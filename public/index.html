@@ -184,48 +184,36 @@ body, html {
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-  axios.get('/api/parceiros')
-    .then(response => {
-      const container = document.getElementById('parceiros-container');
-      const data = response.data;
+axios.get('/api/parceiros')
+  .then(response => {
+    const container = document.getElementById('parceiros-container');
+    const data = response.data;
 
-      if (!data || !Array.isArray(data.records)) {
-        console.error("❌ Estrutura de dados inválida em /api/parceiros:", data);
-        return;
-      }
+    if (!data || !Array.isArray(data)) {
+      console.error("❌ Estrutura de dados inválida em /api/parceiros:", data);
+      return;
+    }
 
-      data.records.forEach(record => {
-        const p = record.fields || {};
-        const card = document.createElement('div');
-        card.className = 'parceiro-card';
-        card.innerHTML = `
-          <img src="${p.logoURL || 'logo-aproveitai.png'}" alt="${p.nomeFantasia || 'parceiro'}">
-          <h3>${p.nomeFantasia || 'parceiro'}</h3>
-          <p><strong>${p.cidade || ''}</strong></p>
-          <p><small>${p.ramo || ''}</small></p>
-          ${p.beneficios ? `<p><strong>Benefício:</strong> ${p.beneficios}</p>` : ''}
-          ${typeof p.whatsapp === 'string'
-              ? `<p><a href="https://wa.me/55${p.whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Olá, encontrei seu contato no site do Cartão AproveitAI!')}">WhatsApp</a></p>`
-              : ''
-            }
-          ${p.site ? `<p><a href="${p.site}" target="_blank">Site</a></p>` : ''}
-          ${p.instagram ? `<p><a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank">Instagram</a></p>` : ''}
-        `;
-        container.appendChild(card);
-      });
-    })
-    .catch(err => console.error('❌ Erro ao carregar parceiros:', err));
-</script>
-<script>
-  fetch("./api/parceiros.js")
-    .then((res) => res.json())
-    .then((dados) => {
-      console.log("Parceiros carregados:", dados);
-      // Aqui seu código para renderizar os parceiros
-    })
-    .catch((erro) => {
-      console.error("Erro ao carregar parceiros:", erro);
+    data.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'parceiro-card';
+      card.innerHTML = `
+        <img src="${p.logo || 'logo-aproveitai.png'}" alt="${p.nome || 'parceiro'}">
+        <h3>${p.nome || 'parceiro'}</h3>
+        <p><strong>${p.cidade || ''}</strong></p>
+        <p><small>${p.ramo || ''}</small></p>
+        ${p.beneficios ? `<p><strong>Benefício:</strong> ${p.beneficios}</p>` : ''}
+        ${typeof p.whatsapp === 'string'
+            ? `<p><a href="https://wa.me/55${p.whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Olá, encontrei seu contato no site do Cartão AproveitAI!')}">WhatsApp</a></p>`
+            : ''
+          }
+        ${p.site ? `<p><a href="${p.site}" target="_blank">Site</a></p>` : ''}
+        ${p.instagram ? `<p><a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank">Instagram</a></p>` : ''}
+      `;
+      container.appendChild(card);
     });
+  })
+    .catch(err => console.error('❌ Erro ao carregar parceiros:', err));
 </script>
 
   <footer>
