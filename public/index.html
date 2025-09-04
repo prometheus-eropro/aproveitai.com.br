@@ -189,10 +189,10 @@ body, html {
       const container = document.getElementById('parceiros-container');
       const data = response.data;
 
-      if (!data || !Array.isArray(data)) {
-        console.error("❌ Estrutura de dados inválida em /api/parceiros:", data);
-        return;
-      }
+if (!Array.isArray(data)) {
+  console.error("❌ Estrutura inválida: esperado array, mas recebi:", data);
+  return;
+}
 
       data.forEach(p => {
         const card = document.createElement('div');
