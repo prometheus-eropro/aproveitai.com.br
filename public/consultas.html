@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta charset="UTF-8">
+  <title>Consultas Recentes</title>
+  <style>
+
+#voltar-fixo {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #0a7f2e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  z-index: 999;
+}
+
+body, html {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.wrap {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+    body {
+      background-color: #dff3ff;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    header img {
+      height: 80px;
+      margin: 0 30px;
+    }
+
+    header h1 {
+      font-size: 26px;
+      color: #008000;
+    }
+
+    .container {
+      background: #fff;
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px #ccc;
+    }
+
+    .consulta {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .ativo {
+      background-color: #e0ffe6;
+    }
+
+    .inativo {
+      background-color: #ffeee0;
+    }
+
+    .erro {
+      background-color: #ffd3d3;
+    }
+
+    .voltar {
+      margin-top: 20px;
+      display: block;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body onload="carregarConsultas()" style="margin: 0; font-family: sans-serif; background: linear-gradient(135deg, #bdeeff, #81d4fa);">
+
+  <!-- Cabeçalho unificado -->
+  <div style="display: grid; grid-template-columns: 140px 1fr 140px; gap: 12px; align-items: center; justify-items: center; margin: 18px auto 0; max-width: 600px;">
+    <img src="logo-prometheus.png" alt="Logo 1" style="height: 90px;">
+    <div style="background: #e9fff1; border: 1px solid #b7efc2; color: #0a4c1a; border-radius: 999px; padding: 12px 20px; font-weight: 900; font-size: 1.6rem;">
+      Cartão AproveitAI
+    </div>
+    <img src="logo-aproveitai.png" alt="Logo 2" style="height: 75px;">
+  </div>
+
+  <!-- Bloco branco com sombra para conteúdo -->
+  <div style="background: white; margin: 40px auto; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); padding: 30px; max-width: 800px;">
+    <h2 style="text-align: center;">Consultas Recentes</h2>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+      <button onclick="window.print()" style="padding: 10px 20px; background-color: #3e6bee; color: white; border: none; border-radius: 6px; margin: 5px;">
+        🖨️ Imprimir / Salvar PDF
+      </button>
+<button onclick="exportarCSV()" style="padding: 10px 20px; background-color: #f57c00; color: white; border: none; border-radius: 6px; margin: 5px;">
+  📤 Exportar CSV
+</button>
+
+      <button onclick="window.history.back()" style="padding: 10px 20px; background-color: #757575; color: white; border: none; border-radius: 6px; margin: 5px;">
+        ↩️ Voltar
+      </button>
+    </div>
+<div style="background-color: #e6f4ff; text-align: center; padding: 20px;">
+  <img src="logo-prometheus.png" alt="Logo 1" style="height: 70px; vertical-align: middle; margin-right: 20px;">
+  <span style="background-color: #b2ebf2; padding: 10px 20px; border-radius: 20px; font-size: 28px; font-weight: bold; color: #008000;">
+    Cartão AproveitAI
+  </span>
+  <img src="logo-aproveitai.png" alt="Logo 2" style="height: 60px; vertical-align: middle; margin-left: 20px;">
+</div>
+
+    <div id="mensagemAviso" style="color: red; text-align: center; margin-bottom: 10px;"></div>
+    <div id="listaConsultas"></div>
+  </div>
+<button id="voltar-fixo" onclick="window.history.back()">⬅️ Voltar</button>
+<script src="script/consulta.js"></script>
+</body>
+</html>
