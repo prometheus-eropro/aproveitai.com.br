@@ -216,6 +216,18 @@ body, html {
     })
     .catch(err => console.error('❌ Erro ao carregar parceiros:', err));
 </script>
+<script>
+  fetch("./api/parceiros.js")
+    .then((res) => res.json())
+    .then((dados) => {
+      console.log("Parceiros carregados:", dados);
+      // Aqui seu código para renderizar os parceiros
+    })
+    .catch((erro) => {
+      console.error("Erro ao carregar parceiros:", erro);
+    });
+</script>
+
   <footer>
     <div class="footer-buttons">
       <a href="beneficios.html"><i class="fa-solid fa-gift"></i> Benefícios</a>
