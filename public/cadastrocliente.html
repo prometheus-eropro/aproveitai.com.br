@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro Cliente - Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #cceeff, #a3d8ff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      margin: 30px 0 10px;
+      text-align: center;
+    }
+
+    header img {
+      height: 80px;
+      margin: 0 20px;
+    }
+
+    header h1 {
+      background-color: #dfffe8;
+      color: #007a33;
+      display: inline-block;
+      padding: 10px 25px;
+      border-radius: 20px;
+      font-size: 1.5em;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      margin: 20px 0;
+      width: 90%;
+      max-width: 450px;
+    }
+
+    .box h2 {
+      color: #00582b;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 15px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007a33;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    #sucessoArea {
+      display: none;
+      text-align: center;
+    }
+
+    #whatsapp-link {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 18px;
+      background-color: #25d366;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+#voltar-fixo {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #0a7f2e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  z-index: 999;
+}  </style>
+</head>
+<body>
+
+  <header>
+    <img src="logo-prometheus.png" alt="Logo ConsciencIAs">
+    <h1>Cartão AproveitAI</h1>
+    <img src="logo-aproveitai.png" alt="Logo AproveitAI">
+  </header>
+
+  <div class="box" id="formArea">
+    <h2>Cadastro de Cliente</h2>
+    <form id="formCliente">
+      <input type="text" name="nome" placeholder="Nome Completo" required />
+      <input type="text" name="cpf" placeholder="CPF" required />
+      <input type="date" name="dataNascimento" placeholder="Data de Nascimento" required />
+      <input type="text" name="celular" placeholder="Celular" required />
+      <input type="text" name="grupo" placeholder="Grupo" />
+      <input type="text" name="cidade" placeholder="Cidade" required />
+      <button type="submit">Cadastrar</button>
+    </form>
+  </div>
+
+  <div class="box" id="sucessoArea">
+    <h2>✅ Cadastro realizado com sucesso!</h2>
+    <p>Agora clique abaixo para ativar seu cartão pelo WhatsApp:</p>
+    <a href="#" id="whatsapp-link" target="_blank">Ativar pelo WhatsApp</a>
+  </div>
+
+<script>
+  function somenteDigitos(str){ return str.replace(/\D/g,""); }
+  function gerarIdPublico(){ return `APV-${Math.random().toString(36).substr(2,5).toUpperCase()}`; }
+
+  document.getElementById("formCliente").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const idPublico = gerarIdPublico();
+    const cpf = somenteDigitos(form.cpf.value);
+    const dados = {
+      nome: form.nome.value.trim(),
+      cpf,
+      dataNascimento: form.dataNascimento.value,
+      celular: somenteDigitos(form.celular.value),
+      grupo: form.grupo.value.trim(),
+      cidade: form.cidade.value.trim(),
+      ativo: "NÃO",
+      idPublico
+    };
+if (cpf.length !== 11) {
+  alert("CPF inválido. Deve conter 11 dígitos.");
+  return;
+}
+if (dados.celular.length < 10) {
+  alert("Número de celular inválido.");
+  return;
+}
+
+    try {
+      const resp = await fetch("/api/consulta?tipo=clientes", {
+
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      });
+
+      if (!resp.ok) {
+        alert("Erro ao cadastrar.");
+        return;
+      }
+
+      document.getElementById("formArea").style.display = "none";
+      document.getElementById("sucessoArea").style.display = "block";
+
+      const msg = `Olá! Fiz meu cadastro e quero ativar meu cartão.%0A%0ANome: ${encodeURIComponent(dados.nome)}%0ACPF: ${cpf}`;
+      document.getElementById("whatsapp-link").href = `https://wa.me/5528999692303?text=${msg}`;
+
+    } catch (err) {
+      console.error(err);
+      alert("Falha na conexão com o servidor.");
+    }
+  });
+</script>
+<button id="voltar-fixo" onclick="window.history.back()">⬅️ Voltar</button>
+
+</body>
+</html>
+
+
+
+
+
+

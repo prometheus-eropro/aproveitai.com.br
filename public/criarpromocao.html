@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Criar Promoção</title>
+  <script defer src="zap.js"></script>
+  <style>
+
+#voltar-fixo {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #0a7f2e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  z-index: 999;
+}
+
+
+    body {
+      background-color: #b3e5fc;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #fff;
+      padding: 10px 30px;
+      border-bottom: 5px solid #01579b;
+    }
+
+    header img {
+      height: 70px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #01579b;
+    }
+
+    .mensagem-parceiro {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      color: #004d40;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px #0002;
+    }
+
+    form {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button[type="submit"] {
+      margin-top: 30px;
+      width: 100%;
+      padding: 15px;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #303f9f;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="logo-prometheus.png" alt="Logo ConsciênciaIAS">
+    <h1>Cartão AproveitAI</h1>
+    <img src="logo-aproveitai.png" alt="Logo AproveitAI">
+    <script defer src="criarpromocao.js"></script>
+
+  </header>
+
+  <div class="container">
+    <h1>Nova Promoção</h1>
+
+    <div class="mensagem-parceiro" id="mensagem-parceiro">
+      <!-- Nome do parceiro aqui -->
+    </div>
+
+    <form id="formPromocao">
+      <label for="titulo">Título da Promoção:</label>
+      <input type="text" id="titulo" required />
+
+      <label for="descricao">Descrição:</label>
+      <textarea id="descricao" required></textarea>
+
+      <label for="dataInicio">Data de Início:</label>
+      <input type="date" id="dataInicio" required />
+
+      <label for="dataFim">Data de Término:</label>
+      <input type="date" id="dataFim" required />
+
+      <label for="grupo">Grupo (opcional):</label>
+      <input type="text" id="grupo" placeholder="Ex: estudantes, idosos, etc." />
+
+      <label for="whatsapp">WhatsApp (automático):</label>
+      <input type="text" id="whatsapp" placeholder="(00) 00000-0000" />
+
+      <label for="instagram">Instagram (automático):</label>
+      <input type="text" id="instagram" placeholder="@exemplo" />
+
+      <button type="submit">Enviar Promoção</button>
+    </form>
+  </div>
+  <script>
+document.getElementById("formPromocao").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const dados = {
+    titulo: document.getElementById("titulo").value,
+    descricao: document.getElementById("descricao").value,
+    dataInicio: document.getElementById("dataInicio").value,
+    dataFim: document.getElementById("dataFim").value,
+    grupo: document.getElementById("grupo").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    instagram: document.getElementById("instagram").value,
+  };
+
+  try {
+    const response = await fetch("/api/consulta?tipo=promocoes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const resultado = await response.json();
+    alert("Promoção enviada com sucesso!");
+  } catch (err) {
+    console.error("Erro ao enviar promoção:", err);
+    alert("Erro ao enviar promoção.");
+  }
+});
+
+  </script>
+<button id="voltar-fixo" onclick="window.history.back()">⬅️ Voltar</button>
+<script src="script/criarpromocao.js"></script>
+</body>
+</html>
+
+
+
+
+
+
