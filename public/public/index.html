@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartão AproveitAI</title>
+<!-- Favicon tradicional (PC) -->
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+<!-- Apple iOS Icon -->
+<link rel="apple-touch-icon" sizes="180x180" href="logo-aproveitai.png">
+
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a7f2e">
+  <style>
+body, html {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.wrap {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+    :root {
+      --verde: #0a7f2e;
+      --verde-esc: #085e22;
+      --azul: #3e6bee;
+      --bg1: #bdeeff;
+      --bg2: #81d4fa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+    body {
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: #232630;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .topo {
+      text-align: center;
+      padding: 20px 10px;
+    }
+    .logo-line {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .logo-line img {
+      max-height: 180px;
+      max-width: 60%;
+    }
+    .brand-name {
+      font-size: 2.5rem;
+      font-weight: bold;
+      background: #eaffeb;
+      padding: 8px 20px;
+      border-radius: 20px;
+      color: var(--verde);
+      margin: 0 auto 15px;
+      display: inline-block;
+    }
+    .slogan {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--verde);
+      margin-bottom: 12px;
+    }
+    .welcome-box {
+      background: #ffffffee;
+      border-radius: 16px;
+      margin: 0 auto;
+      max-width: 800px;
+      padding: 16px;
+      box-shadow: 0 2px 10px #0002;
+    }
+    .welcome-box b {
+      font-size: 1.1rem;
+    }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .cta-row a {
+      text-decoration: none;
+      background: var(--verde);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+    .section {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.3rem;
+      color: var(--azul);
+      font-weight: bold;
+    }
+    footer {
+      background: #232323;
+      color: #eaeaea;
+      text-align: center;
+      padding: 18px 10px 16px;
+      margin-top: auto;
+    }
+    .footer-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .footer-buttons a {
+      padding: .55em 1.1em;
+      border: none;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #fff;
+      text-decoration: none;
+      color: #000;
+    }
+    .footer-buttons a:hover {
+      transform: scale(1.05);
+    }
+    footer .mini {
+      opacity: .9;
+      font-size: .9rem;
+      margin-top: 6px;
+    }
+    footer .mini a {
+      color: #3ee770;
+      text-decoration: underline;
+    }
+  </style>
+<style>
+  .parceiros { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; padding:20px; }
+  .parceiro-card { background:#fff; padding:12px; border-radius:8px; width:200px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+  .parceiro-card img { max-width:100px; margin-bottom:10px; }
+  .parceiro-card h3 { margin:8px 0 4px; font-size:1.2rem; color:#0a7f2e; }
+  .parceiro-card p { margin:4px 0; font-size:0.9rem; }
+  .parceiro-card a { color:#1a73e8; text-decoration:none; }
+</style>
+
+</head>
+<body>
+  <div class="topo">
+    <div class="logo-line">
+      <img src="logo-prometheus.png" alt="Logo 1">
+      <span class="brand-name">Cartão AproveitAI</span>
+      <img src="logo-aproveitai.png" alt="Logo 2">
+    </div>
+    <div class="slogan">Tecnologia com ConsciêncIA gera Resultado.</div>
+    <div class="welcome-box">
+      <b>Bem-vindo à PROMETHEUS EROPRO Soluções Inteligentes!</b><br>
+      Assine e experimente o <b>Cartão AproveitAI</b> e comece a economizar de verdade.
+    </div>
+    <div class="cta-row">
+      <a href="cadastrocliente.html">Quero ser Cliente</a>
+      <a href="areadocliente.html">Área do Cliente</a>      
+      <a href="areadoparceiro.html">Área do Parceiro</a>
+      <a href="cadastroparceiro.html">Quero ser Parceiro</a>
+  
+ </div>
+  </div>
+
+  <div class="section">Parceiros e Benefícios</div>
+<section>
+  
+  <div id="parceiros-container" class="parceiros"></div>
+</section>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+axios.get("/api/parceiros")
+axios.get("/api/consulta?tipo=parceiros")
+
+
+    .then(response => {
+      const container = document.getElementById('parceiros-container');
+      const data = response.data;
+
+if (!Array.isArray(data)) {
+  console.error("❌ Estrutura inválida: esperado array, mas recebi:", data);
+  return;
+}
+
+      data.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'parceiro-card';
+        card.innerHTML = `
+          <img src="${p.logo || 'logo-aproveitai.png'}" alt="${p.nome || 'parceiro'}">
+          <h3>${p.nome || 'parceiro'}</h3>
+          <p><strong>${p.cidade || ''}</strong></p>
+          <p><small>${p.ramo || ''}</small></p>
+          ${p.beneficios ? `<p><strong>Benefício:</strong> ${p.beneficios}</p>` : ''}
+          ${typeof p.whatsapp === 'string'
+              ? `<p><a href="https://wa.me/55${p.whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent('Olá, encontrei seu contato no site do Cartão AproveitAI!')}">WhatsApp</a></p>`
+              : ''
+            }
+          ${p.site ? `<p><a href="${p.site}" target="_blank">Site</a></p>` : ''}
+          ${p.instagram ? `<p><a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank">Instagram</a></p>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    })
+    .catch(err => console.error('❌ Erro ao carregar parceiros:', err));
+</script>
+
+  <footer>
+    <div class="footer-buttons">
+      <a href="beneficios.html"><i class="fa-solid fa-gift"></i> Benefícios</a>
+      <a href="promocoes.html"><i class="fa-solid fa-tags"></i> Promoções</a>
+      <a href="depoimentos.html"><i class="fa-solid fa-comments"></i> Depoimentos</a>
+      <a href="faq.html"><i class="fa-solid fa-circle-question"></i> Dúvidas Frequentes</a>
+    </div>
+    <div class="mini">
+      PROMETHEUS EROPRO Soluções Inteligentes © 2025 • CNPJ 58.584.332/0001-40
+    </div>
+    <div class="mini">
+      <a href="mailto:cartao.aproveitai@gmail.com">cartao.aproveitai@gmail.com</a> ·
+      <a href="https://wa.me/5528999692303" target="_blank">(28) 99969-2303</a> ·
+      <a href="https://instagram.com/cartao.aproveitai" target="_blank">@cartao.aproveitai</a>
+    </div>
+    <div class="mini">
+      <a href="privacidade.html">Privacidade</a> ·
+      <a href="termos.html">Termos</a> ·
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </footer>
+
+  <div id="cookie-banner" style="position:fixed; bottom:0; background:#ffe082; color:#222; width:100%; padding:15px; text-align:center; z-index:9999; font-weight:bold;">
+    Este site utiliza cookies para melhorar sua experiência. 
+    <a href="privacidade.html" style="color:#1a73e8;">Saiba mais</a>
+    <button onclick="aceitarCookies()" style="margin-left:20px; padding:5px 10px;">Aceitar</button>
+  </div>
+
+  <script>
+  function aceitarCookies() {
+    document.getElementById("cookie-banner").style.display = "none";
+    localStorage.setItem("cookiesAceitos", "sim");
+  }
+  if (localStorage.getItem("cookiesAceitos") === "sim") {
+    document.getElementById("cookie-banner").style.display = "none";
+  }
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+
