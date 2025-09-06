@@ -1,15 +1,9 @@
 {
-  "name": "AproveitAI",
+  "name": "Cartão AproveitAI",
   "short_name": "AproveitAI",
-  "start_url": "/index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0a7f2e",
-  "icons": [
-    {
-      "src": "/logo-aproveitai.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    }
-  ]
+  "theme_color": "#ffffff",
+  "icons": []
 }
