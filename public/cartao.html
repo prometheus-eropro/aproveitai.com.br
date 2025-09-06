@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-
   <meta charset="UTF-8" />
   <title>Cartão AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,18 +44,14 @@
       padding: 12px;
       background: #f0fff4;
     }
-.card {
-  width: 100%;
-  max-width: 380px;
-  aspect-ratio: 16/9;
-  background: white;
-  border: 2px dashed #ccc;
-  display: flex;
-  padding: 16px;
-  justify-content: space-between;
-  box-sizing: border-box;
-  flex-wrap: wrap;
-}
+    .card {
+      width: 16cm;
+      height: 9cm;
+      background: white;
+      border: 2px dashed #ccc;
+      display: flex;
+      padding: 16px;
+      justify-content: space-between;
     }
     .left, .right {
       width: 48%;
@@ -87,54 +82,7 @@
       cursor: pointer;
       color: white;
     }
-
-  body {
-    font-size: 18px;
-    line-height: 1.5;
-    margin: 0;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-
-  .container {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  @media (max-width: 600px) {
-    body {
-      font-size: 20px;
-    }
-  }
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-  body {
-    font-size: 18px;
-  }
-.botoes-fixos {
-  position: fixed;
-  bottom: 10px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  width: 100%;
-  background: white;
-  padding: 10px 0;
-  border-top: 1px solid #ddd;
-  z-index: 999;
-}
-
-.botoes-fixos button {
-  font-size: 16px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  background-color: #f0f0f0;
-  cursor: pointer;
-}
-
-</style>
-
+  </style>
 </head>
 <body>
 
@@ -169,6 +117,7 @@
 
   <button id="acaoBtn" style="display: none;"></button>
   <button id="salvarImgBtn" style="display: none; background-color: #0a7f2e;">Salvar Cartão (Imagem)</button>
+  <button onclick="history.back()" style="
     position: fixed;
     bottom: 20px;
     left: 20px;
@@ -183,18 +132,6 @@
   ">⬅ Voltar</button>
 
   <script>
-document.getElementById("salvarImgBtn").addEventListener("click", async () => {
-  const domtoimage = await import("https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/src/dom-to-image.min.js");
-  const node = document.getElementById("cartao"); // Substitua "cartao" pelo ID correto se for diferente
-
-  domtoimage.toJpeg(node, { quality: 0.95 }).then((dataUrl) => {
-    const link = document.createElement("a");
-    link.download = "cartao.jpg";
-    link.href = dataUrl;
-    link.click();
-  });
-});
-
     const idPublico = new URLSearchParams(window.location.search).get('id');
 
     async function buscarClienteSeguro(id) {
@@ -255,18 +192,9 @@ document.getElementById("salvarImgBtn").addEventListener("click", async () => {
         link.click();
       });
     };
-  </script>
-<div class="botoes-fixos">
-  <button onclick="window.history.back()">⬅️ Voltar</button>
-  <button onclick="window.print()">🖨️ Imprimir</button>
-  <button id="salvarImgBtn">💾 Salvar imagem</button>
-</div>
+fetch("https://airtable-api-jade.vercel.app/api/consulta?tipo=clientes")
+  
+</script>
 
 </body>
 </html>
-
-
-
-
-
-

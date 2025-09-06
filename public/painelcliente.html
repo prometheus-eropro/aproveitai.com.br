@@ -166,7 +166,10 @@ body, p, li, span {
   if (!id) return;
 
   // 1) Carrega todos os clientes e filtra pelo idPublico no front
-  const r = await fetch("/api/consulta?tipo=clientes");
+fetch('https://airtable-api-jade.vercel.app/api/clientes');
+fetch('https://airtable-api-jade.vercel.app/api/beneficios')
+fetch('https://airtable-api-jade.vercel.app/api/promocoes')
+https://airtable-api-jade.vercel.app/api/consultas
   if (!r.ok) return;
   const clientes = await r.json();
   const c = clientes.find(x => (x.idPublico || "").toUpperCase() === id.toUpperCase());

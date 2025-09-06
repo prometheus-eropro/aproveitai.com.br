@@ -132,10 +132,10 @@ body, .card, .info {
     const tableName = 'promocoes';
     const hoje = new Date().toISOString().split('T')[0];
 
-axios.get('/api/consulta?tipo=promocoes')
-
-  .then(response => {
-      const container = document.getElementById('promocoes');
+fetch('https://airtable-api-jade.vercel.app/api/promocoes')
+  .then(res => res.json())
+  .then(data => {
+    const registros = data;
       const registros = response.data.records;
 
       const ativos = registros.filter(r => {

@@ -211,7 +211,17 @@ if (data.whatsapp.length < 8) {
 }
 
     try {
-const response = await axios.post("/api/consulta?tipo=parceiros", data);
+const resp = await fetch('https://airtable-api-jade.vercel.app/api/parceiros', {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data)
+});
+
+if (!resp.ok) {
+  alert("Erro ao cadastrar parceiro.");
+  return;
+}
+
 
 
 // Após confirmação do cadastro

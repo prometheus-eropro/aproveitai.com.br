@@ -102,9 +102,9 @@ body, html {
 <script>
 (async () => {
   try {
-    const r = await fetch("/api/consulta?tipo=beneficios");
+const r = await fetch('https://airtable-api-jade.vercel.app/api/beneficios');
+const data = await r.json();
 
-    const data = await r.json();
     const container = document.getElementById('beneficios');
 
     data.forEach(d => {

@@ -101,7 +101,8 @@ body, html {
   </div>
 
   <script>
-fetch("/api/consulta?tipo=depoimentos")
+fetch("https://airtable-api-jade.vercel.app/api/consulta?tipo=depoimentos")
+
   .then(response => response.json())
   .then(data => {
     const container = document.getElementById('depoimentos-container');
@@ -127,9 +128,3 @@ fetch("/api/consulta?tipo=depoimentos")
 
 </body>
 </html>
-
-
-
-
-
-

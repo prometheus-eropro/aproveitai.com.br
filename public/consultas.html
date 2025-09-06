@@ -12,6 +12,7 @@
   bottom: 20px;
   left: 20px;
   padding: 12px 24px;
+
   font-size: 16px;
   background-color: #0a7f2e;
   color: white;
@@ -143,8 +144,29 @@ body, html {
     <div id="mensagemAviso" style="color: red; text-align: center; margin-bottom: 10px;"></div>
     <div id="listaConsultas"></div>
   </div>
+<script>
+fetch('https://airtable-api-jade.vercel.app/api/clientes')
+
+fetch("https://airtable-api-jade.vercel.app/api/consulta?tipo=consultas")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("listaConsultas");
+    data.forEach(consulta => {
+      const ativo = (consulta.ativo || '').toLowerCase();
+      if (ativo === 'sim') {
+        const div = document.createElement("div");
+        div.className = "consulta ativo";
+        div.innerHTML = `
+          <p><strong>${consulta.nome}</strong> - ${consulta.status}</p>
+        `;
+        container.appendChild(div);
+      }
+    });
+  });
+fetch('https://airtable-api-jade.vercel.app/api/consultas')
+</script>
+
 <button id="voltar-fixo" onclick="window.history.back()">⬅️ Voltar</button>
-<script src="script/consulta.js"></script>
 </body>
 </html>
 

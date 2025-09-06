@@ -201,7 +201,11 @@ async function consultarCliente() {
 
   try {
     // 1) Valida cliente
-    const r = await fetch("/api/validarcliente", {
+fetch('https://airtable-api-jade.vercel.app/api/parceiros')
+fetch('https://airtable-api-jade.vercel.app/api/clientes')
+fetch('https://airtable-api-jade.vercel.app/api/promocoes')
+
+, {
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({ cpfOuId: valor })

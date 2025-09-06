@@ -155,7 +155,11 @@ if (dados.celular.length < 10) {
 }
 
     try {
-      const resp = await fetch("/api/consulta?tipo=clientes", {
+const resp = await fetch('https://airtable-api-jade.vercel.app/api/clientes', {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(dados)
+});
 
         method: "POST",
         headers: { "Content-Type": "application/json" },

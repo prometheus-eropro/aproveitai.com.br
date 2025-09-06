@@ -185,7 +185,8 @@ body, html {
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
 
-axios.get("/api/consulta?tipo=parceiros")
+axios.get('https://airtable-api-jade.vercel.app/api/parceiros')
+
 
 
     .then(response => {
@@ -256,6 +257,24 @@ if (!Array.isArray(data)) {
     document.getElementById("cookie-banner").style.display = "none";
   }
   </script>
+<script>
+fetch("https://airtable-api-jade.vercel.app/api/consulta?tipo=parceiros")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("parceiros-container");
+    data.forEach(parceiro => {
+      if ((parceiro.ativo || '').toLowerCase() === 'sim') {
+        const div = document.createElement("div");
+        div.className = "parceiro";
+        div.innerHTML = `
+          <h3>${parceiro.nome}</h3>
+          <p>${parceiro.descricao}</p>
+        `;
+        container.appendChild(div);
+      }
+    });
+  });
+</script>
 
 </body>
 </html>

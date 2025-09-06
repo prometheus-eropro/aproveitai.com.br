@@ -103,7 +103,9 @@ body, html {
   </footer>
 
   <script>
-fetch("/api/consulta?tipo=faq")
+fetch('https://airtable-api-jade.vercel.app/api/consulta?tipo=faq')
+
+
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById('faq-list');

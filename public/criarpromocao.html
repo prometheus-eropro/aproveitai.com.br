@@ -161,7 +161,7 @@ document.getElementById("formPromocao").addEventListener("submit", async (e) => 
   };
 
   try {
-    const response = await fetch("/api/consulta?tipo=promocoes", {
+fetch('https://airtable-api-jade.vercel.app/api/promocoes'), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

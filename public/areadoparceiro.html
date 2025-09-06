@@ -78,6 +78,15 @@ body, html {
       width: 100%;
     }
 
+@media (max-width: 480px) {
+  #voltar-fixo {
+    padding: 8px 16px;
+    font-size: 14px;
+    bottom: 15px;
+    left: 15px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -102,7 +111,7 @@ body, html {
 <div id="acessoNegado" style="display: none; padding: 20px; text-align: center;">
   <h2>Acesso negado</h2>
   <p>Seu acesso ainda não está liberado. Para ativar seu painel, entre em contato via WhatsApp.</p>
-  <a href="https://wa.me/55SEUNUMERO?text=Olá,%20quero%20acesso%20ao%20painel" target="_blank" style="text-decoration:none;color:white;">
+  <a href="https://wa.me/5528999692303?text=Olá,%20quero%20acesso%20ao%20painel" target="_blank" style="text-decoration:none;color:white;">
     <button style="background-color:#25D366;color:white;padding:10px 20px;border:none;border-radius:5px;cursor:pointer;">
       Falar com Suporte no WhatsApp
     </button>
@@ -170,10 +179,11 @@ async function entrarPainel() {
     btn.disabled = false; btn.textContent = textoOriginal;
   }
 }
-
+fetch('https://airtable-api-jade.vercel.app/api/parceiros')
 </script>
 <button id="voltar-fixo" onclick="window.history.back()">⬅️ Voltar</button>
-<script src="script/consulta.js"></script>
+
+
 
 </body>
 </html>
