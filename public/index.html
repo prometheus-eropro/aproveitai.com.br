@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cartão AproveitAI</title>
+<link rel="stylesheet" href="style.css">
+
+
+<link rel="apple-touch-icon" href="logo-aproveitai.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#0a7a2a">
+
+
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        Bem-vindo à <strong>PROMETHEUS EROPRO Soluções Inteligentes</strong><br>
+        Assine e comece a economizar de verdade.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+<!-- BOTÕES PRINCIPAIS -->
+<div class="botoes-centrais">
+  <a href="beneficios.html" class="btn-aproveitai">🎁 Benefícios</a>
+  <a href="promocoes.html" class="btn-aproveitai">🔥 Promoções</a>
+  <a href="painelcliente.html" class="btn-aproveitai">👤 Área do Cliente</a>
+  <a href="painelparceiro.html" class="btn-aproveitai">🏪 Área do Parceiro</a>
+  <a href="https://wa.me/5528999692303?text=Olá!%20Quero%20ser%20parceiro%20do%20Cartão%20AproveitAI" target="_blank" class="btn-aproveitai">🤝 Quero ser Parceiro</a>
+  <a href="cadastro.html" class="btn-aproveitai">📝 Quero ser Cliente</a>
+
+</div>
+
+
+
+<script>
+  document.getElementById("btnCliente").addEventListener("click", function () {
+    const box = document.getElementById("explicacaoCliente");
+    box.style.display = (box.style.display === "none" ? "block" : "none");
+    box.scrollIntoView({ behavior: "smooth" });
+  });
+</script>
+
+<div class="filtros">
+  <input type="text" id="buscaNome" placeholder="Buscar por nome">
+  <select id="buscaCidade"><option value="">Todas as cidades</option></select>
+  <select id="buscaRamo"><option value="">Todos os ramos</option></select>
+  <button onclick="filtrar()">Filtrar</button>
+</div>
+
+<div class="cards-wrapper">
+  <div id="parceiros" class="container-parceiros">
+  </div>
+</div>
+
+<div class="separador-footer"></div>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+<script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const parceirosDiv = document.getElementById("parceiros");
+const buscaNome = document.getElementById("buscaNome");
+const buscaCidade = document.getElementById("buscaCidade");
+const buscaRamo = document.getElementById("buscaRamo");
+
+let parceiros = [];
+
+function normalizar(txt) {
+  return (txt || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+// === RENDERIZAR CARDS ===
+function renderizar(lista) {
+  parceirosDiv.innerHTML = "";
+  if (!lista.length) {
+    parceirosDiv.innerHTML = "Nenhum parceiro encontrado.";
+    return;
+  }
+
+  lista.forEach(p => {
+    const nome = p.nomeFantasia || p.nome || "Parceiro";
+    const cidade = p.cidade || "-";
+    const ramo = p.ramo || "-";
+    const tipoDesconto = p.tipoDesconto || "";
+    const whatsapp = (p.whatsapp || "").replace(/\D/g, "");
+    const instagram = p.instagram || "";
+    const site = p.site || "";
+    const email = p.email || "";
+
+    // === LOGO do parceiro (com fallback) ===
+    let logo = (p.logoURL || "").trim();
+    if (!logo || !logo.includes("http")) {
+      logo = "logo-aproveitai.png";
+    }
+
+    parceirosDiv.innerHTML += `
+      <div class="card">
+        <img 
+          src="${logo}" 
+          alt="${nome}" 
+          onerror="this.src='logo-aproveitai.png'" 
+          style="max-height:100px;margin-bottom:10px;"
+        >
+        <h3>${nome}</h3>
+        <p><b>Cidade:</b> ${cidade}</p>
+        <p><b>Ramo:</b> ${ramo}</p>
+        ${tipoDesconto ? `<p><b>Desconto:</b> ${tipoDesconto}</p>` : ""}
+        ${whatsapp ? `<p><a href="https://wa.me/55${whatsapp}" target="_blank">WhatsApp</a></p>` : ""}
+        ${instagram ? `<p><a href="https://instagram.com/${instagram.replace("@", "")}" target="_blank">${instagram}</a></p>` : ""}
+        ${site ? `<p><a href="${site}" target="_blank">Site</a></p>` : ""}
+        ${email ? `<p><a href="mailto:${email}">${email}</a></p>` : ""}
+      </div>
+    `;
+  });
+}
+
+// === PREENCHER FILTROS ===
+function preencherFiltros() {
+  buscaCidade.innerHTML = `<option value="">Todas as cidades</option>`;
+  buscaRamo.innerHTML = `<option value="">Todos os ramos</option>`;
+
+  // remove acento e caracteres especiais pra uniformizar
+  const cidades = [...new Set(parceiros
+    .map(p => normalizar(p.cidade))
+    .filter(Boolean)
+  )].sort();
+
+  const ramos = [...new Set(parceiros
+    .map(p => normalizar(p.ramo))
+    .filter(Boolean)
+  )].sort();
+
+  cidades.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+    buscaCidade.appendChild(opt);
+  });
+
+  ramos.forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r;
+    opt.textContent = r.charAt(0).toUpperCase() + r.slice(1);
+    buscaRamo.appendChild(opt);
+  });
+}
+
+// === FILTRAR ===
+function filtrar() {
+  const nomeBusca = normalizar(buscaNome.value);
+  const cidadeBusca = normalizar(buscaCidade.value);
+  const ramoBusca = normalizar(buscaRamo.value);
+
+  const filtrados = parceiros.filter(p => {
+    const nomeOk =
+      !nomeBusca ||
+      normalizar(p.nomeFantasia || p.nome).includes(nomeBusca);
+
+    const cidadeOk =
+      !cidadeBusca ||
+      normalizar(p.cidade).includes(cidadeBusca); // compara sem acento e sem hífen
+
+    const ramoOk =
+      !ramoBusca ||
+      normalizar(p.ramo).includes(ramoBusca);
+
+    return nomeOk && cidadeOk && ramoOk;
+  });
+
+  renderizar(filtrados);
+}
+
+// === CARREGAR PARCEIROS ===
+async function carregarParceiros() {
+  try {
+    const resposta = await fetch(`${sheetURL}?aba=parceiros`);
+    const dados = await resposta.json();
+    parceiros = dados.filter(p => (p.ativo || "").toLowerCase() === "sim");
+    renderizar(parceiros);
+    preencherFiltros();
+  } catch (erro) {
+    console.error("Erro ao carregar parceiros:", erro);
+    parceirosDiv.innerHTML = "Erro ao carregar parceiros.";
+  }
+}
+
+carregarParceiros();
+</script>
+<div id="lgpd-barra" style="
+  position:fixed;bottom:0;left:0;width:100%;
+  background:#0a7a2a;color:white;padding:12px;text-align:center;
+  font-size:14px;z-index:9999;">
+  Utilizamos cookies para melhorar sua experiência. Ao continuar navegando,
+  você concorda com nossa <a href='privacidade.html' style='color:#aaffaa;text-decoration:underline;'>Política de Privacidade</a>.
+  <button onclick="aceitarLGPD()" style='margin-left:10px;padding:6px 12px;border:none;background:white;color:#0a7a2a;border-radius:6px;cursor:pointer;'>Entendi</button>
+</div>
+
+<script>
+function aceitarLGPD(){
+  localStorage.setItem("lgpd-ok","sim");
+  const lgpd = document.getElementById("lgpd-barra");
+if (lgpd) lgpd.style.display = "none";
+
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const lgpd = document.getElementById("lgpd-barra");
+  if(lgpd && localStorage.getItem("lgpd-ok")==="sim"){
+    lgpd.style.display="none";
+  }
+});
+
+</script>
+<script>
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const btn = document.createElement("button");
+  btn.textContent = "📲 Adicionar à tela inicial";
+  btn.className = "btn";
+  btn.style.position = "fixed";
+  btn.style.bottom = "20px";
+  btn.style.right = "20px";
+  btn.style.zIndex = "9999";
+
+  btn.onclick = async () => {
+    btn.remove();
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  };
+
+  document.body.appendChild(btn);
+});
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+</script>
+</body>
+</html>

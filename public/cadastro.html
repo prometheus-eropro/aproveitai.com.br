@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro | Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .card-info {
+      background: #f1fbff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 0 8px rgba(0,0,0,0.08);
+    }
+    .form-wrap {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    form label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    form input[type="text"],
+    form input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+    form button {
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+    }
+    .checkbox-termo {
+      margin-top: 20px;
+    }
+    .checkbox-termo label {
+      display: inline;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ CABEÇALHO PADRÃO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        📝 <strong>Quero ser Cliente</strong><br>
+        Preencha o formulário para solicitar seu cartão.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+<!-- ✅ BLOCO EXPLICAÇÃO -->
+<div class="card-info">
+  <h2 style="color:#007f30; text-align:center;">📋 Como funciona o Cartão AproveitAI</h2>
+  <p>O <strong>Cartão AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
+  <ol style="margin-top:10px;">
+    <li>Preencha o cadastro e aceite os Termos de Adesão.</li>
+    <li>Nossa equipe entrará em contato para confirmar o pagamento.</li>
+    <li>Após a confirmação, você receberá seu <strong>Cartão Digital AproveitAI</strong> com QR Code.</li>
+    <li>Apresente o QR Code aos parceiros para obter descontos.</li>
+  </ol>
+  <p style="margin-top:10px;">📙 <strong>Valor individual:</strong> R$ 20,00/mês.</p>
+  <p>👥 <strong>Grupos</strong> (empresas, associações, sindicatos, condomínios) têm condições especiais.</p>
+</div>
+
+<!-- ✅ FORMULÁRIO -->
+<div class="form-wrap">
+  <form>
+    <label>Nome completo:</label>
+    <input type="text" required>
+
+    <label>CPF:</label>
+    <input type="text" required>
+
+    <label>Celular (WhatsApp):</label>
+    <input type="text" required>
+
+    <label>Cidade:</label>
+    <input type="text" required>
+
+    <label>Grupo (empresa, sindicato ou particular):</label>
+    <input type="text" placeholder="(opcional — empresa, sindicato etc)">
+
+    <label>Data de nascimento:</label>
+    <input type="date">
+
+    <div class="checkbox-termo">
+      <input type="checkbox" id="aceite" required>
+      <label for="aceite">
+        Li e aceito os <a href="termos.html" target="_blank">Termos de Adesão</a> e <a href="privacidade.html" target="_blank">Política de Privacidade</a>
+      </label>
+    </div>
+
+    <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
+  </form>
+
+  <div style="text-align:center; margin-top: 20px;">
+    <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Área do Parceiro • Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0a7f2e">
+</head>
+
+<body>
+
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>Área do Parceiro</strong><br>
+        Valide clientes e acompanhe seus relatórios.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+<!-- ✅ ÁREA DE LOGIN -->
+<div class="wrap" style="display:flex; justify-content:center; padding: 30px;">
+  <div class="card" id="loginBox" style="max-width: 500px; width: 100%;">
+    <h2 style="text-align:center;color:#0a4c1a">Acesso do Parceiro</h2>
+    <div class="small" style="text-align:center"><b>Use seu CNPJ e token cadastrado</b></div>
+
+    <label>CNPJ</label>
+    <input id="cnpj" placeholder="Digite seu CNPJ">
+
+    <label>Token</label>
+    <input id="token" type="password" placeholder="Digite seu token">
+
+    <button class="btn-aproveitai" onclick="entrarParceiro()">Entrar</button>
+
+    <div id="resultado" style="margin-top: 10px;"></div>
+
+    <div id="erroLogin" style="color:#d10000;font-weight:800;margin-top:10px;text-align:center"></div>
+
+    <div style="text-align:center; margin-top: 20px;">
+      <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ PAINEL DO PARCEIRO -->
+<div class="wrap" style="display:flex; justify-content:center; padding: 30px;">
+  <div class="card" id="painelBox" style="display:none; max-width: 600px; width: 100%;">
+
+    <h2 style="text-align:center;color:#0a4c1a">Bem-vindo, <span id="nomeParceiro"></span></h2>
+
+    <label>CPF ou ID Público do Cliente</label>
+    <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
+
+    <button class="btn-aproveitai" onclick="validarCliente()">Validar Cliente</button>
+
+    <div id="resultadoCliente" style="margin-top: 15px;"></div>
+
+    <!-- Resultado detalhado -->
+    <div id="boxResultado" style="
+      display:none;
+      margin-top:25px;
+      padding:18px;
+      border-radius:12px;
+      border:2px solid #198754;
+      background:#f6fff8;
+      font-size:15px;
+      line-height:1.6;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    "></div>
+
+    <!-- Relatório -->
+    <div style="margin-top: 20px;">
+      <button class="btn-aproveitai" onclick="window.open(sheetURL + '?relatorio=1','_blank')">
+        📊 Ver relatório de consultas
+      </button>
+    </div>
+
+    <!-- Sair -->
+    <div style="margin-top:15px;text-align:center;">
+      <button onclick="location.reload()" class="vermelho">⬅️ Sair / Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ SCRIPT -->
+<script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+async function entrarParceiro() {
+  const cnpj = document.getElementById("cnpj").value.trim();
+  const token = document.getElementById("token").value.trim();
+  const box = document.getElementById("resultado");
+
+  box.innerHTML = "Validando...";
+
+  if (!cnpj || !token) {
+    box.innerHTML = "❌ Informe CNPJ e token.";
+    return;
+  }
+
+  try {
+    const url = `${sheetURL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data || data.erro) {
+      box.innerHTML = "❌ Acesso negado.";
+      return;
+    }
+
+    box.innerHTML = `<div class="status-box"><h3>${data.parceiro}</h3><p><b>Status:</b> ATIVO</p></div>`;
+    document.getElementById("painelBox").style.display = "block";
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("nomeParceiro").textContent = data.parceiro;
+  } catch (e) {
+    console.error(e);
+    box.innerHTML = "❌ Erro ao validar parceiro.";
+  }
+}
+
+async function validarCliente() {
+  const cpf = document.getElementById("cpfCliente").value.trim();
+  const box = document.getElementById("resultadoCliente");
+
+  box.innerHTML = "Consultando...";
+
+  if (!cpf) {
+    box.innerHTML = "❌ Informe o CPF.";
+    return;
+  }
+
+  try {
+    const url = `${sheetURL}?validarCPF=${encodeURIComponent(cpf.replace(/\D/g, ""))}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data || !data.nome) {
+      box.innerHTML = "❌ Cliente não encontrado.";
+      return;
+    }
+
+    const dataAceite = data.dataAceite
+      ? formatarData(data.dataAceite)
+      : "-";
+
+    box.innerHTML = `
+      <div class="status-box ativo">
+        <p><b>Nome:</b> ${data.nome}</p>
+        <p><b>Status:</b> ATIVO</p>
+        <p><b>Data de Aceite:</b> ${dataAceite}</p>
+        <p class="codigo">✔ Código: ${data.codigoERO}</p>
+      </div>
+    `;
+  } catch (e) {
+    console.error(e);
+    box.innerHTML = "❌ Erro ao validar cliente.";
+  }
+}
+
+function formatarData(valor) {
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+  return d.toLocaleDateString("pt-BR") + " " +
+         d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+</script>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+</body>
+</html>

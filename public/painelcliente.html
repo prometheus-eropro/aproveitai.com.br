@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Área do Cliente | Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0a7f2e">
+</head>
+
+<body>
+
+<!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja com nome da página -->
+      <p class="boas-vindas">
+        👤 <strong>Área do Cliente</strong><br>
+        Consulte seu CPF ou ID e acesse seus benefícios.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+<!-- ✅ CONTEÚDO CENTRALIZADO -->
+<div class="wrap" style="display:flex; justify-content:center; padding: 30px;">
+  <div class="card" style="max-width: 600px; width: 100%;">
+
+    <h2 style="text-align:center;margin:0 0 10px;color:#0a4c1a">Bem-vindo à Área do Cliente</h2>
+
+    <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)" style="width: 100%; padding: 10px; font-size: 16px;">
+    <button onclick="consultar()" style="margin-top: 10px;">Consultar</button>
+
+    <div class="small" style="margin-top: 10px;">Após a consulta, você poderá acessar seu cartão digital, salvar no celular ou imprimir.</div>
+
+    <div id="legenda" style="font-size:12px;text-align:center;margin-top:10px;color:#555;">
+      <b>Legenda:</b> 🟩 Exclusivo para você &nbsp; 🟨 Do seu grupo &nbsp; ⚪ Para todos
+    </div>
+
+    <div id="resultado" style="margin-top: 20px;"></div>
+
+    <h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Benefícios disponíveis</h3>
+    <div id="beneficiosCliente" class="card" style="display:none;background:#fefefe"></div>
+
+    <h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Promoções disponíveis</h3>
+    <div id="promocoesCliente" class="card" style="display:none;background:#fefefe"></div>
+
+    <button id="btnCartao" class="btn2" style="display:none;margin-top:15px;" onclick="abrirCartao()">Ver / Salvar Cartão</button>
+
+    <!-- ✅ BOTÃO VOLTAR -->
+    <div style="text-align:center; margin-top: 20px;">
+      <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ SCRIPT DE CONSULTA -->
+<script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+async function consultar() {
+  const input = document.getElementById("cpf").value.trim();
+  const box = document.getElementById("resultado");
+
+  box.classList.remove("ativo", "inativo");
+  box.innerHTML = "Consultando...";
+
+  if (!input) {
+    box.innerHTML = "❌ Informe seu CPF ou ID Público.";
+    return;
+  }
+
+  const somenteNumeros = input.replace(/\D/g, "");
+  const isCPF = somenteNumeros.length === 11;
+
+  try {
+    const url = isCPF
+      ? `${sheetURL}?clienteCPF=${encodeURIComponent(somenteNumeros)}`
+      : `${sheetURL}?clienteID=${encodeURIComponent(input)}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data || !data.nome) {
+      box.classList.add("inativo");
+      box.innerHTML = "❌ Cliente não encontrado.";
+      document.getElementById("btnCartao").style.display = "none";
+      return;
+    }
+
+    const dataAceite = data.dataAceite
+      ? formatarData(data.dataAceite)
+      : "-";
+
+    box.classList.add(data.ativo === "SIM" ? "ativo" : "inativo");
+
+    box.innerHTML = `
+      <div class="status-box">
+        <h3>${data.nome}</h3>
+        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
+        <p><b>CPF:</b> ${mascararCPF(data.cpf)}</p>
+        <p><b>Nº do Cartão:</b> ${data.cartao || "-"}</p>
+        <p><b>Data de Aceite:</b> ${dataAceite}</p>
+        <p><b>Grupo:</b> ${data.grupo || "geral"}</p>
+        ${data.ativo === "SIM" ? `<p class="codigo">✔ Código: ${data.codigoERO}</p>` : ""}
+      </div>
+    `;
+
+    document.getElementById("btnCartao").style.display =
+      data.ativo === "SIM" ? "block" : "none";
+  } catch (e) {
+    console.error(e);
+    box.innerHTML = "❌ Erro ao consultar. Tente novamente.";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("beneficiosCliente").style.display = "none";
+  document.getElementById("promocoesCliente").style.display = "none";
+});
+
+function mascararCPF(cpf) {
+  if (!cpf) return "-";
+  return cpf.replace(/^(\d{3})\d{3}\d{3}(\d{2})$/, "$1*** ***$2");
+}
+
+function formatarData(valor) {
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+  return d.toLocaleDateString("pt-BR") + " " +
+         d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function abrirCartao() {
+  window.location.href = "cartao.html";
+}
+</script>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+
+</body>
+</html>

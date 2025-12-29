@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dúvidas Frequentes | Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#0a7f2e">
+  <style>
+    .faq-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 14px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .faq-item {
+      margin-bottom: 20px;
+    }
+
+    .faq-item h3 {
+      margin-bottom: 6px;
+      color: #0a7a3b;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ CABEÇALHO PADRÃO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        <strong> ❓ Dúvidas Frequentes</strong><br></p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+
+  <div class="tarja-verdeagua">
+   
+  </div>
+</header>
+
+<!-- ✅ CONTEÚDO -->
+<div class="faq-container" id="faq">
+  <p>Carregando dúvidas...</p>
+</div>
+
+<div style="text-align:center; margin: 40px 0;">
+  <a href="index.html" class="btn-aproveitai">⬅️ Voltar ao site</a>
+</div>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+
+<!-- ✅ SCRIPT GOOGLE SHEETS -->
+<script>
+  const URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec?aba=faq";
+
+  fetch(URL)
+    .then(res => res.json())
+    .then(dados => {
+      const faq = document.getElementById("faq");
+      faq.innerHTML = "";
+
+      dados.forEach(item => {
+        faq.innerHTML += `
+          <div class="faq-item">
+            <h3>${item.pergunta}</h3>
+            <p>${item.resposta}</p>
+          </div>
+        `;
+      });
+    });
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+
+</body>
+</html>

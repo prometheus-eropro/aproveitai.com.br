@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Promoções | Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0a7f2e">
+</head>
+<body>
+
+<!-- ✅ CABEÇALHO PADRÃO -->
+  <!-- ✅ TARJA DE TÍTULO DA PÁGINA -->
+  <header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- ✅ Tarja de página no mesmo estilo do index -->
+      <p class="boas-vindas">
+        🎯 <strong>Promoções Ativas</strong><br>
+        Confira todas as promoções públicas em vigor.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+</header>
+
+<!-- ✅ CONTEÚDO PRINCIPAL -->
+<div class="container-parceiros" id="lista"></div>
+
+<!-- ✅ MENSAGEM DE OBSERVAÇÃO -->
+<div style="text-align:center; margin: 20px auto; font-size: 14px; color: #333; max-width: 800px;">
+  ⚠️ Algumas promoções podem ser exclusivas para grupos ou clientes específicos.<br>
+  Consulte sua área do cliente para conferir as promoções personalizadas.
+</div>
+
+<!-- ✅ BOTÃO VOLTAR ESTILIZADO -->
+<div style="text-align:center; margin-bottom: 30px;">
+  <button onclick="location.href='index.html'" style="
+    background: #3cc062;
+    color: white;
+    padding: 8px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  ">← Voltar ao início</button>
+</div>
+
+<!-- ✅ SCRIPT DE PROMOÇÕES -->
+<script>
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+fetch(ENDPOINT + "?aba=promocoes")
+  .then(r => r.json())
+  .then(d => {
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    const ativos = d.filter(p =>
+      String(p.ativo || "").toUpperCase() === "SIM" &&
+      (!p.grupo || p.grupo.trim() === "")
+    );
+
+    ativos.forEach(p => {
+      lista.innerHTML += `
+        <div class="card">
+          <b>${p.titulo || p.nome || "Promoção sem título"}</b><br>
+          <p>${p.descricao || "-"}</p>
+          <small>
+            <b>Parceiro:</b> ${p.parceiro || p.parceiroCNPJ || "-"}<br>
+            <b>Validade:</b> ${p.dataFim || "-"}<br>
+            ${p.zap ? `<b>WhatsApp:</b> ${p.zap}<br>` : ""}
+            ${p.instagram ? `<b>Instagram:</b> @${p.instagram}<br>` : ""}
+          </small>
+        </div>
+      `;
+    });
+
+    if (!ativos.length) {
+      lista.innerHTML = "<p style='text-align:center;'>Nenhuma promoção ativa no momento.</p>";
+    }
+  })
+  .catch(err => {
+    document.getElementById("lista").innerHTML =
+      "<p style='color:red;text-align:center'>Erro ao carregar promoções.</p>";
+    console.error(err);
+  });
+</script>
+
+<!-- ✅ SERVICE WORKER -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+
+</body>
+</html>

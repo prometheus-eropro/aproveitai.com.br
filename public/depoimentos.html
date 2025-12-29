@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Depoimentos | Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ CABEÇALHO PADRÃO (IGUAL AO index.html) -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        <strong> 📣 Depoimentos</strong><br> </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+
+  <div class="tarja-verdeagua">
+   
+  </div>
+</header>
+
+<!-- ✅ CONTEÚDO -->
+<div class="wrap" style="max-width: 800px; margin: 30px auto;">
+  <div id="lista"></div>
+
+  <div style="text-align:center; margin-top: 30px;">
+    <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+
+<!-- ✅ SCRIPT PARA CARREGAR DEPOIMENTOS -->
+<script>
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+fetch(ENDPOINT + "?aba=depoimentos")
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById("lista").innerHTML = d.map(x => `
+      <div class="card">
+        "${x.texto}"<br><br>
+        <b>- ${x.nome || x.autor || x.cliente || x.usuario || "Anônimo"}</b>
+      </div>
+    `).join("");
+  });
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+
+</body>
+</html>
