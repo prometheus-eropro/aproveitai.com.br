@@ -850,3 +850,11 @@ CARDS DE PARCEIROS
   border-radius: 14px;
   margin-left: 8px;
 }
+.status-box.ativo {
+  background:#e9f9ef;
+  border:2px solid #198754;
+}
+.status-box.inativo {
+  background:#fdeaea;
+  border:2px solid #dc3545;
+}

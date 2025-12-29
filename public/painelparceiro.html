@@ -159,14 +159,28 @@ const url = valor.startsWith("APV-")
       ? formatarData(data.dataAceite)
       : "-";
 
-    box.innerHTML = `
-      <div class="status-box ativo">
-        <p><b>Nome:</b> ${data.nome}</p>
-        <p><b>Status:</b> ATIVO</p>
-        <p><b>Data de Aceite:</b> ${dataAceite}</p>
-        <p class="codigo">✔ Código: ${data.codigoERO}</p>
-      </div>
-    `;
+   const cpfMascarado = data.cpf
+  ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
+  : "-";
+
+const codigo = data.ativo === "SIM" ? data.codigoERO : "—";
+
+box.innerHTML = `
+  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+    <p><b>Nome:</b> ${data.nome}</p>
+    <p><b>CPF:</b> ${cpfMascarado}</p>
+    <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
+    <p><b>Cidade:</b> ${data.cidade || "-"}</p>
+    <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+    <p><b>Cliente desde:</b> ${dataAceite}</p>
+    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
+
+    ${data.ativo === "SIM"
+      ? `<p class="codigo">✔ Código ERO: <b>${data.codigoERO}</b></p>`
+      : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
+    }
+  </div>
+`;
   } catch (e) {
     console.error(e);
     box.innerHTML = "❌ Erro ao validar cliente.";
