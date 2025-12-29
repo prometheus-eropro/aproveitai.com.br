@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Área do Cliente | Cartão AproveitAI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Área do Cliente | Cartão AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0a7f2e">
+
 </head>
 
 <body>
-
 <!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
 <header class="site-header">
   <div class="brandline">
@@ -30,117 +28,230 @@
   </div>
 </header>
 
-<!-- ✅ CONTEÚDO CENTRALIZADO -->
-<div class="wrap" style="display:flex; justify-content:center; padding: 30px;">
-  <div class="card" style="max-width: 600px; width: 100%;">
-
+<div class="wrap">
+  <div class="card">
     <h2 style="text-align:center;margin:0 0 10px;color:#0a4c1a">Bem-vindo à Área do Cliente</h2>
 
-    <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)" style="width: 100%; padding: 10px; font-size: 16px;">
-    <button onclick="consultar()" style="margin-top: 10px;">Consultar</button>
+    <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
+<button onclick="consultar()">Consultar</button>
 
-    <div class="small" style="margin-top: 10px;">Após a consulta, você poderá acessar seu cartão digital, salvar no celular ou imprimir.</div>
+<div class="small">Após a consulta, você poderá acessar seu cartão digital, salvar no celular ou imprimir.</div>
 
-    <div id="legenda" style="font-size:12px;text-align:center;margin-top:10px;color:#555;">
-      <b>Legenda:</b> 🟩 Exclusivo para você &nbsp; 🟨 Do seu grupo &nbsp; ⚪ Para todos
-    </div>
+<!-- 🔸 Legenda única e fixa -->
+<div id="legenda" style="font-size:12px;text-align:center;margin-top:10px;color:#555;">
+  <b>Legenda:</b> 🟩 Exclusivo para você &nbsp; 🟨 Do seu grupo &nbsp; ⚪ Para todos
+</div>
 
-    <div id="resultado" style="margin-top: 20px;"></div>
+<div id="resultado"></div>
+<h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Benefícios disponíveis</h3>
+<div id="beneficiosCliente" class="card" style="display:none;background:#fefefe"></div>
 
-    <h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Benefícios disponíveis</h3>
-    <div id="beneficiosCliente" class="card" style="display:none;background:#fefefe"></div>
+<h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Promoções disponíveis</h3>
+<div id="promocoesCliente" class="card" style="display:none;background:#fefefe"></div>
 
-    <h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Promoções disponíveis</h3>
-    <div id="promocoesCliente" class="card" style="display:none;background:#fefefe"></div>
-
-    <button id="btnCartao" class="btn2" style="display:none;margin-top:15px;" onclick="abrirCartao()">Ver / Salvar Cartão</button>
-
-    <!-- ✅ BOTÃO VOLTAR -->
-    <div style="text-align:center; margin-top: 20px;">
-      <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
-    </div>
+    <button id="btnCartao" class="btn2" style="display:none" onclick="abrirCartao()">Ver / Salvar Cartão</button>
+    <div style="text-align:center"><a class="voltar" href="index.html">← Voltar ao site</a></div>
   </div>
 </div>
 
-<!-- ✅ SCRIPT DE CONSULTA -->
 <script>
 const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+let ultimoIdPublico = "";
 
-async function consultar() {
-  const input = document.getElementById("cpf").value.trim();
+// Função de normalização
+function norm(v){ return String(v ?? "").toLowerCase().trim(); }
+function isAtivo(v){
+  const s = norm(v);
+  return ["sim","true","1","ativo","yes"].includes(s);
+}
+
+// ===============================================
+// 🔍 CONSULTA CLIENTE
+// ===============================================
+async function consultar(){
+  const valor = document.getElementById("cpf").value.trim();
   const box = document.getElementById("resultado");
+  const btn = document.getElementById("btnCartao");
 
-  box.classList.remove("ativo", "inativo");
-  box.innerHTML = "Consultando...";
+  btn.style.display = "none";
+  box.classList.remove("ativo","inativo");
+  box.textContent = "Consultando...";
 
-  if (!input) {
-    box.innerHTML = "❌ Informe seu CPF ou ID Público.";
+  if(!valor){
+    box.textContent = "Informe seu CPF ou ID Público.";
     return;
   }
 
-  const somenteNumeros = input.replace(/\D/g, "");
-  const isCPF = somenteNumeros.length === 11;
+  const soDigitos = valor.replace(/\D/g,"");
+  const isCpf = soDigitos.length === 11;
 
   try {
-    const url = isCPF
-      ? `${sheetURL}?clienteCPF=${encodeURIComponent(somenteNumeros)}`
-      : `${sheetURL}?clienteID=${encodeURIComponent(input)}`;
+    const url = isCpf
+      ? `${sheetURL}?aba=clientes&cpf=${encodeURIComponent(soDigitos)}`
+      : `${sheetURL}?aba=clientes&idPublico=${encodeURIComponent(valor)}`;
 
     const res = await fetch(url);
     const data = await res.json();
 
-    if (!data || !data.nome) {
-      box.classList.add("inativo");
-      box.innerHTML = "❌ Cliente não encontrado.";
-      document.getElementById("btnCartao").style.display = "none";
+    let achado = null;
+    if (Array.isArray(data)) {
+      achado = isCpf
+        ? data.find(x => String(x.cpf).replace(/\D/g,"") === soDigitos)
+        : data.find(x => String(x.idPublico).trim() === valor);
+    } else {
+      achado = data;
+    }
+
+    if(!achado || !achado.cpf){
+      box.textContent = "❌ Cliente não encontrado.";
+      document.getElementById("beneficiosCliente").style.display = "none";
+      document.getElementById("promocoesCliente").style.display = "none";
       return;
     }
 
-    const dataAceite = data.dataAceite
-      ? formatarData(data.dataAceite)
-      : "-";
+    const ativo = isAtivo(achado.ativo);
+    box.classList.add(ativo ? "ativo" : "inativo");
 
-    box.classList.add(data.ativo === "SIM" ? "ativo" : "inativo");
+    ultimoIdPublico = (achado.idPublico || "").trim();
 
     box.innerHTML = `
-      <div class="status-box">
-        <h3>${data.nome}</h3>
-        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
-        <p><b>CPF:</b> ${mascararCPF(data.cpf)}</p>
-        <p><b>Nº do Cartão:</b> ${data.cartao || "-"}</p>
-        <p><b>Data de Aceite:</b> ${dataAceite}</p>
-        <p><b>Grupo:</b> ${data.grupo || "geral"}</p>
-        ${data.ativo === "SIM" ? `<p class="codigo">✔ Código: ${data.codigoERO}</p>` : ""}
-      </div>
+      <div><b>Nome:</b> ${achado.nome || "-"}</div>
+      <div><b>CPF:</b> ${achado.cpf || "-"}</div>
+      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+      <div><b>Celular:</b> ${achado.celular || "-"}</div>
+      <div><b>Data de Nascimento:</b> ${achado.nascimento || "-"}</div>
+      <div><b>Data de Cadastro:</b> ${achado.dataAceite || "-"}</div>
+      <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
     `;
 
-    document.getElementById("btnCartao").style.display =
-      data.ativo === "SIM" ? "block" : "none";
+    if (ultimoIdPublico) {
+      btn.style.display = "block";
+      carregarBeneficiosEPromocoes(achado.grupo || "", achado.idPublico || "");
+    }
   } catch (e) {
     console.error(e);
-    box.innerHTML = "❌ Erro ao consultar. Tente novamente.";
+    box.textContent = "⚠️ Erro na consulta.";
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("beneficiosCliente").style.display = "none";
-  document.getElementById("promocoesCliente").style.display = "none";
+// ===============================================
+// 🪪 ABRIR CARTÃO DIGITAL
+// ===============================================
+function abrirCartao(){
+  if(!ultimoIdPublico) return;
+  window.location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
+}
+
+// ===============================================
+// 🎁 BENEFÍCIOS E PROMOÇÕES PERSONALIZADOS
+// ===============================================
+async function carregarBeneficiosEPromocoes(grupo, idPublico) {
+
+  const boxBenef = document.getElementById("beneficiosCliente");
+  const boxPromo = document.getElementById("promocoesCliente");
+
+  boxBenef.style.display = "none";
+  boxPromo.style.display = "none";
+  boxBenef.innerHTML = "Carregando benefícios...";
+  boxPromo.innerHTML = "Carregando promoções...";
+
+  try {
+    const [benefRes, promoRes] = await Promise.all([
+      fetch(sheetURL + "?aba=beneficios"),
+      fetch(sheetURL + "?aba=promocoes")
+    ]);
+
+    const beneficios = await benefRes.json();
+    const promocoes = await promoRes.json();
+
+    // Função auxiliar para normalizar valores
+    const norm = v => String(v || "").trim().toLowerCase();
+
+// ====== BENEFÍCIOS ======
+const filtradosBenef = beneficios.filter(b => {
+  const ativo = norm(b.ativo) === "sim";
+  const grupoMatch = norm(b.grupo) === norm(grupo);
+  const idMatch = norm(b.idPublico) === norm(idPublico);
+  const publico = !b.grupo && !b.idPublico; // se não tiver grupo nem id, é geral
+  return ativo && (publico || grupoMatch || idMatch);
 });
 
-function mascararCPF(cpf) {
-  if (!cpf) return "-";
-  return cpf.replace(/^(\d{3})\d{3}\d{3}(\d{2})$/, "$1*** ***$2");
-}
+    if (filtradosBenef.length > 0) {
+      boxBenef.innerHTML = filtradosBenef.map(b => {
+        let tipo = "geral";
+        let corFundo = "#ffffff";
+        if (b.idPublico && norm(b.idPublico) === norm(idPublico)) {
+          tipo = "exclusivo";
+          corFundo = "#e6ffe6"; // verde claro
+        } else if (b.grupo && norm(b.grupo) === norm(grupo)) {
+          tipo = "grupo";
+          corFundo = "#fffbe6"; // amarelo claro
+        }
 
-function formatarData(valor) {
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR") + " " +
-         d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-}
+        return `
+          <div style="margin-bottom:15px;background:${corFundo};padding:10px;border-radius:10px;">
+            <b>${b.titulo || b.nome || "Benefício sem título"}</b><br>
+            ${b.descricao || "-"}<br>
+            <small>
+              <b>Parceiro:</b> ${b.parceiro || b.parceiroCNPJ || "-"}<br>
+              <b>Validade:</b> ${b.dataFim || "-"}<br>
+              ${tipo === "grupo" ? "<b style='color:#b58900'>Exclusivo do seu grupo</b>" :
+               tipo === "exclusivo" ? "<b style='color:#008000'>Exclusivo para você</b>" :
+               "<b style='color:#555'>Disponível para todos</b>"}
+            </small>
+          </div>
+        `;
+      }).join("");
+    } else {
+      boxBenef.innerHTML = "<i>Nenhum benefício disponível.</i>";
+    }
+    boxBenef.style.display = "block";
 
-function abrirCartao() {
-  window.location.href = "cartao.html";
+    // ====== PROMOÇÕES ======
+    const filtradosPromo = promocoes.filter(p =>
+      norm(p.ativo) === "sim" &&
+      (
+        !p.grupo || norm(p.grupo) === norm(grupo) || norm(p.idPublico) === norm(idPublico)
+      )
+    );
+
+    if (filtradosPromo.length > 0) {
+      boxPromo.innerHTML = filtradosPromo.map(p => {
+        let tipo = "geral";
+        let corFundo = "#ffffff";
+        if (p.idPublico && norm(p.idPublico) === norm(idPublico)) {
+          tipo = "exclusivo";
+          corFundo = "#e6ffe6";
+        } else if (p.grupo && norm(p.grupo) === norm(grupo)) {
+          tipo = "grupo";
+          corFundo = "#fffbe6";
+        }
+
+        return `
+          <div style="margin-bottom:15px;background:${corFundo};padding:10px;border-radius:10px;">
+            <b>${p.titulo || p.nome || "Promoção sem título"}</b><br>
+            ${p.descricao || "-"}<br>
+            <small>
+              <b>Parceiro:</b> ${p.parceiro || p.parceiroCNPJ || "-"}<br>
+              <b>Validade:</b> ${p.dataFim || "-"}<br>
+              ${tipo === "grupo" ? "<b style='color:#b58900'>Exclusiva do seu grupo</b>" :
+               tipo === "exclusivo" ? "<b style='color:#008000'>Exclusiva para você</b>" :
+               "<b style='color:#555'>Disponível para todos</b>"}
+            </small>
+          </div>
+        `;
+      }).join("");
+    } else {
+      boxPromo.innerHTML = "<i>Nenhuma promoção ativa no momento.</i>";
+    }
+    boxPromo.style.display = "block";
+  } catch (err) {
+    console.error(err);
+    boxBenef.innerHTML = "Erro ao carregar benefícios.";
+    boxPromo.innerHTML = "Erro ao carregar promoções.";
+  }
 }
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->

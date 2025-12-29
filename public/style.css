@@ -101,37 +101,56 @@ h1, h2, h3 {
 }
 
 /* =========================
-   FILTROS
-========================= */
+/* =====================================================
+   INDEX – FILTROS (BOTÃO NA MESMA LINHA)
+   ===================================================== */
+
 .filtros {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 18px 22px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 18px;
+
   display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  padding: 15px;
-  font-size: 14px;
 }
 
-.filtros input,
-.filtros select,
-.filtros button {
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+/* Campo buscar */
+.filtros input {
+  flex: 2;
+  min-width: 260px;
+}
+
+/* Selects */
+.filtros select {
+  flex: 1;
   min-width: 180px;
 }
 
+/* Botão */
 .filtros button {
-  background: #3cc062;
-  color: white;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
+  flex: 0;
+  min-width: 140px;
+  height: 46px;
+  white-space: nowrap;
 }
 
-.filtros button:hover {
-  background: #2da350;
+/* Mobile */
+@media (max-width: 900px) {
+  .filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtros input,
+  .filtros select,
+  .filtros button {
+    width: 100%;
+  }
 }
 
 /* =========================
@@ -141,7 +160,7 @@ h1, h2, h3 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 100px;
   padding: 20px;
 }
 
@@ -153,7 +172,7 @@ h1, h2, h3 {
   text-align: center;
   max-width: 260px;
   width: 100%;
-  min-height: 420px; /* aumentada */
+  min-height: 210px; /* aumentada */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -241,4 +260,561 @@ input#cpf {
   font-weight: bold;
   color: #0a7a2a;
   margin-top: 10px;
+}
+.resultado.ativo {
+  background: #e9fbe9;
+  border: 2px solid #1e8e3e;
+}
+
+.resultado.inativo {
+  background: #fdeaea;
+  border: 2px solid #d93025;
+}
+.btn-cartao {
+  background: #28a745; /* verde */
+  color: #fff;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cartao:hover {
+  background: #1e7e34;
+}
+#boxCliente.ativo {
+  background: #e6fffa;
+  border: 2px solid #16a34a;
+}
+
+#boxCliente.inativo {
+  background: #fee2e2;
+  border: 2px solid #dc2626;
+}
+.beneficio {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 6px;
+  background: #f8f9fa;
+}
+
+.beneficio.geral {
+  border-left: 6px solid #6c757d;
+}
+
+.beneficio.grupo {
+  border-left: 6px solid #facc15;
+}
+
+.beneficio.exclusivo {
+  border-left: 6px solid #16a34a;
+  background: #ecfdf5;
+}
+/* ===== PAINEL CLIENTE ===== */
+
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: linear-gradient(135deg, #bdeeff, #81d4fa);
+  color: #232630;
+}
+
+.wrap {
+  max-width: 600px;
+  margin: auto;
+  padding: 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.08);
+  padding: 20px;
+  margin: 18px auto;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  margin-top: 16px;
+  padding: 12px 18px;
+  font-weight: 700;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #0a7f2e;
+  width: 100%;
+}
+
+button:hover {
+  background: #086826;
+}
+
+.btn2 {
+  background: #0a7f2e;
+}
+
+.voltar {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: #0a7f2e;
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+/* ===== STATUS ===== */
+
+#resultado {
+  margin-top: 14px;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid #e5eaee;
+  background: #f7fbff;
+}
+
+#resultado.ativo {
+  background: #e9fbe9;
+  border: 2px solid #1e8e3e;
+}
+
+#resultado.inativo {
+  background: #fdeaea;
+  border: 2px solid #d93025;
+}
+
+/* ===== BENEFÍCIOS / PROMO ===== */
+
+#beneficiosCliente div,
+#promocoesCliente div {
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+/* ===== LEGENDAS ===== */
+
+.small {
+  font-size: .9rem;
+  color: #444;
+  text-align: center;
+  margin-top: 6px;
+}
+/* Aumenta largura do bloco principal */
+.container,
+.card,
+.box,
+.painel {
+  max-width: 520px !important;
+}
+
+/* Campo de input maior */
+input[type="text"],
+input[type="search"] {
+  width: 100%;
+  font-size: 16px;
+  padding: 14px;
+}
+#listaBeneficios,
+#listaPromocoes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* ======== GRID DE PARCEIROS / CARDS ======== */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+/* ======== CARD INDIVIDUAL ======== */
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  padding: 22px;
+  text-align: center;
+  max-width: 100%;
+}
+
+/* ======== AJUSTE MOBILE ======== */
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+    padding: 0 12px;
+  }
+}
+CARDS DE PARCEIROS
+========================= */
+.container-parceiros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  max-width: 260px;
+  width: 100%;
+  min-height: 420px; /* aumentada */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  word-break: break-word;
+}
+
+.card img {
+  max-height: 100px;
+  margin-bottom: 10px;
+  width: auto;
+  object-fit: contain;
+}
+
+* ======== GRID DE PARCEIROS / CARDS ======== */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+/* ======== GRID DE PARCEIROS (TAMANHO ORIGINAL) ======== */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* 🔙 como era antes */
+  gap: 22px;
+  width: 100%;
+  max-width: 300px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+
+/* ======== CARD INDIVIDUAL (COMPACTO) ======== */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  padding: 18px;
+  text-align: center;
+  max-width: 100%;
+}
+<div class="filtros-container">
+  <input type="text" placeholder="Buscar por nome">
+
+  <div class="filtros-linha">
+    <select>...</select>
+    <select>...</select>
+    <button>Filtrar</button>
+  </div>
+</div>
+/* =====================================================
+   INDEX – GRID DE CARDS (TAMANHO COMPACTO)
+   ===================================================== */
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* 🔻 menor */
+  gap: 20px;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+
+/* Card individual */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  padding: 16px;                /* 🔻 menor */
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.card h3,
+.card strong {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.card img {
+  max-width: 80px;
+  margin-bottom: 10px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   INDEX – BOTÕES (ISOLADOS)
+   ===================================================== */
+
+.index-page button {
+  height: 48px;
+  min-width: 180px;
+  font-size: 0.95rem;
+}
+/* =====================================================
+   INDEX – GRID REAL DE PARCEIROS
+   ===================================================== */
+
+.grid-parceiros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* 🔥 menor */
+  gap: 22px;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+
+/* Card real */
+.card-parceiro {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+  padding: 18px;
+  text-align: center;
+}
+
+/* Logo dentro do card */
+.card-parceiro img {
+  max-width: 90px;
+  margin: 0 auto 12px;
+  display: block;
+}
+
+/* Texto */
+.card-parceiro strong {
+  display: block;
+  margin: 8px 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .grid-parceiros {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   INDEX – GRID DE PARCEIROS (COMPACTO – COMO ERA ANTES)
+   ===================================================== */
+
+.container-parceiros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+/* =====================================================
+   INDEX – CARD DO PARCEIRO
+   ===================================================== */
+
+.container-parceiros .card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  padding: 16px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.container-parceiros .card img {
+  max-height: 90px;
+  margin: 0 auto 10px;
+  display: block;
+}
+/* =====================================================
+   FILTROS – BOTÃO NA MESMA LINHA (FINAL)
+   ===================================================== */
+
+.filtros {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 16px;
+
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  flex-wrap: nowrap;        /* 🔥 NÃO QUEBRA LINHA */
+}
+
+/* Buscar */
+.filtros input {
+  flex: 2 1 0;
+  min-width: 0;             /* 🔥 permite encolher */
+}
+
+/* Selects */
+.filtros select {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Botão */
+.filtros button {
+  flex: 0 0 120px;          /* 🔥 largura fixa */
+  height: 46px;
+  white-space: nowrap;
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .filtros {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .filtros input,
+  .filtros select,
+  .filtros button {
+    width: 100%;
+  }
+}
+/* =====================================================
+   INDEX – GRID DE PARCEIROS (RESPIRO VISUAL)
+   ===================================================== */
+
+.container-parceiros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 32px;                 /* 🔥 MAIS ESPAÇO */
+  max-width: 1200px;
+  margin: 30px auto 50px;
+  padding: 0 20px;
+}
+/* =====================================================
+   INDEX – CARD DO PARCEIRO (RESPIRADO)
+   ===================================================== */
+
+.container-parceiros .card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.14);
+  padding: 22px;              /* 🔥 MAIS RESPIRO */
+  text-align: center;
+  font-size: 0.95rem;
+}
+/* =====================================================
+   INDEX – LOGO DO PARCEIRO (MAIOR E CENTRAL)
+   ===================================================== */
+
+.container-parceiros .card img {
+  max-height: 190px;          /* 🔥 MAIOR */
+  max-width: 100%;
+  margin: 0 auto 14px;
+  display: block;
+  object-fit: contain;
+}
+/* GRID – AJUSTE FINO */
+.container-parceiros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 🔥 MENOR */
+  gap: 48px;                     /* 🔥 MAIS ESPAÇO */
+  max-width: 1200px;
+  margin: 40px auto 60px;
+  padding: 0 32px;
+}
+.container-parceiros .card {
+  max-width: 260px;     /* 🔥 LIMITE REAL */
+  margin: 0 auto;       /* centraliza dentro da coluna */
+}
+.container-parceiros .card {
+  padding: 24px 20px;
+  border-radius: 16px;
+}
+/* FILTROS – BLOCO FECHADO */
+.filtros {
+  max-width: 1200px;
+  margin: 30px auto 30px;
+  padding: 20px 24px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 18px;
+
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 16px;
+}
+
+.filtros button {
+  grid-column: 1 / -1;   /* botão embaixo, central */
+  height: 48px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   FILTROS – CAMPOS DO MESMO TAMANHO (BOTÃO EMBAIXO)
+   ===================================================== */
+
+.filtros {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 18px 22px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 16px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 🔥 três colunas iguais */
+  gap: 16px;
+}
+
+/* input e selects iguais */
+.filtros input,
+.filtros select {
+  width: 100%;
+  height: 44px;          /* 🔥 mesma altura */
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+/* botão ocupa linha inteira */
+.filtros button {
+  grid-column: 1 / -1;   /* 🔥 botão embaixo */
+  height: 46px;
+  margin-top: 6px;
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
 }

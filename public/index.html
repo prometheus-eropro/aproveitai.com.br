@@ -47,13 +47,18 @@
 
 
 <script>
-  document.getElementById("btnCliente").addEventListener("click", function () {
-    const box = document.getElementById("explicacaoCliente");
-    box.style.display = (box.style.display === "none" ? "block" : "none");
-    box.scrollIntoView({ behavior: "smooth" });
-  });
-</script>
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnCliente");
+  const box = document.getElementById("explicacaoCliente");
 
+  if (btn && box) {
+    btn.addEventListener("click", () => {
+      box.style.display = box.style.display === "none" ? "block" : "none";
+      box.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+});
+</script>
 <div class="filtros">
   <input type="text" id="buscaNome" placeholder="Buscar por nome">
   <select id="buscaCidade"><option value="">Todas as cidades</option></select>
@@ -279,7 +284,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
 </script>
 
 <script>
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('/sw.js');
 }
 </script>

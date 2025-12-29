@@ -94,18 +94,20 @@ h2{margin:0 0 8px;color:#0a4c1a}
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-function norm(v){ return String(v ?? "").toLowerCase().trim(); }
+function qs(name){
+  return new URLSearchParams(window.location.search).get(name) || "";
+}
+
+function norm(v){
+  return String(v ?? "").toLowerCase().trim();
+}
+
 function isAtivo(v){
-  const s = norm(v);
-  return ["sim","true","1","ativo","yes"].includes(s);
+  return ["sim","true","1","ativo","yes"].includes(norm(v));
 }
 
 function voltar(){
   window.location.href = "index.html";
-}
-
-function qs(name){
-  return new URLSearchParams(window.location.search).get(name) || "";
 }
 
 (async function carregar(){
@@ -119,16 +121,14 @@ function qs(name){
   }
 
   try{
-    // tenta buscar direto por idPublico
-    const res = await fetch(`${API_URL}?aba=clientes&idPublico=${encodeURIComponent(id)}`);
+    const res = await fetch(
+      `${API_URL}?aba=clientes&idPublico=${encodeURIComponent(id)}`
+    );
     const data = await res.json();
 
-    let c = null;
-    if(Array.isArray(data)){
-      c = data.find(x => String(x.idPublico).trim() === id);
-    }else{
-      c = data;
-    }
+    const c = Array.isArray(data)
+      ? data.find(x => String(x.idPublico).trim() === id)
+      : data;
 
     if(!c || !c.cpf){
       elStatus.textContent = "Dados do cartão não encontrados.";
@@ -143,20 +143,22 @@ function qs(name){
     document.getElementById("idPublico").textContent = c.idPublico || id;
     document.getElementById("grupo").textContent = c.grupo || "-";
     document.getElementById("cidade").textContent = c.cidade || "-";
-    document.getElementById("dataCadastro").textContent =
-  c.dataAceite || c.dataCadastro || "-";
+    document.getElementById("dataCadastro").textContent = c.dataCadastro || "-";
     document.getElementById("statusCliente").textContent = ativo ? "ATIVO" : "INATIVO";
 
-    // QR aponta para validar (se você tiver validar.html). Se não tiver, ele abre o próprio cartão.
-    const urlValidacao = (window.location.origin + "/validar.html?id=" + encodeURIComponent(c.idPublico || id));
-    const urlFallback = (window.location.origin + "/cartao.html?id=" + encodeURIComponent(c.idPublico || id));
-    const finalUrl = urlValidacao; // troque para urlFallback se ainda não existir validar.html
+    const base = window.location.protocol.startsWith("http")
+      ? window.location.origin
+      : "https://aproveitai.com.br";
+
+    const urlValidacao = `${base}/validar.html?id=${encodeURIComponent(c.idPublico)}`;
 
     document.getElementById("qrImg").src =
-      "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + encodeURIComponent(finalUrl);
+      "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" +
+      encodeURIComponent(urlValidacao);
 
     elStatus.style.display = "none";
     box.style.display = "grid";
+
   }catch(e){
     console.error(e);
     elStatus.textContent = "Erro ao carregar os dados do cartão.";
@@ -164,24 +166,6 @@ function qs(name){
 })();
 </script>
 
-<!-- Lib para capturar imagem -->
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-<script>
-function salvarComoImagem(){
-  html2canvas(document.querySelector(".card")).then(canvas => {
-    const link = document.createElement("a");
-    link.download = "cartao-aproveitai.png";
-    link.href = canvas.toDataURL();
-    link.click();
-  });
-}
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
-}
-</script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">
