@@ -141,7 +141,12 @@ async function validarCliente() {
   }
 
   try {
-    const url = `${sheetURL}?validarCPF=${encodeURIComponent(cpf.replace(/\D/g, ""))}`;
+    const valor = cpf.trim();
+
+const url = valor.startsWith("APV-")
+  ? `${sheetURL}?idPublico=${encodeURIComponent(valor)}`
+  : `${sheetURL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}`;
+
     const res = await fetch(url);
     const data = await res.json();
 
