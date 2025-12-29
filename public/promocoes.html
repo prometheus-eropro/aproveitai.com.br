@@ -36,10 +36,9 @@
 <div class="container-parceiros" id="lista"></div>
 
 <!-- ✅ MENSAGEM DE OBSERVAÇÃO -->
-<div style="text-align:center; margin: 20px auto; font-size: 14px; color: #333; max-width: 800px;">
-  ⚠️ Algumas promoções podem ser exclusivas para grupos ou clientes específicos.<br>
-  Consulte sua área do cliente para conferir as promoções personalizadas.
-</div>
+⚠️ Promoções marcadas como <b>EXCLUSIVO</b> são destinadas a grupos ou clientes específicos.
+O uso é validado automaticamente na área do cliente.
+
 
 <!-- ✅ BOTÃO VOLTAR ESTILIZADO -->
 <div style="text-align:center; margin-bottom: 30px;">
@@ -64,25 +63,52 @@ fetch(ENDPOINT + "?aba=promocoes")
     const lista = document.getElementById("lista");
     lista.innerHTML = "";
 
-    const ativos = d.filter(p =>
-      String(p.ativo || "").toUpperCase() === "SIM" &&
-      (!p.grupo || p.grupo.trim() === "")
-    );
+    const hoje = new Date();
+hoje.setHours(0,0,0,0);
+
+const ativos = d.filter(p => {
+  if (String(p.ativo || "").toUpperCase() !== "SIM") return false;
+
+  const inicio = p.dataInicio
+    ? new Date(p.dataInicio.split("/").reverse().join("-"))
+    : null;
+
+  const fim = p.dataFim
+    ? new Date(p.dataFim.split("/").reverse().join("-"))
+    : null;
+
+  if (inicio && hoje < inicio) return false;
+  if (fim && hoje > fim) return false;
+
+  return true; // grupo NÃO filtra
+});
+
 
     ativos.forEach(p => {
-      lista.innerHTML += `
-        <div class="card">
-          <b>${p.titulo || p.nome || "Promoção sem título"}</b><br>
-          <p>${p.descricao || "-"}</p>
-          <small>
-            <b>Parceiro:</b> ${p.parceiro || p.parceiroCNPJ || "-"}<br>
-            <b>Validade:</b> ${p.dataFim || "-"}<br>
-            ${p.zap ? `<b>WhatsApp:</b> ${p.zap}<br>` : ""}
-            ${p.instagram ? `<b>Instagram:</b> @${p.instagram}<br>` : ""}
-          </small>
-        </div>
-      `;
-    });
+
+  const exclusivo = p.grupo && p.grupo.trim() !== "";
+
+  lista.innerHTML += `
+    <div class="card ${exclusivo ? "card-exclusivo" : ""}">
+      <b>${p.titulo || p.nome || "Promoção"}</b>
+      ${exclusivo ? `<span class="badge-exclusivo">EXCLUSIVO</span>` : ""}
+      <p>${p.descricao || "-"}</p>
+      <small>
+        <b>Parceiro:</b> ${p.parceiro || p.parceiroCNPJ || "-"}<br>
+
+        ${p.dataInicio || p.dataFim ? `
+          <b>Validade:</b>
+          ${p.dataInicio ? p.dataInicio : "início livre"}
+          ${p.dataFim ? " até " + p.dataFim : ""}
+          <br>
+        ` : ""}
+
+        ${p.zap ? `<b>WhatsApp:</b> ${p.zap}<br>` : ""}
+        ${p.instagram ? `<b>Instagram:</b> @${p.instagram}<br>` : ""}
+      </small>
+    </div>
+  `;
+});
 
     if (!ativos.length) {
       lista.innerHTML = "<p style='text-align:center;'>Nenhuma promoção ativa no momento.</p>";

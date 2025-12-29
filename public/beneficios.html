@@ -34,9 +34,10 @@
 
 <!-- ✅ AVISO PADRÃO -->
 <div style="text-align:center; margin: 20px auto; font-size: 14px; color: #333; max-width: 800px;">
-  ⚠️ Alguns benefícios podem ser exclusivos para grupos ou clientes específicos.<br>
-  Consulte sua área do cliente para conferir benefícios personalizados.
+  ⚠️ Benefícios marcados como <b>EXCLUSIVO</b> são destinados a grupos, empresas ou clientes específicos.<br>
+  O uso é validado automaticamente na área do cliente.
 </div>
+
 
 <!-- ✅ BOTÃO VOLTAR -->
 <div style="text-align:center; margin-bottom: 30px;">
@@ -61,25 +62,42 @@ fetch(ENDPOINT + "?aba=beneficios")
     const lista = document.getElementById("lista");
     lista.innerHTML = "";
 
-    const ativos = d.filter(b =>
-      String(b.ativo || "").toUpperCase() === "SIM" &&
-      (!b.grupo || b.grupo.trim() === "")
-    );
+    const hoje = new Date();
+hoje.setHours(0,0,0,0);
 
-    ativos.forEach(b => {
-      lista.innerHTML += `
-        <div class="card">
-          <b>${b.titulo || b.nome || "Benefício sem título"}</b><br>
-          <p>${b.descricao || "-"}</p>
-          <small>
-            <b>Parceiro:</b> ${b.parceiro || b.parceiroCNPJ || "-"}<br>
-            <b>Validade:</b> ${b.dataFim || "-"}<br>
-            ${b.zap ? `<b>WhatsApp:</b> ${b.zap}<br>` : ""}
-            ${b.instagram ? `<b>Instagram:</b> @${b.instagram}<br>` : ""}
-          </small>
-        </div>
-      `;
-    });
+const ativos = d.filter(b => {
+  if (String(b.ativo || "").toUpperCase() !== "SIM") return false;
+
+  const inicio = b.dataInicio
+    ? new Date(b.dataInicio.split("/").reverse().join("-"))
+    : null;
+
+  const fim = b.dataFim
+    ? new Date(b.dataFim.split("/").reverse().join("-"))
+    : null;
+
+  if (inicio && hoje < inicio) return false;
+  if (fim && hoje > fim) return false;
+
+  return true; // grupo NÃO filtra aqui
+});
+
+ativos.forEach(b => {
+
+  const exclusivo = b.grupo && b.grupo.trim() !== "";
+
+  lista.innerHTML += `
+    <div class="card ${exclusivo ? "card-exclusivo" : ""}">
+      <b>${b.titulo || "Benefício"}</b>
+      ${exclusivo ? `<span class="badge-exclusivo">EXCLUSIVO</span>` : ""}
+      <p>${b.descricao || "-"}</p>
+      <small>
+        <b>Parceiro:</b> ${b.parceiro || "-"}<br>
+        <b>Validade:</b> ${b.dataInicio || "-"} até ${b.dataFim || "-"}<br>
+      </small>
+    </div>
+  `;
+});
 
     if (!ativos.length) {
       lista.innerHTML = "<p style='text-align:center;'>Nenhum benefício disponível no momento.</p>";

@@ -818,3 +818,35 @@ CARDS DE PARCEIROS
     grid-template-columns: 1fr;
   }
 }
+/* ===== BENEFÍCIOS / PROMOÇÕES EXCLUSIVAS ===== */
+.card-exclusivo {
+  border: 2px solid #ff7a00;
+  background: linear-gradient(135deg, #fff4e6, #ffffff);
+  position: relative;
+}
+
+.badge-exclusivo {
+  display: inline-block;
+  background: #ff7a00;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-left: 6px;
+}
+/* ===== BENEFÍCIOS / PROMOÇÕES EXCLUSIVAS ===== */
+.card-exclusivo {
+  border: 3px solid #ff6a00;
+  background: linear-gradient(135deg, #fff1e0, #ffffff);
+}
+
+.badge-exclusivo {
+  background: #ff6a00;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 14px;
+  margin-left: 8px;
+}
