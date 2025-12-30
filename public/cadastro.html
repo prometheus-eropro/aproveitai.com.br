@@ -43,6 +43,19 @@
       display: inline;
       font-weight: normal;
     }
+.aceite-termos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 0.95rem;
+}
+
+.aceite-termos input {
+  width: 16px;
+  height: 16px;
+}
+
   </style>
 </head>
 <body>
@@ -79,32 +92,37 @@
 
 <!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
-  <form id="formCadastro">
+  <form 
+  action="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
+  method="POST"
+>
+
 
     <label>Nome completo:</label>
-    <input type="text" required>
-
+    <input type="text" name="nome" required>
     <label>CPF:</label>
-    <input type="text" required>
+    <input type="text" name="cpf" required>
 
     <label>Celular (WhatsApp):</label>
-    <input type="text" required>
+    <input type="text" name="celular" required>
 
     <label>Cidade:</label>
-    <input type="text" required>
-
+    <input type="text" name="cidade" required>
     <label>Grupo (empresa, sindicato ou particular):</label>
-    <input type="text" placeholder="(opcional — empresa, sindicato etc)">
+    <input type="text" name="grupo" placeholder="(opcional — empresa, sindicato etc)">
 
     <label>Data de nascimento:</label>
-    <input type="date">
+    <input type="date" name="nascimento">
 
-    <div class="checkbox-termo">
-      <input type="checkbox" id="aceite" required>
-      <label for="aceite">
-        Li e aceito os <a href="termos.html" target="_blank">Termos de Adesão</a> e <a href="privacidade.html" target="_blank">Política de Privacidade</a>
-      </label>
-    </div>
+    <label class="aceite-termos">
+  <input type="checkbox" name="aceite" required>
+  <span>
+    Li e aceito os 
+    <a href="termos.html" target="_blank">Termos de Adesão</a> e 
+    <a href="privacidade.html" target="_blank">Política de Privacidade</a>
+  </span>
+</label>
+
 
     <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
   </form>
@@ -140,11 +158,6 @@
   </div>
 </footer>
 <script>
-const form = document.getElementById("formCadastro");
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
   const campos = form.querySelectorAll("input");
 
   const dados = {
