@@ -10,7 +10,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="manifest" href="manifest.json">
+  
 
 <meta name="theme-color" content="#0a7a2a">
 
@@ -44,19 +44,7 @@
 
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("btnCliente");
-  const box = document.getElementById("explicacaoCliente");
 
-  if (btn && box) {
-    btn.addEventListener("click", () => {
-      box.style.display = box.style.display === "none" ? "block" : "none";
-      box.scrollIntoView({ behavior: "smooth" });
-    });
-  }
-});
-</script>
 <div class="filtros">
   <input type="text" id="buscaNome" placeholder="Buscar por nome">
   <select id="buscaCidade"><option value="">Todas as cidades</option></select>
@@ -98,7 +86,12 @@ document.addEventListener("DOMContentLoaded", () => {
 </footer>
 
 <script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+/* =====================================================
+   CARTÃO APROVEITAI – SCRIPT ÚNICO OFICIAL
+   Estável | Vercel OK | Apps Script OK
+===================================================== */
+
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 const parceirosDiv = document.getElementById("parceiros");
 const buscaNome = document.getElementById("buscaNome");
@@ -107,6 +100,7 @@ const buscaRamo = document.getElementById("buscaRamo");
 
 let parceiros = [];
 
+/* ================= UTIL ================= */
 function normalizar(txt) {
   return (txt || "")
     .toLowerCase()
@@ -115,235 +109,105 @@ function normalizar(txt) {
     .trim();
 }
 
-// === RENDERIZAR CARDS ===
+/* ================= RENDER ================= */
 function renderizar(lista) {
   parceirosDiv.innerHTML = "";
+
   if (!lista.length) {
-    parceirosDiv.innerHTML = "Nenhum parceiro encontrado.";
+    parceirosDiv.innerHTML = "<p>Nenhum parceiro encontrado.</p>";
     return;
   }
 
   lista.forEach(p => {
+    if (String(p.ativo).toLowerCase() !== "sim") return;
+
     const nome = p.nomeFantasia || p.nome || "Parceiro";
     const cidade = p.cidade || "-";
     const ramo = p.ramo || "-";
-    const tipoDesconto = p.tipoDesconto || "";
+    const desconto = p.tipoDesconto || "";
     const whatsapp = (p.whatsapp || "").replace(/\D/g, "");
     const instagram = p.instagram || "";
     const site = p.site || "";
     const email = p.email || "";
 
-    // === LOGO do parceiro (com fallback) ===
     let logo = (p.logoURL || "").trim();
-    if (!logo || !logo.includes("http")) {
-      logo = "logo-aproveitai.png";
-    }
+    if (!logo.startsWith("http")) logo = "logo-aproveitai.png";
 
     parceirosDiv.innerHTML += `
       <div class="card">
-        <img 
-          src="${logo}" 
-          alt="${nome}" 
-          onerror="this.src='logo-aproveitai.png'" 
-          style="max-height:100px;margin-bottom:10px;"
-        >
+        <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
         <h3>${nome}</h3>
         <p><b>Cidade:</b> ${cidade}</p>
         <p><b>Ramo:</b> ${ramo}</p>
-        ${tipoDesconto ? `<p><b>Desconto:</b> ${tipoDesconto}</p>` : ""}
-        ${whatsapp ? `<p><a href="https://wa.me/55${whatsapp}" target="_blank">WhatsApp</a></p>` : ""}
-        ${instagram ? `<p><a href="https://instagram.com/${instagram.replace("@", "")}" target="_blank">${instagram}</a></p>` : ""}
-        ${site ? `<p><a href="${site}" target="_blank">Site</a></p>` : ""}
+        ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
+        ${whatsapp ? `<p><a target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a></p>` : ""}
+        ${instagram ? `<p><a target="_blank" href="https://instagram.com/${instagram.replace("@","")}">${instagram}</a></p>` : ""}
+        ${site ? `<p><a target="_blank" href="${site}">Site</a></p>` : ""}
         ${email ? `<p><a href="mailto:${email}">${email}</a></p>` : ""}
       </div>
     `;
   });
 }
 
-// === PREENCHER FILTROS ===
+/* ================= FILTROS ================= */
 function preencherFiltros() {
   buscaCidade.innerHTML = `<option value="">Todas as cidades</option>`;
   buscaRamo.innerHTML = `<option value="">Todos os ramos</option>`;
 
-  // remove acento e caracteres especiais pra uniformizar
-  const cidades = [...new Set(parceiros
-    .map(p => normalizar(p.cidade))
-    .filter(Boolean)
-  )].sort();
+  [...new Set(parceiros.map(p => normalizar(p.cidade)).filter(Boolean))]
+    .sort()
+    .forEach(c => buscaCidade.innerHTML += `<option value="${c}">${c}</option>`);
 
-  const ramos = [...new Set(parceiros
-    .map(p => normalizar(p.ramo))
-    .filter(Boolean)
-  )].sort();
-
-  cidades.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c;
-    opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-    buscaCidade.appendChild(opt);
-  });
-
-  ramos.forEach(r => {
-    const opt = document.createElement("option");
-    opt.value = r;
-    opt.textContent = r.charAt(0).toUpperCase() + r.slice(1);
-    buscaRamo.appendChild(opt);
-  });
+  [...new Set(parceiros.map(p => normalizar(p.ramo)).filter(Boolean))]
+    .sort()
+    .forEach(r => buscaRamo.innerHTML += `<option value="${r}">${r}</option>`);
 }
 
-// === FILTRAR ===
 function filtrar() {
-  const nomeBusca = normalizar(buscaNome.value);
-  const cidadeBusca = normalizar(buscaCidade.value);
-  const ramoBusca = normalizar(buscaRamo.value);
+  const nome = normalizar(buscaNome.value);
+  const cidade = normalizar(buscaCidade.value);
+  const ramo = normalizar(buscaRamo.value);
 
-  const filtrados = parceiros.filter(p => {
-    const nomeOk =
-      !nomeBusca ||
-      normalizar(p.nomeFantasia || p.nome).includes(nomeBusca);
-
-    const cidadeOk =
-      !cidadeBusca ||
-      normalizar(p.cidade).includes(cidadeBusca); // compara sem acento e sem hífen
-
-    const ramoOk =
-      !ramoBusca ||
-      normalizar(p.ramo).includes(ramoBusca);
-
-    return nomeOk && cidadeOk && ramoOk;
-  });
-
-  renderizar(filtrados);
+  renderizar(
+    parceiros.filter(p =>
+      (!nome || normalizar(p.nomeFantasia || p.nome).includes(nome)) &&
+      (!cidade || normalizar(p.cidade).includes(cidade)) &&
+      (!ramo || normalizar(p.ramo).includes(ramo))
+    )
+  );
 }
 
-// === CARREGAR PARCEIROS ===
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-let parceirosCache = [];
-
+/* ================= LOAD ================= */
 function carregarParceiros() {
   fetch(API_URL + "?aba=parceiros")
     .then(r => r.json())
-    .then(resposta => {
-      if (!resposta.ok || !Array.isArray(resposta.dados)) {
-        throw new Error("Resposta inválida da API");
-      }
-
-      parceirosCache = resposta.dados;
-      renderizarParceiros(parceirosCache);
-      popularFiltros(parceirosCache);
+    .then(res => {
+      if (!res.ok) throw "Erro API";
+      parceiros = res.dados || [];
+      preencherFiltros();
+      renderizar(parceiros);
     })
-    .catch(err => {
-      console.error("Erro ao carregar parceiros:", err);
-      document.getElementById("listaParceiros").innerHTML =
-        "<p>Erro ao carregar parceiros.</p>";
+    .catch(() => {
+      parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
     });
 }
 
-function renderizarParceiros(lista) {
-  const div = document.getElementById("listaParceiros");
-  div.innerHTML = "";
-
-  lista.forEach(p => {
-    if (String(p.ativo).toLowerCase() !== "sim") return;
-
-    div.innerHTML += `
-      <div class="card">
-        <h3>${p.nomeFantasia || ""}</h3>
-        <p><b>Cidade:</b> ${p.cidade || ""}</p>
-        <p><b>Ramo:</b> ${p.ramo || ""}</p>
-        <p><b>WhatsApp:</b> ${p.whatsapp || ""}</p>
-        <p><b>Instagram:</b> ${p.instagram || ""}</p>
-      </div>
-    `;
-  });
+/* ================= LGPD ================= */
+function aceitarLGPD() {
+  localStorage.setItem("lgpd-ok", "sim");
+  document.getElementById("lgpd-barra")?.remove();
 }
 
-function popularFiltros(lista) {
-  const cidades = [...new Set(lista.map(p => p.cidade).filter(Boolean))];
-  const ramos = [...new Set(lista.map(p => p.ramo).filter(Boolean))];
-
-  const selCidade = document.getElementById("buscaCidade");
-  const selRamo = document.getElementById("buscaRamo");
-
-  cidades.forEach(c => selCidade.innerHTML += `<option value="${c}">${c}</option>`);
-  ramos.forEach(r => selRamo.innerHTML += `<option value="${r}">${r}</option>`);
-}
-
-function filtrar() {
-  const nome = document.getElementById("buscaNome").value.toLowerCase();
-  const cidade = document.getElementById("buscaCidade").value;
-  const ramo = document.getElementById("buscaRamo").value;
-
-  const filtrado = parceirosCache.filter(p => {
-    return (
-      (!nome || (p.nomeFantasia || "").toLowerCase().includes(nome)) &&
-      (!cidade || p.cidade === cidade) &&
-      (!ramo || p.ramo === ramo)
-    );
-  });
-
-  renderizarParceiros(filtrado);
-}
-
-document.addEventListener("DOMContentLoaded", carregarParceiros);
-</script>
-
-<div id="lgpd-barra" style="
-  position:fixed;bottom:0;left:0;width:100%;
-  background:#0a7a2a;color:white;padding:12px;text-align:center;
-  font-size:14px;z-index:9999;">
-  Utilizamos cookies para melhorar sua experiência. Ao continuar navegando,
-  você concorda com nossa <a href='privacidade.html' style='color:#aaffaa;text-decoration:underline;'>Política de Privacidade</a>.
-  <button onclick="aceitarLGPD()" style='margin-left:10px;padding:6px 12px;border:none;background:white;color:#0a7a2a;border-radius:6px;cursor:pointer;'>Entendi</button>
-</div>
-
-<script>
-function aceitarLGPD(){
-  localStorage.setItem("lgpd-ok","sim");
-  const lgpd = document.getElementById("lgpd-barra");
-if (lgpd) lgpd.style.display = "none";
-
-}
+/* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", () => {
-  const lgpd = document.getElementById("lgpd-barra");
-  if(lgpd && localStorage.getItem("lgpd-ok")==="sim"){
-    lgpd.style.display="none";
+  if (localStorage.getItem("lgpd-ok") === "sim") {
+    document.getElementById("lgpd-barra")?.remove();
   }
+
+  carregarParceiros();
+
+ 
 });
-
-</script>
-<script>
-let deferredPrompt;
-
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-
-  const btn = document.createElement("button");
-  btn.textContent = "📲 Adicionar à tela inicial";
-  btn.className = "btn";
-  btn.style.position = "fixed";
-  btn.style.bottom = "20px";
-  btn.style.right = "20px";
-  btn.style.zIndex = "9999";
-
-  btn.onclick = async () => {
-    btn.remove();
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-  };
-
-  document.body.appendChild(btn);
-});
-</script>
-
-<script>
-if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  navigator.serviceWorker.register('/sw.js');
-}
 </script>
 </body>
 </html>
