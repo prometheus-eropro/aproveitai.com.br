@@ -79,7 +79,8 @@
 
 <!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
-  <form>
+  <form id="formCadastro">
+
     <label>Nome completo:</label>
     <input type="text" required>
 
@@ -138,6 +139,57 @@
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
+<script>
+const form = document.getElementById("formCadastro");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const campos = form.querySelectorAll("input");
+
+  const dados = {
+    nome: campos[0].value.trim(),
+    cpf: campos[1].value.replace(/\D/g, ""),
+    celular: campos[2].value.trim(),
+    cidade: campos[3].value.trim(),
+    grupo: campos[4].value.trim() || "particular",
+    dataNascimento: campos[5].value,
+    ativo: "NAO",
+    dataAceite: new Date().toISOString()
+  };
+
+  if (!dados.nome || !dados.cpf) {
+    alert("Preencha os campos obrigatórios.");
+    return;
+  }
+
+  const url = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        acao: "novo_cliente",
+        ...dados
+      })
+    });
+
+    const txt = await res.text();
+
+    if (txt === "OK") {
+      alert("✅ Cadastro enviado com sucesso! Aguarde confirmação.");
+      form.reset();
+    } else {
+      alert("⚠️ Erro ao enviar cadastro: " + txt);
+    }
+
+  } catch (err) {
+    alert("Erro de conexão.");
+    console.error(err);
+  }
+});
+</script>
 
 
 </body>

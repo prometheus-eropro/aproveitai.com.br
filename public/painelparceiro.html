@@ -81,7 +81,11 @@
 
     <!-- Relatório -->
     <div style="margin-top: 20px;">
-      <button class="btn-aproveitai" onclick="window.open(sheetURL + '?relatorio=1','_blank')">
+      <button class="btn-aproveitai" onclick="
+  const p = document.getElementById('nomeParceiro').textContent.trim();
+  window.open(sheetURL + '?relatorio=1&parceiro=' + encodeURIComponent(p),'_blank');
+">
+
         📊 Ver relatório de consultas
       </button>
     </div>
@@ -141,11 +145,12 @@ async function validarCliente() {
   }
 
   try {
-    const valor = cpf.trim();
+    const parceiro = document.getElementById("nomeParceiro").textContent.trim();
+const valor = cpf.trim();
 
 const url = valor.startsWith("APV-")
-  ? `${sheetURL}?idPublico=${encodeURIComponent(valor)}`
-  : `${sheetURL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}`;
+  ? `${sheetURL}?idPublico=${encodeURIComponent(valor)}&parceiro=${encodeURIComponent(parceiro)}`
+  : `${sheetURL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&parceiro=${encodeURIComponent(parceiro)}`;
 
     const res = await fetch(url);
     const data = await res.json();
