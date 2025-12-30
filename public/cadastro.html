@@ -92,10 +92,8 @@
 
 <!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
-  <form 
-  action="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
-  method="POST"
->
+  <form onsubmit="event.preventDefault(); enviarCadastro();">
+
 
 
     <label>Nome completo:</label>
@@ -131,6 +129,34 @@
     <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
   </div>
 </div>
+<script>
+async function enviarCadastro() {
+  const dados = {
+    nome: document.getElementById("nome").value,
+    celular: document.getElementById("celular").value,
+    grupo: document.getElementById("grupo").value,
+    cidade: document.getElementById("cidade").value,
+    nascimento: document.getElementById("nascimento").value,
+    aceite: document.getElementById("aceite").checked ? "SIM" : "NAO",
+    origem: window.location.href,
+    userAgent: navigator.userAgent
+  };
+
+  const res = await fetch("https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec", {
+    method: "POST",
+    body: JSON.stringify(dados),
+    headers: { "Content-Type": "application/json" }
+  });
+
+  const json = await res.json();
+
+  if (json.status === "CADASTRO_OK") {
+    window.location.href = "/cadastro-sucesso.html";
+  } else {
+    alert("Erro ao cadastrar. Tente novamente.");
+  }
+}
+</script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
@@ -157,53 +183,6 @@
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
-<script>
-  const campos = form.querySelectorAll("input");
-
-  const dados = {
-    nome: campos[0].value.trim(),
-    cpf: campos[1].value.replace(/\D/g, ""),
-    celular: campos[2].value.trim(),
-    cidade: campos[3].value.trim(),
-    grupo: campos[4].value.trim() || "particular",
-    dataNascimento: campos[5].value,
-    ativo: "NAO",
-    dataAceite: new Date().toISOString()
-  };
-
-  if (!dados.nome || !dados.cpf) {
-    alert("Preencha os campos obrigatórios.");
-    return;
-  }
-
-  const url = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        acao: "novo_cliente",
-        ...dados
-      })
-    });
-
-    const txt = await res.text();
-
-    if (txt === "OK") {
-      alert("✅ Cadastro enviado com sucesso! Aguarde confirmação.");
-      form.reset();
-    } else {
-      alert("⚠️ Erro ao enviar cadastro: " + txt);
-    }
-
-  } catch (err) {
-    alert("Erro de conexão.");
-    console.error(err);
-  }
-});
-</script>
-
 
 </body>
 </html>
