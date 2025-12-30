@@ -99,8 +99,28 @@
 
 <!-- ✅ SCRIPT -->
 <script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+    window[cb] = (data) => {
+      resolve(data);
+      delete window[cb];
+      script.remove();
+    };
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    script.onerror = () => {
+      reject(new Error("JSONP falhou"));
+      delete window[cb];
+      script.remove();
+    };
+    document.body.appendChild(script);
+  });
+}
+</script>
+<script>
 async function entrarParceiro() {
   const cnpj = document.getElementById("cnpj").value.trim();
   const token = document.getElementById("token").value.trim();
@@ -114,14 +134,13 @@ async function entrarParceiro() {
   }
 
   try {
-    const url = `${sheetURL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
-    const res = await fetch(url);
-    const data = await res.json();
+   const url = `${API_URL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
+const data = await jsonp(url);
 
-    if (!data || data.erro) {
-      box.innerHTML = "❌ Acesso negado.";
-      return;
-    }
+if (!data || data.erro) {
+  box.innerHTML = "❌ Acesso negado.";
+  return;
+}
 
     box.innerHTML = `<div class="status-box"><h3>${data.parceiro}</h3><p><b>Status:</b> ATIVO</p></div>`;
     document.getElementById("painelBox").style.display = "block";
@@ -140,20 +159,19 @@ async function validarCliente() {
   box.innerHTML = "Consultando...";
 
   if (!cpf) {
-    box.innerHTML = "❌ Informe o CPF.";
+    box.innerHTML = "❌ Informe o CPF ou ID.";
     return;
   }
 
+  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
+  const valor = cpf.trim();
+
+  const url = valor.startsWith("APV-")
+    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&parceiro=${encodeURIComponent(parceiro)}`
+    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&parceiro=${encodeURIComponent(parceiro)}`;
+
   try {
-    const parceiro = document.getElementById("nomeParceiro").textContent.trim();
-const valor = cpf.trim();
-
-const url = valor.startsWith("APV-")
-  ? `${sheetURL}?idPublico=${encodeURIComponent(valor)}&parceiro=${encodeURIComponent(parceiro)}`
-  : `${sheetURL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&parceiro=${encodeURIComponent(parceiro)}`;
-
-    const res = await fetch(url);
-    const data = await res.json();
+    const data = await jsonp(url);
 
     if (!data || !data.nome) {
       box.innerHTML = "❌ Cliente não encontrado.";
@@ -164,28 +182,27 @@ const url = valor.startsWith("APV-")
       ? formatarData(data.dataAceite)
       : "-";
 
-   const cpfMascarado = data.cpf
-  ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-  : "-";
+    const cpfMascarado = data.cpf
+      ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
+      : "-";
 
-const codigo = data.ativo === "SIM" ? data.codigoERO : "—";
+    box.innerHTML = `
+      <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+        <p><b>Nome:</b> ${data.nome}</p>
+        <p><b>CPF:</b> ${cpfMascarado}</p>
+        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
+        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
+        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+        <p><b>Cliente desde:</b> ${dataAceite}</p>
+        <p><b>Status:</b> ${data.ativo}</p>
 
-box.innerHTML = `
-  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-    <p><b>Nome:</b> ${data.nome}</p>
-    <p><b>CPF:</b> ${cpfMascarado}</p>
-    <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-    <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-    <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-    <p><b>Cliente desde:</b> ${dataAceite}</p>
-    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
-
-    ${data.ativo === "SIM"
-      ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-      : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
-    }
-  </div>
-`;
+        ${
+          data.ativo === "SIM"
+            ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
+            : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
+        }
+      </div>
+    `;
   } catch (e) {
     console.error(e);
     box.innerHTML = "❌ Erro ao validar cliente.";
