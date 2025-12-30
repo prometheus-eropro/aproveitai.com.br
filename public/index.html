@@ -218,21 +218,79 @@ function filtrar() {
 }
 
 // === CARREGAR PARCEIROS ===
-async function carregarParceiros() {
-  try {
-    const resposta = await fetch(`${sheetURL}?aba=parceiros`);
-    const dados = await resposta.json();
-    parceiros = dados.filter(p => (p.ativo || "").toLowerCase() === "sim");
-    renderizar(parceiros);
-    preencherFiltros();
-  } catch (erro) {
-    console.error("Erro ao carregar parceiros:", erro);
-    parceirosDiv.innerHTML = "Erro ao carregar parceiros.";
-  }
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+let parceirosCache = [];
+
+function carregarParceiros() {
+  fetch(API_URL + "?aba=parceiros")
+    .then(r => r.json())
+    .then(resposta => {
+      if (!resposta.ok || !Array.isArray(resposta.dados)) {
+        throw new Error("Resposta inválida da API");
+      }
+
+      parceirosCache = resposta.dados;
+      renderizarParceiros(parceirosCache);
+      popularFiltros(parceirosCache);
+    })
+    .catch(err => {
+      console.error("Erro ao carregar parceiros:", err);
+      document.getElementById("listaParceiros").innerHTML =
+        "<p>Erro ao carregar parceiros.</p>";
+    });
 }
 
-carregarParceiros();
+function renderizarParceiros(lista) {
+  const div = document.getElementById("listaParceiros");
+  div.innerHTML = "";
+
+  lista.forEach(p => {
+    if (String(p.ativo).toLowerCase() !== "sim") return;
+
+    div.innerHTML += `
+      <div class="card">
+        <h3>${p.nomeFantasia || ""}</h3>
+        <p><b>Cidade:</b> ${p.cidade || ""}</p>
+        <p><b>Ramo:</b> ${p.ramo || ""}</p>
+        <p><b>WhatsApp:</b> ${p.whatsapp || ""}</p>
+        <p><b>Instagram:</b> ${p.instagram || ""}</p>
+      </div>
+    `;
+  });
+}
+
+function popularFiltros(lista) {
+  const cidades = [...new Set(lista.map(p => p.cidade).filter(Boolean))];
+  const ramos = [...new Set(lista.map(p => p.ramo).filter(Boolean))];
+
+  const selCidade = document.getElementById("buscaCidade");
+  const selRamo = document.getElementById("buscaRamo");
+
+  cidades.forEach(c => selCidade.innerHTML += `<option value="${c}">${c}</option>`);
+  ramos.forEach(r => selRamo.innerHTML += `<option value="${r}">${r}</option>`);
+}
+
+function filtrar() {
+  const nome = document.getElementById("buscaNome").value.toLowerCase();
+  const cidade = document.getElementById("buscaCidade").value;
+  const ramo = document.getElementById("buscaRamo").value;
+
+  const filtrado = parceirosCache.filter(p => {
+    return (
+      (!nome || (p.nomeFantasia || "").toLowerCase().includes(nome)) &&
+      (!cidade || p.cidade === cidade) &&
+      (!ramo || p.ramo === ramo)
+    );
+  });
+
+  renderizarParceiros(filtrado);
+}
+
+document.addEventListener("DOMContentLoaded", carregarParceiros);
 </script>
+
 <div id="lgpd-barra" style="
   position:fixed;bottom:0;left:0;width:100%;
   background:#0a7a2a;color:white;padding:12px;text-align:center;

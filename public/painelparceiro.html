@@ -81,7 +81,8 @@
 
     <!-- Relatório -->
     <div style="margin-top: 20px;">
-      <button class="btn-aproveitai" onclick="
+      <button class="btn-aproveitai" <button onclick="abrirRelatorio()">📊 Ver relatório de consultas</button>
+="
   const p = document.getElementById('nomeParceiro').textContent.trim();
   window.open(sheetURL + '?relatorio=1&parceiro=' + encodeURIComponent(p),'_blank');
 ">
@@ -119,8 +120,7 @@ function jsonp(url) {
     document.body.appendChild(script);
   });
 }
-</script>
-<script>
+
 async function entrarParceiro() {
   const cnpj = document.getElementById("cnpj").value.trim();
   const token = document.getElementById("token").value.trim();
@@ -194,7 +194,8 @@ async function validarCliente() {
         <p><b>Cidade:</b> ${data.cidade || "-"}</p>
         <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
         <p><b>Cliente desde:</b> ${dataAceite}</p>
-        <p><b>Status:</b> ${data.ativo}</p>
+        Status: ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}
+
 
         ${
           data.ativo === "SIM"
@@ -215,6 +216,17 @@ function formatarData(valor) {
   return d.toLocaleDateString("pt-BR") + " " +
          d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
+function abrirRelatorio() {
+  const parceiro = document.getElementById("nomeParceiro").innerText;
+
+  const url =
+    sheetURL +
+    "?relatorio=1&parceiro=" +
+    encodeURIComponent(parceiro);
+
+  window.open(url, "_blank");
+}
+
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
