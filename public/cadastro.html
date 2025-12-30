@@ -92,71 +92,47 @@
 
 <!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
-  <form onsubmit="event.preventDefault(); enviarCadastro();">
+<form 
+  action="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
+  method="POST"
+>
 
+  <label>Nome completo:</label>
+  <input type="text" name="nome" required>
 
+  <label>CPF:</label>
+  <input type="text" name="cpf" required>
 
-    <label>Nome completo:</label>
-    <input type="text" name="nome" required>
-    <label>CPF:</label>
-    <input type="text" name="cpf" required>
+  <label>Celular (WhatsApp):</label>
+  <input type="text" name="celular" required>
 
-    <label>Celular (WhatsApp):</label>
-    <input type="text" name="celular" required>
+  <label>Cidade:</label>
+  <input type="text" name="cidade" required>
 
-    <label>Cidade:</label>
-    <input type="text" name="cidade" required>
-    <label>Grupo (empresa, sindicato ou particular):</label>
-    <input type="text" name="grupo" placeholder="(opcional — empresa, sindicato etc)">
+  <label>Grupo (empresa, sindicato ou particular):</label>
+  <input type="text" name="grupo">
 
-    <label>Data de nascimento:</label>
-    <input type="date" name="nascimento">
+  <label>Data de nascimento:</label>
+  <input type="date" name="nascimento">
 
-    <label class="aceite-termos">
-  <input type="checkbox" name="aceite" required>
-  <span>
-    Li e aceito os 
-    <a href="termos.html" target="_blank">Termos de Adesão</a> e 
-    <a href="privacidade.html" target="_blank">Política de Privacidade</a>
-  </span>
-</label>
+  <!-- CAMPOS OCULTOS PARA BLINDAGEM -->
+  <input type="hidden" name="origem" value="cadastro_site">
 
+  <label class="aceite-termos">
+    <input type="checkbox" name="aceite" value="SIM" required>
+    <span>
+      Li e aceito os 
+      <a href="termos.html" target="_blank">Termos de Adesão</a> e 
+      <a href="privacidade.html" target="_blank">Política de Privacidade</a>
+    </span>
+  </label>
 
-    <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
-  </form>
-
+  <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
+</form>
   <div style="text-align:center; margin-top: 20px;">
     <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
   </div>
 </div>
-<script>
-async function enviarCadastro() {
-  const dados = {
-    nome: document.getElementById("nome").value,
-    celular: document.getElementById("celular").value,
-    grupo: document.getElementById("grupo").value,
-    cidade: document.getElementById("cidade").value,
-    nascimento: document.getElementById("nascimento").value,
-    aceite: document.getElementById("aceite").checked ? "SIM" : "NAO",
-    origem: window.location.href,
-    userAgent: navigator.userAgent
-  };
-
-  const res = await fetch("https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec", {
-    method: "POST",
-    body: JSON.stringify(dados),
-    headers: { "Content-Type": "application/json" }
-  });
-
-  const json = await res.json();
-
-  if (json.status === "CADASTRO_OK") {
-    window.location.href = "/cadastro-sucesso.html";
-  } else {
-    alert("Erro ao cadastrar. Tente novamente.");
-  }
-}
-</script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
