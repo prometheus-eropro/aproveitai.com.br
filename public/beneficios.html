@@ -53,63 +53,43 @@
 </div>
 
 <!-- ✅ SCRIPT PARA CARREGAR BENEFÍCIOS -->
+
 <script>
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-fetch(ENDPOINT + "?aba=beneficios")
-  .then(r => r.json())
-  .then(d => {
-    const lista = document.getElementById("lista");
-    lista.innerHTML = "";
+async function carregarBeneficios() {
+  try {
+    const res = await fetch(sheetURL + "?aba=beneficios");
 
-    const hoje = new Date();
-hoje.setHours(0,0,0,0);
+    const json = await res.json();
 
-const ativos = d.filter(b => {
-  if (String(b.ativo || "").toUpperCase() !== "SIM") return false;
-
-  const inicio = b.dataInicio
-    ? new Date(b.dataInicio.split("/").reverse().join("-"))
-    : null;
-
-  const fim = b.dataFim
-    ? new Date(b.dataFim.split("/").reverse().join("-"))
-    : null;
-
-  if (inicio && hoje < inicio) return false;
-  if (fim && hoje > fim) return false;
-
-  return true; // grupo NÃO filtra aqui
-});
-
-ativos.forEach(b => {
-
-  const exclusivo = b.grupo && b.grupo.trim() !== "";
-
-  lista.innerHTML += `
-    <div class="card ${exclusivo ? "card-exclusivo" : ""}">
-      <b>${b.titulo || "Benefício"}</b>
-      ${exclusivo ? `<span class="badge-exclusivo">EXCLUSIVO</span>` : ""}
-      <p>${b.descricao || "-"}</p>
-      <small>
-        <b>Parceiro:</b> ${b.parceiro || "-"}<br>
-        <b>Validade:</b> ${b.dataInicio || "-"} até ${b.dataFim || "-"}<br>
-      </small>
-    </div>
-  `;
-});
-
-    if (!ativos.length) {
-      lista.innerHTML = "<p style='text-align:center;'>Nenhum benefício disponível no momento.</p>";
+    if (!json.ok || !Array.isArray(json.dados)) {
+      throw new Error("Formato inválido");
     }
-  })
-  .catch(err => {
-    document.getElementById("lista").innerHTML =
-      "<p style='color:red;text-align:center'>Erro ao carregar benefícios.</p>";
-    console.error(err);
-  });
-</script>
 
+    const lista = json.dados.filter(b => String(b.ativo).toLowerCase() === "sim");
+
+    const box = document.getElementById("lista");
+    box.innerHTML = "";
+
+    lista.forEach(b => {
+      box.innerHTML += `
+        <div class="card">
+          <h3>${b.titulo}</h3>
+          <p>${b.descricao}</p>
+          <small>${b.parceiro || ""}</small>
+        </div>
+      `;
+    });
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("erro").style.display = "block";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", carregarBeneficios);
+</script>
 <!-- ✅ SERVICE WORKER -->
 <script>
 if ("serviceWorker" in navigator) {

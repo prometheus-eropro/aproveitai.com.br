@@ -58,6 +58,7 @@
 
   </style>
 </head>
+
 <body>
 
 <!-- ✅ CABEÇALHO PADRÃO -->
@@ -104,7 +105,7 @@
   <input type="text" name="cpf" required>
 
   <label>Celular (WhatsApp):</label>
-  <input type="text" name="celular" required>
+  <input type="text" name="celular" required placeholder="DDD + número">
 
   <label>Cidade:</label>
   <input type="text" name="cidade" required>
@@ -128,6 +129,8 @@
   </label>
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
+<input type="hidden" name="userAgent" id="userAgent">
+
 </form>
   <div style="text-align:center; margin-top: 20px;">
     <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
@@ -159,6 +162,9 @@
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
+<script>
+document.getElementById("userAgent").value = navigator.userAgent;
+</script>
 
 </body>
 </html>

@@ -70,10 +70,9 @@
   </div>
 </footer>
 
-
 <!-- ✅ SCRIPT PARA CARREGAR DEPOIMENTOS -->
 <script>
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 fetch(ENDPOINT + "?aba=depoimentos")
   .then(r => r.json())

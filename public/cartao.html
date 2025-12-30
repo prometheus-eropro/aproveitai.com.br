@@ -90,9 +90,14 @@ h2{margin:0 0 8px;color:#0a4c1a}
 </div>
 </div>
 </div>
-
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+document.addEventListener("DOMContentLoaded", () => {
+  carregarCartao();
+});
+</script>
+<script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
 
 function qs(name){
   return new URLSearchParams(window.location.search).get(name) || "";

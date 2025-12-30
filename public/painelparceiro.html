@@ -99,6 +99,10 @@
 </div>
 
 <!-- ✅ SCRIPT -->
+<<script>
+const sheetURL = API_URL;
+</script>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
@@ -217,16 +221,12 @@ function formatarData(valor) {
          d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 function abrirRelatorio() {
-  const parceiro = document.getElementById("nomeParceiro").innerText;
-
-  const url =
-    sheetURL +
-    "?relatorio=1&parceiro=" +
-    encodeURIComponent(parceiro);
-
-  window.open(url, "_blank");
+  const nome = document.getElementById("nomeParceiro").textContent.trim();
+  window.open(
+    sheetURL + "&relatorio=1&parceiro=" + encodeURIComponent(nome),
+    "_blank"
+  );
 }
-
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->

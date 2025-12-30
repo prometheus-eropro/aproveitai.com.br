@@ -163,8 +163,11 @@ async function carregarBeneficiosEPromocoes(grupo, idPublico) {
       fetch(sheetURL + "?aba=promocoes")
     ]);
 
-    const beneficios = await benefRes.json();
-    const promocoes = await promoRes.json();
+   const benefJson = await benefRes.json();
+const promoJson = await promoRes.json();
+
+const beneficios = Array.isArray(benefJson.dados) ? benefJson.dados : [];
+const promocoes  = Array.isArray(promoJson.dados) ? promoJson.dados : [];
 
     // Função auxiliar para normalizar valores
     const norm = v => String(v || "").trim().toLowerCase();
@@ -253,6 +256,10 @@ const filtradosBenef = beneficios.filter(b => {
     boxPromo.innerHTML = "Erro ao carregar promoções.";
   }
 }
+<script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+</script>
+
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">

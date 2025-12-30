@@ -55,72 +55,39 @@ O uso é validado automaticamente na área do cliente.
 
 <!-- ✅ SCRIPT DE PROMOÇÕES -->
 <script>
-const ENDPOINT = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-fetch(ENDPOINT + "?aba=promocoes")
-  .then(r => r.json())
-  .then(d => {
-    const lista = document.getElementById("lista");
-    lista.innerHTML = "";
+async function carregarPromocoes() {
+  try {
+    const res = await fetch(`${sheetURL}?aba=promocoes`);
+    const json = await res.json();
 
-    const hoje = new Date();
-hoje.setHours(0,0,0,0);
+    const dados = Array.isArray(json)
+      ? json
+      : (json.dados || []);
 
-const ativos = d.filter(p => {
-  if (String(p.ativo || "").toUpperCase() !== "SIM") return false;
+    const ativas = dados.filter(p => p.ativo === "SIM");
+    const box = document.getElementById("lista");
+box.innerHTML = "";
 
-  const inicio = p.dataInicio
-    ? new Date(p.dataInicio.split("/").reverse().join("-"))
-    : null;
-
-  const fim = p.dataFim
-    ? new Date(p.dataFim.split("/").reverse().join("-"))
-    : null;
-
-  if (inicio && hoje < inicio) return false;
-  if (fim && hoje > fim) return false;
-
-  return true; // grupo NÃO filtra
-});
-
-
-    ativos.forEach(p => {
-
-  const exclusivo = p.grupo && p.grupo.trim() !== "";
-
-  lista.innerHTML += `
-    <div class="card ${exclusivo ? "card-exclusivo" : ""}">
-      <b>${p.titulo || p.nome || "Promoção"}</b>
-      ${exclusivo ? `<span class="badge-exclusivo">EXCLUSIVO</span>` : ""}
-      <p>${p.descricao || "-"}</p>
-      <small>
-        <b>Parceiro:</b> ${p.parceiro || p.parceiroCNPJ || "-"}<br>
-
-        ${p.dataInicio || p.dataFim ? `
-          <b>Validade:</b>
-          ${p.dataInicio ? p.dataInicio : "início livre"}
-          ${p.dataFim ? " até " + p.dataFim : ""}
-          <br>
-        ` : ""}
-
-        ${p.zap ? `<b>WhatsApp:</b> ${p.zap}<br>` : ""}
-        ${p.instagram ? `<b>Instagram:</b> @${p.instagram}<br>` : ""}
-      </small>
+ativas.forEach(p => {
+  box.innerHTML += `
+    <div class="card">
+      <h3>${p.titulo || ""}</h3>
+      <p>${p.descricao || ""}</p>
+      <small>${p.parceiro || ""}</small>
     </div>
   `;
 });
 
-    if (!ativos.length) {
-      lista.innerHTML = "<p style='text-align:center;'>Nenhuma promoção ativa no momento.</p>";
-    }
-  })
-  .catch(err => {
-    document.getElementById("lista").innerHTML =
-      "<p style='color:red;text-align:center'>Erro ao carregar promoções.</p>";
-    console.error(err);
-  });
-</script>
 
+  } catch (e) {
+    console.error("Erro ao carregar promoções", e);
+  }
+}
+document.addEventListener("DOMContentLoaded", carregarPromocoes);
+
+</script>
 <!-- ✅ SERVICE WORKER -->
 <script>
 if ("serviceWorker" in navigator) {
