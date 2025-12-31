@@ -55,46 +55,64 @@
 <!-- ✅ SCRIPT PARA CARREGAR BENEFÍCIOS -->
 
 <script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 async function carregarBeneficios() {
-  try {
-    const res = await fetch(sheetURL + "?aba=beneficios");
+  const container = document.getElementById("lista");
+  container.innerHTML = "";
 
+  try {
+    const res = await fetch(API_URL + "?aba=beneficios");
     const json = await res.json();
 
     if (!json.ok || !Array.isArray(json.dados)) {
-      throw new Error("Formato inválido");
+      container.innerHTML = "<p>Erro ao carregar benefícios.</p>";
+      return;
     }
 
-    const lista = json.dados.filter(b => String(b.ativo).toLowerCase() === "sim");
+    json.dados.forEach(b => {
+      if (String(b.ativo).toLowerCase() !== "sim") return;
+// ⏰ Ignorar benefícios vencidos
+if (b.dataFim) {
+  const hoje = new Date();
+  const fim = new Date(b.dataFim.split("/").reverse().join("-"));
+  if (hoje > fim) return;
+}
 
-    const box = document.getElementById("lista");
-    box.innerHTML = "";
+      // 🔑 REGRA DEFINITIVA
+      const exclusivo = (b.grupo && b.grupo.trim() !== "") || (b.idPublico && b.idPublico.trim() !== "");
 
-    lista.forEach(b => {
-      box.innerHTML += `
-        <div class="card">
-          <h3>${b.titulo}</h3>
-          <p>${b.descricao}</p>
-          <small>${b.parceiro || ""}</small>
-        </div>
+      const card = document.createElement("div");
+      card.className = "card";
+      if (exclusivo) card.classList.add("exclusivo");
+
+      card.innerHTML = `
+        ${exclusivo ? `<div class="tarja">EXCLUSIVO</div>` : ""}
+        <h3>${b.titulo || ""}</h3>
+        <p>${b.descricao || ""}</p>
+        <div class="linha-info parceiro">
+  PARCEIRO: <strong>${(b.parceiro || "").toUpperCase()}</strong>
+</div>
+
+        ${b.zap ? `<div class="linha-info"><strong>WhatsApp:</strong> ${b.zap}</div>` : ""}
+        ${b.instagram ? `<div class="linha-info"><strong>Instagram:</strong> ${b.instagram}</div>` : ""}
+        ${b.dataFim ? `<div class="fim">Fim: ${b.dataFim}</div>` : ""}
       `;
+
+      container.appendChild(card);
     });
+
+    if (!container.innerHTML) {
+      container.innerHTML = "<p>Nenhum benefício disponível.</p>";
+    }
 
   } catch (e) {
     console.error(e);
-    document.getElementById("erro").style.display = "block";
+    container.innerHTML = "<p>Erro de conexão com o servidor.</p>";
   }
 }
 
 document.addEventListener("DOMContentLoaded", carregarBeneficios);
-</script>
-<!-- ✅ SERVICE WORKER -->
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
-}
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->

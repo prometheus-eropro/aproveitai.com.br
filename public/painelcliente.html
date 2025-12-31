@@ -21,7 +21,7 @@
       <!-- Tarja com nome da página -->
       <p class="boas-vindas">
         👤 <strong>Área do Cliente</strong><br>
-        Consulte seu CPF ou ID e acesse seus benefícios.
+        Consulte seu CPF ou ID e acesse benefícios e promoçôes exclusivas.
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
@@ -30,30 +30,44 @@
 
 <div class="wrap">
   <div class="card">
-    <h2 style="text-align:center;margin:0 0 10px;color:#0a4c1a">Bem-vindo à Área do Cliente</h2>
+    <h2 style="text-align:center;margin:0 0 10px;color:#0a4c1a">
+      Bem-vindo à Área do Cliente
+    </h2>
 
     <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
-<button onclick="consultar()">Consultar</button>
 
-<div class="small">Após a consulta, você poderá acessar seu cartão digital, salvar no celular ou imprimir.</div>
+    <button onclick="consultar()">Consultar</button>
 
-<!-- 🔸 Legenda única e fixa -->
-<div id="legenda" style="font-size:12px;text-align:center;margin-top:10px;color:#555;">
-  <b>Legenda:</b> 🟩 Exclusivo para você &nbsp; 🟨 Do seu grupo &nbsp; ⚪ Para todos
+    <div class="small">
+      Após a consulta, você poderá acessar seu cartão digital,
+      salvar no celular ou imprimir.
+    </div>
+
+    <div id="resultado"></div>
+
+    <button
+      id="btnBeneficios"
+      class="btn2"
+      style="display:none;margin-top:15px"
+      onclick="abrirBeneficios()">
+      🎁 Ver Benefícios e Promoções
+    </button>
+
+    <button
+      id="btnCartao"
+      class="btn2"
+      style="display:none;margin-top:10px"
+      onclick="abrirCartao()">
+      💳 Ver / Salvar Cartão
+    </button>
+<div style="text-align:center;margin-top:15px">
+  <a href="index.html" class="voltar">
+    ← Voltar ao site
+  </a>
 </div>
 
-<div id="resultado"></div>
-<h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Benefícios disponíveis</h3>
-<div id="beneficiosCliente" class="card" style="display:none;background:#fefefe"></div>
-
-<h3 style="text-align:center;margin-top:25px;color:#0a4c1a">Promoções disponíveis</h3>
-<div id="promocoesCliente" class="card" style="display:none;background:#fefefe"></div>
-
-    <button id="btnCartao" class="btn2" style="display:none" onclick="abrirCartao()">Ver / Salvar Cartão</button>
-    <div style="text-align:center"><a class="voltar" href="index.html">← Voltar ao site</a></div>
   </div>
 </div>
-
 <script>
 const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 let ultimoIdPublico = "";
@@ -121,19 +135,29 @@ async function consultar(){
       <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
       <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
       <div><b>Celular:</b> ${achado.celular || "-"}</div>
-      <div><b>Data de Nascimento:</b> ${achado.nascimento || "-"}</div>
-      <div><b>Data de Cadastro:</b> ${achado.dataAceite || "-"}</div>
+<div><b>Data de Nascimento:</b> ${achado.nascimento || "-"}</div>
+<div><b>Data de Cadastro:</b> ${achado.dataAceite || achado.dataCadastro || "-"}</div>
       <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
     `;
+// ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
+// 🔐 REGRA DE ACESSO AOS BOTÕES
+if (ativo) {
+  document.getElementById("btnBeneficios").style.display = "block";
+  document.getElementById("btnCartao").style.display = "block";
+} else {
+  document.getElementById("btnBeneficios").style.display = "none";
+  document.getElementById("btnCartao").style.display = "none";
+}
 
-    if (ultimoIdPublico) {
-      btn.style.display = "block";
-      carregarBeneficiosEPromocoes(achado.grupo || "", achado.idPublico || "");
-    }
+   
   } catch (e) {
     console.error(e);
     box.textContent = "⚠️ Erro na consulta.";
   }
+}
+if (ultimoIdPublico) {
+  document.getElementById("btnBeneficios").style.display = "block";
+  document.getElementById("btnCartao").style.display = "block";
 }
 
 // ===============================================
@@ -143,124 +167,12 @@ function abrirCartao(){
   if(!ultimoIdPublico) return;
   window.location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
 }
-
-// ===============================================
-// 🎁 BENEFÍCIOS E PROMOÇÕES PERSONALIZADOS
-// ===============================================
-async function carregarBeneficiosEPromocoes(grupo, idPublico) {
-
-  const boxBenef = document.getElementById("beneficiosCliente");
-  const boxPromo = document.getElementById("promocoesCliente");
-
-  boxBenef.style.display = "none";
-  boxPromo.style.display = "none";
-  boxBenef.innerHTML = "Carregando benefícios...";
-  boxPromo.innerHTML = "Carregando promoções...";
-
-  try {
-    const [benefRes, promoRes] = await Promise.all([
-      fetch(sheetURL + "?aba=beneficios"),
-      fetch(sheetURL + "?aba=promocoes")
-    ]);
-
-   const benefJson = await benefRes.json();
-const promoJson = await promoRes.json();
-
-const beneficios = Array.isArray(benefJson.dados) ? benefJson.dados : [];
-const promocoes  = Array.isArray(promoJson.dados) ? promoJson.dados : [];
-
-    // Função auxiliar para normalizar valores
-    const norm = v => String(v || "").trim().toLowerCase();
-
-// ====== BENEFÍCIOS ======
-const filtradosBenef = beneficios.filter(b => {
-  const ativo = norm(b.ativo) === "sim";
-  const grupoMatch = norm(b.grupo) === norm(grupo);
-  const idMatch = norm(b.idPublico) === norm(idPublico);
-  const publico = !b.grupo && !b.idPublico; // se não tiver grupo nem id, é geral
-  return ativo && (publico || grupoMatch || idMatch);
-});
-
-    if (filtradosBenef.length > 0) {
-      boxBenef.innerHTML = filtradosBenef.map(b => {
-        let tipo = "geral";
-        let corFundo = "#ffffff";
-        if (b.idPublico && norm(b.idPublico) === norm(idPublico)) {
-          tipo = "exclusivo";
-          corFundo = "#e6ffe6"; // verde claro
-        } else if (b.grupo && norm(b.grupo) === norm(grupo)) {
-          tipo = "grupo";
-          corFundo = "#fffbe6"; // amarelo claro
-        }
-
-        return `
-          <div style="margin-bottom:15px;background:${corFundo};padding:10px;border-radius:10px;">
-            <b>${b.titulo || b.nome || "Benefício sem título"}</b><br>
-            ${b.descricao || "-"}<br>
-            <small>
-              <b>Parceiro:</b> ${b.parceiro || b.parceiroCNPJ || "-"}<br>
-              <b>Validade:</b> ${b.dataFim || "-"}<br>
-              ${tipo === "grupo" ? "<b style='color:#b58900'>Exclusivo do seu grupo</b>" :
-               tipo === "exclusivo" ? "<b style='color:#008000'>Exclusivo para você</b>" :
-               "<b style='color:#555'>Disponível para todos</b>"}
-            </small>
-          </div>
-        `;
-      }).join("");
-    } else {
-      boxBenef.innerHTML = "<i>Nenhum benefício disponível.</i>";
-    }
-    boxBenef.style.display = "block";
-
-    // ====== PROMOÇÕES ======
-    const filtradosPromo = promocoes.filter(p =>
-      norm(p.ativo) === "sim" &&
-      (
-        !p.grupo || norm(p.grupo) === norm(grupo) || norm(p.idPublico) === norm(idPublico)
-      )
-    );
-
-    if (filtradosPromo.length > 0) {
-      boxPromo.innerHTML = filtradosPromo.map(p => {
-        let tipo = "geral";
-        let corFundo = "#ffffff";
-        if (p.idPublico && norm(p.idPublico) === norm(idPublico)) {
-          tipo = "exclusivo";
-          corFundo = "#e6ffe6";
-        } else if (p.grupo && norm(p.grupo) === norm(grupo)) {
-          tipo = "grupo";
-          corFundo = "#fffbe6";
-        }
-
-        return `
-          <div style="margin-bottom:15px;background:${corFundo};padding:10px;border-radius:10px;">
-            <b>${p.titulo || p.nome || "Promoção sem título"}</b><br>
-            ${p.descricao || "-"}<br>
-            <small>
-              <b>Parceiro:</b> ${p.parceiro || p.parceiroCNPJ || "-"}<br>
-              <b>Validade:</b> ${p.dataFim || "-"}<br>
-              ${tipo === "grupo" ? "<b style='color:#b58900'>Exclusiva do seu grupo</b>" :
-               tipo === "exclusivo" ? "<b style='color:#008000'>Exclusiva para você</b>" :
-               "<b style='color:#555'>Disponível para todos</b>"}
-            </small>
-          </div>
-        `;
-      }).join("");
-    } else {
-      boxPromo.innerHTML = "<i>Nenhuma promoção ativa no momento.</i>";
-    }
-    boxPromo.style.display = "block";
-  } catch (err) {
-    console.error(err);
-    boxBenef.innerHTML = "Erro ao carregar benefícios.";
-    boxPromo.innerHTML = "Erro ao carregar promoções.";
-  }
+function abrirBeneficios(){
+  if(!ultimoIdPublico) return;
+  window.location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
 }
-<script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 </script>
 
-</script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">

@@ -57,42 +57,63 @@ O uso é validado automaticamente na área do cliente.
 <script>
 const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
+function promocaoValida(p){
+  if (String(p.ativo).toLowerCase() !== "sim") return false;
+
+  const hoje = new Date();
+  const fim = p.dataFim ? new Date(p.dataFim) : null;
+
+  if (fim && hoje > fim) return false;
+
+  return true;
+}
+
 async function carregarPromocoes() {
   try {
     const res = await fetch(`${sheetURL}?aba=promocoes`);
     const json = await res.json();
 
-    const dados = Array.isArray(json)
-      ? json
-      : (json.dados || []);
+    const dados = Array.isArray(json) ? json : (json.dados || []);
+    const lista = document.getElementById("lista");
 
-    const ativas = dados.filter(p => p.ativo === "SIM");
-    const box = document.getElementById("lista");
-box.innerHTML = "";
+    lista.innerHTML = "";
 
-ativas.forEach(p => {
-  box.innerHTML += `
-    <div class="card">
-      <h3>${p.titulo || ""}</h3>
-      <p>${p.descricao || ""}</p>
-      <small>${p.parceiro || ""}</small>
-    </div>
-  `;
-});
+    dados
+      .filter(promocaoValida)
+      .forEach(p => {
 
+        const exclusivo =
+          (p.grupo && p.grupo.trim() !== "") ||
+          (p.idPublico && p.idPublico.trim() !== "");
 
-  } catch (e) {
-    console.error("Erro ao carregar promoções", e);
+        lista.innerHTML += `
+          <div class="card ${exclusivo ? "exclusivo" : ""}">
+            ${exclusivo ? `<div class="tarja">EXCLUSIVO</div>` : ""}
+
+            <h3>${p.titulo || ""}</h3>
+            <p>${p.descricao || ""}</p>
+
+            ${p.parceiro ? `
+              <div>
+                <strong>PARCEIRO:</strong>
+                <strong>${p.parceiro.toUpperCase()}</strong>
+              </div>` : ""}
+
+            ${p.zap ? `<div><strong>WhatsApp:</strong> ${p.zap}</div>` : ""}
+            ${p.instagram ? `<div><strong>Instagram:</strong> ${p.instagram}</div>` : ""}
+            ${p.dataFim ? `<div class="fim">Fim: ${p.dataFim}</div>` : ""}
+          </div>
+        `;
+      });
+
+  } catch (erro) {
+    console.error("Erro ao carregar promoções:", erro);
+    document.getElementById("lista").innerHTML =
+      "<p>Erro ao carregar promoções.</p>";
   }
 }
-document.addEventListener("DOMContentLoaded", carregarPromocoes);
 
-</script>
-<!-- ✅ SERVICE WORKER -->
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
-}
+document.addEventListener("DOMContentLoaded", carregarPromocoes);
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Meus Benefícios | Cartão AproveitAI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja com nome da página -->
+      <p class="boas-vindas">
+        👤 <strong>Área do Cliente</strong><br>
+        Consulte seu CPF ou ID e acesse benefícios e promoçôes exclusivas.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+
+<h2 style="text-align:center;margin-top:20px">
+  🎁 Meus Benefícios e Promoções
+</h2>
+
+<div id="lista" class="grid-cards"></div>
+
+<div style="text-align:center;margin:30px">
+  <a href="painelcliente.html" class="voltar">← Voltar</a>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+// pegar ID do cliente pela URL
+const params = new URLSearchParams(window.location.search);
+const idCliente = params.get("id");
+
+// ===========================
+// REGRA DE VISUALIZAÇÃO
+// ===========================
+function clientePodeVer(item, grupoCliente) {
+  if (!item.grupo && !item.idPublico) return true;
+  if (item.grupo && item.grupo === grupoCliente) return true;
+  if (item.idPublico && item.idPublico === idCliente) return true;
+  return false;
+}
+
+async function carregarTudo() {
+  if (!idCliente) {
+    document.getElementById("lista").innerHTML = "Acesso inválido.";
+    return;
+  }
+
+  const resCliente = await fetch(`${API_URL}?aba=clientes&idPublico=${idCliente}`);
+  const cliente = await resCliente.json();
+
+  // 🔐 BLOQUEIO TOTAL SE NÃO ATIVO
+  if (!cliente || String(cliente.ativo).toLowerCase() !== "sim") {
+    document.getElementById("lista").innerHTML =
+      "<p style='text-align:center;color:red'>Cliente inativo ou inexistente.</p>";
+    return;
+  }
+
+  const grupoCliente = cliente.grupo;
+
+  const [resBen, resPro] = await Promise.all([
+    fetch(API_URL + "?aba=beneficios"),
+    fetch(API_URL + "?aba=promocoes")
+  ]);
+
+  const ben = (await resBen.json()).dados || [];
+  const pro = (await resPro.json()).dados || [];
+
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  [...ben, ...pro].forEach(item => {
+    if (String(item.ativo).toLowerCase() !== "sim") return;
+    if (!clientePodeVer(item, grupoCliente)) return;
+
+    const exclusivo = item.grupo || item.idPublico;
+
+lista.innerHTML += `
+  <div class="card ${exclusivo ? "exclusivo" : ""}">
+    ${exclusivo ? "<div class='tarja'>EXCLUSIVO</div>" : ""}
+
+    <h3>${item.titulo || ""}</h3>
+
+    <p>${item.descricao || ""}</p>
+
+    ${item.parceiro ? `<div><b>PARCEIRO:</b> ${item.parceiro}</div>` : ""}
+
+    <div class="contatos">
+
+      ${item.zap
+        ? `<a href="https://wa.me/55${item.zap.replace(/\D/g,"")}"
+             target="_blank" class="link zap">📱 WhatsApp</a>`
+        : ""}
+
+      ${item.instagram
+        ? `<a href="https://instagram.com/${item.instagram.replace("@","")}"
+             target="_blank" class="link insta">📸 Instagram</a>`
+        : ""}
+
+      ${item.site
+        ? `<a href="${item.site}"
+             target="_blank" class="link site">🌐 Site</a>`
+        : ""}
+
+    </div>
+
+    ${item.dataFim ? `<div class="fim">Fim: ${item.dataFim}</div>` : ""}
+  </div>
+`;
+  });
+
+  if (!lista.innerHTML) {
+    lista.innerHTML = "<p style='text-align:center'>Nenhum benefício disponível.</p>";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", carregarTudo);
+</script>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+
+</body>
+</html>

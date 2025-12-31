@@ -84,28 +84,30 @@
 <script>
 const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-  fetch(URL)
-    .then(res => res.json())
-    .then(dados => {
-      const faq = document.getElementById("faq");
-      faq.innerHTML = "";
+fetch(sheetURL + "?aba=faq")
+  .then(res => res.json())
+  .then(dados => {
+    const faq = document.getElementById("faq");
+    faq.innerHTML = "";
 
-      dados.forEach(item => {
-        faq.innerHTML += `
-          <div class="faq-item">
-            <h3>${item.pergunta}</h3>
-            <p>${item.resposta}</p>
-          </div>
-        `;
-      });
+    if (!dados || dados.length === 0) {
+      faq.innerHTML = "<p>Nenhuma dúvida cadastrada no momento.</p>";
+      return;
+    }
+
+    dados.forEach(item => {
+      faq.innerHTML += `
+        <div class="faq-item">
+          <h3>${item.pergunta}</h3>
+          <p>${item.resposta}</p>
+        </div>
+      `;
     });
+  })
+  .catch(() => {
+    document.getElementById("faq").innerHTML =
+      "<p>Erro ao carregar as dúvidas.</p>";
+  });
 </script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
-}
-</script>
-
 </body>
 </html>

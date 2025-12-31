@@ -35,11 +35,21 @@
     <h2 style="text-align:center;color:#0a4c1a">Acesso do Parceiro</h2>
     <div class="small" style="text-align:center"><b>Use seu CNPJ e token cadastrado</b></div>
 
-    <label>CNPJ</label>
-    <input id="cnpj" placeholder="Digite seu CNPJ">
+    <label class="label-padrao">CNPJ</label>
+<input
+  type="text"
+  id="cnpj"
+  class="input-padrao"
+  placeholder="Digite seu CNPJ"
+>
 
-    <label>Token</label>
-    <input id="token" type="password" placeholder="Digite seu token">
+<label class="label-padrao">Token</label>
+<input
+  type="text"
+  id="token"
+  class="input-padrao"
+  placeholder="Digite seu token"
+>
 
     <button class="btn-aproveitai" onclick="entrarParceiro()">Entrar</button>
 
@@ -81,14 +91,10 @@
 
     <!-- Relatório -->
     <div style="margin-top: 20px;">
-      <button class="btn-aproveitai" <button onclick="abrirRelatorio()">📊 Ver relatório de consultas</button>
-="
-  const p = document.getElementById('nomeParceiro').textContent.trim();
-  window.open(sheetURL + '?relatorio=1&parceiro=' + encodeURIComponent(p),'_blank');
-">
-
-        📊 Ver relatório de consultas
-      </button>
+<button onclick="window.open('relatorio.html','_blank')">
+📊 Ver relatório
+</button>
+    
     </div>
 
     <!-- Sair -->
@@ -99,11 +105,8 @@
 </div>
 
 <!-- ✅ SCRIPT -->
-<<script>
-const sheetURL = API_URL;
-</script>
-
 <script>
+
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 function jsonp(url) {
@@ -125,7 +128,8 @@ function jsonp(url) {
   });
 }
 
-async function entrarParceiro() {
+ async function entrarParceiro() {
+
   const cnpj = document.getElementById("cnpj").value.trim();
   const token = document.getElementById("token").value.trim();
   const box = document.getElementById("resultado");
@@ -150,25 +154,29 @@ if (!data || data.erro) {
     document.getElementById("painelBox").style.display = "block";
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("nomeParceiro").textContent = data.parceiro;
+    sessionStorage.setItem("parceiroLogado", data.parceiro);
+    sessionStorage.setItem("parceiroNome", data.parceiro);
+    sessionStorage.setItem("parceiroCNPJ", data.cnpj);
+
   } catch (e) {
     console.error(e);
     box.innerHTML = "❌ Erro ao validar parceiro.";
   }
 }
 
+
 async function validarCliente() {
-  const cpf = document.getElementById("cpfCliente").value.trim();
+
+  const valor = document.getElementById("cpfCliente").value.trim();
   const box = document.getElementById("resultadoCliente");
+  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
 
   box.innerHTML = "Consultando...";
 
-  if (!cpf) {
-    box.innerHTML = "❌ Informe o CPF ou ID.";
+  if (!valor) {
+    box.innerHTML = "❌ Informe o CPF ou ID Público.";
     return;
   }
-
-  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
-  const valor = cpf.trim();
 
   const url = valor.startsWith("APV-")
     ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&parceiro=${encodeURIComponent(parceiro)}`
@@ -182,8 +190,8 @@ async function validarCliente() {
       return;
     }
 
-    const dataAceite = data.dataAceite
-      ? formatarData(data.dataAceite)
+    const dataCadastro = data.dataCadastro
+      ? formatarData(data.dataCadastro)
       : "-";
 
     const cpfMascarado = data.cpf
@@ -197,9 +205,8 @@ async function validarCliente() {
         <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
         <p><b>Cidade:</b> ${data.cidade || "-"}</p>
         <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-        <p><b>Cliente desde:</b> ${dataAceite}</p>
-        Status: ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}
-
+        <p><b>Cliente desde:</b> ${dataCadastro}</p>
+        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
         ${
           data.ativo === "SIM"
@@ -220,15 +227,35 @@ function formatarData(valor) {
   return d.toLocaleDateString("pt-BR") + " " +
          d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
-function abrirRelatorio() {
-  const nome = document.getElementById("nomeParceiro").textContent.trim();
-  window.open(
-    sheetURL + "&relatorio=1&parceiro=" + encodeURIComponent(nome),
-    "_blank"
-  );
+
+
+function verRelatorio() {
+
+  const parceiro = document.getElementById("nomeParceiro")
+    ? document.getElementById("nomeParceiro").textContent.trim()
+    : "total";
+
+  const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiro)}`;
+
+  window.open(url, "_blank");
+}
+
+async function carregarRelatorio() {
+  const parceiro = document.getElementById("nomeParceiro").textContent || "total";
+
+  const url = `${API_URL}&relatorio=1&parceiro=${encodeURIComponent(parceiro)}`;
+
+  const resp = await fetch(url);
+  const data = await resp.json();
+
+  if (!data.ok) {
+    alert("Erro ao carregar relatório");
+    return;
+  }
+
+  montarTabelaRelatorio(data.registros);
 }
 </script>
-
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">

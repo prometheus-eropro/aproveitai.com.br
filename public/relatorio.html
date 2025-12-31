@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Relatório de Consultas</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #2e7d32; color: #fff; }
+</style>
+</head>
+<body>
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>Área do Parceiro</strong><br>
+        Valide clientes e acompanhe seus relatórios.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+<link rel="stylesheet" href="style.css">
+
+</header>
+
+<h2>Relatório de Consultas – Últimos 7 dias</h2>
+<div id="dadosParceiro" class="dados-parceiro"></div>
+
+<button class="relatorio-botao" onclick="window.print()">
+  🖨️ Imprimir / PDF
+</button>
+
+<table>
+<thead>
+<tr>
+  <th>Data/Hora</th>
+  <th>Grupo</th>
+  <th>Status</th>
+  <th>Código de Autorização</th>
+</tr>
+</thead>
+<tbody id="dados"></tbody>
+</table>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+const parceiro = sessionStorage.getItem("parceiroLogado");
+
+if (!parceiro) {
+  alert("Sessão expirada. Faça login novamente.");
+  window.location.href = "painelparceiro.html";
+}
+const parceiroNome = sessionStorage.getItem("parceiroNome");
+const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+
+document.getElementById("dadosParceiro").innerHTML = `
+  <strong>Parceiro:</strong> ${parceiroNome || "-"}<br>
+  <strong>CNPJ:</strong> ${parceiroCNPJ || "-"}
+`;
+
+fetch(`${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiro)}`)
+  .then(r => r.json())
+  .then(d => {
+    if (!d.ok) {
+      alert("Erro ao carregar relatório");
+      return;
+    }
+
+    const tbody = document.getElementById("dados");
+    tbody.innerHTML = "";
+
+    d.registros.forEach(r => {
+  tbody.innerHTML += `
+    <tr>
+      <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
+      <td>${r.grupo || "-"}</td>
+      <td>${r.status}</td>
+      <td>${r["codigo-ero"] || r.codigo_ero || "-"}</td>
+    </tr>
+  `;
+});
+
+  });
+</script>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
+
+</body>
+</html>

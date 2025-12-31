@@ -93,22 +93,46 @@
 
 <!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
-<form 
+<form id="formCadastro"
   action="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
-  method="POST"
->
+  method="POST">
+<!-- rastreio básico -->
+<input type="hidden" name="userAgent" value="">
+<input type="hidden" name="origemAceite" value="cadastro_site">
+<input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
 
   <label>Nome completo:</label>
   <input type="text" name="nome" required>
 
-  <label>CPF:</label>
-  <input type="text" name="cpf" required>
+<label>CPF:</label>
+<input
+  type="text"
+  name="cpf"
+  placeholder="Somente números"
+  maxlength="11"
+  pattern="\d{11}"
+  inputmode="numeric"
+  required
+>
 
-  <label>Celular (WhatsApp):</label>
-  <input type="text" name="celular" required placeholder="DDD + número">
+<label>Celular (WhatsApp):</label>
+<input
+  type="text"
+  name="celular"
+  placeholder="DDD + número (ex: 28999992303)"
+  maxlength="11"
+  pattern="\d{10,11}"
+  inputmode="numeric"
+  required
+>
 
-  <label>Cidade:</label>
-  <input type="text" name="cidade" required>
+<label>Cidade - Estado:</label>
+<input
+  type="text"
+  name="cidade"
+  placeholder="Ex: Guaçuí - ES"
+  required
+>
 
   <label>Grupo (empresa, sindicato ou particular):</label>
   <input type="text" name="grupo">
@@ -164,6 +188,71 @@
 </footer>
 <script>
 document.getElementById("userAgent").value = navigator.userAgent;
+</script>
+<script>
+document.querySelectorAll('input[inputmode="numeric"]').forEach(campo => {
+  campo.addEventListener("input", () => {
+    campo.value = campo.value.replace(/\D/g, "");
+  });
+});
+</script>
+<script>
+const form = document.getElementById("formCadastro");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const dados = new FormData(form);
+
+  // Converte data para dd/mm/aaaa antes de enviar
+  if (dados.get("nascimento")) {
+    const [y,m,d] = dados.get("nascimento").split("-");
+    dados.set("nascimento", `${d}/${m}/${y}`);
+  }
+
+  // Envio SEM aguardar resposta (evita erro falso)
+  fetch(form.action, {
+    method: "POST",
+    body: dados,
+    mode: "no-cors"
+  });
+
+  // ✅ Sempre tratar como sucesso
+  document.body.innerHTML = `
+    <div style="
+      max-width:600px;
+      margin:80px auto;
+      background:#f1fbff;
+      padding:30px;
+      border-radius:14px;
+      text-align:center;
+      box-shadow:0 4px 12px rgba(0,0,0,.1)">
+      
+      <h2 style="color:#1fae5a">✅ Cadastro recebido com sucesso!</h2>
+
+      <p style="margin-top:15px">
+        Seu cadastro foi recebido e está em análise.<br><br>
+        Assim que for liberado, entraremos em contato informando
+        o <strong>número do seu Cartão AproveitAI</strong>.
+      </p>
+
+      <p style="margin-top:10px;font-size:14px;color:#555">
+        ⚠️ Caso já exista cadastro com este CPF,
+        entre em contato conosco para verificação.
+      </p>
+
+      <a href="index.html"
+         class="btn-aproveitai"
+         style="display:inline-block;margin-top:20px">
+        Voltar ao site
+      </a>
+    </div>
+  `;
+});
+</script>
+<script>
+  const uaField = document.querySelector('input[name="userAgent"]');
+  if (uaField) uaField.value = navigator.userAgent;
 </script>
 
 </body>
