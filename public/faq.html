@@ -86,16 +86,16 @@ const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6Q
 
 fetch(sheetURL + "?aba=faq")
   .then(res => res.json())
-  .then(dados => {
+  .then(resp => {
     const faq = document.getElementById("faq");
     faq.innerHTML = "";
 
-    if (!dados || dados.length === 0) {
+    if (!resp.ok || !resp.dados || resp.dados.length === 0) {
       faq.innerHTML = "<p>Nenhuma dúvida cadastrada no momento.</p>";
       return;
     }
 
-    dados.forEach(item => {
+    resp.dados.forEach(item => {
       faq.innerHTML += `
         <div class="faq-item">
           <h3>${item.pergunta}</h3>

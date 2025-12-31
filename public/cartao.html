@@ -518,7 +518,8 @@ async function carregarCartao(){
   }
 
   try{
-    const res = await fetch(`${API_URL}?aba=clientes&idPublico=${encodeURIComponent(id)}`);
+    const res = await fetch(`${API_URL}?idPublico=${encodeURIComponent(id)}`);
+
     const data = await res.json();
 
     const c = Array.isArray(data)
@@ -535,7 +536,18 @@ async function carregarCartao(){
     document.getElementById("idPublico").innerText = c.idPublico || "-";
     document.getElementById("grupo").innerText = c.grupo || "-";
     document.getElementById("cidade").innerText = c.cidade || "-";
-    document.getElementById("dataAceite").innerText = c.dataAceite || "-";
+    let dataCadastro = "-";
+
+if (c.dataCadastro || c.dataAceite) {
+  const raw = c.dataCadastro || c.dataAceite;
+  const d = new Date(raw);
+  if (!isNaN(d)) {
+    dataCadastro = d.toLocaleDateString("pt-BR");
+  }
+}
+
+document.getElementById("dataAceite").innerText = dataCadastro;
+
     document.getElementById("status").innerText = isAtivo(c.ativo) ? "ATIVO" : "INATIVO";
 
     // QR Code
