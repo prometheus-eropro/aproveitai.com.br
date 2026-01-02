@@ -141,9 +141,22 @@
 
 
   </style>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 </head>
 
 <body>
+<script>
+const parceiroNome = sessionStorage.getItem("parceiroNome");
+const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+
+if (!parceiroNome || !parceiroCNPJ) {
+  alert("Sessão expirada. Faça login novamente.");
+  window.location.href = "painelparceiro.html";
+}
+</script>
+
+
 <!-- ✅ CABEÇALHO PADRONIZADO -->
 <header class="site-header">
   <div class="brandline">
@@ -164,7 +177,16 @@
 
 
 <main>
-  <div id="scanner"></div>
+<div id="reader" style="
+  width:300px;
+  margin:30px auto;
+  border:3px dashed #28a745;
+  border-radius:12px;
+  padding:10px;
+  background:#fff;
+"></div>
+  
+<div id="scanner"></div>
   <p>Aponte a câmera para o QR Code do cliente.</p>
 </main>
 
@@ -201,25 +223,43 @@
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
-let scanner;
+const parceiro = sessionStorage.getItem("parceiroNome");
 
-window.addEventListener("DOMContentLoaded", () => {
-  scanner = new Html5Qrcode("scanner");
+const qr = new Html5Qrcode("reader");
 
-  scanner.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    (qrCodeMessage) => {
-      scanner.stop().then(() => {
-        window.location.href =
-          "resultado.html?idPublico=" + encodeURIComponent(qrCodeMessage);
-      });
-    }
-  );
-});
+qr.start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 220 },
+  (texto) => {
+    qr.stop().then(() => {
+
+      let idPublico = "";
+
+      try {
+        const url = new URL(texto);
+        idPublico = url.searchParams.get("idPublico");
+      } catch {
+        idPublico = texto;
+      }
+
+      if (!idPublico) {
+        alert("QR Code inválido.");
+        return;
+      }
+
+      // ✅ ENVIA PARCEIRO PARA A VALIDAÇÃO
+      window.location.href =
+        "resultado.html?idPublico=" +
+        encodeURIComponent(idPublico) +
+        "&parceiro=" +
+        encodeURIComponent(parceiro);
+    });
+  }
+);
 </script>
+
 </body>
 </html>
