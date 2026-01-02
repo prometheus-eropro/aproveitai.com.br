@@ -1665,3 +1665,19 @@ th {
   padding: 30px;
   border-radius: 12px;
 }
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.status-ativo {
+  background: #2e7d32; /* verde */
+}
+
+.status-inativo {
+  background: #c62828; /* vermelho */
+}

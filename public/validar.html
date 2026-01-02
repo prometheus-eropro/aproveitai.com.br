@@ -176,31 +176,6 @@
 </footer>
 
 <!-- ✅ BIBLIOTECA QR CODE -->
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
-<script>
-<div id="scanner" style="width:300px;margin:auto"></div>
-
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script>
-let scanner;
-
-window.addEventListener("load", () => {
-  scanner = new Html5Qrcode("scanner");
-
-  scanner.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    (qrCodeMessage) => {
-      scanner.stop().then(() => {
-        // redireciona direto para o resultado
-        window.location.href = "resultado.html?id=" + encodeURIComponent(qrCodeMessage);
-      });
-    },
-    (err) => {}
-  );
-});
-</script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">
@@ -229,34 +204,22 @@ window.addEventListener("load", () => {
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script>
-let scannerAtivo = false;
-let html5QrCode;
+let scanner;
 
-function iniciarScanner() {
-  if (scannerAtivo) return;
-  scannerAtivo = true;
+window.addEventListener("DOMContentLoaded", () => {
+  scanner = new Html5Qrcode("scanner");
 
-  html5QrCode = new Html5Qrcode("scanner");
-
-  html5QrCode.start(
+  scanner.start(
     { facingMode: "environment" },
     { fps: 10, qrbox: 250 },
     (qrCodeMessage) => {
-
-      html5QrCode.stop().then(() => {
-        // ✅ SEMPRE redireciona com ID
+      scanner.stop().then(() => {
         window.location.href =
-          "resultado.html?id=" + encodeURIComponent(qrCodeMessage);
+          "resultado.html?idPublico=" + encodeURIComponent(qrCodeMessage);
       });
-
     }
-  ).catch(() => {
-    alert("Erro ao acessar a câmera");
-    scannerAtivo = false;
-  });
-}
-
-document.addEventListener("DOMContentLoaded", iniciarScanner);
+  );
+});
 </script>
 </body>
 </html>

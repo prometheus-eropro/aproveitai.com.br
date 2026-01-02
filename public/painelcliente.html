@@ -36,9 +36,9 @@
 
     <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
 
-    <button onclick="consultar()">Consultar</button>
+<button onclick="consultar()">Consultar</button>
 
-    <div class="small">
+   <div class="small">
       Após a consulta, você poderá acessar seu cartão digital,
       salvar no celular ou imprimir.
     </div>
@@ -68,78 +68,6 @@
 
   </div>
 </div>
-<script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-let ultimoIdPublico = "";
-
-// Normalização
-function norm(v){ return String(v ?? "").toLowerCase().trim(); }
-function isAtivo(v){
-  return ["sim","true","1","ativo","yes"].includes(norm(v));
-}
-
-// ==============================
-// 🔍 CONSULTAR CLIENTE (JSONP)
-// ==============================
-function consultar(){
-  const valor = document.getElementById("cpf").value.trim();
-  if(!valor){
-    alert("Informe CPF ou ID Público");
-    return;
-  }
-
-  const callback = "cb_" + Date.now();
-  const s = document.createElement("script");
-
-  window[callback] = function(res){
-    document.body.removeChild(s);
-    delete window[callback];
-
-    const box = document.getElementById("resultado");
-
-    if(res.erro || !res.nome){
-      box.innerHTML = "<div class='erro'>❌ Cliente não encontrado</div>";
-      return;
-    }
-
-    const ativo = isAtivo(res.ativo);
-    ultimoIdPublico = res.idPublico || "";
-
-    box.innerHTML = `
-      <div class="resultado ${ativo ? "ativo" : "inativo"}">
-        <h3>${res.nome}</h3>
-        <p>CPF: ${res.cpf}</p>
-        <p>ID Público: ${res.idPublico}</p>
-        <p>Cidade: ${res.cidade}</p>
-        <p>Grupo: ${res.grupo}</p>
-        <p>Status: <strong>${ativo ? "ATIVO" : "INATIVO"}</strong></p>
-      </div>
-    `;
-
-    document.getElementById("btnBeneficios").style.display = ativo ? "block" : "none";
-    document.getElementById("btnCartao").style.display = ativo ? "block" : "none";
-  };
-
-  const param = valor.startsWith("APV-") ? "idPublico" : "cpf";
-
-  s.src = `${sheetURL}?${param}=${encodeURIComponent(valor)}&callback=${callback}`;
-  document.body.appendChild(s);
-}
-
-// ==============================
-// 🪪 AÇÕES
-// ==============================
-function abrirCartao(){
-  if(ultimoIdPublico)
-    location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
-}
-
-function abrirBeneficios(){
-  if(ultimoIdPublico)
-    location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
-}
-</script>
-
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">
@@ -167,31 +95,70 @@ function abrirBeneficios(){
 </footer>
 
 <script>
-// ==============================
-// CONTROLE DE BOTÕES
-// ==============================
-function mostrarBotoes(ativo){
-  document.getElementById("btnBeneficios").style.display = ativo ? "block" : "none";
-  document.getElementById("btnCartao").style.display = ativo ? "block" : "none";
-}
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-// ==============================
-// AÇÕES
-// ==============================
-function abrirCartao(){
-  if(window.ultimoIdPublico){
-    window.location.href =
-      "cartao.html?id=" + encodeURIComponent(window.ultimoIdPublico);
+let ultimoIdPublico = "";
+
+async function consultar() {
+  const valor = document.getElementById("cpf").value.trim();
+  const box = document.getElementById("resultado");
+
+  if (!valor) {
+    box.textContent = "⚠️ Informe CPF ou ID Público.";
+    return;
+  }
+
+  box.textContent = "⏳ Consultando...";
+
+  try {
+    const param = valor.startsWith("APV-") ? "idPublico" : "cpf";
+    const url = `${API_URL}?${param}=${encodeURIComponent(valor)}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data || !data.nome) {
+      box.textContent = "❌ Cliente não encontrado.";
+      return;
+    }
+
+    ultimoIdPublico = data.idPublico;
+
+    const statusClasse = data.ativo === "SIM" ? "status-ativo" : "status-inativo";
+const statusTexto  = data.ativo === "SIM" ? "ATIVO" : "INATIVO";
+
+box.innerHTML = `
+  <strong>${data.nome}</strong><br>
+  <span class="status ${statusClasse}">
+    ${statusTexto}
+  </span>
+`;
+    const ativo = String(data.ativo).toUpperCase();
+
+if (ativo === "SIM") {
+
+      document.getElementById("btnBeneficios").style.display = "block";
+      document.getElementById("btnCartao").style.display = "block";
+    } else {
+      document.getElementById("btnBeneficios").style.display = "none";
+      document.getElementById("btnCartao").style.display = "none";
+    }
+
+  } catch (e) {
+    console.error(e);
+    box.textContent = "❌ Erro na consulta.";
   }
 }
 
-function abrirBeneficios(){
-  if(window.ultimoIdPublico){
-    window.location.href =
-      "meus-beneficios.html?id=" + encodeURIComponent(window.ultimoIdPublico);
-  }
+function abrirCartao() {
+  if (!ultimoIdPublico) return;
+  window.location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
+}
+
+function abrirBeneficios() {
+  if (!ultimoIdPublico) return;
+  window.location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
 }
 </script>
-
 </body>
 </html>

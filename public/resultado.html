@@ -181,44 +181,42 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const idPublico = params.get("idPublico");
 
 const box = document.getElementById("resultado");
 
-if (!id) {
-  box.innerHTML = "<h3 style='color:red'>❌ QR inválido</h3>";
+if (!idPublico) {
+  box.innerHTML = "❌ QR inválido.";
 } else {
-  fetch(`${API_URL}?consulta=${encodeURIComponent(id)}&origem=qr`)
+  fetch(`${API_URL}?idPublico=${encodeURIComponent(idPublico)}&parceiro=total`)
     .then(r => r.json())
     .then(data => {
 
-  if (!data || !data.nome) {
-    box.innerHTML = "<h3 style='color:red'>❌ Dados não encontrados</h3>";
-    return;
-  }
+      if (!data || !data.nome) {
+        box.innerHTML = "❌ Cliente não encontrado.";
+        return;
+      }
 
-  const ativo = data.status === "ATIVO";
+      const ativo = data.ativo === "SIM";
 
-  box.innerHTML = `
-    <div class="status-box ${ativo ? "ativo" : "inativo"}">
-      <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
+      box.innerHTML = `
+        <div class="${ativo ? "ativo" : "inativo"}">
+          <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
+          <p><b>Nome:</b> ${data.nome}</p>
+          <p><b>CPF:</b> ${data.cpf}</p>
+          <p><b>ID:</b> ${data.idPublico}</p>
+          <p><b>Cidade:</b> ${data.cidade}</p>
+          <p><b>Grupo:</b> ${data.grupo}</p>
+          <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
+        </div>
+      `;
+    });
+}
 
-      <p><b>Nome:</b> ${data.nome}</p>
-      <p><b>CPF:</b> ${data.cpf}</p>
-      <p><b>ID Público:</b> ${data.idPublico}</p>
-      <p><b>Cidade:</b> ${data.cidade}</p>
-      <p><b>Grupo:</b> ${data.grupo}</p>
-      <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
-
-      ${ativo ? `<p><b>Código Autorização:</b> ${data.codigo_ero}</p>` : ""}
-    </div>
-  `;
-})
 function voltarPainel() {
   window.location.href = "painelparceiro.html";
 }
 </script>
-
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">
