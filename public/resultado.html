@@ -161,37 +161,50 @@ if (!id) {
 
 fetch(`${API_URL}?id=${encodeURIComponent(id)}`)
   .then(res => res.json())
-  const ativo = dados.STATUS === "ATIVO";
+  .then(dados => {
 
-box.style.background = ativo ? "#e8fff0" : "#ffe8e8";
-box.style.border = ativo ? "2px solid #1fa855" : "2px solid #cc2e2e";
+    if (!dados || !dados.STATUS) {
+      box.innerHTML = "<h2>❌ Dados não encontrados</h2>";
+      return;
+    }
 
-box.innerHTML = `
-  <h2>${ativo ? "✅ Cliente Ativo" : "❌ Cliente Inativo"}</h2>
+    const ativo = dados.STATUS === "ATIVO";
 
-  <p><strong>Nome:</strong> ${dados.NOME || "-"}</p>
-  <p><strong>CPF:</strong> ${dados.CPF_MASCARADO || "-"}</p>
-  <p><strong>ID Público:</strong> ${dados.ID_PUBLICO || "-"}</p>
-  <p><strong>Cidade:</strong> ${dados.CIDADE || "-"}</p>
-  <p><strong>Grupo:</strong> ${dados.GRUPO || "-"}</p>
-  <p><strong>Cliente desde:</strong> ${dados.DATA_CADASTRO || "-"}</p>
+    box.style.background = ativo ? "#e8fff0" : "#ffe8e8";
+    box.style.border = ativo ? "2px solid #1fa855" : "2px solid #cc2e2e";
 
-  <p style="font-size:18px;font-weight:bold;color:${ativo ? "green" : "red"}">
-    Status: ${dados.STATUS}
-  </p>
+    box.innerHTML = `
+      <h2>${ativo ? "✅ Cliente Ativo" : "❌ Cliente Inativo"}</h2>
 
-  ${
-    ativo && dados.CODIGO_AUTORIZACAO
-      ? `<p style="color:green;font-weight:bold">
-          ✔ Código de Autorização: ${dados.CODIGO_AUTORIZACAO}
-        </p>`
-      : ""
-  }
+      <p><strong>Nome:</strong> ${dados.NOME || "-"}</p>
+      <p><strong>CPF:</strong> ${dados.CPF_MASCARADO || "-"}</p>
+      <p><strong>ID Público:</strong> ${dados.ID_PUBLICO || "-"}</p>
+      <p><strong>Cidade:</strong> ${dados.CIDADE || "-"}</p>
+      <p><strong>Grupo:</strong> ${dados.GRUPO || "-"}</p>
+      <p><strong>Cliente desde:</strong> ${dados.DATA_CADASTRO || "-"}</p>
 
-  <br>
-  <a href="painelparceiro.html">⬅ Voltar ao Painel do Parceiro</a>
-`;
+      <p style="font-size:18px;font-weight:bold;color:${ativo ? "green" : "red"}">
+        Status: ${dados.STATUS}
+      </p>
+
+      ${
+        ativo && dados.CODIGO_AUTORIZACAO
+          ? `<p style="color:green;font-weight:bold">
+              ✔ Código de Autorização: ${dados.CODIGO_AUTORIZACAO}
+            </p>`
+          : ""
+      }
+
+      <br>
+      <a href="painelparceiro.html">⬅ Voltar ao Painel do Parceiro</a>
+    `;
+  })
+  .catch(err => {
+    console.error(err);
+    box.innerHTML = "<h2>❌ Erro ao consultar dados</h2>";
+  });
 </script>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">

@@ -254,5 +254,41 @@ window.addEventListener("load", () => {
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<script>
+const scanner = new Html5Qrcode("scanner");
+
+scanner.start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 250 },
+  qrText => {
+    scanner.stop();
+
+    // Extrai ID do QR
+    const url = new URL(qrText);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      alert("QR inválido");
+      return;
+    }
+
+    // Chama API
+    fetch(`https://script.google.com/macros/s/SUA_API/exec?consulta=${id}&origem=qr`)
+      .then(r => r.json())
+      .then(dados => {
+
+        // 🔒 SALVA OS DADOS PARA A PRÓXIMA PÁGINA
+        sessionStorage.setItem("dadosValidacao", JSON.stringify(dados));
+
+        // 👉 REDIRECIONA
+        window.location.href = "resultado.html";
+      })
+      .catch(() => alert("Erro ao validar QR"));
+  }
+);
+</script>
+
 </body>
 </html>
