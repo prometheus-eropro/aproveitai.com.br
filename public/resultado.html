@@ -161,46 +161,36 @@ if (!id) {
 
 fetch(`${API_URL}?id=${encodeURIComponent(id)}`)
   .then(res => res.json())
-  .then(dados => {
+  const ativo = dados.STATUS === "ATIVO";
 
-    if (!dados || dados.erro) {
-      box.innerHTML = "<h2>❌ Cliente não encontrado</h2>";
-      return;
-    }
+box.style.background = ativo ? "#e8fff0" : "#ffe8e8";
+box.style.border = ativo ? "2px solid #1fa855" : "2px solid #cc2e2e";
 
-    const ativo = dados.status === "ATIVO";
+box.innerHTML = `
+  <h2>${ativo ? "✅ Cliente Ativo" : "❌ Cliente Inativo"}</h2>
 
-    box.style.background = ativo ? "#e8fff0" : "#ffe8e8";
-    box.style.border = ativo ? "2px solid #1fa855" : "2px solid #cc2e2e";
+  <p><strong>Nome:</strong> ${dados.NOME || "-"}</p>
+  <p><strong>CPF:</strong> ${dados.CPF_MASCARADO || "-"}</p>
+  <p><strong>ID Público:</strong> ${dados.ID_PUBLICO || "-"}</p>
+  <p><strong>Cidade:</strong> ${dados.CIDADE || "-"}</p>
+  <p><strong>Grupo:</strong> ${dados.GRUPO || "-"}</p>
+  <p><strong>Cliente desde:</strong> ${dados.DATA_CADASTRO || "-"}</p>
 
-    box.innerHTML = `
-      <h2>${ativo ? "✅ Cliente Ativo" : "❌ Cliente Inativo"}</h2>
+  <p style="font-size:18px;font-weight:bold;color:${ativo ? "green" : "red"}">
+    Status: ${dados.STATUS}
+  </p>
 
-      <p><strong>Nome:</strong> ${dados.nome}</p>
-      <p><strong>CPF:</strong> ${dados.cpf_mascarado}</p>
-      <p><strong>ID Público:</strong> ${dados.id_publico}</p>
-      <p><strong>Cidade:</strong> ${dados.cidade}</p>
-      <p><strong>Grupo:</strong> ${dados.grupo}</p>
-      <p><strong>Cliente desde:</strong> ${dados.data_cadastro}</p>
+  ${
+    ativo && dados.CODIGO_AUTORIZACAO
+      ? `<p style="color:green;font-weight:bold">
+          ✔ Código de Autorização: ${dados.CODIGO_AUTORIZACAO}
+        </p>`
+      : ""
+  }
 
-      <p style="font-size:18px;font-weight:bold;color:${ativo ? "green" : "red"}">
-        Status: ${dados.status}
-      </p>
-
-      ${ativo ? `
-        <p style="color:green;font-weight:bold">
-          ✔ Código de Autorização: ${dados.codigo_autorizacao}
-        </p>
-      ` : ""}
-      
-      <br>
-      <a href="painelparceiro.html">⬅ Voltar ao Painel do Parceiro</a>
-    `;
-  })
-  .catch(err => {
-    console.error(err);
-    box.innerHTML = "<h2>❌ Erro ao consultar validação</h2>";
-  });
+  <br>
+  <a href="painelparceiro.html">⬅ Voltar ao Painel do Parceiro</a>
+`;
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
