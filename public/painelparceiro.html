@@ -68,6 +68,10 @@
   <div class="card" id="painelBox" style="display:none; max-width: 600px; width: 100%;">
 
     <h2 style="text-align:center;color:#0a4c1a">Bem-vindo, <span id="nomeParceiro"></span></h2>
+<script>
+localStorage.setItem("parceiro_nome", "total"); 
+localStorage.setItem("parceiro_cnpj", "00000000000000");
+</script>
 
     <label>CPF ou ID Público do Cliente</label>
     <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
@@ -88,6 +92,22 @@
       line-height:1.6;
       box-shadow:0 2px 6px rgba(0,0,0,0.1);
     "></div>
+<button onclick="abrirValidadorQR()" class="btn-verde">
+  📷 Validar QR Code
+</button>
+
+<script>
+function abrirValidadorQR(){
+  const parceiro = sessionStorage.getItem("parceiroNome");
+  if (!parceiro) {
+    alert("Sessão expirada. Faça login novamente.");
+    location.reload();
+    return;
+  }
+
+  window.location.href = "validar.html";
+}
+</script>
 
     <!-- Relatório -->
     <div style="margin-top: 20px;">
