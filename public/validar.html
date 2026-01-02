@@ -5,48 +5,36 @@
   <title>Validação por QR Code • Cartão AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ESTILO BÁSICO -->
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial, sans-serif;
       background: #f4fff6;
     }
-
     header {
       background: #fff;
       border-bottom: 4px solid #0a7c3a;
       padding: 20px;
       text-align: center;
     }
-
     header h1 {
       margin: 0;
       color: #0a7c3a;
     }
-
-    header p {
-      margin: 5px 0 0;
-      color: #555;
-    }
-
     .tarja {
       background: #e6ffe6;
       padding: 15px;
-      text-align: center;
-      font-weight: bold;
       margin-top: 10px;
       border-radius: 8px;
+      font-weight: bold;
     }
-
     main {
-      padding: 40px 20px;
-      text-align: center;
       background: #9ee3ff;
       min-height: 300px;
+      padding: 40px 20px;
+      text-align: center;
     }
-
-    #reader {
+    #scanner {
       width: 320px;
       margin: 0 auto;
       padding: 10px;
@@ -54,19 +42,12 @@
       border-radius: 12px;
       background: #fff;
     }
-
-    #status {
-      margin-top: 20px;
-      font-size: 16px;
-    }
-
     footer {
       background: #e6ffe6;
-      text-align: center;
       padding: 20px;
+      text-align: center;
       font-size: 14px;
     }
-
     a {
       color: #0a7c3a;
       font-weight: bold;
@@ -87,56 +68,55 @@
   </div>
 </header>
 
-<main id="conteudo">
-
-  <div id="reader"></div>
-
-  <p id="status">
-    Aponte a câmera para o QR Code do cliente.
-  </p>
-
+<main>
+  <div id="scanner"></div>
+  <p>Aponte a câmera para o QR Code do cliente.</p>
 </main>
 
 <footer>
   <strong>Cartão AproveitAI</strong><br>
   PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-  CNPJ: 58.584.332/0001-40<br>
+  CNPJ 58.584.332/0001-40<br>
   © 2025 AproveitAI
 </footer>
 
-<!-- LIB OFICIAL (CORRETA) -->
+<!-- ✅ BIBLIOTECA QR CODE -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script>
-/* =====================================================
-   🔒 BLOQUEIO – SÓ ENTRA VIA PAINEL DO PARCEIRO
-   ===================================================== */
-const parceiroNome = sessionStorage.getItem("parceiroNome");
+/* ===============================
+   PROTEÇÃO DE ACESSO
+================================ */
+const parceiroAutenticado = sessionStorage.getItem("parceiroAutenticado");
 
-if (!parceiroNome) {
-  document.getElementById("conteudo").innerHTML = `
-    <h3>⚠️ Acesso restrito</h3>
-    <p>Este validador só pode ser acessado pela Área do Parceiro.</p>
-    <a href="painelparceiro.html">👉 Ir para Área do Parceiro</a>
-  `;
-  throw new Error("Parceiro não autenticado");
+if (parceiroAutenticado !== "true") {
+  alert("Sessão expirada. Faça login novamente.");
+  window.location.href = "painelparceiro.html";
 }
 
-/* =====================================================
-   📷 INICIAR CÂMERA
-   ===================================================== */
-const html5QrCode = new Html5Qrcode("reader");
+/* ===============================
+   INICIAR SCANNER
+================================ */
+window.addEventListener("load", () => {
 
-html5QrCode.start(
-  { facingMode: "environment" }, // câmera traseira
-  { fps: 10, qrbox: 250 },
-  (texto) => {
-    html5QrCode.stop();
-    window.location.href = "resultado.html?id=" + encodeURIComponent(texto);
-  }
-).catch(err => {
-  alert("Erro ao acessar a câmera. Verifique permissões do navegador.");
-  console.error(err);
+  const html5QrCode = new Html5Qrcode("scanner");
+
+  html5QrCode.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (qrCodeMessage) => {
+
+      html5QrCode.stop();
+
+      // 🔗 Aqui você chama sua API depois
+      alert("QR Code lido:\n" + qrCodeMessage);
+
+    }
+  ).catch(err => {
+    alert("Erro ao acessar a câmera. Verifique permissões.");
+    console.error(err);
+  });
+
 });
 </script>
 
