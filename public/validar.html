@@ -1,155 +1,201 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Validação por QR Code • AproveitAI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="style.css">
-
-<style>
-body{
-  margin:0;
-  background:#f4f6f6;
-  font-family: Arial, sans-serif;
-}
-
-main{
-  min-height: calc(100vh - 240px);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-#scanner{
-  width:100%;
-  max-width:420px;
-  background:#fff;
-  padding:20px;
-  border-radius:14px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
-  text-align:center;
-}
-
-#status{
-  margin-top:15px;
-  font-weight:bold;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validação por QR Code • Cartão AproveitAI</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #f8fdf9;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      background-color: #fff;
+      border-bottom: 4px solid #008000;
+    }
+    h1 {
+      color: #008000;
+      margin-bottom: 4px;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 0;
+      color: #333;
+    }
+    #reader {
+      width: 320px;
+      margin: 30px auto;
+      background: #fff;
+      border: 2px dashed #008000;
+      border-radius: 12px;
+      padding: 10px;
+    }
+    #status {
+      text-align: center;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    footer {
+      background-color: #e6ffe6;
+      text-align: center;
+      font-size: 14px;
+      padding: 20px 10px;
+      margin-top: 50px;
+      color: #333;
+    }
+    a {
+      text-decoration: none;
+    }
+  </style>
 </head>
 
 <body>
-
-<!-- CABEÇALHO PADRÃO -->
+  <!-- ✅ CABEÇALHO PADRONIZADO -->
 <header class="site-header">
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
-
     <div class="brand-center">
       <h1 class="site-title">Cartão AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
 
-      <!-- TARJA VERDE -->
-      <div class="tarja-verde">
-        📷 Validador de QR Code
-      </div>
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>Área do Parceiro</strong><br>
+        VALIDADOR DE QRCODEe.
+      </p>
     </div>
-
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
 
-<main>
-  <div id="scanner">
-    <h3>📷 Aponte para o QR Code do cliente</h3>
-    <div id="reader"></div>
-    <div id="status">Inicializando câmera…</div>
-  </div>
-</main>
 
-<!-- RODAPÉ -->
+  <main id="conteudo-principal" style="text-align:center;">
+    <div id="reader"></div>
+    <div id="status">Aponte a câmera para o QR Code do cliente.</div>
+  </main>
+
+<!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">
     <div>
-      <b>Cartão AproveitAI</b><br>
+      <h3>Cartão AproveitAI</h3>
       PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-      CNPJ: 58.584.332/0001-40
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
     </div>
     <div>
-      <a href="index.html">Voltar ao site</a>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
     </div>
   </div>
   <div class="footer-bottom">
-    © 2025 AproveitAI
+    © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-<script>
-// ===============================
-// BLOQUEIO DE ACESSO
-// ===============================
-const parceiroLogado = sessionStorage.getItem("parceiroLogado");
-const parceiroNome = sessionStorage.getItem("parceiroNome");
-const parceiroCnpj = sessionStorage.getItem("parceiroCnpj");
 
-if (parceiroLogado !== "SIM") {
-  document.body.innerHTML = `
-    <div style="text-align:center; padding:40px">
-      <h2>⚠️ Acesso restrito</h2>
-      <p>Este validador só pode ser acessado pela Área do Parceiro.</p>
-      <a href="painelparceiro.html">Ir para Área do Parceiro</a>
-    </div>
-  `;
-  throw new Error("Parceiro não logado");
-}
-</script>
+  <!-- ========================= BLOQUEIO DE ACESSO ========================= -->
+  <script>
+  const parceiroLogado = sessionStorage.getItem("parceiroLogado");
+  const parceiroNome = sessionStorage.getItem("parceiroNome");
 
-/* 🔐 BLOQUEIO: só entra se veio do painel */
-const parceiroNome = sessionStorage.getItem("parceiroNome");
-
-if (!parceiroNome) {
-  document.body.innerHTML = `
-    <div style="padding:50px;text-align:center;font-family:Arial">
-      <h2>⚠️ Acesso restrito</h2>
-      <p>Este validador só pode ser acessado pela Área do Parceiro.</p>
-      <a href="painelparceiro.html">👉 Ir para Área do Parceiro</a>
+  // Corrigido: aceita qualquer parceiro logado, não apenas "SIM"
+if (!parceiroLogado || !parceiroNome) {
+  document.getElementById("conteudo-principal").innerHTML = `
+    <div style="padding:60px 20px;">
+      <h2 style="color:#333;">⚠️ Acesso restrito</h2>
+      <p>Este validador só pode ser acessado pela <b>Área do Parceiro</b>.</p>
+      <a href="painelparceiro.html" style="color:#008000; font-weight:bold;">Ir para Área do Parceiro</a>
     </div>
   `;
   throw new Error("Parceiro não logado");
 }
 
-/* JSONP helper */
-function jsonp(url) {
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Date.now();
-    window[cb] = data => {
-      resolve(data);
-      delete window[cb];
-      script.remove();
-    };
+    document.getElementById("conteudo-principal").innerHTML = `
+      <div style="padding:60px 20px;">
+        <h2 style="color:#333;">⚠️ Acesso restrito</h2>
+        <p>Este validador só pode ser acessado pela <b>Área do Parceiro</b>.</p>
+        <a href="painelparceiro.html" style="color:#008000; font-weight:bold;">Ir para Área do Parceiro</a>
+      </div>
+    `;
+    throw new Error("Parceiro não logado");
+  }
+  </script>
+
+  <!-- ========================= SCRIPT DE LEITURA QR CODE ========================= -->
+  <script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+  function onScanSuccess(decodedText) {
+    const idCliente = decodedText.trim();
+    const parceiro = sessionStorage.getItem("parceiroNome") || "total";
+    const url = `${API_URL}?idPublico=${encodeURIComponent(idCliente)}&parceiro=${encodeURIComponent(parceiro)}`;
+
+    jsonp(url).then(data => {
+      if (!data || !data.nome) {
+        document.getElementById("status").innerHTML = "❌ Cliente não encontrado.";
+        return;
+      }
+      const ativo = data.ativo === "SIM";
+      const cor = ativo ? "#0a7f2e" : "#c00";
+      document.getElementById("status").innerHTML = `
+        <div style="text-align:left; border:2px solid ${cor}; border-radius:8px; padding:10px; display:inline-block;">
+          <b>Nome:</b> ${data.nome}<br>
+          <b>CPF:</b> ${data.cpf}<br>
+          <b>ID Público:</b> ${data.idPublico}<br>
+          <b>Status:</b> <span style="color:${cor}; font-weight:bold;">${ativo ? "ATIVO" : "INATIVO"}</span><br>
+          <b>Parceiro:</b> ${parceiro}<br>
+          <b>Código Autorização:</b> ${data.codigoERO || "-"}
+        </div>`;
+    });
+  }
+
+  function jsonp(url) {
+    return new Promise((resolve, reject) => {
+      const cb = "cb_" + Date.now();
+      window[cb] = data => {
+        resolve(data);
+        delete window[cb];
+        script.remove();
+      };
+      const script = document.createElement("script");
+      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+  }
+
+  function iniciarScanner() {
+    const html5QrCode = new Html5Qrcode("reader");
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras.length) {
+        html5QrCode.start(cameras[0].id, { fps: 10, qrbox: 250 }, onScanSuccess);
+      } else {
+        document.getElementById("status").innerHTML = "❌ Nenhuma câmera encontrada.";
+      }
+    }).catch(err => {
+      document.getElementById("status").innerHTML = "⚠️ Erro ao acessar a câmera.";
+      console.error(err);
+    });
+  }
+
+  window.addEventListener("load", () => {
     const script = document.createElement("script");
-    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-    script.onerror = reject;
+    script.src = "https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js";
+    script.onload = iniciarScanner;
     document.body.appendChild(script);
   });
-}
-
-/* 📷 QR CODE */
-function onScanSuccess(decodedText) {
-/* Inicializa câmera */
-const html5QrCode = new Html5Qrcode("reader");
-Html5Qrcode.getCameras().then(cameras => {
-  if (cameras.length) {
-    html5QrCode.start(
-      cameras[0].id,
-      { fps: 10, qrbox: 250 },
-      onScanSuccess
-    );
-  }
-});
-</script>
-
-
+  </script>
 </body>
 </html>
