@@ -105,97 +105,69 @@
   </div>
 </footer>
 
-  <!-- ========================= BLOQUEIO DE ACESSO ========================= -->
-  <script>
-  const parceiroLogado = sessionStorage.getItem("parceiroLogado");
-  const parceiroNome = sessionStorage.getItem("parceiroNome");
+<!-- LIB HTML5 QR CODE (OBRIGATÓRIA) -->
+<!-- LIB HTML5 QR CODE -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<!-- HTML5 QR Code -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
-  // Corrigido: aceita qualquer parceiro logado, não apenas "SIM"
-if (!parceiroLogado || !parceiroNome) {
+<script>
+/* ======================================================
+   VALIDADOR QR CODE – APROVEITAI (VERSÃO ESTÁVEL)
+   ====================================================== */
+
+/* 🔒 BLOQUEIO DE ACESSO */
+const parceiroNome = sessionStorage.getItem("parceiroNome");
+
+if (!parceiroNome) {
   document.getElementById("conteudo-principal").innerHTML = `
-    <div style="padding:60px 20px;">
-      <h2 style="color:#333;">⚠️ Acesso restrito</h2>
-      <p>Este validador só pode ser acessado pela <b>Área do Parceiro</b>.</p>
-      <a href="painelparceiro.html" style="color:#008000; font-weight:bold;">Ir para Área do Parceiro</a>
+    <div style="padding:40px;text-align:center">
+      <h3>⚠️ Acesso restrito</h3>
+      <p>Este validador só pode ser acessado pela Área do Parceiro.</p>
+      <a href="painelparceiro.html" style="color:green;font-weight:bold">
+        👉 Ir para Área do Parceiro
+      </a>
     </div>
   `;
-  throw new Error("Parceiro não logado");
+  throw new Error("Parceiro não autenticado");
 }
 
-    document.getElementById("conteudo-principal").innerHTML = `
-      <div style="padding:60px 20px;">
-        <h2 style="color:#333;">⚠️ Acesso restrito</h2>
-        <p>Este validador só pode ser acessado pela <b>Área do Parceiro</b>.</p>
-        <a href="painelparceiro.html" style="color:#008000; font-weight:bold;">Ir para Área do Parceiro</a>
-      </div>
-    `;
-    throw new Error("Parceiro não logado");
-  }
-  </script>
+/* ======================================================
+   INICIAR SCANNER
+   ====================================================== */
+const qrCodeScanner = new Html5Qrcode("reader");
 
-  <!-- ========================= SCRIPT DE LEITURA QR CODE ========================= -->
-  <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-  function onScanSuccess(decodedText) {
-    const idCliente = decodedText.trim();
-    const parceiro = sessionStorage.getItem("parceiroNome") || "total";
-    const url = `${API_URL}?idPublico=${encodeURIComponent(idCliente)}&parceiro=${encodeURIComponent(parceiro)}`;
-
-    jsonp(url).then(data => {
-      if (!data || !data.nome) {
-        document.getElementById("status").innerHTML = "❌ Cliente não encontrado.";
-        return;
-      }
-      const ativo = data.ativo === "SIM";
-      const cor = ativo ? "#0a7f2e" : "#c00";
-      document.getElementById("status").innerHTML = `
-        <div style="text-align:left; border:2px solid ${cor}; border-radius:8px; padding:10px; display:inline-block;">
-          <b>Nome:</b> ${data.nome}<br>
-          <b>CPF:</b> ${data.cpf}<br>
-          <b>ID Público:</b> ${data.idPublico}<br>
-          <b>Status:</b> <span style="color:${cor}; font-weight:bold;">${ativo ? "ATIVO" : "INATIVO"}</span><br>
-          <b>Parceiro:</b> ${parceiro}<br>
-          <b>Código Autorização:</b> ${data.codigoERO || "-"}
-        </div>`;
-    });
-  }
-
-  function jsonp(url) {
-    return new Promise((resolve, reject) => {
-      const cb = "cb_" + Date.now();
-      window[cb] = data => {
-        resolve(data);
-        delete window[cb];
-        script.remove();
-      };
-      const script = document.createElement("script");
-      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-      script.onerror = reject;
-      document.body.appendChild(script);
-    });
-  }
-
-  function iniciarScanner() {
-    const html5QrCode = new Html5Qrcode("reader");
-    Html5Qrcode.getCameras().then(cameras => {
-      if (cameras.length) {
-        html5QrCode.start(cameras[0].id, { fps: 10, qrbox: 250 }, onScanSuccess);
-      } else {
-        document.getElementById("status").innerHTML = "❌ Nenhuma câmera encontrada.";
-      }
-    }).catch(err => {
-      document.getElementById("status").innerHTML = "⚠️ Erro ao acessar a câmera.";
-      console.error(err);
-    });
-  }
-
-  window.addEventListener("load", () => {
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js";
-    script.onload = iniciarScanner;
-    document.body.appendChild(script);
+function iniciarScanner() {
+  qrCodeScanner.start(
+    { facingMode: "environment" }, // 👈 FORÇA CÂMERA
+    {
+      fps: 10,
+      qrbox: 250
+    },
+    onScanSuccess,
+    onScanError
+  ).catch(err => {
+    console.error("Erro ao acessar câmera:", err);
+    alert("Erro ao acessar a câmera. Verifique permissões do navegador.");
   });
-  </script>
+}
+
+/* ======================================================
+   CALLBACKS
+   ====================================================== */
+function onScanSuccess(decodedText) {
+  qrCodeScanner.stop();
+  window.location.href = "resultado.html?id=" + encodeURIComponent(decodedText);
+}
+
+function onScanError(error) {
+  // silencioso (evita spam no console)
+}
+
+/* ======================================================
+   START
+   ====================================================== */
+window.addEventListener("load", iniciarScanner);
+</script>
 </body>
 </html>

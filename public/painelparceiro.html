@@ -98,7 +98,7 @@ localStorage.setItem("parceiro_cnpj", "00000000000000");
 
 <script>
 function abrirValidadorQR(){
-  const parceiro = sessionStorage.getItem("parceiroNome");
+  const parceiro = localStorage.getItem("parceiroNome");
   if (!parceiro) {
     alert("Sessão expirada. Faça login novamente.");
     location.reload();
