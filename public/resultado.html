@@ -197,22 +197,31 @@ if (!idPublico) {
         return;
       }
 
-      const ativo = data.ativo === "SIM";
+const ativo = data.ativo === "SIM";
 
-      box.innerHTML = `
-        <div class="${ativo ? "ativo" : "inativo"}">
-          <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
-          <p><b>Nome:</b> ${data.nome}</p>
-          <p><b>CPF:</b> ${data.cpf}</p>
-          <p><b>ID:</b> ${data.idPublico}</p>
-          <p><b>Cidade:</b> ${data.cidade}</p>
-          <p><b>Grupo:</b> ${data.grupo}</p>
-          <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
-        </div>
-      `;
-    });
-}
+box.innerHTML = `
+  <div class="status-box ${ativo ? "ativo" : "inativo"}">
+    <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
 
+    <p><b>Nome:</b> ${data.nome}</p>
+    <p><b>CPF:</b> ${data.cpf}</p>
+    <p><b>ID:</b> ${data.idPublico}</p>
+    <p><b>Cidade:</b> ${data.cidade}</p>
+    <p><b>Grupo:</b> ${data.grupo}</p>
+    <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
+
+    <p style="
+      margin-top:12px;
+      padding:10px;
+      border-radius:8px;
+      font-weight:600;
+      background:${ativo ? "#e6ffed" : "#ffe6e6"};
+      border:1px solid ${ativo ? "#198754" : "#c82333"};
+    ">
+      ${data.mensagemStatus || ""}
+    </p>
+  </div>
+`;
 function voltarPainel() {
   window.location.href = "painelparceiro.html";
 }

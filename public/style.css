@@ -1695,3 +1695,36 @@ th {
 
   font-weight: 600;
 }
+.alerta-info {
+  max-width: 900px;
+  margin: 25px auto;
+  padding: 14px 18px;
+  background: #eaffea;
+  border-left: 6px solid #28a745;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1b5e20;
+}
+
+.alerta-info b {
+  color: #0a7a2a;
+}
+.alerta-final {
+  max-width: 900px;
+  margin: 30px auto 40px auto;
+  padding: 14px 18px;
+  background: #eaffea;
+  border-left: 6px solid #28a745;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #1b5e20;
+  line-height: 1.5;
+}
+
+.alerta-final b {
+  color: #0a7a2a;
+}
