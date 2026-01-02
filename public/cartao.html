@@ -233,6 +233,7 @@ body{
 
 <!-- BOTÕES -->
 <div class="botoes">
+  <button onclick="salvarNoCelular()">💾 Salvar no celular</button>
   <button onclick="window.print()">🧾 Salvar / Imprimir</button>
   <button class="voltar" onclick="history.back()">⬅ Voltar</button>
 </div>
@@ -266,33 +267,67 @@ body{
 <!-- ================= SCRIPT ================= -->
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const id = new URLSearchParams(location.search).get("id");
 
-const id = new URLSearchParams(window.location.search).get("id");
-
-if(!id){
-  alert("ID do cartão não informado.");
+function jsonp(url){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    window[cb] = (data) => { resolve(data); cleanup(); };
+    const s = document.createElement("script");
+    s.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    s.onerror = () => { reject(new Error("JSONP_FAIL")); cleanup(); };
+    document.body.appendChild(s);
+    function cleanup(){
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+      if(s && s.parentNode) s.parentNode.removeChild(s);
+    }
+  });
 }
 
-fetch(API + "?idPublico=" + id)
-  .then(r => r.json())
-  .then(d => {
+(async () => {
+  if(!id){ alert("ID do cartão não informado."); return; }
+
+  try{
+    const d = await jsonp(API + "?idPublico=" + encodeURIComponent(id));
+
+    if(d.erro){
+      alert("Cartão não localizado: " + d.erro);
+      return;
+    }
+
     document.getElementById("nome").textContent = d.nome || "-";
     document.getElementById("cpf").textContent = d.cpf || "-";
-    document.getElementById("idPublico").textContent = d.idPublico || "-";
+    document.getElementById("idPublico").textContent = d.idPublico || id;
     document.getElementById("grupo").textContent = d.grupo || "-";
     document.getElementById("cidade").textContent = d.cidade || "-";
     document.getElementById("cadastro").textContent = d.dataCadastro || "-";
 
-    if(d.qrURL){
-      document.getElementById("qrCode").src = d.qrURL;
-    } else {
-      alert("QR Code não encontrado na planilha.");
-    }
-  })
-  .catch(e => {
-    alert("Erro ao carregar cartão.");
-    console.error(e);
+    // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
+    const idPub = (d.idPublico || id).trim();
+    const urlValidar1 = "https://aproveitai.com.br/validar.html?id=" + encodeURIComponent(idPub); // padrão recomendado
+    const qrImagem = d.qrURL
+      ? d.qrURL
+      : "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(urlValidar1);
+
+    document.getElementById("qrCode").src = qrImagem;
+
+  }catch(err){
+    console.error(err);
+    alert("Erro ao carregar dados do cartão.");
+  }
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+function salvarNoCelular(){
+  const cartao = document.querySelector(".cartao-dobravel");
+  html2canvas(cartao).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "cartao-aproveitai.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
   });
+}
 </script>
 
 </body>

@@ -181,7 +181,11 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 const params = new URLSearchParams(window.location.search);
-const idPublico = params.get("idPublico");
+const idPublico =
+  params.get("idPublico") ||
+  params.get("id") ||
+  "";
+
 
 const box = document.getElementById("resultado");
 

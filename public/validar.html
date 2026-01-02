@@ -173,14 +173,6 @@
   
   <p>Aponte a câmera para o QR Code do cliente.</p>
 </main>
-
-<footer>
-  <strong>Cartão AproveitAI</strong><br>
-  PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-  CNPJ 58.584.332/0001-40<br>
-  © 2025 AproveitAI
-</footer>
-
 <!-- ✅ BIBLIOTECA QR CODE -->
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
@@ -228,19 +220,31 @@ leitor.start(
 
       let idPublico = "";
 
-      // QR com URL
-      if (texto.startsWith("http")) {
-        try {
-          const url = new URL(texto);
-          idPublico = url.searchParams.get("idPublico");
-        } catch {
-          alert("QR Code inválido.");
-          return;
-        }
-      } else {
-        idPublico = texto.trim();
-      }
+      // QR com URL (aceita idPublico OU id)
+if (texto.startsWith("http")) {
+  try {
+    const url = new URL(texto);
 
+    // aceita: ?idPublico= ou ?id=
+    idPublico =
+      url.searchParams.get("idPublico") ||
+      url.searchParams.get("id") ||
+      "";
+
+    // se o QR for um link do cartao.html, também funciona
+    // ex: /cartao.html?id=APV-...
+    if (!idPublico && url.pathname.includes("cartao.html")) {
+      idPublico = url.searchParams.get("id") || "";
+    }
+
+  } catch {
+    alert("QR Code inválido.");
+    return;
+  }
+} else {
+  // QR texto puro: APV-XXXX
+  idPublico = texto.trim();
+}
       if (!idPublico || !idPublico.startsWith("APV-")) {
         alert("QR Code inválido.");
         return;
