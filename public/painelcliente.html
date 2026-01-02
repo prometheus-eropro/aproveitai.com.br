@@ -139,39 +139,6 @@ function abrirBeneficios(){
     location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
 }
 </script>
-// ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
-// 🔐 REGRA DE ACESSO AOS BOTÕES
-if (ativo) {
-  document.getElementById("btnBeneficios").style.display = "block";
-  document.getElementById("btnCartao").style.display = "block";
-} else {
-  document.getElementById("btnBeneficios").style.display = "none";
-  document.getElementById("btnCartao").style.display = "none";
-}
-
-   
-  } catch (e) {
-    console.error(e);
-    box.textContent = "⚠️ Erro na consulta.";
-  }
-}
-if (ultimoIdPublico) {
-  document.getElementById("btnBeneficios").style.display = "block";
-  document.getElementById("btnCartao").style.display = "block";
-}
-
-// ===============================================
-// 🪪 ABRIR CARTÃO DIGITAL
-// ===============================================
-function abrirCartao(){
-  if(!ultimoIdPublico) return;
-  window.location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
-}
-function abrirBeneficios(){
-  if(!ultimoIdPublico) return;
-  window.location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
-}
-</script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
@@ -199,6 +166,32 @@ function abrirBeneficios(){
   </div>
 </footer>
 
+<script>
+// ==============================
+// CONTROLE DE BOTÕES
+// ==============================
+function mostrarBotoes(ativo){
+  document.getElementById("btnBeneficios").style.display = ativo ? "block" : "none";
+  document.getElementById("btnCartao").style.display = ativo ? "block" : "none";
+}
+
+// ==============================
+// AÇÕES
+// ==============================
+function abrirCartao(){
+  if(window.ultimoIdPublico){
+    window.location.href =
+      "cartao.html?id=" + encodeURIComponent(window.ultimoIdPublico);
+  }
+}
+
+function abrirBeneficios(){
+  if(window.ultimoIdPublico){
+    window.location.href =
+      "meus-beneficios.html?id=" + encodeURIComponent(window.ultimoIdPublico);
+  }
+}
+</script>
 
 </body>
 </html>
