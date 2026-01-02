@@ -4,63 +4,14 @@
 <meta charset="UTF-8">
 <title>Meu Cartão | Cartão AproveitAI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0a7f2e">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #bfefff;
-}
-.cartao-dobravel {
-  width: 8.56cm;
-  height: 5.40cm;
-  margin: 20px auto;
-  background: #eaffea;
-  border: 2px solid #1c8f3c;
-  border-radius: 14px;
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  box-sizing: border-box;
+body{
+  margin:0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background:#bfefff;
 }
 
-/* ============================
-   IMPRESSÃO
-============================ */
-@media print {
-  body {
-    background: #fff;
-  }
-  .cartao-dobravel {
-    box-shadow: none;
-    margin: 0;
-  }
-  .acoes-cartao, .footer, .site-header {
-    display: none !important;
-  }
-}
-
-.btn-acao {
-  background: #0a7f2e;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 15px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.btn-acao.voltar { background: #1f4fd8; }
-.btn-acao:hover { opacity: 0.9; }
-
-.acoes-cartao {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 20px auto;
-}
 /* =========================
    CABEÇALHO
 ========================= */
@@ -114,6 +65,77 @@ body {
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
+
+/* ================= CARTÃO ================= */
+.cartao-dobravel{
+  display:flex;
+  width:17.2cm;
+  min-height:5.4cm;
+  margin:25px auto;
+  background:#f0fff0;
+  border:2px dashed #1c8f3c;
+  border-radius:10px;
+  overflow:hidden;
+}
+.cartao-lado{
+  width:50%;
+  padding:10px;
+  box-sizing:border-box;
+}
+.cartao-esquerdo img{
+  width:80px;
+}
+.dados-cartao p{
+  margin:4px 0;
+  font-size:13px;
+}
+.dados-cartao b{
+  color:#0a7a2a;
+  min-width:120px;
+  display:inline-block;
+}
+.linha-dobra{
+  width:1px;
+  background:#1c8f3c;
+}
+.cartao-direito{
+  text-align:center;
+}
+.qr-img{
+  width:90px;
+  height:90px;
+  margin:8px auto;
+}
+.aviso{
+  font-size:10px;
+}
+.atencao{
+  color:#b80000;
+  font-weight:bold;
+}
+.suporte{
+  font-size:9px;
+}
+
+/* ================= BOTÕES ================= */
+.botoes{
+  text-align:center;
+  margin:20px 0;
+}
+.botoes button{
+  background:#1c8f3c;
+  color:#fff;
+  border:none;
+  padding:10px 22px;
+  margin:6px;
+  border-radius:8px;
+  font-size:15px;
+  cursor:pointer;
+}
+.botoes button.voltar{
+  background:#005bb5;
+}
+
 /* =========================
    RODAPÉ
 ========================= */
@@ -146,137 +168,19 @@ body {
   margin-top: 5px;
   font-size: 11px;
 }
-.cartao-esquerdo {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* subiu o conteúdo */
-  padding-top: 4px; /* sobe um pouco mais o bloco */
-}
-.qr-img {
-  width: 80px;
-  height: 80px;
-  margin: 3px auto;
-}
-.cartao-dobravel {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px;
-  background-color: #f0fff0;
-  border: 2px dashed #1c8f3c;
-  border-radius: 10px;
-  margin: 20px auto;
-  width: 17.2cm;
-  min-height: 5.4cm;
-  height: auto;
-  max-height: none;
-}
 
-@media print {
-  body {
-    margin: 0;
-    padding: 0;
-  }
-  .cartao-dobravel {
-    page-break-inside: avoid;
-    margin-bottom: 10px;
-  }
-}
-/* ============================
-   BOTÕES – APROVEITAI
-============================ */
-.botoes-cartao {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.botoes-cartao button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 24px;
-  font-size: 15px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #fff;
-  transition: all 0.25s ease-in-out;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-}
-
-/* Verde principal */
-.btn-salvar {
-  background-color: #1c8f3c;
-}
-.btn-salvar:hover {
-  background-color: #15732f;
-}
-
-/* Verde claro para salvar no celular */
-.btn-celular {
-  background-color: #3ab76c;
-}
-.btn-celular:hover {
-  background-color: #2e9a5a;
-}
-
-/* Azul para voltar */
-.btn-voltar {
-  background-color: #0073e6;
-}
-.btn-voltar:hover {
-  background-color: #005bb5;
-}
-
-/* Ícones opcionais (caso use emojis) */
-button::before {
-  font-weight: 600;
-}
-
-/* Padroniza espaçamento entre botões */
-.botoes-cartao button + button {
-  margin-left: 10px;
-}
-<!-- =========================
- BOTÕES CENTRALIZADOS
-========================= -->
-<style>
-.botoes {
-  text-align: center;
-  margin-top: 25px;
-  margin-bottom: 25px;
-}
-.botoes button {
-  background-color: #007f3d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 8px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-.botoes button:hover {
-  background-color: #00994f;
-  transform: scale(1.05);
+/* ================= IMPRESSÃO ================= */
+@media print{
+  body{background:#fff;}
+  .botoes,.site-header,.footer{display:none;}
 }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
 </head>
 
 <body>
-body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-}
 
-<!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
+<!-- ✅ CABEÇALHO PADRONIZADO -->
 <header class="site-header">
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
@@ -284,183 +188,65 @@ body {
       <h1 class="site-title">Cartão AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
 
-      <!-- Tarja com nome da página -->
+      <!-- Tarja -->
       <p class="boas-vindas">
-        👤 <strong>Área do Cliente</strong><br>
-        CARTÃO BENEFICIOS APROVEITAI.
+        🏪 <strong>Área do Parceiro</strong><br>
+        Valide clientes e acompanhe seus relatórios.
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
-
 </header>
 
-<!-- ============================
-     CARTÃO FRENTE (dobrável)
-============================ -->
+<!-- CARTÃO -->
 <div class="cartao-dobravel">
 
-  <!-- Lado esquerdo -->
   <div class="cartao-lado cartao-esquerdo">
-    <img src="logo-aproveitai.png" alt="Logo AproveitAI" class="cartao-logo">
+    <img src="logo-aproveitai.png">
     <div class="dados-cartao">
-      <p><b>Nome:</b> <span id="nomeCliente">-</span></p>
-      <p><b>CPF:</b> <span id="cpfCliente">-</span></p>
+      <p><b>Nome:</b> <span id="nome">-</span></p>
+      <p><b>CPF:</b> <span id="cpf">-</span></p>
       <p><b>ID Público:</b> <span id="idPublico">-</span></p>
-      <p><b>Grupo:</b> <span id="grupoCliente">-</span></p>
-      <p><b>Cidade:</b> <span id="cidadeCliente">-</span></p>
-      <p><b>Cadastro:</b> <span id="dataCadastro">-</span></p>
+      <p><b>Grupo:</b> <span id="grupo">-</span></p>
+      <p><b>Cidade:</b> <span id="cidade">-</span></p>
+      <p><b>Cadastro:</b> <span id="cadastro">-</span></p>
     </div>
   </div>
 
-  <!-- linha de dobra -->
   <div class="linha-dobra"></div>
 
-  <!-- Lado direito -->
   <div class="cartao-lado cartao-direito">
-    <h3>Validação</h3>
-    <!-- Geração de QR local (sem depender de servidor externo) -->
-<div id="qrcode" style="margin:auto;"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
-  function gerarQRCodeLocal() {
-    const idPublico = document.getElementById("idPublico")?.innerText || "APV-TESTE";
-    const qrDiv = document.getElementById("qrcode");
-    qrDiv.innerHTML = "";
-    new QRCode(qrDiv, {
-      text: "https://aproveitai.com.br/resultado.html?idPublico=" + idPublico,
-      width: 120,
-      height: 120,
-    });
-  }
-  // Gera o QR depois que os dados do cliente forem carregados
-  window.addEventListener("load", () => {
-    setTimeout(gerarQRCodeLocal, 1000);
-  });
-</script>
-
-    <p class="aviso">
-      Apresente um documento oficial com foto, se solicitado.<br>
-      <b class="atencao">⚠️ Valide sempre antes de realizar a compra no parceiro.</b>
-    </p>
-    <p class="suporte">
-      Suporte: (28) 99969-2303<br>
+    <h4>Validação</h4>
+    <img id="qrCode" class="qr-img">
+    <div class="aviso">
+      Apresente documento com foto se solicitado.<br>
+      <span class="atencao">Valide sempre antes da compra.</span>
+    </div>
+    <div class="suporte">
+      (28) 99969-2303<br>
       cartao.aproveitai@gmail.com<br>
       www.aproveitai.com.br
-    </p>
+    </div>
   </div>
 
 </div>
 
-<!-- ============================
-     BOTÕES
-============================ -->
-<!-- =========================
- BOTÕES CENTRALIZADOS E PADRONIZADOS
-========================= -->
-<style>
-.botoes {
-  text-align: center;
-  margin: 25px 0;
-}
-.botoes button {
-  background-color: #1c8f3c;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 28px;
-  font-size: 16px;
-  font-weight: 600;
-  margin: 6px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-}
-.botoes button:hover {
-  background-color: #15792f;
-  transform: scale(1.05);
-}
-.botoes button.voltar {
-  background-color: #005bb5;
-}
-.botoes button.voltar:hover {
-  background-color: #00408a;
-}
-</style>
-
+<!-- BOTÕES -->
 <div class="botoes">
-  <button onclick="window.print()">🧾 Salvar como PDF / Imprimir</button>
-  <button onclick="abrirCartaoDigital()">🌐 Abrir Cartão Digital</button>
-  <button class="voltar" onclick="window.history.back()">⬅️ Voltar</button>
+  <button onclick="window.print()">🧾 Salvar / Imprimir</button>
+  <button class="voltar" onclick="history.back()">⬅ Voltar</button>
 </div>
 
-<script>
-function abrirCartaoDigital() {
-  const id = new URLSearchParams(window.location.search).get('id');
-  if (!id) {
-    alert("⚠️ ID do cartão não encontrado.");
-    return;
-  }
-
-  // ✅ Caminho correto para o arquivo real
-  const link = `https://aproveitai.com.br/cartao.html?id=${id}`;
-  window.open(link, "_blank");
-}
-</script>
-
-
-
-<!-- ============================
-     SCRIPT – CARREGAR DADOS
-============================ -->
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-function getParam(nome) {
-  return new URLSearchParams(window.location.search).get(nome);
-}
-
-async function carregarCartao() {
-  const id = getParam("id");
-  if (!id) return;
-
-  try {
-    const resp = await fetch(`${API_URL}?idPublico=${id}`);
-    const data = await resp.json();
-
-    if (data && data.nome) {
-      document.getElementById("nomeCliente").textContent = data.nome || "-";
-      document.getElementById("cpfCliente").textContent = data.cpf || "-";
-      document.getElementById("idPublico").textContent = data.idPublico || "-";
-      document.getElementById("grupoCliente").textContent = data.grupo || "-";
-      document.getElementById("cidadeCliente").textContent = data.cidade || "-";
-      document.getElementById("dataCadastro").textContent = data.dataCadastro || "-";
-
-      // 🔹 QR Code fixo (gera mesmo se API não retornar)
-      const qrLink = data.qrURL
-        ? data.qrURL
-        : `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
-      document.getElementById("qrCode").src = qrLink;
-    }
-  } catch (err) {
-    console.error("Erro ao carregar cartão:", err);
-  }
-}
-
-// 🔸 ESSENCIAL – ativa o carregamento
-window.onload = carregarCartao;
-</script>
-
+<!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">
     <div>
       <h3>Cartão AproveitAI</h3>
       PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
       CNPJ: 58.584.332/0001-40<br>
-      <div style="margin-top:5px;">
-        📧 cartao.aproveitai@gmail.com &nbsp;&nbsp;📞 (28) 99969-2303 &nbsp;&nbsp;📸 @cartao.aproveitai
-      </div>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
     </div>
     <div>
       <h3>Links Rápidos</h3>
@@ -476,6 +262,37 @@ window.onload = carregarCartao;
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+const id = new URLSearchParams(window.location.search).get("id");
+
+if(!id){
+  alert("ID do cartão não informado.");
+}
+
+fetch(API + "?idPublico=" + id)
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById("nome").textContent = d.nome || "-";
+    document.getElementById("cpf").textContent = d.cpf || "-";
+    document.getElementById("idPublico").textContent = d.idPublico || "-";
+    document.getElementById("grupo").textContent = d.grupo || "-";
+    document.getElementById("cidade").textContent = d.cidade || "-";
+    document.getElementById("cadastro").textContent = d.dataCadastro || "-";
+
+    if(d.qrURL){
+      document.getElementById("qrCode").src = d.qrURL;
+    } else {
+      alert("QR Code não encontrado na planilha.");
+    }
+  })
+  .catch(e => {
+    alert("Erro ao carregar cartão.");
+    console.error(e);
+  });
 </script>
 
 </body>
