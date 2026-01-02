@@ -192,7 +192,12 @@ const box = document.getElementById("resultado");
 if (!idPublico) {
   box.innerHTML = "❌ QR inválido.";
 } else {
-  fetch(`${API_URL}?idPublico=${idPublico}&parceiro=${parceiro}`)
+  const parceiro =
+  new URLSearchParams(window.location.search).get("parceiro") ||
+  "PARCEIRO_NAO_IDENTIFICADO";
+
+fetch(`${API_URL}?idPublico=${idPublico}&parceiro=${encodeURIComponent(parceiro)}`)
+
 
     .then(r => r.json())
     .then(data => {

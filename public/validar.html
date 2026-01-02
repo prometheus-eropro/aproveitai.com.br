@@ -205,10 +205,6 @@
 const parceiroNome = sessionStorage.getItem("parceiroNome");
 const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
 
-if (!parceiroNome || !parceiroCNPJ) {
-  alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "painelparceiro.html";
-}
 
 const leitor = new Html5Qrcode("reader");
 
