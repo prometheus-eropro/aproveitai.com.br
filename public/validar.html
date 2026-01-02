@@ -1,173 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Validação por QR Code • Cartão AproveitAI</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ESTILO BÁSICO -->
   <style>
     body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background-color: #f8fdf9;
+      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      background: #f4fff6;
     }
+
     header {
-      text-align: center;
+      background: #fff;
+      border-bottom: 4px solid #0a7c3a;
       padding: 20px;
-      background-color: #fff;
-      border-bottom: 4px solid #008000;
+      text-align: center;
     }
-    h1 {
-      color: #008000;
-      margin-bottom: 4px;
+
+    header h1 {
+      margin: 0;
+      color: #0a7c3a;
     }
-    h2 {
-      font-size: 20px;
-      margin-top: 0;
-      color: #333;
+
+    header p {
+      margin: 5px 0 0;
+      color: #555;
     }
+
+    .tarja {
+      background: #e6ffe6;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    main {
+      padding: 40px 20px;
+      text-align: center;
+      background: #9ee3ff;
+      min-height: 300px;
+    }
+
     #reader {
       width: 320px;
-      margin: 30px auto;
-      background: #fff;
-      border: 2px dashed #008000;
-      border-radius: 12px;
+      margin: 0 auto;
       padding: 10px;
+      border: 3px dashed #0a7c3a;
+      border-radius: 12px;
+      background: #fff;
     }
+
     #status {
-      text-align: center;
-      font-size: 16px;
       margin-top: 20px;
+      font-size: 16px;
     }
+
     footer {
-      background-color: #e6ffe6;
+      background: #e6ffe6;
       text-align: center;
+      padding: 20px;
       font-size: 14px;
-      padding: 20px 10px;
-      margin-top: 50px;
-      color: #333;
     }
+
     a {
+      color: #0a7c3a;
+      font-weight: bold;
       text-decoration: none;
     }
   </style>
 </head>
 
 <body>
-  <!-- ✅ CABEÇALHO PADRONIZADO -->
-<header class="site-header">
-  <div class="brandline">
-    <img src="logo-prometheus.png" class="logo logo-prometheus">
-    <div class="brand-center">
-      <h1 class="site-title">Cartão AproveitAI</h1>
-      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
 
-      <!-- Tarja -->
-      <p class="boas-vindas">
-        🏪 <strong>Área do Parceiro</strong><br>
-        VALIDADOR DE QRCODEe.
-      </p>
-    </div>
-    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+<header>
+  <h1>Cartão AproveitAI</h1>
+  <p>Tecnologia com ConsciêncIA gera Resultado.</p>
+
+  <div class="tarja">
+    🏪 Área do Parceiro<br>
+    VALIDADOR DE QR CODE
   </div>
 </header>
 
+<main id="conteudo">
 
-  <main id="conteudo-principal" style="text-align:center;">
-    <div id="reader"></div>
-    <div id="status">Aponte a câmera para o QR Code do cliente.</div>
-  </main>
+  <div id="reader"></div>
 
-<!-- ✅ RODAPÉ PADRÃO -->
-<footer class="footer">
-  <div class="footer-container">
-    <div>
-      <h3>Cartão AproveitAI</h3>
-      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-      CNPJ: 58.584.332/0001-40<br>
-      📧 cartao.aproveitai@gmail.com<br>
-      📞 (28) 99969-2303<br>
-      📸 @cartao.aproveitai
-    </div>
-    <div>
-      <h3>Links Rápidos</h3>
-      <a href="faq.html">Dúvidas Frequentes</a><br>
-      <a href="privacidade.html">Política de Privacidade</a><br>
-      <a href="cookies.html">Política de Cookies</a><br>
-      <a href="consentimento.html">Termo de Consentimento</a><br>
-      <a href="termos.html">Termos de Uso</a><br>
-      <a href="excluir.html">Excluir meus dados</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    © 2025 AproveitAI. Todos os direitos reservados.
-  </div>
+  <p id="status">
+    Aponte a câmera para o QR Code do cliente.
+  </p>
+
+</main>
+
+<footer>
+  <strong>Cartão AproveitAI</strong><br>
+  PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+  CNPJ: 58.584.332/0001-40<br>
+  © 2025 AproveitAI
 </footer>
 
-<!-- LIB HTML5 QR CODE (OBRIGATÓRIA) -->
-<!-- LIB HTML5 QR CODE -->
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<!-- HTML5 QR Code -->
+<!-- LIB OFICIAL (CORRETA) -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script>
-/* ======================================================
-   VALIDADOR QR CODE – APROVEITAI (VERSÃO ESTÁVEL)
-   ====================================================== */
-
-/* 🔒 BLOQUEIO DE ACESSO */
+/* =====================================================
+   🔒 BLOQUEIO – SÓ ENTRA VIA PAINEL DO PARCEIRO
+   ===================================================== */
 const parceiroNome = sessionStorage.getItem("parceiroNome");
 
 if (!parceiroNome) {
-  document.getElementById("conteudo-principal").innerHTML = `
-    <div style="padding:40px;text-align:center">
-      <h3>⚠️ Acesso restrito</h3>
-      <p>Este validador só pode ser acessado pela Área do Parceiro.</p>
-      <a href="painelparceiro.html" style="color:green;font-weight:bold">
-        👉 Ir para Área do Parceiro
-      </a>
-    </div>
+  document.getElementById("conteudo").innerHTML = `
+    <h3>⚠️ Acesso restrito</h3>
+    <p>Este validador só pode ser acessado pela Área do Parceiro.</p>
+    <a href="painelparceiro.html">👉 Ir para Área do Parceiro</a>
   `;
   throw new Error("Parceiro não autenticado");
 }
 
-/* ======================================================
-   INICIAR SCANNER
-   ====================================================== */
-const qrCodeScanner = new Html5Qrcode("reader");
+/* =====================================================
+   📷 INICIAR CÂMERA
+   ===================================================== */
+const html5QrCode = new Html5Qrcode("reader");
 
-function iniciarScanner() {
-  qrCodeScanner.start(
-    { facingMode: "environment" }, // 👈 FORÇA CÂMERA
-    {
-      fps: 10,
-      qrbox: 250
-    },
-    onScanSuccess,
-    onScanError
-  ).catch(err => {
-    console.error("Erro ao acessar câmera:", err);
-    alert("Erro ao acessar a câmera. Verifique permissões do navegador.");
-  });
-}
-
-/* ======================================================
-   CALLBACKS
-   ====================================================== */
-function onScanSuccess(decodedText) {
-  qrCodeScanner.stop();
-  window.location.href = "resultado.html?id=" + encodeURIComponent(decodedText);
-}
-
-function onScanError(error) {
-  // silencioso (evita spam no console)
-}
-
-/* ======================================================
-   START
-   ====================================================== */
-window.addEventListener("load", iniciarScanner);
+html5QrCode.start(
+  { facingMode: "environment" }, // câmera traseira
+  { fps: 10, qrbox: 250 },
+  (texto) => {
+    html5QrCode.stop();
+    window.location.href = "resultado.html?id=" + encodeURIComponent(texto);
+  }
+).catch(err => {
+  alert("Erro ao acessar a câmera. Verifique permissões do navegador.");
+  console.error(err);
+});
 </script>
+
 </body>
 </html>
