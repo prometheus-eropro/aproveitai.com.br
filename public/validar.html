@@ -53,20 +53,115 @@
       font-weight: bold;
       text-decoration: none;
     }
+/* =========================
+   CABEÇALHO
+========================= */
+.site-header {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.brandline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  max-height: 180px;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-center {
+  flex: 1;
+  text-align: center;
+}
+
+.site-title {
+  font-size: 36px;
+  color: #0a7a2a;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  font-weight: bold;
+}
+
+.slogan {
+  font-size: 16px;
+  font-style: italic;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.boas-vindas {
+  background: #dfffe0;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 18px; /* AUMENTADO */
+  line-height: 1.5;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+/* =========================
+   RODAPÉ
+========================= */
+.footer {
+  background: #dfffe0;
+  color: #222;
+  padding: 10px 10px;
+  font-size: 13px;
+  border-top: 3px solid white;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 5px 0;
+}
+
+.footer a {
+  color: #0066cc;
+  font-size: 13px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+
   </style>
 </head>
 
 <body>
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
 
-<header>
-  <h1>Cartão AproveitAI</h1>
-  <p>Tecnologia com ConsciêncIA gera Resultado.</p>
-
-  <div class="tarja">
-    🏪 Área do Parceiro<br>
-    VALIDADOR DE QR CODE
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>Área do Parceiro</strong><br>
+        Valide clientes e acompanhe seus relatórios.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
+
 
 <main>
   <div id="scanner"></div>
@@ -109,7 +204,22 @@ window.addEventListener("load", () => {
       html5QrCode.stop();
 
       // 🔗 Aqui você chama sua API depois
-      alert("QR Code lido:\n" + qrCodeMessage);
+      try {
+  const url = new URL(qrCodeMessage);
+  const id = url.searchParams.get("id");
+
+  if (!id) {
+    alert("QR Code inválido.");
+    return;
+  }
+
+  // 👉 redireciona para página de resultado
+  window.location.href = "resultado.html?id=" + encodeURIComponent(id);
+
+} catch (e) {
+  alert("QR Code inválido.");
+}
+
 
     }
   ).catch(err => {
@@ -119,6 +229,30 @@ window.addEventListener("load", () => {
 
 });
 </script>
-
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer class="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Cartão AproveitAI</h3>
+      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
+      CNPJ: 58.584.332/0001-40<br>
+      📧 cartao.aproveitai@gmail.com<br>
+      📞 (28) 99969-2303<br>
+      📸 @cartao.aproveitai
+    </div>
+    <div>
+      <h3>Links Rápidos</h3>
+      <a href="faq.html">Dúvidas Frequentes</a><br>
+      <a href="privacidade.html">Política de Privacidade</a><br>
+      <a href="cookies.html">Política de Cookies</a><br>
+      <a href="consentimento.html">Termo de Consentimento</a><br>
+      <a href="termos.html">Termos de Uso</a><br>
+      <a href="excluir.html">Excluir meus dados</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 AproveitAI. Todos os direitos reservados.
+  </div>
+</footer>
 </body>
 </html>
