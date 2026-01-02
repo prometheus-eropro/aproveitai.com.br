@@ -36,9 +36,9 @@
 
     <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
 
-<button onclick="consultar()">Consultar</button>
+    <button onclick="consultar()">Consultar</button>
 
-   <div class="small">
+    <div class="small">
       Após a consulta, você poderá acessar seu cartão digital,
       salvar no celular ou imprimir.
     </div>
@@ -68,6 +68,117 @@
 
   </div>
 </div>
+<script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+let ultimoIdPublico = "";
+
+// Função de normalização
+function norm(v){ return String(v ?? "").toLowerCase().trim(); }
+function isAtivo(v){
+  const s = norm(v);
+  return ["sim","true","1","ativo","yes"].includes(s);
+}
+
+// ===============================================
+// 🔍 CONSULTA CLIENTE
+// ===============================================
+async function consultar(){
+  const valor = document.getElementById("cpf").value.trim();
+  const box = document.getElementById("resultado");
+  const btn = document.getElementById("btnCartao");
+
+  btn.style.display = "none";
+  box.classList.remove("ativo","inativo");
+  box.textContent = "Consultando...";
+
+  if(!valor){
+    box.textContent = "Informe seu CPF ou ID Público.";
+    return;
+  }
+
+  const soDigitos = valor.replace(/\D/g,"");
+  const isCpf = soDigitos.length === 11;
+
+  try {
+    const url = isCpf
+      ? `${sheetURL}?aba=clientes&cpf=${encodeURIComponent(soDigitos)}`
+      : `${sheetURL}?aba=clientes&idPublico=${encodeURIComponent(valor)}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    let achado = null;
+    if (Array.isArray(data)) {
+      achado = isCpf
+        ? data.find(x => String(x.cpf).replace(/\D/g,"") === soDigitos)
+        : data.find(x => String(x.idPublico).trim() === valor);
+    } else {
+      achado = data;
+    }
+
+    if(!achado || !achado.cpf){
+      box.textContent = "❌ Cliente não encontrado.";
+      document.getElementById("beneficiosCliente").style.display = "none";
+      document.getElementById("promocoesCliente").style.display = "none";
+      return;
+    }
+
+    const ativo = isAtivo(achado.ativo);
+    box.classList.add(ativo ? "ativo" : "inativo");
+
+    ultimoIdPublico = (achado.idPublico || "").trim();
+
+    box.innerHTML = `
+      <div><b>Nome:</b> ${achado.nome || "-"}</div>
+      <div><b>CPF:</b> ${achado.cpf || "-"}</div>
+      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+      <div><b>Celular:</b> ${achado.celular && achado.celular !== "" ? achado.celular : "-"}</div>
+
+<div><b>Data de Nascimento:</b> ${
+  achado.nascimento
+    ? new Date(achado.nascimento).toLocaleDateString("pt-BR")
+    : "-"
+}</div>
+<div><b>Data de Cadastro/Aceite:</b> ${achado.dataCadastro || "-"}</div>
+
+      <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
+    `;
+// ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
+// 🔐 REGRA DE ACESSO AOS BOTÕES
+if (ativo) {
+  document.getElementById("btnBeneficios").style.display = "block";
+  document.getElementById("btnCartao").style.display = "block";
+} else {
+  document.getElementById("btnBeneficios").style.display = "none";
+  document.getElementById("btnCartao").style.display = "none";
+}
+
+   
+  } catch (e) {
+    console.error(e);
+    box.textContent = "⚠️ Erro na consulta.";
+  }
+}
+if (ultimoIdPublico) {
+  document.getElementById("btnBeneficios").style.display = "block";
+  document.getElementById("btnCartao").style.display = "block";
+}
+
+// ===============================================
+// 🪪 ABRIR CARTÃO DIGITAL
+// ===============================================
+function abrirCartao(){
+  if(!ultimoIdPublico) return;
+  window.location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
+}
+function abrirBeneficios(){
+  if(!ultimoIdPublico) return;
+  window.location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
+}
+</script>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
   <div class="footer-container">
@@ -94,71 +205,6 @@
   </div>
 </footer>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-let ultimoIdPublico = "";
-
-async function consultar() {
-  const valor = document.getElementById("cpf").value.trim();
-  const box = document.getElementById("resultado");
-
-  if (!valor) {
-    box.textContent = "⚠️ Informe CPF ou ID Público.";
-    return;
-  }
-
-  box.textContent = "⏳ Consultando...";
-
-  try {
-    const param = valor.startsWith("APV-") ? "idPublico" : "cpf";
-    const url = `${API_URL}?${param}=${encodeURIComponent(valor)}`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (!data || !data.nome) {
-      box.textContent = "❌ Cliente não encontrado.";
-      return;
-    }
-
-    ultimoIdPublico = data.idPublico;
-
-    const statusClasse = data.ativo === "SIM" ? "status-ativo" : "status-inativo";
-const statusTexto  = data.ativo === "SIM" ? "ATIVO" : "INATIVO";
-
-box.innerHTML = `
-  <strong>${data.nome}</strong><br>
-  <span class="status ${statusClasse}">
-    ${statusTexto}
-  </span>
-`;
-    const ativo = String(data.ativo).toUpperCase();
-
-if (ativo === "SIM") {
-
-      document.getElementById("btnBeneficios").style.display = "block";
-      document.getElementById("btnCartao").style.display = "block";
-    } else {
-      document.getElementById("btnBeneficios").style.display = "none";
-      document.getElementById("btnCartao").style.display = "none";
-    }
-
-  } catch (e) {
-    console.error(e);
-    box.textContent = "❌ Erro na consulta.";
-  }
-}
-
-function abrirCartao() {
-  if (!ultimoIdPublico) return;
-  window.location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
-}
-
-function abrirBeneficios() {
-  if (!ultimoIdPublico) return;
-  window.location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
-}
-</script>
 </body>
 </html>
