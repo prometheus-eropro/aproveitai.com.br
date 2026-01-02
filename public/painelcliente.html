@@ -72,57 +72,71 @@
 const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 let ultimoIdPublico = "";
 
-// Função de normalização
+// Normalização
 function norm(v){ return String(v ?? "").toLowerCase().trim(); }
 function isAtivo(v){
-  const s = norm(v);
-  return ["sim","true","1","ativo","yes"].includes(s);
+  return ["sim","true","1","ativo","yes"].includes(norm(v));
 }
 
-// ===============================================
-// 🔍 CONSULTA CLIENTE
-// ===============================================
-<script>
-function consultarCliente() {
-  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
-  if (!cpf) {
-    alert("Informe o CPF");
+// ==============================
+// 🔍 CONSULTAR CLIENTE (JSONP)
+// ==============================
+function consultar(){
+  const valor = document.getElementById("cpf").value.trim();
+  if(!valor){
+    alert("Informe CPF ou ID Público");
     return;
   }
 
-  const callbackName = "cb_" + Date.now();
-  const script = document.createElement("script");
+  const callback = "cb_" + Date.now();
+  const s = document.createElement("script");
 
-  window[callbackName] = function (res) {
-    document.body.removeChild(script);
-    delete window[callbackName];
+  window[callback] = function(res){
+    document.body.removeChild(s);
+    delete window[callback];
 
-    if (res.erro || !res.nome) {
-      document.getElementById("resultado").innerHTML =
-        "<div class='erro'>❌ Cliente não encontrado</div>";
+    const box = document.getElementById("resultado");
+
+    if(res.erro || !res.nome){
+      box.innerHTML = "<div class='erro'>❌ Cliente não encontrado</div>";
       return;
     }
 
-    const ativo = res.ativo === "SIM";
+    const ativo = isAtivo(res.ativo);
+    ultimoIdPublico = res.idPublico || "";
 
-    document.getElementById("resultado").innerHTML = `
+    box.innerHTML = `
       <div class="resultado ${ativo ? "ativo" : "inativo"}">
         <h3>${res.nome}</h3>
         <p>CPF: ${res.cpf}</p>
-        <p>ID: ${res.idPublico}</p>
+        <p>ID Público: ${res.idPublico}</p>
         <p>Cidade: ${res.cidade}</p>
         <p>Grupo: ${res.grupo}</p>
         <p>Status: <strong>${ativo ? "ATIVO" : "INATIVO"}</strong></p>
       </div>
     `;
+
+    document.getElementById("btnBeneficios").style.display = ativo ? "block" : "none";
+    document.getElementById("btnCartao").style.display = ativo ? "block" : "none";
   };
 
-  script.src =
-    "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec" +
-    "?cpf=" + cpf +
-    "&callback=" + callbackName;
+  const param = valor.startsWith("APV-") ? "idPublico" : "cpf";
 
-  document.body.appendChild(script);
+  s.src = `${sheetURL}?${param}=${encodeURIComponent(valor)}&callback=${callback}`;
+  document.body.appendChild(s);
+}
+
+// ==============================
+// 🪪 AÇÕES
+// ==============================
+function abrirCartao(){
+  if(ultimoIdPublico)
+    location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
+}
+
+function abrirBeneficios(){
+  if(ultimoIdPublico)
+    location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
 }
 </script>
 // ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
