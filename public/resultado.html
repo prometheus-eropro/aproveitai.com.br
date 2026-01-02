@@ -222,6 +222,18 @@ box.innerHTML = `
       ${data.mensagemStatus || ""}
     </p>
   </div>
+<div style="text-align:center;margin-top:20px">
+  <button onclick="voltarLeitorQR()" class="btn-aproveitai">
+    🔁 Validar outro QR Code
+  </button>
+</div>
+
+<script>
+function voltarLeitorQR() {
+  window.location.href = "validar.html";
+}
+</script>
+
 `;
 function voltarPainel() {
   window.location.href = "painelparceiro.html";

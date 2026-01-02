@@ -13,98 +13,17 @@ body {
   font-family: Arial, sans-serif;
   background: #bfefff;
 }
-
-/* ============================
-   CARTÃO DOBRÁVEL
-============================ */
 .cartao-dobravel {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  margin: 30px auto;
+  width: 8.56cm;
+  height: 5.40cm;
+  margin: 20px auto;
   background: #eaffea;
-  border: 2px dashed #1c8f3c;
-  border-radius: 12px;
-  width: 17.2cm; /* largura total (8.6 x 2) */
-  min-height: 5.4cm;
-height: auto;
-max-height: 6cm;
-  position: relative;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-}
-
-.cartao-lado {
-  width: 50%;
-  padding: 8px 14px;
-  box-sizing: border-box;
-}
-
-.cartao-esquerdo {
-  text-align: left;
-}
-
-.cartao-direito {
-  text-align: center;
-  border-left: 1px dashed #1c8f3c;
+  border: 2px solid #1c8f3c;
+  border-radius: 14px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.cartao-logo {
-  width: 80px;
-  margin-bottom: 7px;
-}
-
-.dados-cartao p {
-  margin: 4px 0;
-  font-size: 13px;        /* 🔸 aumenta a fonte */
-  line-height: 1.6;       /* 🔸 melhora o espaçamento */
-  color: #0a0a0a;         /* 🔸 texto mais escuro */
-}
-
-.dados-cartao b {
-  display: inline-block;
-  min-width: 130px;       /* 🔸 dá alinhamento aos rótulos */
-  color: #083a12;         /* 🔸 verde discreto */
-  font-weight: 700;
-}
-
-
-.qr-img {
-  width: 90px;
-  height: 90px;
-  margin: 5px auto;
-}
-
-.aviso {
-  font-size: 9px;
-  color: #000;
-  margin-top: 3px;
-}
-
-.atencao {
-  color: #b80000;
-  font-size: 10px;
-}
-
-.suporte {
-  font-size: 9px;
-  color: #333;
-  margin-top: 3px;
-}
-
-/* linha central (dobra) */
-.linha-dobra {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 1px;
-  height: 100%;
-  border-left: 1px dashed #888;
-  pointer-events: none;
+  justify-content: space-between;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 /* ============================
@@ -410,7 +329,7 @@ body {
     const qrDiv = document.getElementById("qrcode");
     qrDiv.innerHTML = "";
     new QRCode(qrDiv, {
-      text: "https://aproveitai.com.br/validar.html?id=" + idPublico,
+      text: "https://aproveitai.com.br/resultado.html?idPublico=" + idPublico,
       width: 120,
       height: 120,
     });

@@ -141,21 +141,6 @@
 
 
   </style>
-<script src="https://unpkg.com/html5-qrcode"></script>
-
-</head>
-
-<body>
-<script>
-const parceiroNome = sessionStorage.getItem("parceiroNome");
-const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
-
-if (!parceiroNome || !parceiroCNPJ) {
-  alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "painelparceiro.html";
-}
-</script>
-
 
 <!-- ✅ CABEÇALHO PADRONIZADO -->
 <header class="site-header">
@@ -186,7 +171,6 @@ if (!parceiroNome || !parceiroCNPJ) {
   background:#fff;
 "></div>
   
-<div id="scanner"></div>
   <p>Aponte a câmera para o QR Code do cliente.</p>
 </main>
 
@@ -226,40 +210,50 @@ if (!parceiroNome || !parceiroCNPJ) {
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
-const parceiro = sessionStorage.getItem("parceiroNome");
+const parceiroNome = sessionStorage.getItem("parceiroNome");
+const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
 
-const qr = new Html5Qrcode("reader");
+if (!parceiroNome || !parceiroCNPJ) {
+  alert("Sessão expirada. Faça login novamente.");
+  window.location.href = "painelparceiro.html";
+}
 
-qr.start(
+const leitor = new Html5Qrcode("reader");
+
+leitor.start(
   { facingMode: "environment" },
   { fps: 10, qrbox: 220 },
   (texto) => {
-    qr.stop().then(() => {
+    leitor.stop().then(() => {
 
       let idPublico = "";
 
-      try {
-        const url = new URL(texto);
-        idPublico = url.searchParams.get("idPublico");
-      } catch {
-        idPublico = texto;
+      // QR com URL
+      if (texto.startsWith("http")) {
+        try {
+          const url = new URL(texto);
+          idPublico = url.searchParams.get("idPublico");
+        } catch {
+          alert("QR Code inválido.");
+          return;
+        }
+      } else {
+        idPublico = texto.trim();
       }
 
-      if (!idPublico) {
+      if (!idPublico || !idPublico.startsWith("APV-")) {
         alert("QR Code inválido.");
         return;
       }
 
-      // ✅ ENVIA PARCEIRO PARA A VALIDAÇÃO
       window.location.href =
         "resultado.html?idPublico=" +
         encodeURIComponent(idPublico) +
         "&parceiro=" +
-        encodeURIComponent(parceiro);
+        encodeURIComponent(parceiroNome);
     });
   }
 );
 </script>
-
 </body>
 </html>
