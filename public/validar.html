@@ -162,6 +162,19 @@
 
 
 <main>
+<button id="btnIniciarCamera" style="
+  background:#28a745;
+  color:#fff;
+  border:none;
+  padding:14px 22px;
+  font-size:18px;
+  border-radius:8px;
+  cursor:pointer;
+  margin-bottom:20px;
+">
+📷 Iniciar câmera
+</button>
+
 <div id="reader" style="
   width:300px;
   margin:30px auto;
@@ -206,58 +219,62 @@ const parceiroNome = sessionStorage.getItem("parceiroNome");
 const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
 
 
+const parceiroNome = sessionStorage.getItem("parceiroNome");
+
 const leitor = new Html5Qrcode("reader");
 
-leitor.start(
-  { facingMode: "environment" },
-  { fps: 10, qrbox: 220 },
-  (texto) => {
-  leitor.stop().then(() => {
+document.getElementById("btnIniciarCamera").addEventListener("click", async () => {
+  try {
+    await leitor.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 220 },
+      (texto) => {
+        leitor.stop().then(() => {
 
-    let idPublico = "";
+          let idPublico = "";
 
-    try {
-      // normaliza o texto do QR (resolve celular)
-      let valor = texto;
+          try {
+            let valor = texto;
 
-      // se vier como objeto (alguns celulares)
-      if (typeof valor === "object" && valor.text) {
-        valor = valor.text;
+            if (typeof valor === "object" && valor.text) {
+              valor = valor.text;
+            }
+
+            valor = String(valor).trim();
+
+            if (valor.includes("http")) {
+              const url = new URL(valor);
+              idPublico =
+                url.searchParams.get("idPublico") ||
+                url.searchParams.get("id") ||
+                "";
+            } else {
+              idPublico = valor;
+            }
+
+          } catch (e) {
+            alert("QR Code inválido.");
+            return;
+          }
+
+          if (!idPublico || !idPublico.startsWith("APV-")) {
+            alert("QR Code inválido.");
+            return;
+          }
+
+          window.location.href =
+            "resultado.html?idPublico=" +
+            encodeURIComponent(idPublico) +
+            "&parceiro=" +
+            encodeURIComponent(parceiroNome || "PARCEIRO_QR");
+        });
       }
-
-      // remove quebras e espaços invisíveis
-      valor = String(valor).trim();
-
-      // se for URL
-      if (valor.includes("http")) {
-        const url = new URL(valor);
-
-        idPublico =
-          url.searchParams.get("idPublico") ||
-          url.searchParams.get("id") ||
-          "";
-      } else {
-        // texto puro
-        idPublico = valor;
-      }
-
-    } catch (e) {
-      alert("QR Code inválido.");
-      return;
-    }
-
-    if (!idPublico || !idPublico.startsWith("APV-")) {
-      alert("QR Code inválido.");
-      return;
-    }
-
-    window.location.href =
-      "resultado.html?idPublico=" +
-      encodeURIComponent(idPublico) +
-      "&parceiro=" +
-      encodeURIComponent(parceiroNome || "PARCEIRO_QR");
-  });
-}
+    );
+  } catch (err) {
+    alert("Permissão da câmera negada ou indisponível.");
+    console.error(err);
+  }
+});
 </script>
 </body>
 </html>
