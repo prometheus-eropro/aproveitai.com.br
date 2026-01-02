@@ -116,6 +116,33 @@
   margin-top: 5px;
   font-size: 11px;
 }
+.box.ativo {
+  background: #e7f9e7;
+  border: 2px solid #2ecc71;
+}
+
+.box.inativo {
+  background: #ffecec;
+  border: 2px solid #e74c3c;
+}
+.status-box {
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.status-box.ativo {
+  background: #e6ffed;
+  border: 2px solid #198754;
+  color: #145c32;
+}
+
+.status-box.inativo {
+  background: #ffe6e6;
+  border: 2px solid #c82333;
+  color: #7a121a;
+}
 
   </style>
 </head>
@@ -138,13 +165,17 @@
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
-  <div class="box">
-    <h2>✅ QR Code Lido com Sucesso</h2>
-    <p>Conteúdo recebido:</p>
-    <div class="codigo" id="codigo"></div>
+  <!-- RESULTADO DINÂMICO -->
+<div id="resultado" class="box">
+  <h2>⌛ Processando validação...</h2>
+</div>
 
-    <a href="painelparceiro.html">⬅ Voltar ao Painel do Parceiro</a>
-  </div>
+
+<div style="margin-top:20px; text-align:center;">
+  <button onclick="voltarPainel()" class="btn-aproveitai">
+    ← Voltar ao Painel do Parceiro
+  </button>
+</div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
@@ -152,57 +183,40 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-const box = document.querySelector(".box");
+const box = document.getElementById("resultado");
 
 if (!id) {
-  box.innerHTML = "<h2>❌ QR Code inválido</h2>";
-  throw new Error("ID não informado");
+  box.innerHTML = "<h3 style='color:red'>❌ QR inválido</h3>";
+} else {
+  fetch(`${API_URL}?consulta=${encodeURIComponent(id)}&origem=qr`)
+    .then(r => r.json())
+    .then(data => {
+
+  if (!data || !data.nome) {
+    box.innerHTML = "<h3 style='color:red'>❌ Dados não encontrados</h3>";
+    return;
+  }
+
+  const ativo = data.status === "ATIVO";
+
+  box.innerHTML = `
+    <div class="status-box ${ativo ? "ativo" : "inativo"}">
+      <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
+
+      <p><b>Nome:</b> ${data.nome}</p>
+      <p><b>CPF:</b> ${data.cpf}</p>
+      <p><b>ID Público:</b> ${data.idPublico}</p>
+      <p><b>Cidade:</b> ${data.cidade}</p>
+      <p><b>Grupo:</b> ${data.grupo}</p>
+      <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
+
+      ${ativo ? `<p><b>Código Autorização:</b> ${data.codigo_ero}</p>` : ""}
+    </div>
+  `;
+})
+function voltarPainel() {
+  window.location.href = "painelparceiro.html";
 }
-
-fetch(`${API_URL}?id=${encodeURIComponent(id)}`)
-  .then(res => res.json())
-  .then(dados => {
-
-    if (!dados || !dados.STATUS) {
-      box.innerHTML = "<h2>❌ Dados não encontrados</h2>";
-      return;
-    }
-
-    const ativo = dados.STATUS === "ATIVO";
-
-    box.style.background = ativo ? "#e8fff0" : "#ffe8e8";
-    box.style.border = ativo ? "2px solid #1fa855" : "2px solid #cc2e2e";
-
-    box.innerHTML = `
-      <h2>${ativo ? "✅ Cliente Ativo" : "❌ Cliente Inativo"}</h2>
-
-      <p><strong>Nome:</strong> ${dados.NOME || "-"}</p>
-      <p><strong>CPF:</strong> ${dados.CPF_MASCARADO || "-"}</p>
-      <p><strong>ID Público:</strong> ${dados.ID_PUBLICO || "-"}</p>
-      <p><strong>Cidade:</strong> ${dados.CIDADE || "-"}</p>
-      <p><strong>Grupo:</strong> ${dados.GRUPO || "-"}</p>
-      <p><strong>Cliente desde:</strong> ${dados.DATA_CADASTRO || "-"}</p>
-
-      <p style="font-size:18px;font-weight:bold;color:${ativo ? "green" : "red"}">
-        Status: ${dados.STATUS}
-      </p>
-
-      ${
-        ativo && dados.CODIGO_AUTORIZACAO
-          ? `<p style="color:green;font-weight:bold">
-              ✔ Código de Autorização: ${dados.CODIGO_AUTORIZACAO}
-            </p>`
-          : ""
-      }
-
-      <br>
-      <a href="painelparceiro.html">⬅ Voltar ao Painel do Parceiro</a>
-    `;
-  })
-  .catch(err => {
-    console.error(err);
-    box.innerHTML = "<h2>❌ Erro ao consultar dados</h2>";
-  });
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->

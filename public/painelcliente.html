@@ -82,69 +82,49 @@ function isAtivo(v){
 // ===============================================
 // 🔍 CONSULTA CLIENTE
 // ===============================================
-async function consultar(){
-  const valor = document.getElementById("cpf").value.trim();
-  const box = document.getElementById("resultado");
-  const btn = document.getElementById("btnCartao");
-
-  btn.style.display = "none";
-  box.classList.remove("ativo","inativo");
-  box.textContent = "Consultando...";
-
-  if(!valor){
-    box.textContent = "Informe seu CPF ou ID Público.";
+<script>
+function consultarCliente() {
+  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
+  if (!cpf) {
+    alert("Informe o CPF");
     return;
   }
 
-  const soDigitos = valor.replace(/\D/g,"");
-  const isCpf = soDigitos.length === 11;
+  const callbackName = "cb_" + Date.now();
+  const script = document.createElement("script");
 
-  try {
-    const url = isCpf
-      ? `${sheetURL}?aba=clientes&cpf=${encodeURIComponent(soDigitos)}`
-      : `${sheetURL}?aba=clientes&idPublico=${encodeURIComponent(valor)}`;
+  window[callbackName] = function (res) {
+    document.body.removeChild(script);
+    delete window[callbackName];
 
-    const res = await fetch(url);
-    const data = await res.json();
-
-    let achado = null;
-    if (Array.isArray(data)) {
-      achado = isCpf
-        ? data.find(x => String(x.cpf).replace(/\D/g,"") === soDigitos)
-        : data.find(x => String(x.idPublico).trim() === valor);
-    } else {
-      achado = data;
-    }
-
-    if(!achado || !achado.cpf){
-      box.textContent = "❌ Cliente não encontrado.";
-      document.getElementById("beneficiosCliente").style.display = "none";
-      document.getElementById("promocoesCliente").style.display = "none";
+    if (res.erro || !res.nome) {
+      document.getElementById("resultado").innerHTML =
+        "<div class='erro'>❌ Cliente não encontrado</div>";
       return;
     }
 
-    const ativo = isAtivo(achado.ativo);
-    box.classList.add(ativo ? "ativo" : "inativo");
+    const ativo = res.ativo === "SIM";
 
-    ultimoIdPublico = (achado.idPublico || "").trim();
-
-    box.innerHTML = `
-      <div><b>Nome:</b> ${achado.nome || "-"}</div>
-      <div><b>CPF:</b> ${achado.cpf || "-"}</div>
-      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
-      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
-      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
-      <div><b>Celular:</b> ${achado.celular && achado.celular !== "" ? achado.celular : "-"}</div>
-
-<div><b>Data de Nascimento:</b> ${
-  achado.nascimento
-    ? new Date(achado.nascimento).toLocaleDateString("pt-BR")
-    : "-"
-}</div>
-<div><b>Data de Cadastro/Aceite:</b> ${achado.dataCadastro || "-"}</div>
-
-      <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
+    document.getElementById("resultado").innerHTML = `
+      <div class="resultado ${ativo ? "ativo" : "inativo"}">
+        <h3>${res.nome}</h3>
+        <p>CPF: ${res.cpf}</p>
+        <p>ID: ${res.idPublico}</p>
+        <p>Cidade: ${res.cidade}</p>
+        <p>Grupo: ${res.grupo}</p>
+        <p>Status: <strong>${ativo ? "ATIVO" : "INATIVO"}</strong></p>
+      </div>
     `;
+  };
+
+  script.src =
+    "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec" +
+    "?cpf=" + cpf +
+    "&callback=" + callbackName;
+
+  document.body.appendChild(script);
+}
+</script>
 // ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
 // 🔐 REGRA DE ACESSO AOS BOTÕES
 if (ativo) {

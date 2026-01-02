@@ -179,54 +179,26 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script>
-/* ===============================
-   PROTEÇÃO DE ACESSO
-================================ */
-const parceiroAutenticado = sessionStorage.getItem("parceiroAutenticado");
+<div id="scanner" style="width:300px;margin:auto"></div>
 
-if (parceiroAutenticado !== "true") {
-  alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "painelparceiro.html";
-}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+let scanner;
 
-/* ===============================
-   INICIAR SCANNER
-================================ */
 window.addEventListener("load", () => {
+  scanner = new Html5Qrcode("scanner");
 
-  const html5QrCode = new Html5Qrcode("scanner");
-
-  html5QrCode.start(
+  scanner.start(
     { facingMode: "environment" },
     { fps: 10, qrbox: 250 },
     (qrCodeMessage) => {
-
-      html5QrCode.stop();
-
-      // 🔗 Aqui você chama sua API depois
-      try {
-  const url = new URL(qrCodeMessage);
-  const id = url.searchParams.get("id");
-
-  if (!id) {
-    alert("QR Code inválido.");
-    return;
-  }
-
-  // 👉 redireciona para página de resultado
-  window.location.href = "resultado.html?id=" + encodeURIComponent(id);
-
-} catch (e) {
-  alert("QR Code inválido.");
-}
-
-
-    }
-  ).catch(err => {
-    alert("Erro ao acessar a câmera. Verifique permissões.");
-    console.error(err);
-  });
-
+      scanner.stop().then(() => {
+        // redireciona direto para o resultado
+        window.location.href = "resultado.html?id=" + encodeURIComponent(qrCodeMessage);
+      });
+    },
+    (err) => {}
+  );
 });
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
@@ -257,38 +229,34 @@ window.addEventListener("load", () => {
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script>
-const scanner = new Html5Qrcode("scanner");
+let scannerAtivo = false;
+let html5QrCode;
 
-scanner.start(
-  { facingMode: "environment" },
-  { fps: 10, qrbox: 250 },
-  qrText => {
-    scanner.stop();
+function iniciarScanner() {
+  if (scannerAtivo) return;
+  scannerAtivo = true;
 
-    // Extrai ID do QR
-    const url = new URL(qrText);
-    const id = url.searchParams.get("id");
+  html5QrCode = new Html5Qrcode("scanner");
 
-    if (!id) {
-      alert("QR inválido");
-      return;
+  html5QrCode.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (qrCodeMessage) => {
+
+      html5QrCode.stop().then(() => {
+        // ✅ SEMPRE redireciona com ID
+        window.location.href =
+          "resultado.html?id=" + encodeURIComponent(qrCodeMessage);
+      });
+
     }
+  ).catch(() => {
+    alert("Erro ao acessar a câmera");
+    scannerAtivo = false;
+  });
+}
 
-    // Chama API
-    fetch(`https://script.google.com/macros/s/SUA_API/exec?consulta=${id}&origem=qr`)
-      .then(r => r.json())
-      .then(dados => {
-
-        // 🔒 SALVA OS DADOS PARA A PRÓXIMA PÁGINA
-        sessionStorage.setItem("dadosValidacao", JSON.stringify(dados));
-
-        // 👉 REDIRECIONA
-        window.location.href = "resultado.html";
-      })
-      .catch(() => alert("Erro ao validar QR"));
-  }
-);
+document.addEventListener("DOMContentLoaded", iniciarScanner);
 </script>
-
 </body>
 </html>
