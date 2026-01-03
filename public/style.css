@@ -1748,31 +1748,11 @@ main {
   font-size: 13px;
   border-top: 3px solid #fff;
 }
-/* Ajustes mobile */
 @media (max-width: 768px) {
-
-  body {
-    font-size: 15px;
+  header.site-header {
+    display: none;
   }
-
-  h1 {
-    font-size: 22px;
-  }
-
-  .container,
-  .box,
-  .area-validacao {
-    width: 95% !important;
-    max-width: 95% !important;
-  }
-
-  #reader {
-    width: 260px !important;
-    height: 260px !important;
-  }
-
-  button {
-    width: 90%;
-    font-size: 16px;
+  footer.footer {
+    display: none;
   }
 }
