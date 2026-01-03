@@ -213,7 +213,7 @@ if (!idPublico) {
           <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
 
           <p><b>Nome:</b> ${data.nome}</p>
-          <p><b>CPF:</b> ${data.cpf}</p>
+          <p><b>CPF:</b> ${mascararCPF(data.cpf)}</p>
           <p><b>ID:</b> ${data.idPublico}</p>
           <p><b>Cidade:</b> ${data.cidade}</p>
           <p><b>Grupo:</b> ${data.grupo}</p>
@@ -269,6 +269,13 @@ if (!idPublico) {
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
+function mascararCPF(cpf) {
+  if (!cpf) return "";
+  const n = cpf.replace(/\D/g, "");
+  if (n.length !== 11) return cpf;
+  return n.substring(0,3) + ".***.***-" + n.substring(9,11);
+}
+
 </script>
 </body>
 </html>

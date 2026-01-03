@@ -1776,3 +1776,33 @@ main {
     font-size: 16px;
   }
 }
+@media (max-width: 768px) {
+  header,
+  footer,
+  .topo-site,
+  .rodape-site {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  .container,
+  .conteudo {
+    padding: 12px !important;
+  }
+}
+@media (max-width: 768px) {
+  h1, h2 {
+    font-size: 1.2rem;
+  }
+
+  .btn-aproveitai {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 14px;
+  }
+}
