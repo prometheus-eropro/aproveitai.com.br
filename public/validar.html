@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!--
-<link rel="manifest" href="manifest-validar.json">
-<meta name="theme-color" content="#198754">
--->
-
   <meta charset="UTF-8">
   <title>Validação por QR Code • Cartão AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -226,19 +221,8 @@ const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
 
 
 const leitor = new Html5Qrcode("reader");
-<div style="
-  background:#fff3cd;
-  border:1px solid #ffeeba;
-  padding:12px;
-  border-radius:8px;
-  font-size:14px;
-  margin-bottom:15px;
-">
-📌 <b>Dica:</b> toque nos três pontos do navegador e escolha
-<b>“Adicionar à tela inicial”</b> para usar como aplicativo.
-</div>
 
-async function iniciarCamera() {
+document.getElementById("btnIniciarCamera").addEventListener("click", async () => {
   try {
     await leitor.start(
       { facingMode: "environment" },
@@ -250,9 +234,11 @@ async function iniciarCamera() {
 
           try {
             let valor = texto;
+
             if (typeof valor === "object" && valor.text) {
               valor = valor.text;
             }
+
             valor = String(valor).trim();
 
             if (valor.includes("http")) {
@@ -264,7 +250,8 @@ async function iniciarCamera() {
             } else {
               idPublico = valor;
             }
-          } catch {
+
+          } catch (e) {
             alert("QR Code inválido.");
             return;
           }
@@ -286,22 +273,7 @@ async function iniciarCamera() {
     alert("Permissão da câmera negada ou indisponível.");
     console.error(err);
   }
-}
-
-document
-  .getElementById("btnIniciarCamera")
-  .addEventListener("click", iniciarCamera);
-const params = new URLSearchParams(window.location.search);
-
-if (params.get("auto") === "1") {
-  setTimeout(() => {
-    iniciarCamera();
-  }, 500);
-}
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw-validar.js");
-}
-
+});
 </script>
 </body>
 </html>
