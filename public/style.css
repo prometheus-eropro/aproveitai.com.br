@@ -1748,61 +1748,11 @@ main {
   font-size: 13px;
   border-top: 3px solid #fff;
 }
-/* Ajustes mobile */
 @media (max-width: 768px) {
-
-  body {
-    font-size: 15px;
+  header.site-header {
+    display: none;
   }
-
-  h1 {
-    font-size: 22px;
-  }
-
-  .container,
-  .box,
-  .area-validacao {
-    width: 95% !important;
-    max-width: 95% !important;
-  }
-
-  #reader {
-    width: 260px !important;
-    height: 260px !important;
-  }
-
-  button {
-    width: 90%;
-    font-size: 16px;
-  }
-}
-@media (max-width: 768px) {
-  header,
-  footer,
-  .topo-site,
-  .rodape-site {
-    display: none !important;
-  }
-}
-@media (max-width: 768px) {
-  body {
-    padding: 0;
-    margin: 0;
-  }
-
-  .container,
-  .conteudo {
-    padding: 12px !important;
-  }
-}
-@media (max-width: 768px) {
-  h1, h2 {
-    font-size: 1.2rem;
-  }
-
-  .btn-aproveitai {
-    width: 100%;
-    font-size: 1.1rem;
-    padding: 14px;
+  footer.footer {
+    display: none;
   }
 }

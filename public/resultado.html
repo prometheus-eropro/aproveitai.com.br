@@ -239,10 +239,20 @@ if (!idPublico) {
       `;
     })
     .catch(err => {
-      box.innerHTML = "❌ Erro ao validar. Verifique a conexão.";
-      console.error(err);
-    });
-}
+  box.innerHTML = `
+    <div style="color:#b00000;font-weight:600">
+      ⚠ Não foi possível validar agora.
+    </div>
+    <p style="margin-top:10px">
+      Verifique sua conexão e tente novamente.
+    </p>
+    <button onclick="location.reload()" class="btn-aproveitai">
+      🔄 Tentar novamente
+    </button>
+  `;
+  console.error(err);
+});
+
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
