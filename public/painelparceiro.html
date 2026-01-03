@@ -226,16 +226,7 @@ async function validarCliente() {
         <p><b>Cidade:</b> ${data.cidade || "-"}</p>
         <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
         <p><b>Cliente desde:</b> ${dataCadastro}</p>
-        const msg = data.mensagemStatus || "";
-
-mensagem.innerText = msg;
-
-if (data.ativo === "SIM") {
-  mensagem.className = "status-ok";
-} else {
-  mensagem.className = "status-erro";
-}
-
+        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
         ${
           data.ativo === "SIM"

@@ -179,12 +179,6 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-function mascararCPF(cpf) {
-  if (!cpf) return "-";
-  const n = cpf.replace(/\D/g, "");
-  if (n.length !== 11) return cpf;
-  return n.slice(0, 3) + "*****" + n.slice(-2);
-}
 
 const params = new URLSearchParams(window.location.search);
 const idPublico = params.get("idPublico") || params.get("id") || "";
@@ -201,54 +195,54 @@ function voltarLeitorQR() {
 }
 
 if (!idPublico) {
-const cpfMascarado = data.cpf
-  ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-  : "-";
- 
- box.innerHTML = "❌ QR inválido.";
+  box.innerHTML = "❌ QR inválido.";
 } else {
   fetch(`${API_URL}?idPublico=${encodeURIComponent(idPublico)}&parceiro=${encodeURIComponent(parceiro)}`)
     .then(r => r.json())
     .then(data => {
-const box = document.getElementById("resultado-validacao");
 
-const ativo = dados.ativo === "SIM";
+      if (!data || !data.nome) {
+        box.innerHTML = "❌ Cliente não encontrado.";
+        return;
+      }
 
-box.innerHTML = `
-  <div style="
-    padding:20px;
-    border-radius:10px;
-    background:${ativo ? "#e9f9ee" : "#fdeaea"};
-    border:2px solid ${ativo ? "#1e8e3e" : "#c62828"};
-    color:${ativo ? "#1e8e3e" : "#c62828"};
-  ">
-    <h2 style="margin-top:0;">
-      ${ativo ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}
-    </h2>
+      const ativo = data.ativo === "SIM";
 
-    <p><strong>Cliente:</strong> ${dados.nome}</p>
-    <p><b>CPF:</b> ${cpfMascarado}</p>
-    <p><strong>Grupo:</strong> ${dados.grupo}</p>
+      box.innerHTML = `
+        <div class="status-box ${ativo ? "ativo" : "inativo"}">
+          <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
 
-    ${
-      ativo
-        ? `<p style="font-size:18px; margin-top:15px;">
-             <strong>Código de Autorização:</strong><br>
-             <span style="font-size:22px;">${dados.codigoERO}</span>
-           </p>`
-        : ""
-    }
-${
-  ativo
-    ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-    : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
+          <p><b>Nome:</b> ${data.nome}</p>
+          <p><b>CPF:</b> ${data.cpf}</p>
+          <p><b>ID:</b> ${data.idPublico}</p>
+          <p><b>Cidade:</b> ${data.cidade}</p>
+          <p><b>Grupo:</b> ${data.grupo}</p>
+          <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
+
+          <p style="
+            margin-top:12px;
+            padding:10px;
+            border-radius:8px;
+            font-weight:600;
+            background:${ativo ? "#e6ffed" : "#ffe6e6"};
+            border:1px solid ${ativo ? "#198754" : "#c82333"};
+          ">
+            ${data.mensagemStatus || ""}
+          </p>
+        </div>
+
+        <div style="text-align:center;margin-top:20px">
+          <button onclick="voltarLeitorQR()" class="btn-aproveitai">
+            🔁 Validar outro QR Code
+          </button>
+        </div>
+      `;
+    })
+    .catch(err => {
+      box.innerHTML = "❌ Erro ao validar. Verifique a conexão.";
+      console.error(err);
+    });
 }
-
-    <p style="margin-top:15px; font-weight:bold;">
-      ${dados.mensagemStatus}
-    </p>
-  </div>
-`;
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer class="footer">
