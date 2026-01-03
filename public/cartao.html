@@ -233,8 +233,8 @@ body{
 
 <!-- BOTÕES -->
 <div class="botoes">
- <button onclick="salvarCartao()">💾 Salvar no celular</button>
- <button onclick="window.print()">🖨️ Imprimir cartão</button>
+  <button onclick="salvarNoCelular()">💾 Salvar no celular</button>
+  <button onclick="window.print()">🧾 Salvar / Imprimir</button>
   <button class="voltar" onclick="history.back()">⬅ Voltar</button>
 </div>
 
@@ -317,12 +317,11 @@ function jsonp(url){
   }
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-
-function salvarCartao() {
-  html2canvas(document.getElementById("cartao")).then(canvas => {
+function salvarNoCelular(){
+  const cartao = document.querySelector(".cartao-dobravel");
+  html2canvas(cartao).then(canvas => {
     const link = document.createElement("a");
     link.download = "cartao-aproveitai.png";
     link.href = canvas.toDataURL("image/png");

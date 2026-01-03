@@ -213,55 +213,67 @@
   </div>
 </footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
+
 <script>
-/* 🔐 exige parceiro logado */
-if (localStorage.getItem("parceiro_logado") !== "SIM") {
-  document.body.innerHTML = `
-    <div style="max-width:420px;margin:80px auto;padding:25px;
-      border:2px solid #dc3545;background:#ffe6e6;
-      border-radius:12px;text-align:center;font-family:Arial">
-      <h2>🔒 Acesso restrito</h2>
-      <p>Para validar descontos via QR Code, faça login como parceiro.</p>
-      <button onclick="location.href='painelparceiro.html'"
-        style="padding:12px 20px;background:#198754;color:#fff;
-        border:none;border-radius:8px;font-size:16px;cursor:pointer">
-        Ir para o painel
-      </button>
-    </div>`;
-  throw new Error("Nao autenticado");
-}
+let parceiroNome = sessionStorage.getItem("parceiroNome");
+const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+
+
 
 const leitor = new Html5Qrcode("reader");
 
 document.getElementById("btnIniciarCamera").addEventListener("click", async () => {
-  await leitor.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 220 },
-    (texto) => {
-      leitor.stop();
+  try {
+    await leitor.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 220 },
+      (texto) => {
+        leitor.stop().then(() => {
 
-      let valor = String(texto).trim();
-      let id = valor;
+          let idPublico = "";
 
-      if (valor.includes("http")) {
-        try {
-          const u = new URL(valor);
-          id = u.searchParams.get("id") || u.searchParams.get("idPublico") || "";
-        } catch {}
+          try {
+            let valor = texto;
+
+            if (typeof valor === "object" && valor.text) {
+              valor = valor.text;
+            }
+
+            valor = String(valor).trim();
+
+            if (valor.includes("http")) {
+              const url = new URL(valor);
+              idPublico =
+                url.searchParams.get("idPublico") ||
+                url.searchParams.get("id") ||
+                "";
+            } else {
+              idPublico = valor;
+            }
+
+          } catch (e) {
+            alert("QR Code inválido.");
+            return;
+          }
+
+          if (!idPublico || !idPublico.startsWith("APV-")) {
+            alert("QR Code inválido.");
+            return;
+          }
+
+          window.location.href =
+            "resultado.html?idPublico=" +
+            encodeURIComponent(idPublico) +
+            "&parceiro=" +
+            encodeURIComponent(parceiroNome || "PARCEIRO_QR");
+        });
       }
-
-      if (!id.startsWith("APV-")) {
-        alert("QR inválido");
-        return;
-      }
-
-      // 🚀 volta para o painel e valida lá
-      window.location.href =
-        "painelparceiro.html?idPublico=" + encodeURIComponent(id);
-    }
-  );
+    );
+  } catch (err) {
+    alert("Permissão da câmera negada ou indisponível.");
+    console.error(err);
+  }
 });
 </script>
-
 </body>
 </html>
