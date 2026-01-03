@@ -88,6 +88,22 @@
       line-height:1.6;
       box-shadow:0 2px 6px rgba(0,0,0,0.1);
     "></div>
+<button onclick="irParaValidarQR()" style="background:#0a7c3a;color:#fff;">
+  📷 Validar QR Code
+</button>
+
+<script>
+function abrirValidadorQR(){
+  const parceiro = localStorage.getItem("parceiroNome");
+  if (!parceiro) {
+    alert("Sessão expirada. Faça login novamente.");
+    location.reload();
+    return;
+  }
+
+  window.location.href = "validar.html";
+}
+</script>
 
     <!-- Relatório -->
     <div style="margin-top: 20px;">
@@ -108,6 +124,13 @@
 <script>
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+// 🔐 VERIFICA LOGIN PERSISTENTE
+if (localStorage.getItem("parceiro_logado") === "SIM") {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("painelBox").style.display = "block";
+  document.getElementById("nomeParceiro").textContent =
+    localStorage.getItem("parceiro_nome") || "";
+}
 
 function jsonp(url) {
   return new Promise((resolve, reject) => {
@@ -157,6 +180,11 @@ if (!data || data.erro) {
     sessionStorage.setItem("parceiroLogado", data.parceiro);
     sessionStorage.setItem("parceiroNome", data.parceiro);
     sessionStorage.setItem("parceiroCNPJ", data.cnpj);
+// 🔐 LOGIN PERSISTENTE (MODO A)
+localStorage.setItem("parceiro_logado", "SIM");
+localStorage.setItem("parceiro_nome", data.parceiro);
+localStorage.setItem("cnpj_parceiro", data.cnpj);
+
 
   } catch (e) {
     console.error(e);
@@ -169,77 +197,33 @@ async function validarCliente() {
 
   const valor = document.getElementById("cpfCliente").value.trim();
   const box = document.getElementById("resultadoCliente");
-  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
 
-  box.innerHTML = "Consultando...";
+  const parceiro = localStorage.getItem("parceiro_nome");
+  const cnpj = localStorage.getItem("cnpj_parceiro");
 
-  if (!valor) {
-    box.innerHTML = "❌ Informe o CPF ou ID Público.";
-    return;
-  }
+const ativo = data.ativo === "SIM";
 
-  const url = valor.startsWith("APV-")
-    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&parceiro=${encodeURIComponent(parceiro)}`
-    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&parceiro=${encodeURIComponent(parceiro)}`;
+resultadoDiv.innerHTML = `
+  <div class="resultado ${ativo ? "ativo" : "inativo"}">
+    <h3>${ativo ? "✔ Cliente Ativo" : "✖ Cliente Inativo"}</h3>
 
-  try {
-    const data = await jsonp(url);
+    <p><b>Nome:</b> ${data.nome}</p>
+    <p><b>CPF:</b> ${data.cpf}</p>
+    <p><b>ID:</b> ${data.idPublico}</p>
+    <p><b>Status:</b> ${data.ativo}</p>
 
-    if (!data || !data.nome) {
-      box.innerHTML = "❌ Cliente não encontrado.";
-      return;
-    }
-
-    const dataCadastro = data.dataCadastro
-      ? formatarData(data.dataCadastro)
-      : "-";
-
-    const cpfMascarado = data.cpf
-      ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-      : "-";
-
-    box.innerHTML = `
-      <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-        <p><b>Nome:</b> ${data.nome}</p>
-        <p><b>CPF:</b> ${cpfMascarado}</p>
-        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-        <p><b>Cliente desde:</b> ${dataCadastro}</p>
-        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
-
-        ${
-          data.ativo === "SIM"
-            ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-            : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
-        }
+    ${ativo ? `
+      <div class="codigo-ero">
+        🔐 <strong>Código de Autorização</strong><br>
+        <span>${data.codigoERO}</span>
       </div>
-    `;
-  } catch (e) {
-    console.error(e);
-    box.innerHTML = "❌ Erro ao validar cliente.";
-  }
-}
-
-function formatarData(valor) {
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR") + " " +
-         d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-}
-
-
-function verRelatorio() {
-
-  const parceiro = document.getElementById("nomeParceiro")
-    ? document.getElementById("nomeParceiro").textContent.trim()
-    : "total";
-
-  const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiro)}`;
-
-  window.open(url, "_blank");
-}
-
+    ` : `
+      <p style="color:#c00;font-weight:700">
+        Cliente inativo – desconto não autorizado
+      </p>
+    `}
+  </div>
+`;
 async function carregarRelatorio() {
   const parceiro = document.getElementById("nomeParceiro").textContent || "total";
 
@@ -281,6 +265,23 @@ async function carregarRelatorio() {
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
 </footer>
+<script>
+function irParaValidarQR() {
+  // 🔐 recria sessão do parceiro
+
+  // 🚀 vai para o validador
+  window.location.href = "validar.html";
+}
+// se veio do QR, valida automaticamente
+const params = new URLSearchParams(window.location.search);
+const idQR = params.get("idPublico");
+
+if (idQR) {
+  document.getElementById("cpfCliente").value = idQR;
+  validarCliente();
+}
+
+</script>
 
 </body>
 </html>
