@@ -1748,31 +1748,54 @@ main {
   font-size: 13px;
   border-top: 3px solid #fff;
 }
-/* Ajustes mobile */
 @media (max-width: 768px) {
-
-  body {
-    font-size: 15px;
+  header.site-header {
+    display: none;
   }
-
-  h1 {
-    font-size: 22px;
+  footer.footer {
+    display: none;
   }
+}
+footer {
+  width: 100%;
+  margin-top: auto;
+  padding: 18px 10px;      /* antes devia estar 30~40px */
+  font-size: 0.9rem;       /* reduz altura geral */
+}
 
-  .container,
-  .box,
-  .area-validacao {
-    width: 95% !important;
-    max-width: 95% !important;
-  }
+footer .footer-container {
+  max-width: 1200px;       /* ocupa página inteira */
+  margin: 0 auto;
+}
 
-  #reader {
-    width: 260px !important;
-    height: 260px !important;
-  }
+footer p,
+footer a {
+  line-height: 1.4;        /* diminui altura vertical */
+}
+footer,
+.site-footer,
+.footer {
+  width: 100%;
+  padding: 12px 16px !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
 
-  button {
-    width: 90%;
-    font-size: 16px;
-  }
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer h3 {
+  margin: 0 0 6px 0;
+}
+
+.footer p,
+.footer a {
+  font-size: 13px;
+  line-height: 1.4;
 }

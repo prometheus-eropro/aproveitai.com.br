@@ -151,6 +151,7 @@
       <a href="privacidade.html" target="_blank">Política de Privacidade</a>
     </span>
   </label>
+localStorage.setItem("ultimoCadastroNome", nomeDigitado);
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
 <input type="hidden" name="userAgent" id="userAgent">
@@ -218,37 +219,7 @@ form.addEventListener("submit", function(e){
   });
 
   // ✅ Sempre tratar como sucesso
-  document.body.innerHTML = `
-    <div style="
-      max-width:600px;
-      margin:80px auto;
-      background:#f1fbff;
-      padding:30px;
-      border-radius:14px;
-      text-align:center;
-      box-shadow:0 4px 12px rgba(0,0,0,.1)">
-      
-      <h2 style="color:#1fae5a">✅ Cadastro recebido com sucesso!</h2>
-
-      <p style="margin-top:15px">
-        Seu cadastro foi recebido e está em análise.<br><br>
-        Assim que for liberado, entraremos em contato informando
-        o <strong>número do seu Cartão AproveitAI</strong>.
-      </p>
-
-      <p style="margin-top:10px;font-size:14px;color:#555">
-        ⚠️ Caso já exista cadastro com este CPF,
-        entre em contato conosco para verificação.
-      </p>
-
-      <a href="index.html"
-         class="btn-aproveitai"
-         style="display:inline-block;margin-top:20px">
-        Voltar ao site
-      </a>
-    </div>
-  `;
-});
+  window.location.href = "cadastro-sucesso.html";
 </script>
 <script>
   const uaField = document.querySelector('input[name="userAgent"]');
