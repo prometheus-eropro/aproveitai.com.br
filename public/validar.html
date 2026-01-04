@@ -262,6 +262,41 @@ document.getElementById("btnIniciarCamera").addEventListener("click", async () =
   );
 });
 </script>
+<div id="resultado" class="resultado-validacao"></div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const idPublico = params.get("idPublico");
+
+const parceiro = sessionStorage.getItem("parceiroNome");
+const cnpj = sessionStorage.getItem("parceiroCNPJ");
+
+if (!parceiro || !cnpj) {
+  document.getElementById("resultado").innerHTML = `
+    <div style="background:#fff3cd;padding:20px;border-radius:10px">
+      ⚠️ Para validar clientes, faça login na Área do Parceiro.
+    </div>`;
+} else {
+  fetch(`https://script.google.com/macros/s/SEU_SCRIPT/exec?idPublico=${idPublico}&modo=parceiro&parceiro=${encodeURIComponent(parceiro)}&cnpjParceiro=${cnpj}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.erro) {
+        document.getElementById("resultado").innerHTML = "❌ Erro na validação";
+        return;
+      }
+
+      const cor = d.ativo === "SIM" ? "#d4edda" : "#f8d7da";
+
+      document.getElementById("resultado").innerHTML = `
+        <div style="background:${cor};padding:25px;border-radius:12px">
+          <h2>${d.nome}</h2>
+          <p><strong>Status:</strong> ${d.ativo}</p>
+          <p>${d.mensagemStatus}</p>
+          ${d.codigoERO !== "-" ? `<h3>Código: ${d.codigoERO}</h3>` : ""}
+          <button onclick="location.reload()">🔁 Validar outro</button>
+        </div>`;
+    });
+}
+</script>
 
 </body>
 </html>

@@ -137,9 +137,7 @@ async function consultar(){
       <div><b>Celular:</b> ${achado.celular && achado.celular !== "" ? achado.celular : "-"}</div>
 
 <div><b>Data de Nascimento:</b> ${
-  achado.nascimento
-    ? new Date(achado.nascimento).toLocaleDateString("pt-BR")
-    : "-"
+  <div><b>Data de Nascimento:</b> ${achado.nascimento || "-"}</div>
 }</div>
 <div><b>Data de Cadastro/Aceite:</b> ${achado.dataCadastro || "-"}</div>
 
