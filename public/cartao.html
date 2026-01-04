@@ -322,7 +322,7 @@ function jsonp(url){
 <script>
 
 function salvarCartao() {
-  html2canvas(document.getElementById("cartao")).then(canvas => {
+  html2canvas(document.getElementById("cartao-print")).then(canvas => {
     const link = document.createElement("a");
     link.download = "cartao-aproveitai.png";
     link.href = canvas.toDataURL("image/png");
@@ -330,6 +330,12 @@ function salvarCartao() {
   });
 }
 </script>
+<div id="cartao-print">
+  <div class="cartao-dobravel">
+    ...
+  </div>
+</div>
+
 
 </body>
 </html>

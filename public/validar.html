@@ -272,14 +272,40 @@ if (!parceiro || !cnpj) {
       ⚠️ Para validar clientes, faça login na Área do Parceiro.
     </div>`;
 } else {
-  fetch(`https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exex?idPublico=${idPublico}&modo=parceiro&parceiro=${encodeURIComponent(parceiro)}&cnpjParceiro=${cnpj}`)
-    .then(r => r.json())
-    .then(d => {
-      if (d.erro) {
-        document.getElementById("resultado").innerHTML = "❌ Erro na validação";
-        return;
-      }
+ <script>
+function consultarQR(idPublico) {
+  const script = document.createElement("script");
+  script.src =
+    "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec" +
+    "?acao=validar_qr" +
+    "&idPublico=" + encodeURIComponent(idPublico) +
+    "&callback=retornoQR";
+  document.body.appendChild(script);
+}
 
+function retornoQR(d) {
+  const box = document.getElementById("resultado");
+
+  if (!d || !d.status) {
+    box.innerHTML = "⚠️ Erro na validação.";
+    return;
+  }
+
+  if (d.status === "ATIVO") {
+    box.className = "resultado ativo";
+    box.innerHTML = `
+      ✅ <b>CLIENTE ATIVO</b><br>
+      Código: <b>${d.codigo_ero}</b>
+    `;
+  } else {
+    box.className = "resultado inativo";
+    box.innerHTML = `
+      ❌ <b>CLIENTE INATIVO</b><br>
+      Desconto não autorizado
+    `;
+  }
+}
+</script>
       const cor = d.ativo === "SIM" ? "#d4edda" : "#f8d7da";
 
       document.getElementById("resultado").innerHTML = `

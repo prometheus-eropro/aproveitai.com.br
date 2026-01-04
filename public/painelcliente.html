@@ -134,8 +134,8 @@ async function consultar(){
   <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
   <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
   <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
-  <div><b>Celular:</b> ${achado.celular || "-"}</div>
-  <div><b>Data de Nascimento:</b> ${achado.nascimento || "-"}</div>
+<div><b>Celular:</b> ${achado.celular || achado.telefone || "-"}</div>
+<div><b>Data de Nascimento:</b> ${achado["data_nascimento"] || achado.nascimento || "-"}</div>
   <div><b>Data de Cadastro/Aceite:</b> ${achado.dataCadastro || "-"}</div>
   <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
 `;
