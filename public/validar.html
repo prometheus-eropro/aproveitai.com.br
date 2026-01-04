@@ -272,7 +272,7 @@ if (!parceiro || !cnpj) {
       ⚠️ Para validar clientes, faça login na Área do Parceiro.
     </div>`;
 } else {
-  fetch(`https://script.google.com/macros/s/SEU_SCRIPT/exec?idPublico=${idPublico}&modo=parceiro&parceiro=${encodeURIComponent(parceiro)}&cnpjParceiro=${cnpj}`)
+  fetch(`https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exex?idPublico=${idPublico}&modo=parceiro&parceiro=${encodeURIComponent(parceiro)}&cnpjParceiro=${cnpj}`)
     .then(r => r.json())
     .then(d => {
       if (d.erro) {

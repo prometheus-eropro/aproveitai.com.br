@@ -53,7 +53,8 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-const parceiro = sessionStorage.getItem("parceiroLogado");
+const parceiro = sessionStorage.getItem("parceiroNome");
+
 
 if (!parceiro) {
   alert("Sessão expirada. Faça login novamente.");
