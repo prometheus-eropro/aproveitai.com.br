@@ -1799,3 +1799,20 @@ footer,
   font-size: 13px;
   line-height: 1.4;
 }
+.footer {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  background: #e9fff0;
+}
+footer {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+  background: #e9fff0;
+  padding: 30px 20px;
+  margin-top: 40px;
+}

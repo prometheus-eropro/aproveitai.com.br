@@ -72,9 +72,7 @@
     <label>CPF ou ID Público do Cliente</label>
     <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
 
-    <button class="btn-aproveitai" onclick="validarCliente()">Validar Cliente</button>
-<button onclick="validarCliente()">📷 Validar QR Code</button>
-
+    
     <div id="resultadoCliente" style="margin-top: 15px;"></div>
 
     <!-- Resultado detalhado -->
@@ -89,12 +87,16 @@
       line-height:1.6;
       box-shadow:0 2px 6px rgba(0,0,0,0.1);
     "></div>
+<button class="btn-aproveitai" onclick="validarCliente()">Validar Cliente</button>
+<button onclick="validarCliente()">📷 Validar QR Code</button>
 
     <!-- Relatório -->
     <div style="margin-top: 20px;">
-<button onclick="window.open('relatorio.html','_blank')">
-📊 Ver relatório
+<button onclick="window.location.href='validar.html'">
+📷 Validar QR Code
 </button>
+
+<button onclick="verRelatorio()">📊 Ver relatório</button>
     
     </div>
 
@@ -239,16 +241,15 @@ function formatarData(valor) {
 
 
 function verRelatorio() {
+  const parceiroObj = JSON.parse(localStorage.getItem("parceiro"));
+  if (!parceiroObj) {
+    alert("Sessão expirada. Faça login novamente.");
+    return;
+  }
 
-  const parceiro = document.getElementById("nomeParceiro")
-    ? document.getElementById("nomeParceiro").textContent.trim()
-    : "total";
-
-  const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiro)}`;
-
+  const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiroObj.nome)}`;
   window.open(url, "_blank");
 }
-
 async function carregarRelatorio() {
   const parceiro = document.getElementById("nomeParceiro").textContent || "total";
 
