@@ -33,6 +33,7 @@
     <h2 style="text-align:center;margin:0 0 10px;color:#0a4c1a">
       Bem-vindo à Área do Cliente
     </h2>
+<p id="bemVindoNome" style="text-align:center;font-weight:600;color:#0a7f2e"></p>
 
     <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
 
@@ -78,7 +79,8 @@ function isAtivo(v){
   const s = norm(v);
   return ["sim","true","1","ativo","yes"].includes(s);
 }
-ffunction formatarDataBR(data) {
+function formatarDataBR(data) {
+
   const d = new Date(data);
   if (isNaN(d)) return "-";
   return d.toLocaleString("pt-BR", {
@@ -136,6 +138,8 @@ async function consultar(){
     box.classList.add(ativo ? "ativo" : "inativo");
 
     ultimoIdPublico = (achado.idPublico || "").trim();
+document.getElementById("bemVindoNome").innerHTML =
+  `Olá, <strong>${achado.nome || ""}</strong> 👋`;
 
     box.innerHTML = `
   <div><b>Nome:</b> ${achado.nome || "-"}</div>
@@ -186,29 +190,13 @@ function abrirBeneficios(){
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
-<footer class="footer">
-  <div class="footer-container">
-    <div>
-      <h3>Cartão AproveitAI</h3>
-      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-      CNPJ: 58.584.332/0001-40<br>
-      📧 cartao.aproveitai@gmail.com<br>
-      📞 (28) 99969-2303<br>
-      📸 @cartao.aproveitai
-    </div>
-    <div>
-      <h3>Links Rápidos</h3>
-      <a href="faq.html">Dúvidas Frequentes</a><br>
-      <a href="privacidade.html">Política de Privacidade</a><br>
-      <a href="cookies.html">Política de Cookies</a><br>
-      <a href="consentimento.html">Termo de Consentimento</a><br>
-      <a href="termos.html">Termos de Uso</a><br>
-      <a href="excluir.html">Excluir meus dados</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    © 2025 AproveitAI. Todos os direitos reservados.
-  </div>
+<footer style="
+  background:#dfffe0;
+  padding:10px;
+  text-align:center;
+  font-size:12px;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO
 </footer>
 
 

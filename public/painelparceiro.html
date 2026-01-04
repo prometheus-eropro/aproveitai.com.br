@@ -69,6 +69,10 @@
   <div class="card" id="painelBox" style="display:none; max-width: 600px; width: 100%;">
 
     <h2 style="text-align:center;color:#0a4c1a">Bem-vindo, <span id="nomeParceiro"></span></h2>
+sessionStorage.setItem("parceiroLogado", "SIM");
+sessionStorage.setItem("parceiroToken", dados.token);
+sessionStorage.setItem("parceiroNome", dados.parceiro);
+sessionStorage.setItem("parceiroCNPJ", dados.cnpj);
 
     <label>CPF ou ID Público do Cliente</label>
     <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
@@ -95,7 +99,10 @@
 📷 Validar QR Code
 </button>
 
-<button onclick="verRelatorio()">📊 Ver relatório</button>
+<button onclick="window.location.href='relatorio.html?relatorio=1'">
+  📊 Ver relatório
+</button>
+
     
     </div>
 
@@ -156,9 +163,12 @@ if (!data || data.erro) {
     document.getElementById("painelBox").style.display = "block";
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("nomeParceiro").textContent = data.parceiro;
-    sessionStorage.setItem("parceiroLogado", "SIM");
-sessionStorage.setItem("parceiroNome", data.parceiro);
-sessionStorage.setItem("parceiroCNPJ", data.cnpj);
+    localStorage.setItem("parceiro", JSON.stringify({
+  nome: data.parceiro,
+  cnpj: data.cnpj,
+  loginEm: new Date().toISOString()
+}));
+
 
 
   } catch (e) {
@@ -247,7 +257,8 @@ function verRelatorio() {
   }
 
   const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiroObj.nome)}`;
-  window.open(url, "_blank");
+  window.location.href = "relatorio.html";
+
 }
 async function carregarRelatorio() {
   const parceiro = document.getElementById("nomeParceiro").textContent || "total";
@@ -275,29 +286,13 @@ if (idQR) {
 
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
-<footer class="footer">
-  <div class="footer-container">
-    <div>
-      <h3>Cartão AproveitAI</h3>
-      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-      CNPJ: 58.584.332/0001-40<br>
-      📧 cartao.aproveitai@gmail.com<br>
-      📞 (28) 99969-2303<br>
-      📸 @cartao.aproveitai
-    </div>
-    <div>
-      <h3>Links Rápidos</h3>
-      <a href="faq.html">Dúvidas Frequentes</a><br>
-      <a href="privacidade.html">Política de Privacidade</a><br>
-      <a href="cookies.html">Política de Cookies</a><br>
-      <a href="consentimento.html">Termo de Consentimento</a><br>
-      <a href="termos.html">Termos de Uso</a><br>
-      <a href="excluir.html">Excluir meus dados</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    © 2025 AproveitAI. Todos os direitos reservados.
-  </div>
+<footer style="
+  background:#dfffe0;
+  padding:10px;
+  text-align:center;
+  font-size:12px;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO
 </footer>
 
 </body>

@@ -1,151 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Benefícios | Cartão AproveitAI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8">
+<title>Benefícios | Cartão AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
-
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0a7f2e">
-
 </head>
+
 <body>
 
-<!-- ✅ CABEÇALHO PADRÃO COM TARJA -->
+<!-- CABEÇALHO (INALTERADO) -->
 <header class="site-header">
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
     <div class="brand-center">
       <h1 class="site-title">Cartão AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
-
-      <!-- ✅ Tarja verde-água com nome da página -->
       <p class="boas-vindas">
         🎁 <strong>Benefícios Disponíveis</strong><br>
-        Válidos para todos os clientes ativos do cartão.
+        Válidos para clientes ativos do cartão
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
 
-<!-- ✅ LISTA DE BENEFÍCIOS -->
+<!-- TARJA AMARELA CENTRAL -->
+<div style="
+  background:#fff3cd;
+  border:1px solid #ffcc00;
+  padding:12px;
+  margin:20px auto;
+  max-width:900px;
+  text-align:center;
+  border-radius:6px;
+  font-size:14px;">
+  ⚠️ <strong>ATENÇÃO:</strong> Benefícios marcados como <strong>EXCLUSIVO</strong>
+  são destinados a grupos ou clientes específicos.
+</div>
+
+<!-- LISTA -->
 <div class="container-parceiros" id="lista"></div>
 
-<!-- ✅ AVISO PADRÃO -->
-<div style="text-align:center; margin: 20px auto; font-size: 14px; color: #333; max-width: 800px;">
-<div class="alerta-final">
-  ⚠️ <b>Os Beneficios marcadas como EXCLUSIVO</b><br>
-  são destinadas a grupos, empresas ou clientes específicos.<br>
-  O uso é validado automaticamente na área do cliente.
+<div style="text-align:center; margin:30px;">
+  <button onclick="location.href='index.html'" class="btn-voltar">← Voltar ao início</button>
 </div>
-
-
-
-<!-- ✅ BOTÃO VOLTAR -->
-<div style="text-align:center; margin-bottom: 30px;">
-  <button onclick="location.href='index.html'" style="
-    background: #3cc062;
-    color: white;
-    padding: 8px 20px;
-    font-size: 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  ">← Voltar ao início</button>
-</div>
-
-<!-- ✅ SCRIPT PARA CARREGAR BENEFÍCIOS -->
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-async function carregarBeneficios() {
-  const container = document.getElementById("lista");
-  container.innerHTML = "";
+fetch(API + "?aba=beneficios")
+.then(r => r.json())
+.then(d => {
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
 
-  try {
-    const res = await fetch(API_URL + "?aba=beneficios");
-    const json = await res.json();
+  d.dados.forEach(b => {
+    if (String(b.ativo).toLowerCase() !== "sim") return;
 
-    if (!json.ok || !Array.isArray(json.dados)) {
-      container.innerHTML = "<p>Erro ao carregar benefícios.</p>";
-      return;
+    const exclusivo = (b.grupo && b.grupo.trim()) || (b.idPublico && b.idPublico.trim());
+
+    const card = document.createElement("div");
+    card.className = "card";
+    if (exclusivo) {
+      card.style.border = "2px solid #ffcc00";
+      card.style.background = "#fffdf2";
     }
 
-    json.dados.forEach(b => {
-      if (String(b.ativo).toLowerCase() !== "sim") return;
-// ⏰ Ignorar benefícios vencidos
-if (b.dataFim) {
-  const hoje = new Date();
-  const fim = new Date(b.dataFim.split("/").reverse().join("-"));
-  if (hoje > fim) return;
-}
+    card.innerHTML = `
+      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
+      <h3>${b.titulo || ""}</h3>
+      <p>${b.descricao || ""}</p>
+      <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
+      ${b.zap ? `<p><strong>WhatsApp:</strong> ${b.zap}</p>` : ""}
+      ${b.dataFim ? `<p><strong>Fim:</strong> ${b.dataFim}</p>` : ""}
+    `;
 
-      // 🔑 REGRA DEFINITIVA
-      const exclusivo = (b.grupo && b.grupo.trim() !== "") || (b.idPublico && b.idPublico.trim() !== "");
-
-      const card = document.createElement("div");
-      card.className = "card";
-      if (exclusivo) card.classList.add("exclusivo");
-
-      card.innerHTML = `
-        ${exclusivo ? `<div class="tarja">EXCLUSIVO</div>` : ""}
-        <h3>${b.titulo || ""}</h3>
-        <p>${b.descricao || ""}</p>
-        <div class="linha-info parceiro">
-  PARCEIRO: <strong>${(b.parceiro || "").toUpperCase()}</strong>
-</div>
-
-        ${b.zap ? `<div class="linha-info"><strong>WhatsApp:</strong> ${b.zap}</div>` : ""}
-        ${b.instagram ? `<div class="linha-info"><strong>Instagram:</strong> ${b.instagram}</div>` : ""}
-        ${b.dataFim ? `<div class="fim">Fim: ${b.dataFim}</div>` : ""}
-      `;
-
-      container.appendChild(card);
-    });
-
-    if (!container.innerHTML) {
-      container.innerHTML = "<p>Nenhum benefício disponível.</p>";
-    }
-
-  } catch (e) {
-    console.error(e);
-    container.innerHTML = "<p>Erro de conexão com o servidor.</p>";
-  }
-}
-
-document.addEventListener("DOMContentLoaded", carregarBeneficios);
+    lista.appendChild(card);
+  });
+});
 </script>
 
-<!-- ✅ RODAPÉ PADRÃO -->
-<footer class="footer">
-  <div class="footer-container">
-    <div>
-      <h3>Cartão AproveitAI</h3>
-      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-      CNPJ: 58.584.332/0001-40<br>
-      📧 cartao.aproveitai@gmail.com<br>
-      📞 (28) 99969-2303<br>
-      📸 @cartao.aproveitai
-    </div>
-    <div>
-      <h3>Links Rápidos</h3>
-      <a href="faq.html">Dúvidas Frequentes</a><br>
-      <a href="privacidade.html">Política de Privacidade</a><br>
-      <a href="cookies.html">Política de Cookies</a><br>
-      <a href="consentimento.html">Termo de Consentimento</a><br>
-      <a href="termos.html">Termos de Uso</a><br>
-      <a href="excluir.html">Excluir meus dados</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    © 2025 AproveitAI. Todos os direitos reservados.
-  </div>
+<!-- RODAPÉ (INALTERADO) -->
+<footer style="background:#dfffe0;padding:10px;text-align:center;font-size:12px;">
+© 2025 Cartão AproveitAI • PROMETHEUS EROPRO
 </footer>
-
 
 </body>
 </html>

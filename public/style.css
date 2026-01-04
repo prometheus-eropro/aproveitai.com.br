@@ -194,35 +194,12 @@ h1, h2, h3 {
 /* =========================
    RODAPÉ
 ========================= */
-.footer {
-  background: #dfffe0;
-  color: #222;
-  padding: 10px 10px;
-  font-size: 13px;
-  border-top: 3px solid white;
-}
-
-.footer-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  max-width: 1000px;
-  margin: auto;
-  padding: 5px 0;
-}
-
 .footer a {
   color: #0066cc;
   font-size: 13px;
 }
 
-.footer-bottom {
-  text-align: center;
-  margin-top: 5px;
-  font-size: 11px;
-}
+
 /* =========================
    RESPONSIVIDADE
 ========================= */
@@ -235,13 +212,6 @@ h1, h2, h3 {
   .card {
     height: auto;
   }
-
-  .footer-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-}
 input#cpf {
   width: 100%;
   padding: 10px;
@@ -1355,105 +1325,23 @@ body {
   flex: 1;
 }
 
-footer.footer {
-  margin-top: auto;
-}
-footer.footer {
-  background: #e9ffe9;
-  padding: 30px 20px;
-  width: 100%;
-}
-
-.footer-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;       /* 👈 FORÇA LINHA */
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 40px;
-}
-
-.footer-container > div {
-  flex: 1;
-  font-size: 14px;
-  line-height: 1.6;
-}
 
 .footer-container h3 {
   margin-top: 0;
   color: #0a7f2e;
 }
 
-.footer-container a {
-  color: #0a7f2e;
-  text-decoration: none;
-}
 
-.footer-container a:hover {
-  text-decoration: underline;
-}
-
-.footer-bottom {
-  text-align: center;
-  margin-top: 8px; /* 🔽 menos espaço */
-  font-size: 12px;
-}
 @media (max-width: 768px) {
-  .footer-container {
-    flex-direction: column;
-    text-align: center;
   }
-}
-footer.footer {
-  background: #e9ffe9;
-  width: 100%;
-  padding: 10px 20px;
-}
-
-.footer-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 40px;
-}
-
-.footer-container > div {
-  flex: 1;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
 .footer-container h3 {
   margin-top: 0;
   color: #0a7f2e;
 }
 
-.footer-container a {
-  color: #0a7f2e;
-  text-decoration: none;
-}
-
-.footer-container a:hover {
-  text-decoration: underline;
-}
-
-.footer-bottom {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 13px;
-  color: #333;
-}
 
 /* Mobile */
 @media (max-width: 768px) {
-  .footer-container {
-    flex-direction: column;
-    text-align: center;
-  }
 }
 .contatos {
   margin-top: 10px;
@@ -1804,11 +1692,6 @@ footer,
   margin-left: calc(-50vw + 50%);
   background: #e9fff0;
 }
-.footer {
-  background: #e9fff0;
-  padding: 30px 20px;
-  margin-top: 40px;
-}
 
 .footer-container {
   max-width: 1100px;
@@ -1819,9 +1702,233 @@ footer,
   flex-wrap: wrap;
 }
 
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 100%;
+  padding: 20px 40px;
+  box-sizing: border-box;
+}
+
+.footer-container > div {
+  max-width: 50%;
+}
+/* ===== RODAPÉ PADRÃO – TELA CHEIA ===== */
+.footer {
+  width: 100%;
+  background: #e9fff0;
+  padding: 20px 0;
+}
+
+.footer-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  box-sizing: border-box;
+}
+
+.footer-container > div {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer h3 {
+  margin-top: 0;
+  color: #0a7f2e;
+}
+
+.footer a {
+  color: #0a7f2e;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
 .footer-bottom {
   text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: 10px;
+  font-size: 13px;
   opacity: 0.8;
 }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+.footer-full {
+  width: 100%;
+  background: #dfffe0; /* verde-água */
+  padding: 30px 15px 10px;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-col {
+  font-size: 14px;
+}
+
+.footer-col h3 {
+  color: #0a7a2a;
+}
+
+.footer-copy {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 15px;
+}
+/* ===============================
+   TARJA AMARELA - AVISO EXCLUSIVO
+================================ */
+.alerta-exclusivo {
+  background: #fff3cd;
+  border-left: 6px solid #ffc107;
+  color: #664d03;
+  padding: 12px 16px;
+  margin: 25px auto;
+  max-width: 720px;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+}
+/* ===============================
+   TARJA AMARELA DE AVISO (CENTRAL)
+================================ */
+.alerta-exclusivo,
+.alerta-final {
+  max-width: 900px;
+  margin: 25px auto;
+  padding: 14px 18px;
+  background: #fff3cd;
+  border-left: 6px solid #ffc107;
+  color: #664d03;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* ===============================
+   CARD EXCLUSIVO (VISUAL FORTE)
+================================ */
+.card.exclusivo {
+  border: 2px solid #dc3545;
+  background: #fff5f5;
+  position: relative;
+}
+
+/* TARJA VERMELHA EXCLUSIVO */
+.card .tarja {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Ajuste visual interno */
+.card.exclusivo h3 {
+  color: #b02a37;
+}
+/* ===============================
+   TARJA DE AVISO (AMARELA)
+=============================== */
+.tarja-aviso {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 25px auto 15px auto;
+  max-width: 900px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===============================
+   CARD EXCLUSIVO
+=============================== */
+.card.exclusivo {
+  border: 2px solid #f0ad4e;
+  background: #fffdf5;
+  position: relative;
+}
+
+/* Selo EXCLUSIVO */
+.card.exclusivo::before {
+  content: "EXCLUSIVO";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #f0ad4e;
+  color: #000;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+/* ===============================
+   TARJA AMARELA – AVISO EXCLUSIVO
+================================ */
+.alerta-exclusivo {
+  max-width: 900px;
+  margin: 25px auto;
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  color: #856404;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ===============================
+   CARD EXCLUSIVO
+================================ */
+.card.exclusivo {
+  border: 2px solid #ffc107;
+  background: #fffdf2;
+  position: relative;
+}
+
+/* Tarja EXCLUSIVO no topo do card */
+.card.exclusivo .tarja {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ffc107;
+  color: #000;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 6px;
+  text-align:
