@@ -214,22 +214,18 @@
 </footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-/* 🔐 exige parceiro logado */
-if (localStorage.getItem("parceiro_logado") !== "SIM") {
-  document.body.innerHTML = `
-    <div style="max-width:420px;margin:80px auto;padding:25px;
-      border:2px solid #dc3545;background:#ffe6e6;
-      border-radius:12px;text-align:center;font-family:Arial">
-      <h2>🔒 Acesso restrito</h2>
-      <p>Para validar descontos via QR Code, faça login como parceiro.</p>
-      <button onclick="location.href='painelparceiro.html'"
-        style="padding:12px 20px;background:#198754;color:#fff;
-        border:none;border-radius:8px;font-size:16px;cursor:pointer">
-        Ir para o painel
-      </button>
-    </div>`;
+if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
+  document.getElementById("conteudo").innerHTML = `
+    <div class="alerta">
+      🔒 Para validar descontos, faça login como parceiro.
+      <br><br>
+      <a href="painelparceiro.html" class="btn">Ir para o painel</a>
+    </div>
+  `;
   throw new Error("Nao autenticado");
 }
+
+/* 🔐 exige parceiro logado */
 
 const leitor = new Html5Qrcode("reader");
 

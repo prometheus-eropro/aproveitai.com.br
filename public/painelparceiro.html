@@ -59,6 +59,7 @@
 
     <div style="text-align:center; margin-top: 20px;">
       <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+
     </div>
   </div>
 </div>
@@ -88,8 +89,6 @@
       box-shadow:0 2px 6px rgba(0,0,0,0.1);
     "></div>
 <button class="btn-aproveitai" onclick="validarCliente()">Validar Cliente</button>
-<button onclick="validarCliente()">📷 Validar QR Code</button>
-
     <!-- Relatório -->
     <div style="margin-top: 20px;">
 <button onclick="window.location.href='validar.html'">
@@ -157,10 +156,10 @@ if (!data || data.erro) {
     document.getElementById("painelBox").style.display = "block";
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("nomeParceiro").textContent = data.parceiro;
-    localStorage.setItem("parceiro", JSON.stringify({
-  nome: data.parceiro,
-  cnpj: data.cnpj
-}));
+    sessionStorage.setItem("parceiroLogado", "SIM");
+sessionStorage.setItem("parceiroNome", data.parceiro);
+sessionStorage.setItem("parceiroCNPJ", data.cnpj);
+
 
   } catch (e) {
     console.error(e);

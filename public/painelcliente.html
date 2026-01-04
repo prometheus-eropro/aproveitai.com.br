@@ -129,20 +129,16 @@ async function consultar(){
     ultimoIdPublico = (achado.idPublico || "").trim();
 
     box.innerHTML = `
-      <div><b>Nome:</b> ${achado.nome || "-"}</div>
-      <div><b>CPF:</b> ${achado.cpf || "-"}</div>
-      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
-      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
-      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
-      <div><b>Celular:</b> ${achado.celular && achado.celular !== "" ? achado.celular : "-"}</div>
-
-<div><b>Data de Nascimento:</b> ${
+  <div><b>Nome:</b> ${achado.nome || "-"}</div>
+  <div><b>CPF:</b> ${achado.cpf || "-"}</div>
+  <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+  <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+  <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+  <div><b>Celular:</b> ${achado.celular || "-"}</div>
   <div><b>Data de Nascimento:</b> ${achado.nascimento || "-"}</div>
-}</div>
-<div><b>Data de Cadastro/Aceite:</b> ${achado.dataCadastro || "-"}</div>
-
-      <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
-    `;
+  <div><b>Data de Cadastro/Aceite:</b> ${achado.dataCadastro || "-"}</div>
+  <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
+`;
 // ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
 // 🔐 REGRA DE ACESSO AOS BOTÕES
 if (ativo) {
