@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Área do Cliente | Cartão AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+
+
+</head>
+
+<body>
+<!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja com nome da página -->
+      <p class="boas-vindas">
+        👤 <strong>Área do Cliente</strong><br>
+        Consulte seu CPF ou ID e acesse benefícios e promoçôes exclusivas.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2 style="text-align:center;margin:0 0 10px;color:#0a4c1a">
+      Bem-vindo à Área do Cliente
+    </h2>
+<p id="bemVindoNome" style="text-align:center;font-weight:600;color:#0a7f2e"></p>
+
+    <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
+
+    <button onclick="consultar()">Consultar</button>
+
+    <div class="small">
+      Após a consulta, você poderá acessar seu cartão digital,
+      salvar no celular ou imprimir.
+    </div>
+
+    <div id="resultado"></div>
+
+    <button
+      id="btnBeneficios"
+      class="btn2"
+      style="display:none;margin-top:15px"
+      onclick="abrirBeneficios()">
+      🎁 Ver Benefícios e Promoções
+    </button>
+
+    <button
+      id="btnCartao"
+      class="btn2"
+      style="display:none;margin-top:10px"
+      onclick="abrirCartao()">
+      💳 Ver / Salvar Cartão
+    </button>
+<div style="text-align:center;margin-top:15px">
+  <a href="index.html" class="voltar">
+    ← Voltar ao site
+  </a>
+</div>
+
+  </div>
+</div>
+<script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+let ultimoIdPublico = "";
+
+// Função de normalização
+function norm(v){ return String(v ?? "").toLowerCase().trim(); }
+function isAtivo(v){
+  const s = norm(v);
+  return ["sim","true","1","ativo","yes"].includes(s);
+}
+function formatarDataBR(data) {
+
+  const d = new Date(data);
+  if (isNaN(d)) return "-";
+  return d.toLocaleString("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short"
+  });
+}
+
+
+// ===============================================
+// 🔍 CONSULTA CLIENTE
+// ===============================================
+async function consultar(){
+  const valor = document.getElementById("cpf").value.trim();
+  const box = document.getElementById("resultado");
+  const btn = document.getElementById("btnCartao");
+
+  btn.style.display = "none";
+  box.classList.remove("ativo","inativo");
+  box.textContent = "Consultando...";
+
+  if(!valor){
+    box.textContent = "Informe seu CPF ou ID Público.";
+    return;
+  }
+
+  const soDigitos = valor.replace(/\D/g,"");
+  const isCpf = soDigitos.length === 11;
+
+  try {
+    const url = isCpf
+      ? `${sheetURL}?aba=clientes&cpf=${encodeURIComponent(soDigitos)}`
+      : `${sheetURL}?aba=clientes&idPublico=${encodeURIComponent(valor)}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    let achado = null;
+    if (Array.isArray(data)) {
+      achado = isCpf
+        ? data.find(x => String(x.cpf).replace(/\D/g,"") === soDigitos)
+        : data.find(x => String(x.idPublico).trim() === valor);
+    } else {
+      achado = data;
+    }
+
+    if(!achado || !achado.cpf){
+      box.textContent = "❌ Cliente não encontrado.";
+      document.getElementById("beneficiosCliente").style.display = "none";
+      document.getElementById("promocoesCliente").style.display = "none";
+      return;
+    }
+
+    const ativo = isAtivo(achado.ativo);
+    box.classList.add(ativo ? "ativo" : "inativo");
+
+    ultimoIdPublico = (achado.idPublico || "").trim();
+document.getElementById("bemVindoNome").innerHTML =
+  `Olá, <strong>${achado.nome || ""}</strong> 👋`;
+
+    box.innerHTML = `
+  <div><b>Nome:</b> ${achado.nome || "-"}</div>
+  <div><b>CPF:</b> ${achado.cpf || "-"}</div>
+  <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+  <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+  <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+<div><b>Celular:</b> ${achado.celular ? achado.celular : "Não informado"}</div>
+<div><b>Data de Nascimento:</b> ${achado.nascimento ? formatarDataBR(achado.nascimento) : "Não informado"}</div>
+  <div><b>Data de Cadastro/Aceite:</b> ${achado.dataAceite ? formatarDataBR(achado.dataAceite) : "-"}</div>
+
+  <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
+`;
+
+
+// ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
+// 🔐 REGRA DE ACESSO AOS BOTÕES
+if (ativo) {
+  document.getElementById("btnBeneficios").style.display = "block";
+  document.getElementById("btnCartao").style.display = "block";
+} else {
+  document.getElementById("btnBeneficios").style.display = "none";
+  document.getElementById("btnCartao").style.display = "none";
+}
+
+   
+  } catch (e) {
+    console.error(e);
+    box.textContent = "⚠️ Erro na consulta.";
+  }
+}
+if (ultimoIdPublico) {
+  document.getElementById("btnBeneficios").style.display = "block";
+  document.getElementById("btnCartao").style.display = "block";
+}
+
+// ===============================================
+// 🪪 ABRIR CARTÃO DIGITAL
+// ===============================================
+function abrirCartao(){
+  if(!ultimoIdPublico) return;
+  window.location.href = `cartao.html?id=${encodeURIComponent(ultimoIdPublico)}`;
+}
+function abrirBeneficios(){
+  if(!ultimoIdPublico) return;
+  window.location.href = `meus-beneficios.html?id=${encodeURIComponent(ultimoIdPublico)}`;
+}
+</script>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:10px;
+  text-align:center;
+  font-size:12px;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO
+</footer>
+
+
+</body>
+</html>
