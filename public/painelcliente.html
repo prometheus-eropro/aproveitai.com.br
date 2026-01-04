@@ -78,6 +78,15 @@ function isAtivo(v){
   const s = norm(v);
   return ["sim","true","1","ativo","yes"].includes(s);
 }
+ffunction formatarDataBR(data) {
+  const d = new Date(data);
+  if (isNaN(d)) return "-";
+  return d.toLocaleString("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short"
+  });
+}
+
 
 // ===============================================
 // 🔍 CONSULTA CLIENTE
@@ -134,11 +143,14 @@ async function consultar(){
   <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
   <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
   <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
-<div><b>Celular:</b> ${achado.celular || achado.telefone || "-"}</div>
-<div><b>Data de Nascimento:</b> ${achado["data_nascimento"] || achado.nascimento || "-"}</div>
-  <div><b>Data de Cadastro/Aceite:</b> ${achado.dataCadastro || "-"}</div>
+<div><b>Celular:</b> ${achado.celular ? achado.celular : "Não informado"}</div>
+<div><b>Data de Nascimento:</b> ${achado.nascimento ? formatarDataBR(achado.nascimento) : "Não informado"}</div>
+  <div><b>Data de Cadastro/Aceite:</b> ${achado.dataAceite ? formatarDataBR(achado.dataAceite) : "-"}</div>
+
   <div><b>Status:</b> <b>${ativo ? "ATIVO" : "INATIVO"}</b></div>
 `;
+
+
 // ✅ MOSTRAR BOTÕES APÓS CONSULTA COM SUCESSO
 // 🔐 REGRA DE ACESSO AOS BOTÕES
 if (ativo) {
