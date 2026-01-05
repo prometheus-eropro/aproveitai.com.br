@@ -31,8 +31,16 @@
 
 </header>
 
-<h2>Relatório de Consultas – Últimos 7 dias</h2>
+<h2 id="tituloRelatorio">Relatório de Consultas</h2>
+<div id="periodoRelatorio" style="
+  margin:8px 0 15px 0;
+  font-size:14px;
+  font-weight:bold;
+  color:#2e7d32;
+"></div>
+
 <div id="dadosParceiro" class="dados-parceiro"></div>
+
 
 <button class="relatorio-botao" onclick="window.print()">
   🖨️ Imprimir / PDF
@@ -86,6 +94,17 @@ fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
       alert("Erro ao carregar relatório");
       return;
     }
+// 👉 Exibir período do relatório (se vier do GS)
+if (d.periodo && d.periodo.inicio && d.periodo.fim) {
+  const ini = new Date(d.periodo.inicio).toLocaleDateString("pt-BR");
+  const fim = new Date(d.periodo.fim).toLocaleDateString("pt-BR");
+
+  document.getElementById("periodoRelatorio").innerText =
+    `Relatório de ${ini} a ${fim}`;
+} else {
+  document.getElementById("periodoRelatorio").innerText =
+    "Relatório padrão (últimos registros)";
+}
 
     const tbody = document.getElementById("dados");
     tbody.innerHTML = "";
@@ -116,11 +135,16 @@ function voltarPainel() {
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
-  padding:10px;
+  padding:12px;
   text-align:center;
   font-size:12px;
+  line-height:1.4;
 ">
-  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
 
 </body>

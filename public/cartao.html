@@ -197,9 +197,19 @@ body{
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
+<div style="
+  background:#fff3cd;
+  color:#856404;
+  padding:8px;
+  text-align:center;
+  font-size:13px;
+">
+  ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
+</div>
 
 <!-- CARTÃO -->
-<div class="cartao-dobravel">
+
+<div class="cartao-dobravel" id="cartao-print">
 
   <div class="cartao-lado cartao-esquerdo">
     <img src="logo-aproveitai.png">
@@ -241,11 +251,16 @@ body{
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
-  padding:10px;
+  padding:12px;
   text-align:center;
   font-size:12px;
+  line-height:1.4;
 ">
-  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
 
 <!-- ================= SCRIPT ================= -->
@@ -293,8 +308,10 @@ function jsonp(url){
       ? d.qrURL
       : "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(urlValidar1);
 
-    document.getElementById("qrCode").src = qrImagem;
-
+   if (d.qrBase64) {
+  document.getElementById("qrCode").src =
+    "data:image/png;base64," + d.qrBase64;
+}
   }catch(err){
     console.error(err);
     alert("Erro ao carregar dados do cartão.");
@@ -306,13 +323,19 @@ function jsonp(url){
 <script>
 
 function salvarCartao() {
-  html2canvas(document.getElementById("cartao-print")).then(canvas => {
+  const cartao = document.getElementById("cartao-print");
+
+  html2canvas(cartao, {
+    scale: 2,
+    useCORS: false
+  }).then(canvas => {
     const link = document.createElement("a");
     link.download = "cartao-aproveitai.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
   });
 }
+
 function formatarDataBR(iso){
   if(!iso) return "-";
   const d = new Date(iso);
@@ -326,7 +349,5 @@ function formatarDataBR(iso){
     ...
   </div>
 </div>
-
-
 </body>
 </html>

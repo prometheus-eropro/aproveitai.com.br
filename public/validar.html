@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Validação por QR Code • Cartão AproveitAI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest-validar.json">
+<meta name="theme-color" content="#198754">
 
 <style>
 body {
@@ -122,6 +124,11 @@ button {
 </head>
 
 <body>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw-validar.js");
+}
+</script>
 
 <!-- CABEÇALHO -->
 <header class="site-header">
@@ -148,13 +155,17 @@ button {
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
-  padding:10px;
+  padding:12px;
   text-align:center;
   font-size:12px;
+  line-height:1.4;
 ">
-  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO
-</footer>
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
 
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
+</footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
