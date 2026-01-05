@@ -229,18 +229,20 @@ setTimeout(() => {
     r.innerHTML = `
       <div style="background:#fff3cd;padding:15px;border-radius:10px">
         ⏱️ Não foi possível ler o QR Code.<br><br>
-        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
-        <br><br>
-       <div style="text-align:center;margin-top:20px">
-  <button onclick="window.location.href='painelparceiro.html'" class="btn2">
-    ← Voltar ao Painel
-  </button>
-</div>
 
+        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+
+        <br><br>
+
+        <div style="text-align:center;margin-top:20px">
+          <button onclick="window.location.href='painelparceiro.html'">
+            ← Voltar ao Painel
+          </button>
+        </div>
+      </div>
+    `;
   }
 }, 15000);
-
-
   if (idPublicoInicial) {
     processarQR(idPublicoInicial);
   }
@@ -300,10 +302,6 @@ function voltarPainel() {
     alert("Erro ao validar QR Code");
   }
 }
-function voltarPainel() {
-  window.location.href = "painelparceiro.html";
-}
-
 </script>
 
 </body>

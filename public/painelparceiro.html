@@ -179,7 +179,6 @@ sessionStorage.setItem("parceiroCNPJ", data.cnpj);
 async function validarCliente() {
   const parceiroNome = sessionStorage.getItem("parceiroNome");
   const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
-
   const box = document.getElementById("resultadoCliente");
 
   if (!parceiroNome || !parceiroCNPJ) {
@@ -188,7 +187,6 @@ async function validarCliente() {
   }
 
   const valor = document.getElementById("cpfCliente").value.trim();
-  const box = document.getElementById("resultadoCliente");
   const parceiro = document.getElementById("nomeParceiro").textContent.trim();
 
   box.innerHTML = "Consultando...";
@@ -199,8 +197,9 @@ async function validarCliente() {
   }
 
   const url = valor.startsWith("APV-")
-  ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`
-  : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
+    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`
+    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
+
   try {
     const data = await jsonp(url);
 
