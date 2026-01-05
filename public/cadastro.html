@@ -151,8 +151,6 @@
       <a href="privacidade.html" target="_blank">Política de Privacidade</a>
     </span>
   </label>
-localStorage.setItem("ultimoCadastroNome", nome);
-window.location.href = "cadastro-sucesso.html";
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
 <input type="hidden" name="userAgent" id="userAgent">
@@ -190,21 +188,23 @@ form.addEventListener("submit", function(e){
 
   const dados = new FormData(form);
 
-  // Converte data para dd/mm/aaaa antes de enviar
+  const nome = dados.get("nome") || "Novo cliente";
+  localStorage.setItem("ultimoCadastroNome", nome);
+
   if (dados.get("nascimento")) {
     const [y,m,d] = dados.get("nascimento").split("-");
     dados.set("nascimento", `${d}/${m}/${y}`);
   }
 
-  // Envio SEM aguardar resposta (evita erro falso)
   fetch(form.action, {
     method: "POST",
     body: dados,
     mode: "no-cors"
   });
 
-  // ✅ Sempre tratar como sucesso
+  // Redireciona somente depois de salvar o nome
   window.location.href = "cadastro-sucesso.html";
+});
 </script>
 <script>
   const uaField = document.querySelector('input[name="userAgent"]');

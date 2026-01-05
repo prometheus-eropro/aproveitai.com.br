@@ -38,8 +38,7 @@
   🖨️ Imprimir / PDF
 </button>
 <div style="text-align:center;margin:15px 0;">
-  <a href="painelparceiro.html" class="voltar">
-    ← Voltar ao Painel
+
   </a>
 </div>
 
@@ -58,16 +57,21 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-const parceiro = sessionStorage.getItem("parceiroNome");
-
-
-if (!parceiro) {
-  alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "painelparceiro.html";
-}
 const parceiroNome = sessionStorage.getItem("parceiroNome");
 const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+
+if (!parceiroNome || !parceiroCNPJ) {
+  document.body.innerHTML = `
+    <div style="padding:40px;text-align:center">
+      <h2>⚠️ Sessão não encontrada</h2>
+      <p>Volte ao painel do parceiro para acessar o relatório.</p>
+      <button onclick="window.location.href='painelparceiro.html'">
+        🔐 Ir para Login
+      </button>
+    </div>
+  `;
+  throw new Error("Sessão ausente");
+}
 
 document.getElementById("dadosParceiro").innerHTML = `
   <strong>Parceiro:</strong> ${parceiroNome || "-"}<br>
@@ -103,6 +107,12 @@ function voltarPainel() {
 }
 
 </script>
+<div style="margin:20px;text-align:center">
+  <button onclick="history.back()">
+    ⬅️ Voltar
+  </button>
+</div>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;

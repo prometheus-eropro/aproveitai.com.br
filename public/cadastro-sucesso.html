@@ -21,32 +21,60 @@
   </div>
 </header>
 
-<div class="card-info" style="max-width:600px;margin:40px auto;">
-  <p><strong>Seu cadastro foi recebido com sucesso!</strong></p>
+<div class="card-info" style="
+  max-width:600px;
+  margin:40px auto;
+  padding:25px;
+  background:#e6ffed;
+  border:2px solid #28a745;
+  border-radius:12px;
+  box-shadow:0 0 10px rgba(0,0,0,0.08);
+">
 
-  <p>
-    Nossa equipe fará a validação das informações e, assim que o cadastro
-    for liberado, entraremos em contato informando:
-  </p>
+  <h2 style="color:#0a7a2a">✅ Cadastro recebido com sucesso</h2>
+
+  <p>Seu cadastro foi recebido e será validado por nossa equipe.</p>
 
   <ul>
     <li>📌 Número do seu Cartão AproveitAI</li>
     <li>📲 Acesso ao cartão digital com QR Code</li>
   </ul>
 
-  <p>
-    ⚠️ Caso seu CPF já possua cadastro ativo
-<script>
-const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cliente";
+  <p style="margin-top:15px">
+    ⚠️ Caso seu CPF já possua cadastro ativo, ele será identificado automaticamente.
+  </p>
 
-const telefoneAdmin = "5528999692303"; // SEU WHATSAPP
-const mensagem = `📥 Novo cadastro no Cartão AproveitAI
+  <button
+    onclick="abrirWhatsApp()"
+    style="
+      margin-top:20px;
+      padding:14px 22px;
+      font-size:16px;
+      border:none;
+      border-radius:8px;
+      background:#25d366;
+      color:#fff;
+      cursor:pointer;
+    "
+  >
+    📲 Click aqui para avisar administrador no WhatsApp
+  </button>
+
+</div>
+
+<script>
+function abrirWhatsApp() {
+  const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cliente";
+  const telefoneAdmin = "5528999692303";
+
+  const mensagem = `📥 Novo cadastro no Cartão AproveitAI
 
 👤 Nome: ${nome}
 ⏳ Status: Aguardando liberação no sistema.`;
 
-window.open(
-  "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem),
-  "_blank"
-);
+  window.open(
+    "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem),
+    "_blank"
+  );
+}
 </script>
