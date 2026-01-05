@@ -37,6 +37,12 @@
 <button class="relatorio-botao" onclick="window.print()">
   🖨️ Imprimir / PDF
 </button>
+<div style="text-align:center;margin:15px 0;">
+  <a href="painelparceiro.html" class="voltar">
+    ← Voltar ao Painel
+  </a>
+</div>
+
 
 <table>
 <thead>
@@ -80,7 +86,7 @@ fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
     const tbody = document.getElementById("dados");
     tbody.innerHTML = "";
 
-    d.registros.forEach(r => {
+    d.dados.forEach(r => {
   tbody.innerHTML += `
     <tr>
       <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
@@ -92,6 +98,10 @@ fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
 });
 
   });
+function voltarPainel() {
+  window.location.href = "painelparceiro.html";
+}
+
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="

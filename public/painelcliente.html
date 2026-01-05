@@ -70,142 +70,149 @@
   </div>
 </div>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"; // mantém a sua
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+let ultimoIdPublico = "";
 
-function getCampo(obj, chaves){
-  for (const k of chaves){
-    if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+function norm(v){
+  return String(v ?? "").toLowerCase().trim();
+}
+function isAtivo(v){
+  return ["sim","ativo","true","1","yes"].includes(norm(v));
+}
+function formatarDataBR(valor){
+  if(!valor) return "-";
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+  return d.toLocaleDateString("pt-BR") + " " +
+         d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+}
+function pegarCampo(obj, campos){
+  for (const c of campos){
+    if (obj[c] && String(obj[c]).trim() !== "") return obj[c];
   }
   return "";
 }
 
-function formatarDataBR(valor){
-  if (!valor) return "-";
+async function consultar(){
+  const valor = document.getElementById("cpf").value.trim();
+  const box = document.getElementById("resultado");
 
-  // já vem como "03/01/2026 10:41:35"
-  if (typeof valor === "string" && valor.includes("/") && valor.includes(":")) return valor;
+  box.textContent = "Consultando...";
 
-  // ISO / timestamp
-  const d = new Date(valor);
-  if (!isNaN(d.getTime())){
-    const dd = String(d.getDate()).padStart(2,"0");
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const aa = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mi = String(d.getMinutes()).padStart(2,"0");
-    return `${dd}/${mm}/${aa} ${hh}:${mi}`;
-  }
-
-  return String(valor);
-}
-
-function isAtivo(valor){
-  const v = String(valor || "").toUpperCase().trim();
-  return (v === "SIM" || v === "ATIVO" || v === "TRUE" || v === "1");
-}
-
-async function consultarCliente(){
-  const input = document.getElementById("cpfOuId");
-  const resultado = document.getElementById("resultado");
-  const btnBeneficios = document.getElementById("btnBeneficios");
-  const btnCartao = document.getElementById("btnCartao");
-
-  const termo = (input.value || "").trim();
-  if (!termo){
-    resultado.innerHTML = "<p style='color:#b00020;font-weight:800'>Digite seu CPF ou ID Público.</p>";
-    btnBeneficios.style.display = "none";
-    btnCartao.style.display = "none";
+  if(!valor){
+    box.textContent = "Informe seu CPF ou ID Público.";
     return;
   }
 
-  resultado.innerHTML = "<p>Consultando...</p>";
+  const soDigitos = valor.replace(/\D/g,"");
+  const isCpf = soDigitos.length === 11;
+
+  const url = isCpf
+    ? `${sheetURL}?cpf=${encodeURIComponent(soDigitos)}`
+    : `${sheetURL}?idPublico=${encodeURIComponent(valor)}`;
 
   try{
-    // usa JSONP se seu Apps Script estiver em JSONP (callback)
-    const url = `${API_URL}?consulta=1&termo=${encodeURIComponent(termo)}&callback=cb_${Date.now()}`;
-    const data = await jsonp(url);
+    const res = await fetch(url);
+    const achado = await res.json();
 
-    if (!data || !data.encontrado){
-      resultado.innerHTML = "<p style='color:#b00020;font-weight:800'>Cliente não encontrado.</p>";
-      btnBeneficios.style.display = "none";
-      btnCartao.style.display = "none";
-      return;
-    }
+    if(!achado || !achado.cpf){
+  box.textContent = "❌ Cliente não encontrado.";
+  return;
+}
 
-    const achado = data.dados || {};
+// SALVA O ID CORRETAMENTE
+ultimoIdPublico = achado.idPublico;
 
-    const nome = getCampo(achado, ["nome"]);
-    const cpf = getCampo(achado, ["cpf"]);
-    const idPublico = getCampo(achado, ["idPublico","id_publico","id"]);
-    const grupo = getCampo(achado, ["grupo"]);
-    const cidade = getCampo(achado, ["cidade"]);
-    const celular = getCampo(achado, ["celular","telefone","tel"]);
-    const nascimento = getCampo(achado, ["nascimento","dataNascimento","data_nascimento"]);
-    const dataAceite = getCampo(achado, ["dataAceite","dataCadastro","cadastro","data_aceite"]);
-    const ativo = getCampo(achado, ["ativo","status"]);
+    const ativo = isAtivo(achado.ativo);
+    const nascimento = pegarCampo(achado, ["nascimento","dataNascimento","data_nascimento"]);
+    const dataAceite = pegarCampo(achado, ["dataAceite","dataCadastro","cadastro","data_aceite"]);
 
-    const ativoBool = isAtivo(ativo);
+document.getElementById("bemVindoNome").innerHTML = ativo
+  ? `
+    <span style="color:#000">
+      Olá, <strong style="color:#0a7f2e">${achado.nome}</strong> 👋<br>
+      Que bom ter você por aqui! 😊<br>
+      Seu cadastro está <strong style="color:#0a7f2e">ATIVO</strong>.<br>
+      Aproveite agora todos os benefícios e promoções disponíveis.
+    </span>
+  `
+  : `
+    <span style="color:#000">
+      Olá, <strong style="color:#c62828">${achado.nome}</strong> 👋<br>
+      Seu cadastro está <strong style="color:#c62828">INATIVO</strong> no momento.<br>
+      Regularize seu acesso para voltar a aproveitar os benefícios do Cartão AproveitAI.
+    </span>
+  `;
+const btnBeneficios = document.getElementById("btnBeneficios");
+const btnCartao = document.getElementById("btnCartao");
 
-    resultado.innerHTML = `
-      <div class="result-box">
-        <div><b>Nome:</b> ${nome || "-"}</div>
-        <div><b>CPF:</b> ${cpf || "-"}</div>
-        <div><b>ID Público:</b> ${idPublico || "-"}</div>
-        <div><b>Grupo:</b> ${grupo || "-"}</div>
-        <div><b>Cidade:</b> ${cidade || "-"}</div>
-        <div><b>Celular:</b> ${celular || "-"}</div>
-        <div><b>Data de Nascimento:</b> ${nascimento || "-"}</div>
-        <div><b>Data de Cadastro/Aceite:</b> ${formatarDataBR(dataAceite)}</div>
-        <div class="status-pill ${ativoBool ? "status-ativo" : "status-inativo"}">
-          ${ativoBool ? "ATIVO" : "INATIVO"}
+if (ativo) {
+  btnBeneficios.style.display = "block";
+  btnCartao.style.display = "block";
+} else {
+  btnBeneficios.style.display = "none";
+  btnCartao.style.display = "none";
+}
+
+    box.innerHTML = `
+
+      <div><b>Nome:</b> ${achado.nome}</div>
+      <div><b>CPF:</b> ${achado.cpf}</div>
+      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+      <div><b>Celular:</b> ${achado.celular || "Não informado"}</div>
+      <div><b>Data de Nascimento:</b> ${nascimento ? formatarDataBR(nascimento) : "Não informado"}</div>
+      <div><b>Data de Cadastro/Aceite:</b> ${dataAceite ? formatarDataBR(dataAceite) : "-"}</div>
+      <div style="
+  margin-top:8px;
+  padding:6px 10px;
+  border-radius:8px;
+  font-weight:700;
+  color:#fff;
+  background:${ativo ? "#0a7f2e" : "#c62828"};
+">
+  Status: ${ativo ? "ATIVO" : "INATIVO"}
+</div>
+
+
+      ${!ativo ? `
+        <div style="
+          margin-top:12px;
+          padding:12px;
+          border-radius:10px;
+          background:#ffeaea;
+          border:2px solid #c62828;
+          color:#7a0000;
+          font-weight:600;
+          text-align:center;
+        ">
+          ⚠️ Seu cadastro está <b>INATIVO</b>.<br>
+          Procure o Cartão AproveitAI para regularizar
+          e volte a aproveitar os benefícios.
         </div>
-      </div>
+      ` : ""}
     `;
-
-    // guarda ID para outras páginas
-    if (idPublico) localStorage.setItem("ultimoIdPublico", idPublico);
-
-    // só libera botões se ATIVO
-    btnBeneficios.style.display = ativoBool ? "block" : "none";
-    btnCartao.style.display = ativoBool ? "block" : "none";
-
-  }catch(err){
-    console.error(err);
-    resultado.innerHTML = "<p style='color:#b00020;font-weight:800'>Erro ao consultar. Verifique a API.</p>";
-    btnBeneficios.style.display = "none";
-    btnCartao.style.display = "none";
+  } catch(e){
+    console.error(e);
+    box.textContent = "⚠️ Erro ao consultar.";
   }
 }
-
-// JSONP helper
-function jsonp(url){
-  return new Promise((resolve, reject) => {
-    const cbName = "cb_" + Math.random().toString(36).slice(2);
-    const s = document.createElement("script");
-    const timeout = setTimeout(() => {
-      cleanup();
-      reject(new Error("Timeout JSONP"));
-    }, 12000);
-
-    function cleanup(){
-      clearTimeout(timeout);
-      if (s.parentNode) s.parentNode.removeChild(s);
-      delete window[cbName];
-    }
-
-    window[cbName] = (payload) => {
-      cleanup();
-      resolve(payload);
-    };
-
-    s.src = url.replace(/callback=[^&]+/, "callback=" + cbName);
-    s.onerror = () => { cleanup(); reject(new Error("Erro ao carregar JSONP")); };
-    document.body.appendChild(s);
-  });
+function abrirBeneficios() {
+  if (!ultimoIdPublico) {
+    alert("ID do cliente não encontrado.");
+    return;
+  }
+  window.location.href = "meus-beneficios.html?id=" + encodeURIComponent(ultimoIdPublico);
 }
 
-// liga botão
-document.getElementById("btnConsultar").addEventListener("click", consultarCliente);
+function abrirCartao() {
+  if (!ultimoIdPublico) {
+    alert("ID do cartão não informado.");
+    return;
+  }
+  window.location.href = "cartao.html?id=" + encodeURIComponent(ultimoIdPublico);
+}
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->

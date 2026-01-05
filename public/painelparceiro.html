@@ -67,12 +67,10 @@
 <!-- ✅ PAINEL DO PARCEIRO -->
 <div class="wrap" style="display:flex; justify-content:center; padding: 30px;">
   <div class="card" id="painelBox" style="display:none; max-width: 600px; width: 100%;">
+<h2 style="text-align:center;color:#0a4c1a">
+  Bem-vindo, <span id="nomeParceiro"></span>
+</h2>
 
-    <h2 style="text-align:center;color:#0a4c1a">Bem-vindo, <span id="nomeParceiro"></span></h2>
-sessionStorage.setItem("parceiroLogado", "SIM");
-sessionStorage.setItem("parceiroToken", dados.token);
-sessionStorage.setItem("parceiroNome", dados.parceiro);
-sessionStorage.setItem("parceiroCNPJ", dados.cnpj);
 
     <label>CPF ou ID Público do Cliente</label>
     <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
@@ -163,11 +161,11 @@ if (!data || data.erro) {
     document.getElementById("painelBox").style.display = "block";
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("nomeParceiro").textContent = data.parceiro;
-    localStorage.setItem("parceiro", JSON.stringify({
-  nome: data.parceiro,
-  cnpj: data.cnpj,
-  loginEm: new Date().toISOString()
-}));
+    sessionStorage.setItem("parceiroLogado", "SIM");
+sessionStorage.setItem("parceiroToken", token);
+sessionStorage.setItem("parceiroNome", data.parceiro);
+sessionStorage.setItem("parceiroCNPJ", data.cnpj);
+
 
 
 
@@ -179,14 +177,15 @@ if (!data || data.erro) {
 
 
 async function validarCliente() {
-const parceiroObj = JSON.parse(localStorage.getItem("parceiro"));
-const parceiroNome = parceiroObj?.nome;
-const parceiroCNPJ = parceiroObj?.cnpj;
+  const parceiroNome = sessionStorage.getItem("parceiroNome");
+  const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
 
-if (!parceiroNome || !parceiroCNPJ) {
-  box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
-  return;
-}
+  const box = document.getElementById("resultadoCliente");
+
+  if (!parceiroNome || !parceiroCNPJ) {
+    box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
+    return;
+  }
 
   const valor = document.getElementById("cpfCliente").value.trim();
   const box = document.getElementById("resultadoCliente");
@@ -200,8 +199,8 @@ if (!parceiroNome || !parceiroCNPJ) {
   }
 
   const url = valor.startsWith("APV-")
-  ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&parceiro=${encodeURIComponent(parceiroNome)}&cnpjParceiro=${encodeURIComponent(parceiroCNPJ)}`
-  : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&parceiro=${encodeURIComponent(parceiroNome)}&cnpjParceiro=${encodeURIComponent(parceiroCNPJ)}`;
+  ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`
+  : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
   try {
     const data = await jsonp(url);
 

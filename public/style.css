@@ -1776,3 +1776,38 @@ main {
     font-size: 16px;
   }
 }
+/* FUNDO POR STATUS */
+.body-ativo {
+  background: linear-gradient(180deg, #dfffe0, #b8f5c2);
+}
+
+.body-inativo {
+  background: linear-gradient(180deg, #ffe0e0, #f5b8b8);
+}
+
+/* MENSAGEM DE ALERTA */
+.alerta-inativo {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffe0e0;
+  color: #8b0000;
+  font-weight: 700;
+  text-align: center;
+}
+.status {
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.status.ativo {
+  background: #d4f8d4;
+  color: #0a7a0a;
+}
+
+.status.inativo {
+  background: #ffe0e0;
+  color: #b00000;
+}

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Área do Cliente | Cartão AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+
+
+</head>
+
+<body>
+<!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja com nome da página -->
+      <p class="boas-vindas">
+        👤 <strong>Área do Cliente</strong><br>
+        Consulte seu CPF ou ID e acesse benefícios e promoçôes exclusivas.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2 style="text-align:center;margin:0 0 10px;color:#0a4c1a">
+      Bem-vindo à Área do Cliente
+    </h2>
+<p id="bemVindoNome" style="text-align:center;font-weight:600;color:#0a7f2e"></p>
+
+   <input
+  type="text"
+  id="busca"
+  placeholder="Digite seu CPF ou ID Público (APV-XXXX)"
+>
+    <button onclick="consultarCliente()">Consultar</button>
+
+
+    <div class="small">
+      Após a consulta, você poderá acessar seu cartão digital,
+      salvar no celular ou imprimir.
+    </div>
+
+    <div id="resultado"></div>
+
+    <button
+      id="btnBeneficios"
+      class="btn2"
+      style="display:none;margin-top:15px"
+      onclick="abrirBeneficios()">
+      🎁 Ver Benefícios e Promoções
+    </button>
+
+    <button
+      id="btnCartao"
+      class="btn2"
+      style="display:none;margin-top:10px"
+      onclick="abrirCartao()">
+      💳 Ver / Salvar Cartão
+    </button>
+<div style="text-align:center;margin-top:15px">
+  <a href="index.html" class="voltar">
+    ← Voltar ao site
+  </a>
+</div>
+
+  </div>
+</div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"; // mantém a sua
+function preencherDados(d) {
+  document.getElementById("nome").textContent = d.nome || "-";
+  document.getElementById("cpf").textContent = d.cpf || "-";
+  document.getElementById("idPublico").textContent = d.idPublico || "-";
+  document.getElementById("grupo").textContent = d.grupo || "-";
+  document.getElementById("cidade").textContent = d.cidade || "-";
+  document.getElementById("celular").textContent = d.celular || "-";
+  document.getElementById("nascimento").textContent = d.nascimento || "-";
+  document.getElementById("cadastro").textContent = d.dataCadastro || "-";
+
+  aplicarStatus(d.ativo, d.mensagemStatus);
+}
+
+function getCampo(obj, chaves){
+  for (const k of chaves){
+    if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+  }
+  return "";
+}
+
+function formatarDataBR(valor){
+  if (!valor) return "-";
+
+  // já vem como "03/01/2026 10:41:35"
+  if (typeof valor === "string" && valor.includes("/") && valor.includes(":")) return valor;
+
+  // ISO / timestamp
+  const d = new Date(valor);
+  if (!isNaN(d.getTime())){
+    const dd = String(d.getDate()).padStart(2,"0");
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const aa = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mi = String(d.getMinutes()).padStart(2,"0");
+    return `${dd}/${mm}/${aa} ${hh}:${mi}`;
+  }
+
+  return String(valor);
+}
+
+function isAtivo(valor){
+  const v = String(valor || "").toUpperCase().trim();
+  return (v === "SIM" || v === "ATIVO" || v === "TRUE" || v === "1");
+}
+
+async function consultarCliente(){
+const valor = document.getElementById("busca").value.trim();
+
+if (!valor) {
+  alert("Digite um CPF ou ID Público (APV-XXXX).");
+  return;
+}
+
+let url = API;
+
+if (valor.toUpperCase().startsWith("APV-")) {
+  url += "?idPublico=" + encodeURIComponent(valor);
+} else {
+  url += "?cpf=" + encodeURIComponent(valor);
+}
+
+  const input = document.getElementById("cpfOuId");
+  const resultado = document.getElementById("resultado");
+  const btnBeneficios = document.getElementById("btnBeneficios");
+  const btnCartao = document.getElementById("btnCartao");
+
+  const termo = (input.value || "").trim();
+  if (!termo){
+    resultado.innerHTML = "<p style='color:#b00020;font-weight:800'>Digite seu CPF ou ID Público.</p>";
+    btnBeneficios.style.display = "none";
+    btnCartao.style.display = "none";
+    return;
+  }
+
+  resultado.innerHTML = "<p>Consultando...</p>";
+
+  try{
+    // usa JSONP se seu Apps Script estiver em JSONP (callback)
+    let param = "cpf";
+if (termo.toUpperCase().startsWith("APV-")) {
+  param = "idPublico";
+}
+
+const url = `${API_URL}?${param}=${encodeURIComponent(termo)}&callback=cb_${Date.now()}`;
+
+
+    const data = await jsonp(url);
+
+    if (!data || !data.cpf){
+  resultado.innerHTML = "<p style='color:#b00020;font-weight:800'>Cliente não encontrado.</p>";
+  btnBeneficios.style.display = "none";
+  btnCartao.style.display = "none";
+  return;
+} // 👈 ESTA CHAVE ESTAVA FALTANDO
+
+const achado = data;
+
+    const nome = getCampo(achado, ["nome"]);
+    const cpf = getCampo(achado, ["cpf"]);
+    const idPublico = getCampo(achado, ["idPublico","id_publico","id"]);
+    const grupo = getCampo(achado, ["grupo"]);
+    const cidade = getCampo(achado, ["cidade"]);
+    const celular = getCampo(achado, ["celular","telefone","tel"]);
+    const nascimento = getCampo(achado, ["nascimento","dataNascimento","data_nascimento"]);
+    const dataAceite = getCampo(achado, ["dataAceite","dataCadastro","cadastro","data_aceite"]);
+    const ativo = getCampo(achado, ["ativo","status"]);
+
+    const ativoBool = isAtivo(ativo);
+document.body.classList.remove("body-ativo", "body-inativo");
+document.body.classList.add(ativoBool ? "body-ativo" : "body-inativo");
+
+resultado.innerHTML = `
+  <div class="result-box">
+    <div><b>Nome:</b> ${nome || "-"}</div>
+    <div><b>CPF:</b> ${cpf || "-"}</div>
+    <div><b>ID Público:</b> ${idPublico || "-"}</div>
+    <div><b>Grupo:</b> ${grupo || "-"}</div>
+    <div><b>Cidade:</b> ${cidade || "-"}</div>
+    <div><b>Celular:</b> ${celular || "-"}</div>
+    <div><b>Data de Nascimento:</b> ${nascimento || "-"}</div>
+    <div><b>Data de Cadastro/Aceite:</b> ${formatarDataBR(dataAceite)}</div>
+
+    <div class="status-pill ${ativoBool ? "status-ativo" : "status-inativo"}">
+      ${ativoBool ? "ATIVO" : "INATIVO"}
+    </div>
+
+    ${!ativoBool ? `
+      <div class="alerta-inativo">
+        ⚠ Seu cadastro está <b>INATIVO</b> no momento.<br>
+        Para acessar benefícios e promoções, procure a equipe do Cartão AproveitAI
+        e regularize seu acesso.
+      </div>
+    ` : ""}
+  </div>
+`;
+
+        // guarda ID para outras páginas
+    if (idPublico) localStorage.setItem("ultimoIdPublico", idPublico);
+
+    // só libera botões se ATIVO
+    btnBeneficios.style.display = ativoBool ? "block" : "none";
+    btnCartao.style.display = ativoBool ? "block" : "none";
+
+  }catch(err){
+    console.error(err);
+    resultado.innerHTML = "<p style='color:#b00020;font-weight:800'>Erro ao consultar. Verifique a API.</p>";
+    btnBeneficios.style.display = "none";
+    btnCartao.style.display = "none";
+  }
+}
+
+// JSONP helper
+function jsonp(url){
+  return new Promise((resolve, reject) => {
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+    const s = document.createElement("script");
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Timeout JSONP"));
+    }, 12000);
+
+    function cleanup(){
+      clearTimeout(timeout);
+      if (s.parentNode) s.parentNode.removeChild(s);
+      delete window[cbName];
+    }
+
+    window[cbName] = (payload) => {
+      cleanup();
+      resolve(payload);
+    };
+
+    s.src = url.replace(/callback=[^&]+/, "callback=" + cbName);
+    s.onerror = () => { cleanup(); reject(new Error("Erro ao carregar JSONP")); };
+    document.body.appendChild(s);
+  });
+}
+function abrirBeneficios(){
+  const id = localStorage.getItem("ultimoIdPublico");
+  if(!id){
+    alert("ID do cliente não encontrado.");
+    return;
+  }
+  window.location.href = `meus-beneficios.html?id=${encodeURIComponent(id)}`;
+}
+
+function abrirCartao(){
+  const id = localStorage.getItem("ultimoIdPublico");
+  if(!id){
+    alert("ID do cliente não encontrado.");
+    return;
+  }
+  window.location.href = `cartao.html?id=${encodeURIComponent(id)}`;
+}
+function formatarDataBR(iso){
+  if(!iso) return "-";
+  const d = new Date(iso);
+  return d.toLocaleDateString("pt-BR") + " " +
+         d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+}
+async function consultarCliente() {
+  const valor = document.getElementById("busca").value.trim();
+
+if (!valor) {
+  alert("Digite um CPF ou ID Público");
+  return;
+}
+
+  if (!valor) return alert("Informe CPF ou ID Público");
+
+  let url = API;
+
+  if (valor.toUpperCase().startsWith("APV-")) {
+    url += "?idPublico=" + encodeURIComponent(valor);
+  } else {
+    url += "?cpf=" + encodeURIComponent(valor);
+  }
+
+  try {
+    const d = await jsonp(url);
+
+    if (d.erro) {
+      mostrarInativo("Cliente não encontrado.");
+      return;
+    }
+
+    preencherDados(d);
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao consultar cliente.");
+  }
+}
+
+</script>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:10px;
+  text-align:center;
+  font-size:12px;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO
+</footer>
+
+
+</body>
+</html>

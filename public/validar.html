@@ -167,23 +167,50 @@ const token = sessionStorage.getItem("parceiroToken");
 
 if (parceiroLogado !== "SIM" || !token) {
   conteudo.innerHTML = `
-    <div class="resultado" style="background:#fff3cd">
-      🔒 Para validar descontos via QR Code, é necessário estar logado como parceiro.<br><br>
-      <button onclick="location.href='painelparceiro.html'">Ir para login</button>
-    </div>
-  `;
+  <button id="btnCamera">📷 Iniciar câmera</button>
+  <div id="reader"></div>
+  <div id="resultado" class="resultado"></div>
+
+  <button onclick="voltarPainel()" style="
+    margin-top:20px;
+    background:#0a7a2a;
+    color:#fff;
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+  ">
+    ⬅️ Voltar ao Painel
+  </button>
+`;
+
 } else {
   iniciarLeitor();
 }
+function onScanSuccess(decodedText, decodedResult) {
+
+  if (html5QrcodeScanner) {
+    html5QrcodeScanner.clear();
+  }
+
+  window.location.href = "validar.html?idPublico=" + decodedText;
+}
+
+let leitor; // ⬅️ declare fora da função (GLOBAL)
 
 function iniciarLeitor() {
+
+  if (leitor) {
+    leitor.stop().catch(() => {});
+  }
+
   conteudo.innerHTML = `
     <button id="btnCamera">📷 Iniciar câmera</button>
     <div id="reader"></div>
     <div id="resultado" class="resultado"></div>
   `;
 
-  const leitor = new Html5Qrcode("reader");
+  leitor = new Html5Qrcode("reader");
 
   document.getElementById("btnCamera").onclick = async () => {
     await leitor.start(
@@ -195,13 +222,31 @@ function iniciarLeitor() {
       }
     );
   };
+}
+setTimeout(() => {
+  const r = document.getElementById("resultado");
+  if (r && r.innerHTML.trim() === "") {
+    r.innerHTML = `
+      <div style="background:#fff3cd;padding:15px;border-radius:10px">
+        ⏱️ Não foi possível ler o QR Code.<br><br>
+        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+        <br><br>
+       <div style="text-align:center;margin-top:20px">
+  <button onclick="window.location.href='painelparceiro.html'" class="btn2">
+    ← Voltar ao Painel
+  </button>
+</div>
+
+  }
+}, 15000);
+
 
   if (idPublicoInicial) {
     processarQR(idPublicoInicial);
   }
 }
 
-function processarQR(texto) {
+async function processarQR(texto) {
   let id = texto;
 
   if (texto.includes("http")) {
@@ -215,16 +260,49 @@ function processarQR(texto) {
     alert("QR Code inválido");
     return;
   }
+function voltarPainel() {
+  if (leitor) {
+    leitor.stop().catch(() => {});
+  }
+  window.location.href = "painelparceiro.html";
+}
 
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-const url =
-  API_URL +
-  "?idPublico=" + encodeURIComponent(id) +
-  "&modo=parceiro" +
-"&token=" + encodeURIComponent(token) +
-"&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
-"&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
+  const url =
+    API_URL +
+    "?idPublico=" + encodeURIComponent(id) +
+    "&modo=parceiro" +
+"&token=" + sessionStorage.getItem("parceiroToken")
+    "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
+    "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
+
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    const div = document.getElementById("resultado");
+
+    if (!data || !data.nome) {
+      div.innerHTML = "❌ Cliente não encontrado.";
+      return;
+    }
+
+    div.innerHTML = `
+      <div class="resultado" style="background:${data.ativo === "SIM" ? "#d4edda" : "#f8d7da"}">
+        <b>Cliente:</b> ${data.nome}<br>
+        <b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}<br>
+        ${data.ativo === "SIM" ? `<b>Código:</b> ${data.codigoERO}` : "Sem liberação"}
+      </div>
+    `;
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao validar QR Code");
+  }
+}
+function voltarPainel() {
+  window.location.href = "painelparceiro.html";
+}
 
 </script>
 
