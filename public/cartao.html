@@ -302,40 +302,27 @@ function jsonp(url){
     document.getElementById("cadastro").textContent = d.dataCadastro || "-";
 
     // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
-    const idPub = (d.idPublico || id).trim();
-    const urlValidar1 = "https://aproveitai.com.br/validar.html?id=" + encodeURIComponent(idPub); // padrão recomendado
-// ✅ QR Code: prioridade -> Base64 | URL da planilha | Gerado na hora
+   // ===============================
+// QR CODE (BLOCO ÚNICO E SEGURO)
+// ===============================
 const idPublicoFinal = (d.idPublico || id).trim();
 
 const urlValidar =
   "https://aproveitai.com.br/validar.html?idPublico=" +
   encodeURIComponent(idPublicoFinal);
 
-const qrFinal =
-  d.qrURL
-    ? d.qrURL
-    : "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-      encodeURIComponent(urlValidar);
+let qrFinal;
 
-document.getElementById("qrCode").src = qrFinal;
-let qrFinal = "";
-
-// 1️⃣ Se um dia você salvar base64 no GS
 if (d.qrBase64) {
   qrFinal = "data:image/png;base64," + d.qrBase64;
-
-// 2️⃣ Se existir URL pronta na planilha
 } else if (d.qrURL) {
   qrFinal = d.qrURL;
-
-// 3️⃣ Fallback automático (GARANTE funcionamento)
 } else {
   qrFinal =
     "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
     encodeURIComponent(urlValidar);
 }
 
-// ✅ AQUI ESTAVA FALTANDO
 document.getElementById("qrCode").src = qrFinal;
   }catch(err){
     console.error(err);
