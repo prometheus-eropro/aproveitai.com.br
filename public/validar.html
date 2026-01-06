@@ -174,9 +174,6 @@ const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
 
 localStorage.setItem("parceiroLogado", "SIM");
-localStorage.setItem("parceiroToken", token);
-localStorage.setItem("parceiroNome", nome);
-localStorage.setItem("parceiroCNPJ", cnpj);
 // Sempre monta a tela
 conteudo.innerHTML = `
   <button id="btnCamera">📷 Iniciar câmera</button>
