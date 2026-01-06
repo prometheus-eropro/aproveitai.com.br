@@ -55,6 +55,25 @@
   width: 16px;
   height: 16px;
 }
+.btn-voltar-flutuante {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  background: #198754;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.btn-voltar-flutuante:hover {
+  background: #146c43;
+}
 
   </style>
 </head>
@@ -223,6 +242,15 @@ form.addEventListener("submit", function(e){
 <script>
   const uaField = document.querySelector('input[name="userAgent"]');
   if (uaField) uaField.value = navigator.userAgent;
+<button class="btn-voltar-flutuante" onclick="voltarPagina()">
+  ⬅️ Voltar
+</button>
+<script>
+function voltarPagina() {
+  history.back();
+}
+</script>
+
 </script>
 
 </body>

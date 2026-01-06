@@ -49,14 +49,14 @@ h1, h2, h3 {
 }
 
 .site-title {
-  font-size: 36px;
+  font-size: 28px;
   color: #0a7a2a;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
   font-weight: bold;
 }
 
 .slogan {
-  font-size: 16px;
+  font-size: 14px;
   font-style: italic;
   margin-bottom: 5px;
   color: #555;
@@ -67,7 +67,7 @@ h1, h2, h3 {
   padding: 12px 15px;
   border-radius: 8px;
   margin-top: 10px;
-  font-size: 18px; /* AUMENTADO */
+  font-size: 15px; /* AUMENTADO */
   line-height: 1.5;
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
@@ -113,7 +113,7 @@ h1, h2, h3 {
 .filtros {
   max-width: 1200px;
   margin: 30px auto;
-  padding: 18px 22px;
+  padding: 15px 20px;
   background: rgba(255,255,255,0.35);
   border-radius: 18px;
 
@@ -663,7 +663,7 @@ CARDS DE PARCEIROS
 .filtros {
   max-width: 1200px;
   margin: 30px auto;
-  padding: 16px 20px;
+  padding: 15px 20px;
   background: rgba(255,255,255,0.35);
   border-radius: 16px;
 
@@ -762,7 +762,7 @@ CARDS DE PARCEIROS
 .filtros {
   max-width: 1200px;
   margin: 30px auto 30px;
-  padding: 20px 24px;
+  padding: 15px 20px;
   background: rgba(255,255,255,0.35);
   border-radius: 18px;
 
@@ -789,7 +789,7 @@ CARDS DE PARCEIROS
 .filtros {
   max-width: 1200px;
   margin: 30px auto;
-  padding: 18px 22px;
+  padding: 15px 20px;
   background: rgba(255,255,255,0.35);
   border-radius: 16px;
 
@@ -1810,4 +1810,168 @@ main {
 .status.inativo {
   background: #ffe0e0;
   color: #b00000;
+}
+.btn-voltar-flutuante {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  background: #198754;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.btn-voltar-flutuante:hover {
+  background: #146c43;
+}
+.filtros {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #d9f4ff;
+  padding: 12px;
+  border-radius: 14px;
+  max-width: 900px;
+  margin: 15px auto;
+}
+
+.filtros input,
+.filtros select {
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  min-width: 180px;
+}
+
+.filtros button {
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 10px;
+  border: none;
+  background: #198754;
+  color: #fff;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.filtros button:hover {
+  background: #146c43;
+}
+.container-parceiros {
+  margin-top: 1px;
+}
+
+.card-parceiro {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-parceiro:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+.card-contatos {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.card-contatos img {
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.card-contatos img:hover {
+  transform: scale(1.15);
+  opacity: 0.85;
+}
+.card-contatos-texto {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag-contato {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0a3d1c;
+  background: #d4f5e2;
+  border: 1px solid #a3e6c1;
+  transition: 0.2s;
+}
+
+.tag-contato:hover {
+  background: #a3e6c1;
+}
+
+.tag-whatsapp { }
+.tag-instagram { }
+.tag-site { }
+.tag-email { }
+.card-status {
+  max-width: 420px;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.card-aviso {
+  background: #fff3cd;
+  border: 2px solid #ffecb5;
+}
+
+.card-status .icone {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.card-status h3 {
+  margin: 10px 0;
+  color: #664d03;
+}
+
+.card-status p {
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.btn-principal {
+  background: #198754;
+  color: #fff;
+  border: none;
+  padding: 14px 22px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-secundario {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
+  color: #0a7a2a;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
 }

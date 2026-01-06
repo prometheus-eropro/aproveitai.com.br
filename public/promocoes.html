@@ -17,7 +17,7 @@
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         🎯 <strong>Promoções Ativas</strong><br>
-        Promoções públicas em vigor
+        Validas para cliente com cartâo AproveitAI ativo
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
@@ -46,11 +46,6 @@
 </div>
 
 <div class="container-parceiros" id="lista"></div>
-
-<div style="text-align:center; margin:30px;">
-  <button onclick="location.href='index.html'" class="btn-voltar">← Voltar ao início</button>
-</div>
-
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
@@ -84,6 +79,10 @@ fetch(API + "?aba=promocoes")
     lista.appendChild(card);
   });
 });
+
+function voltarPagina() {
+  history.back();
+}
 </script>
 
 <footer style="
@@ -99,6 +98,10 @@ fetch(API + "?aba=promocoes")
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
+</script>
+<button class="btn-voltar-flutuante" onclick="voltarPagina()">
+  ⬅️ Voltar
+</button>
 
 </body>
 </html>

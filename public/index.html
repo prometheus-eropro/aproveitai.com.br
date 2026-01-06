@@ -49,14 +49,16 @@
   <a href="promocoes.html" class="btn-aproveitai">🔥 Promoções</a>
   <a href="painelcliente.html" class="btn-aproveitai">👤 Área do Cliente</a>
   <a href="painelparceiro.html" class="btn-aproveitai">🏪 Área do Parceiro</a>
-  <a
+<a
   href="https://api.whatsapp.com/send?phone=5528999692303&text=Olá!%20Quero%20ser%20parceiro%20do%20Cartão%20AproveitAI.%0A%0ANome%20do%20negócio:%0ACidade:%0ARamo:%0ATelefone:%0AInstagram:%0A%0AObrigado!"
   target="_blank"
-  class="btn-parceiro"
+  class="btn-aproveitai"
 >
-  Quero ser parceiro
+  🏪 Quero ser parceiro
 </a>
-  <a href="cadastro.html" class="btn-aproveitai">📝 Quero ser Cliente</a>
+<a href="cadastro.html" class="btn-aproveitai">
+  🏪 Quero ser cliente
+</a>
 
 </div>
 
@@ -114,8 +116,7 @@
 
 <script>
 /* =====================================================
-   CARTÃO APROVEITAI – SCRIPT ÚNICO OFICIAL
-   Estável | Vercel OK | Apps Script OK
+   CARTÃO APROVEITAI – SCRIPT ÚNICO OFICIAL (INDEX)
 ===================================================== */
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
@@ -127,7 +128,9 @@ const buscaRamo = document.getElementById("buscaRamo");
 
 let parceiros = [];
 
-/* ================= UTIL ================= */
+/* =========================
+   UTIL
+========================= */
 function normalizar(txt) {
   return (txt || "")
     .toLowerCase()
@@ -136,7 +139,29 @@ function normalizar(txt) {
     .trim();
 }
 
-/* ================= RENDER ================= */
+/* =========================
+   PREENCHER FILTROS
+========================= */
+function preencherFiltros() {
+  buscaCidade.innerHTML = `<option value="">Todas as cidades</option>`;
+  buscaRamo.innerHTML = `<option value="">Todos os ramos</option>`;
+
+  [...new Set(parceiros.map(p => normalizar(p.cidade)).filter(Boolean))]
+    .sort()
+    .forEach(c => {
+      buscaCidade.innerHTML += `<option value="${c}">${c}</option>`;
+    });
+
+  [...new Set(parceiros.map(p => normalizar(p.ramo)).filter(Boolean))]
+    .sort()
+    .forEach(r => {
+      buscaRamo.innerHTML += `<option value="${r}">${r}</option>`;
+    });
+}
+
+/* =========================
+   RENDERIZAR CARDS
+========================= */
 function renderizar(lista) {
   parceirosDiv.innerHTML = "";
 
@@ -167,44 +192,38 @@ function renderizar(lista) {
         <p><b>Cidade:</b> ${cidade}</p>
         <p><b>Ramo:</b> ${ramo}</p>
         ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
-        ${whatsapp ? `<p><a target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a></p>` : ""}
-        ${instagram ? `<p><a target="_blank" href="https://instagram.com/${instagram.replace("@","")}">${instagram}</a></p>` : ""}
-        ${site ? `<p><a target="_blank" href="${site}">Site</a></p>` : ""}
-        ${email ? `<p><a href="mailto:${email}">${email}</a></p>` : ""}
+
+        <div class="card-contatos-texto">
+          ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
+          ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
+          ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
+          ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
+        </div>
       </div>
     `;
   });
 }
 
-/* ================= FILTROS ================= */
-function preencherFiltros() {
-  buscaCidade.innerHTML = `<option value="">Todas as cidades</option>`;
-  buscaRamo.innerHTML = `<option value="">Todos os ramos</option>`;
-
-  [...new Set(parceiros.map(p => normalizar(p.cidade)).filter(Boolean))]
-    .sort()
-    .forEach(c => buscaCidade.innerHTML += `<option value="${c}">${c}</option>`);
-
-  [...new Set(parceiros.map(p => normalizar(p.ramo)).filter(Boolean))]
-    .sort()
-    .forEach(r => buscaRamo.innerHTML += `<option value="${r}">${r}</option>`);
-}
-
+/* =========================
+   FILTRAR
+========================= */
 function filtrar() {
   const nome = normalizar(buscaNome.value);
   const cidade = normalizar(buscaCidade.value);
   const ramo = normalizar(buscaRamo.value);
 
-  renderizar(
-    parceiros.filter(p =>
-      (!nome || normalizar(p.nomeFantasia || p.nome).includes(nome)) &&
-      (!cidade || normalizar(p.cidade).includes(cidade)) &&
-      (!ramo || normalizar(p.ramo).includes(ramo))
-    )
+  const filtrados = parceiros.filter(p =>
+    (!nome || normalizar(p.nomeFantasia || p.nome).includes(nome)) &&
+    (!cidade || normalizar(p.cidade).includes(cidade)) &&
+    (!ramo || normalizar(p.ramo).includes(ramo))
   );
+
+  renderizar(filtrados);
 }
 
-/* ================= LOAD ================= */
+/* =========================
+   CARREGAR PARCEIROS
+========================= */
 function carregarParceiros() {
   fetch(API_URL + "?aba=parceiros")
     .then(r => r.json())
@@ -219,21 +238,11 @@ function carregarParceiros() {
     });
 }
 
-/* ================= LGPD ================= */
-function aceitarLGPD() {
-  localStorage.setItem("lgpd-ok", "sim");
-  document.getElementById("lgpd-barra")?.remove();
-}
-
-/* ================= INIT ================= */
+/* =========================
+   INIT
+========================= */
 document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem("lgpd-ok") === "sim") {
-    document.getElementById("lgpd-barra")?.remove();
-  }
-
   carregarParceiros();
-
- 
 });
 </script>
 </body>
