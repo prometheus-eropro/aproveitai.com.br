@@ -278,9 +278,10 @@ if (localStorage.getItem("parceiroLogado") !== "SIM") {
     API_URL +
     "?idPublico=" + encodeURIComponent(id) +
     "&modo=parceiro" +
-"&token=" + sessionStorage.getItem("parceiroToken")
-    "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
-    "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
+"&token=" + localStorage.getItem("parceiroToken")
+
+  "&parceiro=" + encodeURIComponent(localStorage.getItem("parceiroNome")) +
+"&cnpjParceiro=" + encodeURIComponent(localStorage.getItem("parceiroCNPJ"));
 
   try {
     const resp = await fetch(url);
@@ -349,8 +350,6 @@ div.innerHTML = `
 
 } // fecha if ou outro bloco acima (se existir)
 
-</script>
-
 function voltarPainel() {
   if (leitor) {
     leitor.stop().catch(() => {});
@@ -359,6 +358,5 @@ function voltarPainel() {
 }
 
 </script>
-
 </body>
 </html>
