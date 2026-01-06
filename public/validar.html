@@ -120,6 +120,45 @@ button {
   font-size: 11px;
   margin-top: 5px;
 }
+.box-validacao {
+  max-width: 420px;
+  margin: 25px auto;
+  padding: 22px;
+  border-radius: 14px;
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.6;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  border: 3px solid transparent;
+}
+
+.box-validacao.ativo {
+  background: #d4edda;
+  border-color: #198754;
+  color: #0f5132;
+}
+
+.box-validacao.inativo {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #842029;
+}
+
+.box-validacao h3 {
+  margin-top: 0;
+  text-align: center;
+  font-size: 20px;
+}
+
+.box-validacao .codigo {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+
 </style>
 </head>
 
@@ -296,18 +335,21 @@ if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
   : "-";
 
 div.innerHTML = `
-  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+  <div class="box-validacao ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+    <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
+
     <p><b>Nome:</b> ${data.nome}</p>
     <p><b>CPF:</b> ${cpfMascarado}</p>
-    <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
+    <p><b>ID Público:</b> ${data.idPublico}</p>
     <p><b>Cidade:</b> ${data.cidade || "-"}</p>
     <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
     ${
       data.ativo === "SIM"
-        ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-        : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
+        ? `<div class="codigo">Código de Autorização<br>${data.codigoERO}</div>`
+        : `<p style="font-weight:bold;text-align:center">
+             Cliente inativo — desconto NÃO liberado
+           </p>`
     }
   </div>
 `;
@@ -317,13 +359,16 @@ div.innerHTML = `
     alert("Erro ao validar QR Code");
   }
 }
+
 function voltarPainel() {
-  if (leitor) {
-    leitor.stop().catch(() => {});
-  }
+  try {
+    if (leitor && scannerAtivo) {
+      leitor.stop().catch(() => {});
+    }
+  } catch (e) {}
+
   window.location.href = "painelparceiro.html";
 }
-
 </script>
 
 </body>
