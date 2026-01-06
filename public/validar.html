@@ -362,7 +362,7 @@ resultado.innerHTML = `
 
     <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
     <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-    <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+    <p><b>Grupo:</b> ${data.grupo || "-"}</p>
 
     <p><b>Cliente desde:</b> ${
       data.dataCadastro
@@ -375,10 +375,16 @@ resultado.innerHTML = `
     ${
       data.ativo === "SIM"
         ? `<div class="codigo">✔ Código de Autorização: ${data.codigoERO}</div>`
-        : `<p style="margin-top:10px;font-weight:bold">
-             Cliente inativo — desconto não autorizado
-           </p>`
+        : `<p style="font-weight:bold">Desconto não autorizado</p>`
     }
+
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-principal" onclick="iniciarLeitor()">
+        🔄 Validar outro cliente
+      </button>
+    </div>
+  </div>
+`;
 await pararLeitorSilencioso();
 scannerAtivo = false;
 
