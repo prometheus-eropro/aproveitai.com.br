@@ -2,194 +2,328 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Validação por QR Code - Cartão AproveitAI</title>
+<title>Validação por QR Code • Cartão AproveitAI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="manifest" href="manifest-validar.json">
-<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="/manifest-validar.json">
+<meta name="theme-color" content="#198754">
 
 <style>
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  background: #aee6ff;
+  font-family: Arial, sans-serif;
+  background: #f4fff6;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+.site-header {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.brandline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  max-height: 180px;
+}
+
+.brand-center {
+  flex: 1;
   text-align: center;
 }
 
-header {
-  background: #fff;
-  padding: 20px;
+.site-title {
+  font-size: 36px;
+  color: #0a7a2a;
+  font-weight: bold;
 }
 
-h1 {
-  color: #0a7c3a;
-}
-
-button {
-  padding: 14px 22px;
+.slogan {
   font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  font-style: italic;
+  color: #555;
 }
 
-.btn {
-  background: #1fa84f;
-  color: #fff;
-  margin: 10px;
+.boas-vindas {
+  background: #dfffe0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.btn:hover {
-  opacity: 0.9;
+/* =========================
+   CONTEÚDO
+========================= */
+main {
+  background: #9ee3ff;
+  min-height: 300px;
+  padding: 40px 20px;
+  text-align: center;
 }
 
 #reader {
-  width: 280px;
+  width: 300px;
   margin: 20px auto;
+  border: 3px dashed #28a745;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
 }
 
-.result {
-  max-width: 420px;
-  margin: 20px auto;
-  padding: 16px;
+button {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 14px 22px;
+  font-size: 18px;
   border-radius: 8px;
-  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
 }
 
-.ok {
-  background: #e6fff1;
-  border: 2px solid #1fa84f;
-  color: #0a7c3a;
+.resultado {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 18px;
 }
 
-.erro {
-  background: #ffecec;
-  border: 2px solid #d93025;
-  color: #a10000;
+/* =========================
+   RODAPÉ
+========================= */
+.footer {
+  background: #dfffe0;
+  padding: 10px;
+  font-size: 13px;
 }
 
-footer {
-  background: #dff5e1;
-  padding: 12px;
-  font-size: 12px;
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.footer-bottom {
+  text-align: center;
+  font-size: 11px;
+  margin-top: 5px;
 }
 </style>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 
 <body>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw-validar.js");
+}
+</script>
 
-<header>
-  <h1>Cartão AproveitAI</h1>
-  <strong>Validação por QR Code</strong><br>
-  Área exclusiva do parceiro
+<!-- CABEÇALHO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        🏪 <strong>Validação por QR Code</strong><br>
+        Área exclusiva do parceiro
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo">
+  </div>
 </header>
 
-<br>
+<main id="conteudo">
 
-<button class="btn" onclick="iniciarCamera()">📷 Iniciar câmera</button>
+<!-- conteúdo dinâmico -->
 
-<div id="reader"></div>
+</main>
 
-<div id="resultado"></div>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
 
-<button class="btn" onclick="voltarPainel()">⬅ Voltar ao Painel</button>
-
-<footer>
-© 2025 Cartão AproveitAI · PROMETHEUS EROPRO<br>
-O Cartão AproveitAI não garante descontos. Benefícios são definidos pelos parceiros.
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-let scanner = null;
+const conteudo = document.getElementById("conteudo");
+const params = new URLSearchParams(window.location.search);
+const idPublicoInicial = params.get("idPublico");
 
-function iniciarCamera() {
-  document.getElementById("resultado").innerHTML = "";
+const parceiroLogado = sessionStorage.getItem("parceiroLogado");
+const token = sessionStorage.getItem("parceiroToken");
 
-  if (scanner) {
-    scanner.clear();
+// Sempre monta a tela
+conteudo.innerHTML = `
+  <button id="btnCamera">📷 Iniciar câmera</button>
+  <div id="reader"></div>
+  <div id="resultado" class="resultado"></div>
+
+  <div style="margin-top:20px">
+    <button onclick="voltarPainel()">⬅️ Voltar ao Painel</button>
+  </div>
+`;
+
+// Só inicia a câmera quando clicar
+document.getElementById("btnCamera").onclick = () => {
+  iniciarLeitor();
+};
+function onScanSuccess(decodedText, decodedResult) {
+
+  if (html5QrcodeScanner) {
+    html5QrcodeScanner.clear();
   }
 
-  scanner = new Html5Qrcode("reader");
+  window.location.href = "validar.html?idPublico=" + decodedText;
+}
 
-  Html5Qrcode.getCameras().then(devices => {
-    if (!devices.length) {
-      alert("Nenhuma câmera encontrada.");
+let leitor = null;
+let scannerAtivo = false;
+
+function iniciarLeitor() {
+  if (scannerAtivo) return;
+
+  scannerAtivo = true;
+
+  if (!leitor) {
+    leitor = new Html5Qrcode("reader");
+  }
+
+  leitor.start(
+    { facingMode: "environment" }, // câmera traseira no celular
+    { fps: 10, qrbox: 220 },
+    texto => {
+      scannerAtivo = false;
+      leitor.stop().catch(()=>{});
+      processarQR(texto);
+    }
+  ).catch(err => {
+    scannerAtivo = false;
+    alert("Não foi possível acessar a câmera.");
+    console.error(err);
+  });
+}
+setTimeout(() => {
+  const r = document.getElementById("resultado");
+  if (r && r.innerHTML.trim() === "") {
+    r.innerHTML = `
+      <div style="background:#fff3cd;padding:15px;border-radius:10px">
+        ⏱️ Não foi possível ler o QR Code.<br><br>
+
+        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+
+        <br><br>
+
+        <div style="text-align:center;margin-top:20px">
+          <button onclick="window.location.href='painelparceiro.html'">
+            ← Voltar ao Painel
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}, 15000);
+  if (idPublicoInicial) {
+    processarQR(idPublicoInicial);
+  }
+async function processarQR(texto) {
+if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
+  alert("Sessão expirada. Faça login novamente.");
+  window.location.href = "painelparceiro.html";
+  return;
+}
+
+  let id = texto;
+
+  if (texto.includes("http")) {
+    try {
+      const u = new URL(texto);
+      id = u.searchParams.get("idPublico") || "";
+    } catch {}
+  }
+
+  if (!id.startsWith("APV-")) {
+    alert("QR Code inválido");
+    return;
+  }
+
+  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+  const url =
+    API_URL +
+    "?idPublico=" + encodeURIComponent(id) +
+    "&modo=parceiro" +
+"&token=" + sessionStorage.getItem("parceiroToken")
+    "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
+    "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
+
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    const div = document.getElementById("resultado");
+
+    if (!data || !data.nome) {
+      div.innerHTML = "❌ Cliente não encontrado.";
       return;
     }
 
-    scanner.start(
-      devices[0].id,
-      { fps: 10, qrbox: 250 },
-      onScanSuccess
-    ).catch(err => {
-      alert("Erro ao acessar a câmera.");
-      console.error(err);
-    });
-  });
-}
+    const cpfMascarado = data.cpf
+  ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
+  : "-";
 
-function onScanSuccess(textoQR) {
-  pararCamera();
-  validarCodigo(textoQR.trim());
-}
+div.innerHTML = `
+  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+    <p><b>Nome:</b> ${data.nome}</p>
+    <p><b>CPF:</b> ${cpfMascarado}</p>
+    <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
+    <p><b>Cidade:</b> ${data.cidade || "-"}</p>
+    <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
-function pararCamera() {
-  if (scanner) {
-    scanner.stop().then(() => {
-      scanner.clear();
-    }).catch(() => {});
+    ${
+      data.ativo === "SIM"
+        ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
+        : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
+    }
+  </div>
+`;
+
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao validar QR Code");
   }
 }
-
-function validarCodigo(codigo) {
-  document.getElementById("resultado").innerHTML =
-    "<div class='result'>Consultando...</div>";
-
-  fetch(API_URL + "?validar=1&codigo=" + encodeURIComponent(codigo))
-    .then(r => r.json())
-    .then(dados => {
-      mostrarResultado(dados);
-    })
-    .catch(() => {
-      mostrarErro("Erro ao consultar servidor.");
-    });
-}
-
-function mostrarResultado(d) {
-  if (!d || d.encontrado !== true) {
-    mostrarErro("Cliente não encontrado.");
-    return;
-  }
-
-  if (d.ativo !== true) {
-    mostrarErro("Cliente INATIVO. Desconto não liberado.");
-    return;
-  }
-
-  document.getElementById("resultado").innerHTML = `
-    <div class="result ok">
-      <strong>CLIENTE ATIVO</strong><br><br>
-      Nome: ${d.nome}<br>
-      Código do Cartão: ${d.codigo}<br>
-      Autorização: <strong>${d.codigoERO}</strong><br><br>
-      ✔ Desconto liberado
-    </div>
-  `;
-}
-
-function mostrarErro(msg) {
-  document.getElementById("resultado").innerHTML = `
-    <div class="result erro">❌ ${msg}</div>
-  `;
-}
-
 function voltarPainel() {
-  pararCamera();
+  if (leitor) {
+    leitor.stop().catch(() => {});
+  }
   window.location.href = "painelparceiro.html";
 }
+
 </script>
 
 </body>
