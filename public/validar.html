@@ -251,24 +251,23 @@ async function iniciarLeitor() {
   if (scannerAtivo) return;
   scannerAtivo = true;
 
-  // limpa estado anterior sem erro
   await pararLeitorSilencioso();
 
   if (!leitor) {
     leitor = new Html5Qrcode("reader");
   }
 
-  // limpa resultado anterior
   document.getElementById("resultado").innerHTML = "";
 
-  leitor.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 220 },
-    (texto) => {
-      // não para aqui — processarQR vai cuidar do stop com segurança
-      processarQR(texto);
-    }
-  ).catch(err => {
+  try {
+    await leitor.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 220 },
+      (texto) => {
+        processarQR(texto);
+      }
+    );
+  } catch (err) {
     scannerAtivo = false;
     document.getElementById("resultado").innerHTML = `
       <div class="bloco-validacao inativo">
@@ -280,7 +279,7 @@ async function iniciarLeitor() {
       </div>
     `;
     console.error(err);
-  });
+  }
 }
 .catch(err => {
     scannerAtivo = false;
