@@ -385,25 +385,9 @@ resultado.innerHTML = `
     </div>
   </div>
 `;
-await pararLeitorSilencioso();
-scannerAtivo = false;
 
-    <!-- 🔄 BOTÃO VALIDAR OUTRO CLIENTE -->
-    <div style="text-align:center;margin-top:18px">
-      <button class="btn-principal" onclick="iniciarLeitor()">
-        🔄 Validar outro cliente
-      </button>
-    </div>
-  </div>
-`;
 await pararLeitorSilencioso();
   scannerAtivo = false;
-// 🔒 trava nova leitura (agora sim, no lugar certo)
-scannerAtivo = false;
-
-if (leitor) {
-  leitor.stop().catch(() => {});
-}
 
   } catch (e) {
   console.error(e);
