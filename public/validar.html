@@ -353,6 +353,19 @@ function renderizarResultadoPadrao(d) {
     </div>
   `;
 }
+<script>
+  function voltarPainel() {
+    try {
+      if (window.html5QrCode && window.html5QrCode.isScanning) {
+        window.html5QrCode.stop();
+      }
+    } catch (e) {}
+
+    window.location.href = "painelparceiro.html";
+  }
+</script>
+
+
 </script>
 </body>
 </html>
