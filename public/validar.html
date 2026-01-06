@@ -208,56 +208,27 @@ if ("serviceWorker" in navigator) {
 </footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
 
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 <script>
 const conteudo = document.getElementById("conteudo");
 const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
 
-const parceiroLogado = sessionStorage.getItem("parceiroLogado");
-const token = sessionStorage.getItem("parceiroToken");
-
-// Sempre monta a tela
 conteudo.innerHTML = `
   <button id="btnCamera">📷 Iniciar câmera</button>
   <div id="reader"></div>
   <div id="resultado" class="resultado"></div>
 `;
 
-// Só inicia a câmera quando clicar
-document.getElementById("btnCamera").onclick = () => {
-  iniciarLeitor();
-};
-function onScanSuccess(decodedText, decodedResult) {
+document.getElementById("btnCamera").onclick = iniciarLeitor;
 
-  if (html5QrcodeScanner) {
-    html5QrcodeScanner.clear();
-  }
-
-  window.location.href = "validar.html?idPublico=" + decodedText;
-}
-
-let leitor = null;
-let scannerAtivo = false;
-async function pararLeitorSilencioso() {
-  if (!leitor) return;
-  try {
-    await leitor.stop();
-  } catch (e) {
-    // ignora erro "scanner is not running"
-  }
-}
-
-<script>
 let leitor = null;
 let scannerAtivo = false;
 
 async function pararLeitorSilencioso() {
   if (!leitor) return;
-  try {
-    await leitor.stop();
-  } catch (e) {
-    // ignora erro
-  }
+  try { await leitor.stop(); } catch {}
 }
 
 async function iniciarLeitor() {
@@ -266,61 +237,40 @@ async function iniciarLeitor() {
 
   await pararLeitorSilencioso();
 
-  if (!leitor) {
-    leitor = new Html5Qrcode("reader");
-  }
-
+  if (!leitor) leitor = new Html5Qrcode("reader");
   document.getElementById("resultado").innerHTML = "";
 
   try {
     await leitor.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: 220 },
-      (texto) => {
-        processarQR(texto);
-      }
+      texto => processarQR(texto)
     );
   } catch (err) {
     scannerAtivo = false;
     document.getElementById("resultado").innerHTML = `
       <div class="bloco-validacao inativo">
         <h3>⚠️ Não foi possível acessar a câmera</h3>
-        <p>Verifique a permissão do navegador e tente novamente.</p>
-        <div style="text-align:center;margin-top:18px">
-          <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
-        </div>
-      </div>
-    `;
-    console.error(err);
+        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+      </div>`;
   }
 }
-</script>
 
-  if (idPublicoInicial) {
-    processarQR(idPublicoInicial);
-  }
+if (idPublicoInicial) processarQR(idPublicoInicial);
+
 async function processarQR(texto) {
-if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
-  alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "painelparceiro.html";
-  return;
-}
-const resultado = document.getElementById("resultado");
+  if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
+    alert("Sessão expirada.");
+    location.href = "painelparceiro.html";
+    return;
+  }
 
-resultado.innerHTML = `
-  <div class="card-status">
-    <div class="icone">⏳</div>
-    <p>Validando cliente, aguarde…</p>
-  </div>
-`;
+  const resultado = document.getElementById("resultado");
+  resultado.innerHTML = "⏳ Validando…";
 
   let id = texto;
-
   if (texto.includes("http")) {
-    try {
-      const u = new URL(texto);
-      id = u.searchParams.get("idPublico") || "";
-    } catch {}
+    try { id = new URL(texto).searchParams.get("idPublico") || ""; } catch {}
   }
 
   if (!id.startsWith("APV-")) {
@@ -334,95 +284,28 @@ resultado.innerHTML = `
     API_URL +
     "?idPublico=" + encodeURIComponent(id) +
     "&modo=parceiro" +
-"&token=" + sessionStorage.getItem("parceiroToken")
+    "&token=" + sessionStorage.getItem("parceiroToken") +
     "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
     "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
 
   try {
-    const resp = await fetch(url);
-    const data = await resp.json();
+    const data = await fetch(url).then(r => r.json());
 
-    const div = document.getElementById("resultado");
-
-if (!data || !data.nome) {
-  resultado.innerHTML = `
-    <div class="card-status card-aviso">
-      <div class="icone">❌</div>
-      <h3>Cliente não encontrado</h3>
-      <button class="btn-principal" onclick="iniciarLeitor()">🔄 Tentar novamente</button>
-      <button class="btn-secundario" onclick="voltarAnterior()">← Voltar</button>
-    </div>
-  `;
-  return;
-}
-
-resultado.innerHTML = `
-  <div class="bloco-validacao ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-    <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
-
-    <p><b>Nome:</b> ${data.nome}</p>
-
-    <p><b>CPF:</b> ${
-      data.cpf
-        ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-        : "-"
-    }</p>
-
-    <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-    <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-    <p><b>Grupo:</b> ${data.grupo || "-"}</p>
-
-    <p><b>Cliente desde:</b> ${
-      data.dataCadastro
-        ? new Date(data.dataCadastro).toLocaleString("pt-BR")
-        : "-"
-    }</p>
-
-    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
-
-    ${
-      data.ativo === "SIM"
-        ? `<div class="codigo">✔ Código de Autorização: ${data.codigoERO}</div>`
-        : `<p style="font-weight:bold">Desconto não autorizado</p>`
-    }
-
-    <div style="text-align:center;margin-top:20px">
-      <button class="btn-principal" onclick="iniciarLeitor()">
-        🔄 Validar outro cliente
-      </button>
-    </div>
-  </div>
-`;
-
-await pararLeitorSilencioso();
-  scannerAtivo = false;
-
-  } catch (e) {
-  console.error(e);
-  document.getElementById("resultado").innerHTML = `
-    <div class="bloco-validacao inativo">
-      <h3>⚠️ Erro ao validar</h3>
-      <p>Não foi possível validar agora. Tente novamente.</p>
-      <div style="text-align:center;margin-top:18px">
-        <button class="btn-principal" onclick="iniciarLeitor()">🔄 Validar outro cliente</button>
-      </div>
-    </div>
-  `;
-  
-}
-
-}
-function voltarPainel() {
-  if (leitor) {
-    leitor.stop().catch(() => {});
+    resultado.innerHTML = `
+      <div class="bloco-validacao ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+        <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
+        <p><b>Nome:</b> ${data.nome || "-"}</p>
+        <p><b>Status:</b> ${data.ativo}</p>
+        ${data.ativo === "SIM" ? `<div class="codigo">Código: ${data.codigoERO}</div>` : ""}
+        <button onclick="iniciarLeitor()">🔄 Validar outro</button>
+      </div>`;
+  } catch {
+    resultado.innerHTML = "Erro ao validar.";
   }
-  window.location.href = "painelparceiro.html";
-}
-function voltarAnterior() {
-  history.back();
-}
 
+  await pararLeitorSilencioso();
+  scannerAtivo = false;
+}
 </script>
-
 </body>
 </html>
