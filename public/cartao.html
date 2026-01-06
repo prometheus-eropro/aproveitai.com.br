@@ -333,13 +333,19 @@ document.getElementById("qrCode").src = qrFinal;
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
-
 function salvarCartao() {
   const cartao = document.getElementById("cartao-print");
+  const qr = document.getElementById("qrCode");
+
+  // garante que o QR já carregou
+  if (!qr.complete) {
+    alert("Aguarde o QR Code carregar e tente novamente.");
+    return;
+  }
 
   html2canvas(cartao, {
     scale: 2,
-    useCORS: false
+    useCORS: true
   }).then(canvas => {
     const link = document.createElement("a");
     link.download = "cartao-aproveitai.png";

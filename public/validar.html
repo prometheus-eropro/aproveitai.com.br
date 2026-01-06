@@ -173,9 +173,10 @@ const conteudo = document.getElementById("conteudo");
 const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
 
-const parceiroLogado = sessionStorage.getItem("parceiroLogado");
-const token = sessionStorage.getItem("parceiroToken");
-
+localStorage.setItem("parceiroLogado", "SIM");
+localStorage.setItem("parceiroToken", token);
+localStorage.setItem("parceiroNome", nome);
+localStorage.setItem("parceiroCNPJ", cnpj);
 // Sempre monta a tela
 conteudo.innerHTML = `
   <button id="btnCamera">📷 Iniciar câmera</button>
@@ -250,7 +251,8 @@ setTimeout(() => {
     processarQR(idPublicoInicial);
   }
 async function processarQR(texto) {
-if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
+if (localStorage.getItem("parceiroLogado") !== "SIM") {
+
   alert("Sessão expirada. Faça login novamente.");
   window.location.href = "painelparceiro.html";
   return;
@@ -291,18 +293,58 @@ if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
       return;
     }
 
-    div.innerHTML = `
-      <div class="resultado" style="background:${data.ativo === "SIM" ? "#d4edda" : "#f8d7da"}">
-        <b>Cliente:</b> ${data.nome}<br>
-        <b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}<br>
-        ${data.ativo === "SIM" ? `<b>Código:</b> ${data.codigoERO}` : "Sem liberação"}
-      </div>
-    `;
-  } catch (e) {
-    console.error(e);
-    alert("Erro ao validar QR Code");
-  }
-}
+div.innerHTML = `
+  <div class="resultado" style="
+    background:${data.ativo === "SIM" ? "#d4edda" : "#f8d7da"};
+    border:2px solid ${data.ativo === "SIM" ? "#1c8f3c" : "#c62828"};
+  ">
+
+    <div style="font-weight:700;font-size:18px;margin-bottom:10px">
+      ${data.nome}
+    </div>
+
+    <div><b>CPF:</b> ${data.cpf}</div>
+    <div><b>ID Público:</b> ${data.idPublico}</div>
+    <div><b>Grupo:</b> ${data.grupo || "-"}</div>
+    <div><b>Cidade:</b> ${data.cidade || "-"}</div>
+    <div><b>Cadastro:</b> ${data.dataCadastro || "-"}</div>
+
+    <div style="
+      margin-top:10px;
+      padding:8px;
+      border-radius:8px;
+      font-weight:700;
+      color:#fff;
+      background:${data.ativo === "SIM" ? "#1c8f3c" : "#c62828"};
+    ">
+      Status: ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}
+    </div>
+
+    ${
+      data.ativo === "SIM"
+        ? `
+          <div style="
+            margin-top:10px;
+            font-size:18px;
+            font-weight:700;
+            color:#0a7a2a;
+          ">
+            ✓ Código de Autorização: ${data.codigoERO}
+          </div>
+        `
+        : `
+          <div style="
+            margin-top:10px;
+            font-weight:600;
+            color:#7a0000;
+          ">
+            ⚠ Cliente inativo. Desconto não autorizado.
+          </div>
+        `
+    }
+
+  </div>
+`;
 function voltarPainel() {
   if (leitor) {
     leitor.stop().catch(() => {});
