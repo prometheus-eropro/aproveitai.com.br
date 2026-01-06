@@ -247,6 +247,9 @@ setTimeout(() => {
   if (idPublicoInicial) {
     processarQR(idPublicoInicial);
   }
+
+
+<script>
 async function processarQR(texto) {
 
   if (localStorage.getItem("parceiroLogado") !== "SIM") {
@@ -257,108 +260,100 @@ async function processarQR(texto) {
 
   let id = texto;
 
-  // Trata QR que vem como URL
+  // QR pode vir como URL
   if (texto.includes("http")) {
     try {
       const u = new URL(texto);
       id = u.searchParams.get("idPublico") || "";
-    } catch (err) {
-      alert("QR Code inválido.");
+    } catch {
+      mostrarErro("QR Code inválido.");
       return;
     }
   }
 
   if (!id || !id.startsWith("APV-")) {
-    alert("QR Code inválido.");
+    mostrarErro("QR Code inválido.");
     return;
   }
 
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-  const url =
-    API_URL +
-    "?idPublico=" + encodeURIComponent(id) +
-    "&modo=parceiro" +
-     "&modo=qr";
-
   try {
-    const resp = await fetch(url);
+    const resp = await fetch(
+      API_URL +
+      "?idPublico=" + encodeURIComponent(id) +
+      "&modo=parceiro&origem=qr"
+    );
+
     const data = await resp.json();
 
-    const div = document.getElementById("resultado");
-
     if (!data || !data.nome) {
-  document.getElementById("resultado").innerHTML =
-    "❌ Cliente não encontrado.";
-  return;
+      mostrarErro("Cliente não encontrado.");
+      return;
+    }
+
+    renderizarResultadoPadrao(data);
+
+  } catch (err) {
+    console.error(err);
+    mostrarErro("Erro ao consultar o cliente.");
+  }
 }
 
-renderizarResultadoPadrao(data);
-function renderizarResultadoPadrao(d) {
+function mostrarErro(msg) {
+  document.getElementById("resultado").innerHTML = `
+    <div style="
+      background:#fdeaea;
+      border:2px solid #dc3545;
+      border-radius:12px;
+      padding:20px;
+      max-width:420px;
+      margin:20px auto;
+      color:#842029;
+      font-weight:bold;
+    ">
+      ❌ ${msg}
+    </div>
+  `;
+}
 
-  const box = document.getElementById("resultado");
-  box.style.display = "block";
+function renderizarResultadoPadrao(d) {
 
   const ativo = d.ativo === "SIM";
 
-  box.innerHTML = `
+  document.getElementById("resultado").innerHTML = `
     <div style="
       background:${ativo ? '#e6ffed' : '#fdeaea'};
       border:2px solid ${ativo ? '#198754' : '#dc3545'};
       border-radius:12px;
       padding:20px;
-      margin-top:20px;
       max-width:420px;
-      margin-left:auto;
-      margin-right:auto;
+      margin:20px auto;
     ">
 
-      <h3 style="margin-top:0;color:${ativo ? '#198754' : '#dc3545'}">
+      <h3 style="color:${ativo ? '#198754' : '#dc3545'}">
         ${ativo ? '✔ CLIENTE ATIVO' : '✖ CLIENTE INATIVO'}
       </h3>
 
-      <p><b>Nome:</b> ${d.nome || '-'}</p>
-      <p><b>CPF:</b> ${d.cpf || '-'}</p>
-      <p><b>ID Público:</b> ${d.idPublico || '-'}</p>
-      <p><b>Cidade:</b> ${d.cidade || '-'}</p>
-      <p><b>Grupo:</b> ${d.grupo || '-'}</p>
-      <p><b>Cadastro:</b> ${d.dataCadastro || '-'}</p>
-
-      <p style="font-weight:bold">
-        Status:
-        <span style="color:${ativo ? '#198754' : '#dc3545'}">
-          ${ativo ? 'ATIVO' : 'INATIVO'}
-        </span>
-      </p>
+      <p><b>Nome:</b> ${d.nome}</p>
+      <p><b>CPF:</b> ${d.cpf}</p>
+      <p><b>ID Público:</b> ${d.idPublico}</p>
+      <p><b>Cidade:</b> ${d.cidade}</p>
+      <p><b>Grupo:</b> ${d.grupo}</p>
+      <p><b>Cadastro:</b> ${d.dataCadastro}</p>
 
       ${
         ativo
-          ? `<div style="
-                margin-top:12px;
-                padding:10px;
-                background:#d1e7dd;
-                border-radius:8px;
-                font-weight:bold;
-                color:#0f5132;
-              ">
-                ✔ Código de Autorização: ${d.codigoERO}
+          ? `<div style="background:#d1e7dd;padding:10px;border-radius:8px;font-weight:bold">
+               ✔ Código de Autorização: ${d.codigoERO}
              </div>`
-          : `<div style="
-                margin-top:12px;
-                padding:10px;
-                background:#f8d7da;
-                border-radius:8px;
-                font-weight:bold;
-                color:#842029;
-              ">
-                ⚠ Cliente inativo. Desconto não autorizado.
+          : `<div style="background:#f8d7da;padding:10px;border-radius:8px;font-weight:bold">
+               ⚠ Cliente inativo. Desconto não autorizado.
              </div>`
       }
-
     </div>
   `;
 }
-
 </script>
 </body>
 </html>
