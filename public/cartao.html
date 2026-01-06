@@ -304,14 +304,29 @@ function jsonp(url){
     // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
     const idPub = (d.idPublico || id).trim();
     const urlValidar1 = "https://aproveitai.com.br/validar.html?id=" + encodeURIComponent(idPub); // padrão recomendado
-    const qrImagem = d.qrURL
-      ? d.qrURL
-      : "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(urlValidar1);
+// ✅ QR Code: prioridade -> Base64 | URL da planilha | Gerado na hora
+const idPub = (d.idPublico || id).trim();
+const urlValidar = "https://aproveitai.com.br/validar.html?idPublico=" + encodeURIComponent(idPub);
 
-   if (d.qrBase64) {
-  document.getElementById("qrCode").src =
-    "data:image/png;base64," + d.qrBase64;
+let qrFinal = "";
+
+// 1️⃣ Se um dia você salvar base64 no GS
+if (d.qrBase64) {
+  qrFinal = "data:image/png;base64," + d.qrBase64;
+
+// 2️⃣ Se existir URL pronta na planilha
+} else if (d.qrURL) {
+  qrFinal = d.qrURL;
+
+// 3️⃣ Fallback automático (GARANTE funcionamento)
+} else {
+  qrFinal =
+    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+    encodeURIComponent(urlValidar);
 }
+
+// ✅ AQUI ESTAVA FALTANDO
+document.getElementById("qrCode").src = qrFinal;
   }catch(err){
     console.error(err);
     alert("Erro ao carregar dados do cartão.");
@@ -344,10 +359,5 @@ function formatarDataBR(iso){
 }
 
 </script>
-<div id="cartao-print">
-  <div class="cartao-dobravel">
-    ...
-  </div>
-</div>
 </body>
 </html>
