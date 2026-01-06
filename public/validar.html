@@ -173,9 +173,7 @@ const conteudo = document.getElementById("conteudo");
 const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
 
-const parceiroLogado = sessionStorage.getItem("parceiroLogado");
-const token = sessionStorage.getItem("parceiroToken");
-
+localStorage.setItem("parceiroLogado", "SIM");
 // Sempre monta a tela
 conteudo.innerHTML = `
   <button id="btnCamera">📷 Iniciar câmera</button>
@@ -250,23 +248,28 @@ setTimeout(() => {
     processarQR(idPublicoInicial);
   }
 async function processarQR(texto) {
-if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
-  alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "painelparceiro.html";
-  return;
-}
+
+  if (localStorage.getItem("parceiroLogado") !== "SIM") {
+    alert("Sessão expirada. Faça login novamente.");
+    window.location.href = "painelparceiro.html";
+    return;
+  }
 
   let id = texto;
 
+  // Trata QR que vem como URL
   if (texto.includes("http")) {
     try {
       const u = new URL(texto);
       id = u.searchParams.get("idPublico") || "";
-    } catch {}
+    } catch (err) {
+      alert("QR Code inválido.");
+      return;
+    }
   }
 
-  if (!id.startsWith("APV-")) {
-    alert("QR Code inválido");
+  if (!id || !id.startsWith("APV-")) {
+    alert("QR Code inválido.");
     return;
   }
 
@@ -276,9 +279,7 @@ if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
     API_URL +
     "?idPublico=" + encodeURIComponent(id) +
     "&modo=parceiro" +
-"&token=" + sessionStorage.getItem("parceiroToken")
-    "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
-    "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
+     "&modo=qr";
 
   try {
     const resp = await fetch(url);
@@ -287,30 +288,77 @@ if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
     const div = document.getElementById("resultado");
 
     if (!data || !data.nome) {
-      div.innerHTML = "❌ Cliente não encontrado.";
-      return;
-    }
-
-    div.innerHTML = `
-      <div class="resultado" style="background:${data.ativo === "SIM" ? "#d4edda" : "#f8d7da"}">
-        <b>Cliente:</b> ${data.nome}<br>
-        <b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}<br>
-        ${data.ativo === "SIM" ? `<b>Código:</b> ${data.codigoERO}` : "Sem liberação"}
-      </div>
-    `;
-  } catch (e) {
-    console.error(e);
-    alert("Erro ao validar QR Code");
-  }
+  document.getElementById("resultado").innerHTML =
+    "❌ Cliente não encontrado.";
+  return;
 }
-function voltarPainel() {
-  if (leitor) {
-    leitor.stop().catch(() => {});
-  }
-  window.location.href = "painelparceiro.html";
+
+renderizarResultadoPadrao(data);
+function renderizarResultadoPadrao(d) {
+
+  const box = document.getElementById("resultado");
+  box.style.display = "block";
+
+  const ativo = d.ativo === "SIM";
+
+  box.innerHTML = `
+    <div style="
+      background:${ativo ? '#e6ffed' : '#fdeaea'};
+      border:2px solid ${ativo ? '#198754' : '#dc3545'};
+      border-radius:12px;
+      padding:20px;
+      margin-top:20px;
+      max-width:420px;
+      margin-left:auto;
+      margin-right:auto;
+    ">
+
+      <h3 style="margin-top:0;color:${ativo ? '#198754' : '#dc3545'}">
+        ${ativo ? '✔ CLIENTE ATIVO' : '✖ CLIENTE INATIVO'}
+      </h3>
+
+      <p><b>Nome:</b> ${d.nome || '-'}</p>
+      <p><b>CPF:</b> ${d.cpf || '-'}</p>
+      <p><b>ID Público:</b> ${d.idPublico || '-'}</p>
+      <p><b>Cidade:</b> ${d.cidade || '-'}</p>
+      <p><b>Grupo:</b> ${d.grupo || '-'}</p>
+      <p><b>Cadastro:</b> ${d.dataCadastro || '-'}</p>
+
+      <p style="font-weight:bold">
+        Status:
+        <span style="color:${ativo ? '#198754' : '#dc3545'}">
+          ${ativo ? 'ATIVO' : 'INATIVO'}
+        </span>
+      </p>
+
+      ${
+        ativo
+          ? `<div style="
+                margin-top:12px;
+                padding:10px;
+                background:#d1e7dd;
+                border-radius:8px;
+                font-weight:bold;
+                color:#0f5132;
+              ">
+                ✔ Código de Autorização: ${d.codigoERO}
+             </div>`
+          : `<div style="
+                margin-top:12px;
+                padding:10px;
+                background:#f8d7da;
+                border-radius:8px;
+                font-weight:bold;
+                color:#842029;
+              ">
+                ⚠ Cliente inativo. Desconto não autorizado.
+             </div>`
+      }
+
+    </div>
+  `;
 }
 
 </script>
-
 </body>
 </html>
