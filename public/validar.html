@@ -247,6 +247,19 @@ async function pararLeitorSilencioso() {
   }
 }
 
+<script>
+let leitor = null;
+let scannerAtivo = false;
+
+async function pararLeitorSilencioso() {
+  if (!leitor) return;
+  try {
+    await leitor.stop();
+  } catch (e) {
+    // ignora erro
+  }
+}
+
 async function iniciarLeitor() {
   if (scannerAtivo) return;
   scannerAtivo = true;
@@ -274,19 +287,15 @@ async function iniciarLeitor() {
         <h3>⚠️ Não foi possível acessar a câmera</h3>
         <p>Verifique a permissão do navegador e tente novamente.</p>
         <div style="text-align:center;margin-top:18px">
-          <button class="btn-principal" onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+          <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
         </div>
       </div>
     `;
     console.error(err);
   }
 }
-.catch(err => {
-    scannerAtivo = false;
-    alert("Não foi possível acessar a câmera.");
-    console.error(err);
-  });
-}
+</script>
+
   if (idPublicoInicial) {
     processarQR(idPublicoInicial);
   }
