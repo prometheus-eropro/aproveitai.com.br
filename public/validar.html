@@ -289,45 +289,56 @@ async function processarQR(texto) {
     "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
 
   try {
-    const data = await fetch(url).then(r => r.json());
+  const data = await fetch(url).then(r => r.json());
 
-    resultado.innerHTML = `
-  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-    <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
+  resultado.innerHTML = `
+    <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+      <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
 
-    <p><b>Nome:</b> ${data.nome || "-"}</p>
+      <p><b>Nome:</b> ${data.nome || "-"}</p>
 
-    <p><b>CPF:</b> ${
-      data.cpf
-        ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-        : "-"
-    }</p>
+      <p><b>CPF:</b> ${
+        data.cpf
+          ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
+          : "-"
+      }</p>
 
-    <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-    <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-    <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+      <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
+      <p><b>Cidade:</b> ${data.cidade || "-"}</p>
+      <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
 
-    <p><b>Cliente desde:</b> ${
-      data.dataCadastro
-        ? new Date(data.dataCadastro).toLocaleString("pt-BR")
-        : "-"
-    }</p>
+      <p><b>Cliente desde:</b> ${
+        data.dataCadastro
+          ? new Date(data.dataCadastro).toLocaleString("pt-BR")
+          : "-"
+      }</p>
 
-    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
+      <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
-    ${
-      data.ativo === "SIM"
-        ? `<div class="codigo">✔ Código de Autorização: ${data.codigoERO}</div>`
-        : `<p style="font-weight:bold;color:#b02a37">❌ Desconto não autorizado</p>`
-    }
+      ${
+        data.ativo === "SIM"
+          ? `<div class="codigo">✔ Código de Autorização: ${data.codigoERO}</div>`
+          : `<p style="font-weight:bold;color:#b02a37">❌ Desconto não autorizado</p>`
+      }
 
-    <div style="text-align:center;margin-top:18px">
-      <button onclick="iniciarLeitor()">🔄 Validar outro cliente</button>
+      <div style="text-align:center;margin-top:18px">
+        <button onclick="iniciarLeitor()">🔄 Validar outro cliente</button>
+      </div>
     </div>
-  </div>
-`;
+  `;
 
   await pararLeitorSilencioso();
+  scannerAtivo = false;
+
+} catch (err) {
+  console.error(err);
+  resultado.innerHTML = `
+    <div class="status-box inativo">
+      <h3>⚠️ Erro ao validar</h3>
+      <p>Não foi possível validar agora. Tente novamente.</p>
+      <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+    </div>
+  `;
   scannerAtivo = false;
 }
 </script>
