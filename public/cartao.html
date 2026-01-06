@@ -305,9 +305,19 @@ function jsonp(url){
     const idPub = (d.idPublico || id).trim();
     const urlValidar1 = "https://aproveitai.com.br/validar.html?id=" + encodeURIComponent(idPub); // padrão recomendado
 // ✅ QR Code: prioridade -> Base64 | URL da planilha | Gerado na hora
-const idPub = (d.idPublico || id).trim();
-const urlValidar = "https://aproveitai.com.br/validar.html?idPublico=" + encodeURIComponent(idPub);
+const idPublicoFinal = (d.idPublico || id).trim();
 
+const urlValidar =
+  "https://aproveitai.com.br/validar.html?idPublico=" +
+  encodeURIComponent(idPublicoFinal);
+
+const qrFinal =
+  d.qrURL
+    ? d.qrURL
+    : "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+      encodeURIComponent(urlValidar);
+
+document.getElementById("qrCode").src = qrFinal;
 let qrFinal = "";
 
 // 1️⃣ Se um dia você salvar base64 no GS
