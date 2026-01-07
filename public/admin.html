@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin — Aproveitai</title>
+  <style>
+    body{font-family:Arial; margin:20px; background:#f6f7fb;}
+    .card{background:#fff; padding:16px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.08); margin-bottom:14px;}
+    input,button{padding:10px; border-radius:10px; border:1px solid #ddd;}
+    button{cursor:pointer; border:none;}
+    .btn{background:#111; color:#fff;}
+    .btn2{background:#0a7; color:#fff;}
+    .row{display:flex; gap:10px; flex-wrap:wrap;}
+    .pill{padding:6px 10px; border-radius:999px; color:#fff; font-weight:700;}
+    .ativo{background:#16a34a;}
+    .inativo{background:#dc2626;}
+    table{width:100%; border-collapse:collapse;}
+    th,td{padding:10px; border-bottom:1px solid #eee; text-align:left; font-size:14px;}
+    small{color:#666;}
+    a{word-break:break-all;}
+/* =========================
+   RODAPÉ
+========================= */
+.footer {
+  background: #dfffe0;
+  color: #222;
+  padding: 10px 10px;
+  font-size: 13px;
+  border-top: 3px solid white;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 5px 0;
+}
+
+.footer a {
+  color: #0066cc;
+  font-size: 13px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+.site-header {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.brandline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  max-height: 180px;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-center {
+  flex: 1;
+  text-align: center;
+}
+
+.site-title {
+  font-size: 36px;
+  color: #0a7a2a;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  font-weight: bold;
+}
+
+.slogan {
+  font-size: 16px;
+  font-style: italic;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.boas-vindas {
+  background: #dfffe0;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 18px; /* AUMENTADO */
+  line-height: 1.5;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+
+  </style>
+</head>
+<body>
+
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>PAINEL DE ADMINISTRAÇÃO</strong><br>
+        Administração geral cartão AproveitAI.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+  <div class="card">
+    <h2>Admin — Aproveitai</h2>
+    <div class="row">
+      
+      <div style="display:flex; gap:6px; align-items:center;">
+  <input id="adminKey" type="password" placeholder="Senha admin"/>
+  <button type="button" onclick="toggleSenha()">👁️</button>
+</div>
+
+      <button class="btn" onclick="login()">Entrar</button>
+    </div>
+    <small id="status">Desconectado.</small>
+  </div>
+
+  <div class="card" id="painel" style="display:none;">
+    <div class="row">
+      <button class="btn" onclick="carregarParceiros()">Carregar Parceiros</button>
+      <button class="btn" onclick="carregarClientes()">Carregar Clientes</button>
+    </div>
+    <div id="saida" style="margin-top:12px;"></div>
+  </div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwMMQ2FR2JBpo7xvWVazw4dAV6t_t90UxTASLcGfo1t7fA-beDqJDC-4z-Y7DL9vRunVg/exec";
+
+let ADMIN_KEY = "";
+let ADMIN_NOME = "";
+
+/* =========================
+   JSONP HELPER
+========================= */
+function jsonp(params, cb){
+  const script = document.createElement("script");
+  const url = new URL(API_URL);
+
+  params.callback = cb;
+  Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+
+  script.src = url.toString();
+  document.body.appendChild(script);
+}
+
+/* =========================
+   LOGIN
+========================= */
+function login(){
+  const key = document.getElementById("adminKey").value.trim();
+  if(!key) return status("Informe a senha");
+
+  window.loginCallback = function(r){
+    if(!r.ok){
+      status("❌ Acesso negado");
+      return;
+    }
+
+    ADMIN_KEY = key;
+    ADMIN_NOME = r.admin;
+
+    document.getElementById("painel").style.display = "block";
+    status("✅ Logado como " + ADMIN_NOME);
+  };
+
+  jsonp({
+    action: "loginAdmin",
+    key: key
+  }, "loginCallback");
+}
+
+/* =========================
+   STATUS
+========================= */
+function status(msg){
+  document.getElementById("status").innerText = msg;
+}
+
+/* =========================
+   LISTAR PARCEIROS
+========================= */
+function carregarParceiros(){
+  window.listarCallback = function(r){
+    if(!r.ok){
+      status("Erro ao listar parceiros");
+      return;
+    }
+
+    let html = `<h3>Parceiros</h3><table>
+      <tr><th>Status</th><th>Nome</th><th>CNPJ</th><th>Ações</th></tr>`;
+
+    r.parceiros.forEach(p=>{
+      const ativo = String(p.ativo).toLowerCase() === "sim";
+      html += `
+        <tr>
+          <td>${ativo ? "🟢 ATIVO" : "🔴 INATIVO"}</td>
+          <td>${p.nomeFantasia || p.nome || ""}</td>
+          <td>${p.cnpj || ""}</td>
+          <td>
+            <button onclick="alterarStatus('${p.cnpj}','${ativo ? "NAO":"SIM"}')">
+              ${ativo ? "Desativar" : "Ativar"}
+            </button>
+            <button onclick="gerarContrato('${p.cnpj}')">Contrato</button>
+          </td>
+        </tr>`;
+    });
+
+    html += "</table>";
+    document.getElementById("saida").innerHTML = html;
+  };
+
+  jsonp({
+    action: "listar_parceiros",
+    key: ADMIN_KEY
+  }, "listarCallback");
+}
+
+/* =========================
+   ALTERAR STATUS
+========================= */
+function alterarStatus(cnpj, statusNovo){
+  jsonp({
+    action: "alterar_status",
+    key: ADMIN_KEY,
+    aba: "parceiros",
+    campoId: "cnpj",
+    valorId: cnpj,
+    status: statusNovo
+  }, "noop");
+
+  setTimeout(carregarParceiros, 800);
+}
+
+/* =========================
+   GERAR CONTRATO
+========================= */
+function gerarContrato(cnpj){
+  window.contratoCallback = function(r){
+    if(r.ok && r.url) window.open(r.url, "_blank");
+    else status("Erro ao gerar contrato");
+  };
+
+  jsonp({
+    action: "gerarContrato",
+    cnpj: cnpj,
+    admin: ADMIN_NOME
+  }, "contratoCallback");
+}
+
+function noop(){}
+</script>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em meda corrente, salvo autorização expressa do estabelecimento.
+</footer>
+
+
+</body>
+</html>
