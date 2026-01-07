@@ -157,134 +157,101 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwMMQ2FR2JBpo7xvWVazw4d
 let ADMIN_KEY = "";
 let ADMIN_NOME = "";
 
-/* =========================
-   JSONP HELPER
-========================= */
-function jsonp(params, cb){
-  const script = document.createElement("script");
-  const url = new URL(API_URL);
-
-  params.callback = cb;
-  Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
-
-  script.src = url.toString();
-  document.body.appendChild(script);
+/* ===== Mostrar / ocultar senha ===== */
+function toggleSenha(){
+  const i = document.getElementById("adminKey");
+  i.type = i.type === "password" ? "text" : "password";
 }
 
-/* =========================
-   LOGIN
-========================= */
+/* ===== JSONP ===== */
+function jsonp(params, cb){
+  const s = document.createElement("script");
+  const u = new URL(API_URL);
+  params.callback = cb;
+  Object.keys(params).forEach(k=>u.searchParams.set(k,params[k]));
+  s.src = u.toString();
+  document.body.appendChild(s);
+}
+
+/* ===== Status ===== */
+function status(t){ document.getElementById("status").innerText = t }
+
+/* ===== Login ===== */
 function login(){
   const key = document.getElementById("adminKey").value.trim();
   if(!key) return status("Informe a senha");
 
-  window.loginCallback = function(r){
-    if(!r.ok){
-      status("❌ Acesso negado");
-      return;
-    }
+  window.loginCallback = r => {
+    if(!r.ok) return status("❌ Acesso negado");
 
     ADMIN_KEY = key;
     ADMIN_NOME = r.admin;
-
     document.getElementById("painel").style.display = "block";
     status("✅ Logado como " + ADMIN_NOME);
   };
 
-  jsonp({
-    action: "loginAdmin",
-    key: key
-  }, "loginCallback");
+  jsonp({action:"loginAdmin",key:key},"loginCallback");
 }
 
-/* =========================
-   STATUS
-========================= */
-function status(msg){
-  document.getElementById("status").innerText = msg;
-}
-
-/* =========================
-   LISTAR PARCEIROS
-========================= */
+/* ===== Listar parceiros ===== */
 function carregarParceiros(){
-  window.listarCallback = function(r){
-    if(!r.ok){
-      status("Erro ao listar parceiros");
-      return;
-    }
+  window.listarCallback = r => {
+    if(!r.ok) return status("Erro ao listar");
 
-    let html = `<h3>Parceiros</h3><table>
+    let h = `<table>
       <tr><th>Status</th><th>Nome</th><th>CNPJ</th><th>Ações</th></tr>`;
 
     r.parceiros.forEach(p=>{
-      const ativo = String(p.ativo).toLowerCase() === "sim";
-      html += `
-        <tr>
-          <td>${ativo ? "🟢 ATIVO" : "🔴 INATIVO"}</td>
-          <td>${p.nomeFantasia || p.nome || ""}</td>
-          <td>${p.cnpj || ""}</td>
-          <td>
-            <button onclick="alterarStatus('${p.cnpj}','${ativo ? "NAO":"SIM"}')">
-              ${ativo ? "Desativar" : "Ativar"}
-            </button>
-            <button onclick="gerarContrato('${p.cnpj}')">Contrato</button>
-          </td>
-        </tr>`;
+      const ativo = String(p.ativo).toLowerCase()==="sim";
+      h += `<tr>
+        <td>${ativo?"🟢":"🔴"}</td>
+        <td>${p.nomeFantasia||""}</td>
+        <td>${p.cnpj||""}</td>
+        <td>
+          <button onclick="alterarStatus('${p.cnpj}','${ativo?"NAO":"SIM"}')">
+            ${ativo?"Desativar":"Ativar"}
+          </button>
+          <button onclick="gerarContrato('${p.cnpj}')">Contrato</button>
+        </td>
+      </tr>`;
     });
 
-    html += "</table>";
-    document.getElementById("saida").innerHTML = html;
+    h += "</table>";
+    document.getElementById("saida").innerHTML = h;
   };
 
-  jsonp({
-    action: "listar_parceiros",
-    key: ADMIN_KEY
-  }, "listarCallback");
+  jsonp({action:"listar_parceiros",key:ADMIN_KEY},"listarCallback");
 }
 
-/* =========================
-   ALTERAR STATUS
-========================= */
-function alterarStatus(cnpj, statusNovo){
+/* ===== Alterar status ===== */
+function alterarStatus(cnpj,statusNovo){
   jsonp({
-    action: "alterar_status",
-    key: ADMIN_KEY,
-    aba: "parceiros",
-    campoId: "cnpj",
-    valorId: cnpj,
-    status: statusNovo
-  }, "noop");
+    action:"alterar_status",
+    key:ADMIN_KEY,
+    aba:"parceiros",
+    campoId:"cnpj",
+    valorId:cnpj,
+    status:statusNovo
+  },"noop");
 
-  setTimeout(carregarParceiros, 800);
+  setTimeout(carregarParceiros,700);
 }
 
-/* =========================
-   GERAR CONTRATO
-========================= */
+/* ===== Contrato ===== */
 function gerarContrato(cnpj){
-  window.contratoCallback = function(r){
-    if(r.ok && r.url) window.open(r.url, "_blank");
-    else status("Erro ao gerar contrato");
+  window.contratoCallback = r=>{
+    if(r.ok && r.url) window.open(r.url,"_blank");
+    else status("Erro contrato");
   };
 
   jsonp({
-    action: "gerarContrato",
-    cnpj: cnpj,
-    admin: ADMIN_NOME
-  }, "contratoCallback");
+    action:"gerarContrato",
+    cnpj:cnpj,
+    admin:ADMIN_NOME
+  },"contratoCallback");
 }
 
 function noop(){}
-<script>
-function toggleSenha() {
-  const input = document.getElementById("adminKey");
-  if (!input) return;
-
-  input.type = input.type === "password" ? "text" : "password";
-}
-</script>
-
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
