@@ -1547,6 +1547,36 @@
       // view padrão
       setView("dashboard");
     })();
+
+/**
+ * Executor JSONP universal
+ * Garante que qualquer callback dinâmica exista
+ */
+window.executarJSONP = function (url, onSuccess, onError) {
+  const cbName = "cb_" + Math.random().toString(36).substr(2, 9);
+
+  window[cbName] = function (res) {
+    try {
+      onSuccess && onSuccess(res);
+    } finally {
+      delete window[cbName];
+      script.remove();
+    }
+  };
+
+  const script = document.createElement("script");
+  script.src = url + "&callback=" + cbName;
+
+  script.onerror = function () {
+    onError && onError();
+    delete window[cbName];
+    script.remove();
+  };
+
+  document.body.appendChild(script);
+};
+</script>
+
   </script>
 </body>
 </html>

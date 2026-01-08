@@ -217,22 +217,23 @@ async function validarCliente() {
       : "-";
 
     box.innerHTML = `
-      <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-        <p><b>Nome:</b> ${data.nome}</p>
-        <p><b>CPF:</b> ${cpfMascarado}</p>
-        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-        <p><b>Cliente desde:</b> ${dataCadastro}</p>
-        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
+  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+    <p><b>Nome:</b> ${data.nome}</p>
+    <p><b>CPF:</b> ${cpfMascarado}</p>
+    <p><b>ID Público (APV):</b> ${data.idPublico ? data.idPublico : "-"}</p>
+    <p><b>Cidade:</b> ${data.cidade || "-"}</p>
+    <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+    <p><b>Cliente desde:</b> ${data.dataCadastro ? formatarData(data.dataCadastro) : "-"}</p>
+    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
-        ${
-          data.ativo === "SIM"
-            ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-            : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
-        }
-      </div>
-    `;
+    ${
+      data.ativo === "SIM"
+        ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
+        : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
+    }
+  </div>
+`;
+
   } catch (e) {
     console.error(e);
     box.innerHTML = "❌ Erro ao validar cliente.";
