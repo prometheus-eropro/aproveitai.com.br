@@ -1,57 +1,315 @@
+<!-- =========================================================
+  admin.html — PAINEL ADMIN (100% compatível com seu Google Apps Script)
+  - Login por "key" (senha) => action=loginAdmin&key=...
+  - Lê abas: clientes, beneficios, promocoes, logs, log_admin, admins (via ?aba=...)
+  - Parceiros: lista via action=listar_parceiros (e permite atualizar via action=atualizar_parceiro)
+  - Ativar/Desativar: action=alterar_status (clientes/parceiros/beneficios/promocoes)
+  - Criar: clientes/parceiros/beneficio/promocao (actions criar_*)
+  - Relatório: action=relatorioGeral
+  - Gerar PDFs: action=gerarContrato (parceiro) / action=gerar_termos_cliente (cliente)
+  - JSONP (sem CORS): injeta <script> com callback
+========================================================= -->
+
 <!doctype html>
 <html lang="pt-br">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Admin — Aproveitai</title>
+  <title>Admin — AproveitAI</title>
+
   <style>
-    body{font-family:Arial; margin:20px; background:#f6f7fb;}
-    .card{background:#fff; padding:16px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.08); margin-bottom:14px;}
-    input,button{padding:10px; border-radius:10px; border:1px solid #ddd;}
-    button{cursor:pointer; border:none;}
-    .btn{background:#111; color:#fff;}
-    .btn2{background:#0a7; color:#fff;}
-    .row{display:flex; gap:10px; flex-wrap:wrap;}
-    .pill{padding:6px 10px; border-radius:999px; color:#fff; font-weight:700;}
-    .ativo{background:#16a34a;}
-    .inativo{background:#dc2626;}
-    table{width:100%; border-collapse:collapse;}
-    th,td{padding:10px; border-bottom:1px solid #eee; text-align:left; font-size:14px;}
-    small{color:#666;}
-    a{word-break:break-all;}
-/* =========================
-   RODAPÉ
-========================= */
-.footer {
-  background: #dfffe0;
-  color: #222;
-  padding: 10px 10px;
-  font-size: 13px;
-  border-top: 3px solid white;
-}
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --good:#16a34a;
+      --bad:#dc2626;
+      --warn:#f59e0b;
+      --brand:#0ea5e9;
+      --brand2:#22c55e;
+      --shadow: 0 10px 25px rgba(2,6,23,.08);
+      --radius:16px;
+    }
 
-.footer-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  max-width: 1000px;
-  margin: auto;
-  padding: 5px 0;
-}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(14,165,233,.18), transparent 60%),
+                  radial-gradient(1000px 600px at 80% -10%, rgba(34,197,94,.14), transparent 60%),
+                  var(--bg);
+    }
 
-.footer a {
-  color: #0066cc;
-  font-size: 13px;
-}
+    .wrap{max-width:1200px;margin:0 auto;padding:18px;}
+    .topbar{
+      background: linear-gradient(90deg, rgba(14,165,233,.18), rgba(34,197,94,.14));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:14px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      box-shadow: var(--shadow);
+    }
 
-.footer-bottom {
-  text-align: center;
-  margin-top: 5px;
-  font-size: 11px;
-}
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .badge{
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      display:grid;place-items:center;
+      color:white;font-weight:800;
+      box-shadow: 0 10px 18px rgba(14,165,233,.22);
+    }
+    .brand h1{margin:0;font-size:16px;line-height:1.1}
+    .brand small{color:var(--muted);display:block;margin-top:2px}
 
+    .right{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.8);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn{
+      border:1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:700;
+      box-shadow: 0 6px 14px rgba(2,6,23,.06);
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .btn:active{transform: translateY(0px)}
+    .btn.primary{
+      border:none;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color:white;
+    }
+    .btn.danger{
+      border:1px solid rgba(220,38,38,.35);
+      background: rgba(220,38,38,.08);
+      color: var(--bad);
+    }
+
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:14px;
+    }
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .side, .main{
+      background: rgba(255,255,255,.75);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .side{
+      padding:10px;
+    }
+
+    .navbtn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid transparent;
+      background: transparent;
+      cursor:pointer;
+      text-align:left;
+      font-weight:800;
+      color: #0b1220;
+    }
+    .navbtn small{display:block;font-weight:600;color:var(--muted);margin-top:2px}
+    .navbtn.active{
+      border-color: rgba(14,165,233,.35);
+      background: linear-gradient(90deg, rgba(14,165,233,.12), rgba(34,197,94,.10));
+    }
+
+    .mainHeader{
+      padding:14px 14px 0 14px;
+    }
+    .titleRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .titleRow h2{margin:0;font-size:18px}
+    .titleRow p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+
+    .content{
+      padding:14px;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:12px;
+    }
+    @media (max-width: 1000px){
+      .cards{grid-template-columns: repeat(2, minmax(0, 1fr));}
+    }
+    @media (max-width: 520px){
+      .cards{grid-template-columns: 1fr;}
+    }
+
+    .card{
+      background: rgba(255,255,255,.9);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:12px;
+      box-shadow: 0 8px 18px rgba(2,6,23,.05);
+    }
+    .card b{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    .card .big{font-size:22px;font-weight:900}
+
+    .row{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      margin-bottom:12px;
+    }
+    .input, select, textarea{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.95);
+      padding:10px 10px;
+      border-radius: 12px;
+      outline:none;
+      min-width: 180px;
+      font-weight:700;
+      color: var(--text);
+    }
+    textarea{min-height:90px;min-width:280px;font-weight:600}
+
+    .hint{font-size:12px;color:var(--muted)}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+
+    .status{
+      display:inline-flex;align-items:center;gap:8px;
+      font-weight:900;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.8);
+      font-size:12px;
+    }
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--muted)}
+    .status.ok{border-color: rgba(22,163,74,.25); background: rgba(22,163,74,.08); color: var(--good)}
+    .status.ok .dot{background: var(--good)}
+    .status.bad{border-color: rgba(220,38,38,.25); background: rgba(220,38,38,.08); color: var(--bad)}
+    .status.bad .dot{background: var(--bad)}
+
+    .tableWrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.9);
+    }
+    table{
+      border-collapse:collapse;
+      width:100%;
+      min-width: 900px;
+    }
+    th, td{
+      border-bottom:1px solid var(--line);
+      padding:10px 10px;
+      text-align:left;
+      vertical-align:top;
+      font-size:13px;
+    }
+    th{
+      position:sticky; top:0;
+      background: rgba(248,250,252,.95);
+      z-index:1;
+      font-size:12px;
+      color: var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    td .mini{
+      font-size:12px;color:var(--muted);font-weight:700;
+    }
+
+    .chip{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid var(--line);
+      font-weight:900;font-size:12px;
+      background: rgba(255,255,255,.85);
+    }
+    .chip.green{border-color: rgba(22,163,74,.25); background: rgba(22,163,74,.08); color: var(--good)}
+    .chip.red{border-color: rgba(220,38,38,.25); background: rgba(220,38,38,.08); color: var(--bad)}
+
+    .toast{
+      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+      background: rgba(15,23,42,.92);
+      color:#fff;
+      padding:10px 12px;
+      border-radius: 12px;
+      font-weight:800;
+      box-shadow: 0 18px 35px rgba(2,6,23,.35);
+      opacity:0;
+      pointer-events:none;
+      transition:.18s ease;
+      max-width: calc(100% - 24px);
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px);}
+
+    /* Login modal */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(2,6,23,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:100;
+    }
+    .overlay.show{display:flex}
+    .modal{
+      width:min(520px, 100%);
+      background: rgba(255,255,255,.96);
+      border:1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 30px 60px rgba(2,6,23,.25);
+      overflow:hidden;
+    }
+    .modal header{
+      padding:14px 14px;
+      background: linear-gradient(90deg, rgba(14,165,233,.18), rgba(34,197,94,.14));
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .modal header b{font-size:14px}
+    .modal .body{padding:14px}
+    .modal .body p{margin:0 0 10px 0;color:var(--muted);font-weight:700}
 /* =========================
    CABEÇALHO
 ========================= */
@@ -109,8 +367,8 @@
 
   </style>
 </head>
-<body>
 
+<body>
 <!-- ✅ CABEÇALHO PADRONIZADO -->
 <header class="site-header">
   <div class="brandline">
@@ -121,155 +379,1174 @@
 
       <!-- Tarja -->
       <p class="boas-vindas">
-        🏪 <strong>PAINEL DE ADMINISTRAÇÃO</strong><br>
-        Administração geral cartão AproveitAI.
+        🏪 <strong>PAINEL ADMINISTRAÇÃO</strong><br>
+        Controle e administração total do site.
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
 
-  <div class="card">
-    <h2>Admin — Aproveitai</h2>
-    <div class="row">
-      
-      <div style="display:flex; gap:6px; align-items:center;">
-  <input id="adminKey" type="password" placeholder="Senha admin"/>
-  <button type="button" onclick="toggleSenha()">👁️</button>
-</div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge">A</div>
+        <div>
+          <h1>Admin — AproveitAI</h1>
+          <small id="subinfo">Última atualização: <span id="ultima"></span></small>
+        </div>
+      </div>
 
-      <button class="btn" onclick="login()">Entrar</button>
+      <div class="right">
+        <div class="pill">
+          <span class="dot" style="width:10px;height:10px;border-radius:999px;background:var(--brand)"></span>
+          <span id="pillAdmin">Não autenticado</span>
+        </div>
+        <button class="btn" id="btnRecarregar">Recarregar</button>
+        <button class="btn danger" id="btnSair">Sair</button>
+      </div>
     </div>
-    <small id="status">Desconectado.</small>
+
+    <div class="grid">
+      <aside class="side">
+        <button class="navbtn active" data-view="dashboard">
+          Dashboard
+          <span class="hint">Resumo e saúde do sistema</span>
+        </button>
+
+        <div class="hr"></div>
+
+        <button class="navbtn" data-view="clientes">
+          Clientes
+          <small>listar + ativar/desativar + criar + termos</small>
+        </button>
+        <button class="navbtn" data-view="parceiros">
+          Parceiros
+          <small>listar + ativar/desativar + editar + criar + contrato</small>
+        </button>
+        <button class="navbtn" data-view="beneficios">
+          Benefícios
+          <small>listar + ativar/desativar + criar</small>
+        </button>
+        <button class="navbtn" data-view="promocoes">
+          Promoções
+          <small>listar + ativar/desativar + criar</small>
+        </button>
+
+        <div class="hr"></div>
+
+        <button class="navbtn" data-view="logs">
+          Logs
+          <small>somente leitura</small>
+        </button>
+        <button class="navbtn" data-view="log_admin">
+          Log Admin
+          <small>somente leitura</small>
+        </button>
+        <button class="navbtn" data-view="admins">
+          Admins
+          <small>somente leitura</small>
+        </button>
+      </aside>
+
+      <main class="main">
+        <div class="mainHeader">
+          <div class="titleRow">
+            <div>
+              <h2 id="viewTitle">Dashboard</h2>
+              <p id="viewDesc">Resumo geral do banco e validações.</p>
+            </div>
+            <div class="row" style="margin:0">
+              <span id="statusApi" class="status"><span class="dot"></span>API não verificada</span>
+              <button class="btn primary" id="btnTestarApi">Testar API</button>
+            </div>
+          </div>
+          <div class="hr"></div>
+        </div>
+
+        <div class="content">
+          <!-- DASHBOARD -->
+          <section data-section="dashboard">
+            <div class="cards">
+              <div class="card">
+                <b>Clientes</b>
+                <div class="big" id="mClientes">—</div>
+                <div class="hint" id="mClientes2">—</div>
+              </div>
+              <div class="card">
+                <b>Parceiros</b>
+                <div class="big" id="mParceiros">—</div>
+                <div class="hint" id="mParceiros2">—</div>
+              </div>
+              <div class="card">
+                <b>Validações (logs)</b>
+                <div class="big" id="mLogs">—</div>
+                <div class="hint">Registros totais no log</div>
+              </div>
+              <div class="card">
+                <b>Status</b>
+                <div class="big" id="mStatus">—</div>
+                <div class="hint">API / Login</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="row">
+              <button class="btn primary" id="btnCarregarTudo">Carregar tudo (rápido)</button>
+              <span class="hint">Carrega: relatório geral + últimos dados (logs, clientes, parceiros).</span>
+            </div>
+
+            <div class="tableWrap" style="margin-top:10px">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Atalho</th>
+                    <th>O que faz</th>
+                    <th>Observação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><b>Clientes</b></td>
+                    <td>Ativar/Inativar, criar novo, gerar termos do cliente (PDF)</td>
+                    <td>Controle principal do pagamento via campo <b>ativo</b></td>
+                  </tr>
+                  <tr>
+                    <td><b>Parceiros</b></td>
+                    <td>Ativar/Inativar, editar campos (patch), criar novo, gerar contrato (PDF)</td>
+                    <td>Lista usa action=listar_parceiros (gera log_admin automaticamente)</td>
+                  </tr>
+                  <tr>
+                    <td><b>Benefícios/Promoções</b></td>
+                    <td>Ativar/Inativar e criar registros</td>
+                    <td>Edição avançada não existe no seu GAS hoje (somente status + criar)</td>
+                  </tr>
+                  <tr>
+                    <td><b>Logs/Log Admin</b></td>
+                    <td>Somente leitura</td>
+                    <td>Transparência e auditoria</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- CLIENTES -->
+          <section data-section="clientes" style="display:none">
+            <div class="row">
+              <input class="input" id="filtroClientes" placeholder="Buscar (nome / cpf / cidade / idPublico)"/>
+              <button class="btn" id="btnReloadClientes">Recarregar</button>
+              <button class="btn primary" id="btnNovoCliente">+ Criar Cliente</button>
+            </div>
+            <div class="hint">Dica: o botão de status altera a coluna <b>ativo</b> para <b>SIM</b> ou <b>NAO</b>.</div>
+            <div class="hr"></div>
+            <div class="tableWrap">
+              <table id="tblClientes"></table>
+            </div>
+          </section>
+
+          <!-- PARCEIROS -->
+          <section data-section="parceiros" style="display:none">
+            <div class="row">
+              <input class="input" id="filtroParceiros" placeholder="Buscar (nome / cnpj / cidade / ramo)"/>
+              <button class="btn" id="btnReloadParceiros">Recarregar</button>
+              <button class="btn primary" id="btnNovoParceiro">+ Criar Parceiro</button>
+            </div>
+            <div class="hint">Parceiros permitem <b>edição</b> via action=atualizar_parceiro (patch).</div>
+            <div class="hr"></div>
+            <div class="tableWrap">
+              <table id="tblParceiros"></table>
+            </div>
+          </section>
+
+          <!-- BENEFICIOS -->
+          <section data-section="beneficios" style="display:none">
+            <div class="row">
+              <input class="input" id="filtroBeneficios" placeholder="Buscar (parceiro / grupo / descrição)"/>
+              <button class="btn" id="btnReloadBeneficios">Recarregar</button>
+              <button class="btn primary" id="btnNovoBeneficio">+ Criar Benefício</button>
+            </div>
+            <div class="hr"></div>
+            <div class="tableWrap">
+              <table id="tblBeneficios"></table>
+            </div>
+          </section>
+
+          <!-- PROMOCOES -->
+          <section data-section="promocoes" style="display:none">
+            <div class="row">
+              <input class="input" id="filtroPromocoes" placeholder="Buscar (parceiro / título / descrição)"/>
+              <button class="btn" id="btnReloadPromocoes">Recarregar</button>
+              <button class="btn primary" id="btnNovoPromocao">+ Criar Promoção</button>
+            </div>
+            <div class="hr"></div>
+            <div class="tableWrap">
+              <table id="tblPromocoes"></table>
+            </div>
+          </section>
+
+          <!-- LOGS -->
+          <section data-section="logs" style="display:none">
+            <div class="row">
+              <input class="input" id="filtroLogs" placeholder="Buscar (cpf / nome / parceiro / status / tipo)"/>
+              <button class="btn" id="btnReloadLogs">Recarregar</button>
+            </div>
+            <div class="hint">Somente leitura. Mostra exatamente a aba <b>logs</b>.</div>
+            <div class="hr"></div>
+            <div class="tableWrap">
+              <table id="tblLogs"></table>
+            </div>
+          </section>
+
+          <!-- LOG ADMIN -->
+          <section data-section="log_admin" style="display:none">
+            <div class="row">
+              <input class="input" id="filtroLogAdmin" placeholder="Buscar (admin / ação / entidade / id)"/>
+              <button class="btn" id="btnReloadLogAdmin">Recarregar</button>
+            </div>
+            <div class="hint">Somente leitura. Mostra a aba <b>log_admin</b>.</div>
+            <div class="hr"></div>
+            <div class="tableWrap">
+              <table id="tblLogAdmin"></table>
+            </div>
+          </section>
+
+          <!-- ADMINS -->
+          <section data-section="admins" style="display:none">
+            <div class="row">
+              <input class="input" id="filtroAdmins" placeholder="Buscar (usuario / nome)"/>
+              <button class="btn" id="btnReloadAdmins">Recarregar</button>
+            </div>
+            <div class="hint">Somente leitura. Mostra a aba <b>admins</b> (atenção: aqui aparecem senhas).</div>
+            <div class="hr"></div>
+            <div class="tableWrap">
+              <table id="tblAdmins"></table>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
   </div>
 
-  <div class="card" id="painel" style="display:none;">
-    <div class="row">
-      <button class="btn" onclick="carregarParceiros()">Carregar Parceiros</button>
-      <button class="btn" onclick="carregarClientes()">Carregar Clientes</button>
+  <!-- LOGIN MODAL -->
+  <div class="overlay" id="overlayLogin">
+    <div class="modal">
+      <header>
+        <b>Entrar no Admin</b>
+        <span class="hint">Acesso via aba “admins”</span>
+      </header>
+      <div class="body">
+        <p>Digite a <b>senha (key)</b> cadastrada na coluna <b>senha</b> da aba <b>admins</b>.</p>
+        <div class="row">
+          <input class="input" id="inpKey" placeholder="Senha (key) do admin" style="min-width:260px"/>
+          <button class="btn primary" id="btnLogin">Entrar</button>
+        </div>
+        <div class="hint" id="loginMsg"></div>
+      </div>
     </div>
-    <div id="saida" style="margin-top:12px;"></div>
   </div>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+  <div class="toast" id="toast"></div>
 
+  <script>
+    /**************************************************************
+     * CONFIG — COLE AQUI SUA URL /exec DO APPS SCRIPT
+     **************************************************************/
+    const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"; 
+    // Exemplo: "https://script.google.com/macros/s/AKfycbzXZpsNWvfsfjoFRMhOn6SXnBEjnUcU-kcGPhGssr30Gl9TOyRUjQaz3GmVce7iGsBc/exec";
 
-let ADMIN_KEY = "";
-let ADMIN_NOME = "";
+    /**************************************************************
+     * ESTADO
+     **************************************************************/
+    const state = {
+      key: sessionStorage.getItem("admin_key") || "",
+      adminName: sessionStorage.getItem("admin_name") || "",
+      cache: {
+        clientes: [],
+        parceiros: [],
+        beneficios: [],
+        promocoes: [],
+        logs: [],
+        log_admin: [],
+        admins: []
+      }
+    };
 
-/* ===== Mostrar / ocultar senha ===== */
-function toggleSenha(){
-  const i = document.getElementById("adminKey");
-  i.type = i.type === "password" ? "text" : "password";
-}
+    /**************************************************************
+     * UTIL
+     **************************************************************/
+    const $ = (q) => document.querySelector(q);
+    const $$ = (q) => [...document.querySelectorAll(q)];
 
-/* ===== JSONP ===== */
-function jsonp(params, cb){
-  const s = document.createElement("script");
-  const u = new URL(API_URL);
-  params.callback = cb;
-  Object.keys(params).forEach(k=>u.searchParams.set(k,params[k]));
-  s.src = u.toString();
-  document.body.appendChild(s);
-}
+    function toast(msg){
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(()=>t.classList.remove("show"), 2400);
+    }
 
-/* ===== Status ===== */
-function status(t){ document.getElementById("status").innerText = t }
+    function brDateTime(v){
+      if(!v) return "";
+      try{
+        const d = (v instanceof Date) ? v : new Date(v);
+        if (isNaN(d.getTime())) return String(v);
+        const pad = (n)=> String(n).padStart(2,"0");
+        return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }catch(e){
+        return String(v);
+      }
+    }
 
-/* ===== Login ===== */
-function login(){
-  const key = document.getElementById("adminKey").value.trim();
-  if(!key) return status("Informe a senha");
+    function onlyDigits(v){ return String(v||"").replace(/\D/g,""); }
 
-  window.loginCallback = r => {
-    if(!r.ok) return status("❌ Acesso negado");
+    function asSIM(v){
+      const s = String(v||"").trim().toLowerCase();
+      return s === "sim" || s === "true" || s === "1";
+    }
 
-    ADMIN_KEY = key;
-    ADMIN_NOME = r.admin;
-    document.getElementById("painel").style.display = "block";
-    status("✅ Logado como " + ADMIN_NOME);
-  };
+    function chipAtivo(v){
+      const on = asSIM(v);
+      return `<span class="chip ${on ? "green" : "red"}">${on ? "ATIVO" : "INATIVO"}</span>`;
+    }
 
-  jsonp({action:"loginAdmin",key:key},"loginCallback");
-}
+    /**************************************************************
+     * JSONP (CORS SAFE)
+     **************************************************************/
+    function jsonp(params){
+      return new Promise((resolve, reject)=>{
+        if(!API_URL || API_URL.includes("COLE_AQUI")){
+          reject(new Error("API_URL_NAO_CONFIGURADA"));
+          return;
+        }
 
-/* ===== Listar parceiros ===== */
-function carregarParceiros(){
-  window.listarCallback = r => {
-    if(!r.ok) return status("Erro ao listar");
+        const cb = "cb_" + Math.random().toString(36).slice(2);
+        const url = new URL(API_URL);
+        Object.entries(params || {}).forEach(([k,v]) => {
+          if (v === undefined || v === null) return;
+          url.searchParams.set(k, v);
+        });
+        url.searchParams.set("callback", cb);
 
-    let h = `<table>
-      <tr><th>Status</th><th>Nome</th><th>CNPJ</th><th>Ações</th></tr>`;
+        const script = document.createElement("script");
+        script.src = url.toString();
+        script.async = true;
 
-    r.parceiros.forEach(p=>{
-      const ativo = String(p.ativo).toLowerCase()==="sim";
-      h += `<tr>
-        <td>${ativo?"🟢":"🔴"}</td>
-        <td>${p.nomeFantasia||""}</td>
-        <td>${p.cnpj||""}</td>
-        <td>
-          <button onclick="alterarStatus('${p.cnpj}','${ativo?"NAO":"SIM"}')">
-            ${ativo?"Desativar":"Ativar"}
-          </button>
-          <button onclick="gerarContrato('${p.cnpj}')">Contrato</button>
-        </td>
-      </tr>`;
+        const timeout = setTimeout(()=>{
+          cleanup();
+          reject(new Error("TIMEOUT"));
+        }, 15000);
+
+        function cleanup(){
+          clearTimeout(timeout);
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+          try{ delete window[cb]; }catch(e){}
+        }
+
+        window[cb] = (data)=>{
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = ()=>{
+          cleanup();
+          reject(new Error("ERRO_SCRIPT_JSONP"));
+        };
+
+        document.body.appendChild(script);
+      });
+    }
+
+    /**************************************************************
+     * API WRAPPERS (conforme seu GAS)
+     **************************************************************/
+    async function apiStatus(){
+      return jsonp({}); // retorna {status:"API_ATIVA"} no final do doGet
+    }
+
+    async function loginAdmin(key){
+      return jsonp({ action:"loginAdmin", key });
+    }
+
+    async function relatorioGeral(){
+      return jsonp({ action:"relatorioGeral", key: state.key });
+    }
+
+    async function listarAba(aba){
+      // usa ?aba=... (sem log_admin automático)
+      return jsonp({ aba });
+    }
+
+    async function listarParceiros(){
+      // usa action=listar_parceiros (gera log_admin)
+      return jsonp({ action:"listar_parceiros", key: state.key });
+    }
+
+    async function atualizarParceiro(cnpj, patchObj){
+      return jsonp({ action:"atualizar_parceiro", key: state.key, cnpj, patch: JSON.stringify(patchObj||{}) });
+    }
+
+    async function alterarStatus(aba, campoId, valorId, status){
+      return jsonp({ action:"alterar_status", key: state.key, aba, campoId, valorId, status });
+    }
+
+    async function criarCliente(payload){
+      return jsonp({ action:"criar_cliente", key: state.key, ...payload });
+    }
+
+    async function criarParceiro(payload){
+      return jsonp({ action:"criar_parceiro", key: state.key, ...payload });
+    }
+
+    async function criarBeneficio(payload){
+      return jsonp({ action:"criar_beneficio", key: state.key, ...payload });
+    }
+
+    async function criarPromocao(payload){
+      return jsonp({ action:"criar_promocao", key: state.key, ...payload });
+    }
+
+    async function gerarContrato(cnpj){
+      // seu GAS pede admin no parâmetro (não pede key). Vamos mandar os dois.
+      return jsonp({ action:"gerarContrato", cnpj, admin: state.adminName, key: state.key });
+    }
+
+    async function gerarTermosCliente(cpf){
+      return jsonp({ action:"gerar_termos_cliente", key: state.key, cpf });
+    }
+
+    /**************************************************************
+     * LOGIN FLOW
+     **************************************************************/
+    function abrirLogin(){
+      $("#overlayLogin").classList.add("show");
+      $("#inpKey").value = state.key || "";
+      $("#loginMsg").textContent = "";
+      setTimeout(()=> $("#inpKey").focus(), 80);
+    }
+
+    function fecharLogin(){
+      $("#overlayLogin").classList.remove("show");
+    }
+
+    function syncTopPill(){
+      const ok = !!state.key && !!state.adminName;
+      $("#pillAdmin").textContent = ok ? `Admin: ${state.adminName}` : "Não autenticado";
+      $("#mStatus").textContent = ok ? "Logado" : "Deslogado";
+    }
+
+    async function fazerLogin(){
+      const key = String($("#inpKey").value || "").trim();
+      if(!key){ $("#loginMsg").textContent = "Digite a senha (key)."; return; }
+
+      $("#loginMsg").textContent = "Verificando acesso...";
+      try{
+        const r = await loginAdmin(key);
+        if(!r || !r.ok){
+          $("#loginMsg").textContent = (r && r.erro) ? ("Erro: " + r.erro) : "Acesso negado.";
+          toast("Acesso negado");
+          return;
+        }
+        state.key = key;
+        state.adminName = r.admin || "Admin";
+        sessionStorage.setItem("admin_key", state.key);
+        sessionStorage.setItem("admin_name", state.adminName);
+        fecharLogin();
+        toast("Login OK");
+        syncTopPill();
+        await carregarDashboard();
+      }catch(err){
+        $("#loginMsg").textContent = "Falha na comunicação com a API.";
+        toast("Erro na API");
+      }
+    }
+
+    function sair(){
+      sessionStorage.removeItem("admin_key");
+      sessionStorage.removeItem("admin_name");
+      state.key = "";
+      state.adminName = "";
+      toast("Você saiu");
+      syncTopPill();
+      abrirLogin();
+    }
+
+    /**************************************************************
+     * NAV / VIEW
+     **************************************************************/
+    const viewMeta = {
+      dashboard: { title:"Dashboard", desc:"Resumo geral do banco e validações." },
+      clientes: { title:"Clientes", desc:"Gerencie clientes: criar, ativar/desativar, gerar termos." },
+      parceiros: { title:"Parceiros", desc:"Gerencie parceiros: criar, editar, ativar/desativar, contrato." },
+      beneficios:{ title:"Benefícios", desc:"Benefícios por grupo/parceiro: criar e ativar/desativar." },
+      promocoes: { title:"Promoções", desc:"Promoções: criar e ativar/desativar." },
+      logs:      { title:"Logs", desc:"Somente leitura (auditoria de validações)." },
+      log_admin: { title:"Log Admin", desc:"Somente leitura (auditoria do painel admin)." },
+      admins:    { title:"Admins", desc:"Somente leitura (controle de acesso)." }
+    };
+
+    function setView(view){
+      $$(".navbtn").forEach(b=> b.classList.toggle("active", b.dataset.view === view));
+      $$("[data-section]").forEach(s=> s.style.display = (s.dataset.section === view) ? "" : "none");
+      $("#viewTitle").textContent = viewMeta[view]?.title || view;
+      $("#viewDesc").textContent = viewMeta[view]?.desc || "";
+      // carregamento sob demanda
+      if(view === "clientes") carregarClientes();
+      if(view === "parceiros") carregarParceiros();
+      if(view === "beneficios") carregarBeneficios();
+      if(view === "promocoes") carregarPromocoes();
+      if(view === "logs") carregarLogs();
+      if(view === "log_admin") carregarLogAdmin();
+      if(view === "admins") carregarAdmins();
+    }
+
+    /**************************************************************
+     * RENDER TABLES
+     **************************************************************/
+    function renderTable(el, rows, opts={}){
+      const { columns, rowRenderer } = opts;
+      if(!rows || !rows.length){
+        el.innerHTML = `<thead><tr><th>Vazio</th></tr></thead><tbody><tr><td class="mini">Nenhum registro.</td></tr></tbody>`;
+        return;
+      }
+
+      const cols = columns && columns.length ? columns : Object.keys(rows[0]);
+      const thead = `<thead><tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join("")}</tr></thead>`;
+      const tbody = `<tbody>${
+        rows.map((r,idx)=>{
+          if(rowRenderer) return rowRenderer(r, idx, cols);
+          return `<tr>${cols.map(c=>`<td>${escapeHtml(r[c])}</td>`).join("")}</tr>`;
+        }).join("")
+      }</tbody>`;
+      el.innerHTML = thead + tbody;
+    }
+
+    function escapeHtml(v){
+      const s = String(v ?? "");
+      return s
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    /**************************************************************
+     * LOADERS
+     **************************************************************/
+    async function testarApi(){
+      try{
+        const r = await apiStatus();
+        const ok = r && (r.status === "API_ATIVA" || r.ok === true);
+        $("#statusApi").className = "status " + (ok ? "ok" : "bad");
+        $("#statusApi").innerHTML = `<span class="dot"></span>${ok ? "API OK" : "API sem resposta"}`;
+        toast(ok ? "API OK" : "API não respondeu");
+      }catch(e){
+        $("#statusApi").className = "status bad";
+        $("#statusApi").innerHTML = `<span class="dot"></span>API com erro`;
+        toast("API com erro");
+      }
+    }
+
+    async function carregarDashboard(){
+      if(!state.key) return;
+
+      try{
+        const rep = await relatorioGeral();
+        if(!rep || !rep.clientes){
+          toast("Falha ao ler relatório");
+          return;
+        }
+
+        $("#mClientes").textContent = rep.clientes.total ?? "—";
+        $("#mClientes2").textContent = `Ativos: ${rep.clientes.ativos ?? 0} | Inativos: ${rep.clientes.inativos ?? 0}`;
+
+        $("#mParceiros").textContent = rep.parceiros.total ?? "—";
+        $("#mParceiros2").textContent = `Ativos: ${rep.parceiros.ativos ?? 0} | Inativos: ${rep.parceiros.inativos ?? 0}`;
+
+        $("#mLogs").textContent = rep.validacoes ?? "—";
+        $("#mStatus").textContent = "Logado";
+        toast("Dashboard atualizado");
+      }catch(e){
+        toast("Erro no dashboard");
+      }
+    }
+
+    async function carregarClientes(){
+      if(!state.key) return;
+      try{
+        const r = await listarAba("clientes");
+        state.cache.clientes = (r && r.dados) ? r.dados : [];
+        renderClientes();
+      }catch(e){
+        toast("Erro ao carregar clientes");
+      }
+    }
+
+    function renderClientes(){
+      const q = String($("#filtroClientes").value||"").trim().toLowerCase();
+      const rows = (state.cache.clientes||[]).filter(o=>{
+        if(!q) return true;
+        return Object.values(o).some(v=> String(v||"").toLowerCase().includes(q));
+      });
+
+      renderTable($("#tblClientes"), rows, {
+        columns: ["idPublico","cpf","nome","celular","cidade","grupo","nascimento","dataAceite","dataCadastro","ativo","Ações"],
+        rowRenderer: (r)=>{
+          const id = r.idPublico || r.id || "";
+          const cpf = r.cpf || "";
+          const ativo = r.ativo;
+          const on = asSIM(ativo);
+
+          return `
+            <tr>
+              <td><b>${escapeHtml(id)}</b><div class="mini">ID</div></td>
+              <td>${escapeHtml(cpf)}</td>
+              <td><b>${escapeHtml(r.nome||"")}</b></td>
+              <td>${escapeHtml(r.celular||"")}</td>
+              <td>${escapeHtml(r.cidade||"")}</td>
+              <td>${escapeHtml(r.grupo||"")}</td>
+              <td>${escapeHtml(r.nascimento||"")}</td>
+              <td>${escapeHtml(r.dataAceite||"")}</td>
+              <td>${escapeHtml(r.dataCadastro||"")}</td>
+              <td>${chipAtivo(ativo)}</td>
+              <td style="white-space:nowrap">
+                <button class="btn" data-act="toggleCliente" data-cpf="${escapeHtml(cpf)}" data-ativo="${on ? "SIM":"NAO"}">
+                  ${on ? "Inativar" : "Ativar"}
+                </button>
+                <button class="btn" data-act="termosCliente" data-cpf="${escapeHtml(cpf)}">Termos (PDF)</button>
+              </td>
+            </tr>
+          `;
+        }
+      });
+    }
+
+    async function carregarParceiros(){
+      if(!state.key) return;
+      try{
+        const r = await listarParceiros();
+        state.cache.parceiros = (r && (r.parceiros || r.dados)) ? (r.parceiros || r.dados) : [];
+        renderParceiros();
+      }catch(e){
+        toast("Erro ao carregar parceiros");
+      }
+    }
+
+    function renderParceiros(){
+      const q = String($("#filtroParceiros").value||"").trim().toLowerCase();
+      const rows = (state.cache.parceiros||[]).filter(o=>{
+        if(!q) return true;
+        return Object.values(o).some(v=> String(v||"").toLowerCase().includes(q));
+      });
+
+      // tenta usar chaves comuns do seu projeto
+      const colsBase = ["nomeFantasia","nome","cnpj","cidade","ramo","whatsapp","email","instagram","site","logoURL","token","ativo"];
+
+      renderTable($("#tblParceiros"), rows, {
+        columns: [...colsBase, "Ações"],
+        rowRenderer: (r)=>{
+          const cnpj = r.cnpj || "";
+          const on = asSIM(r.ativo);
+          const nome = r.nomeFantasia || r.nome || "";
+
+          // inputs editáveis (patch)
+          const fields = {
+            nomeFantasia: r.nomeFantasia ?? "",
+            cidade: r.cidade ?? "",
+            ramo: r.ramo ?? "",
+            whatsapp: r.whatsapp ?? "",
+            email: r.email ?? "",
+            instagram: r.instagram ?? "",
+            site: r.site ?? "",
+            logoURL: r.logoURL ?? ""
+          };
+
+          return `
+            <tr>
+              <td><b>${escapeHtml(nome)}</b><div class="mini">Fantasia</div></td>
+              <td>${escapeHtml(r.nome||"")}</td>
+              <td><b>${escapeHtml(cnpj)}</b><div class="mini">CNPJ</div></td>
+              <td><input class="input" style="min-width:160px" data-edit="cidade" data-cnpj="${escapeHtml(cnpj)}" value="${escapeHtml(fields.cidade)}"/></td>
+              <td><input class="input" style="min-width:160px" data-edit="ramo" data-cnpj="${escapeHtml(cnpj)}" value="${escapeHtml(fields.ramo)}"/></td>
+              <td><input class="input" style="min-width:160px" data-edit="whatsapp" data-cnpj="${escapeHtml(cnpj)}" value="${escapeHtml(fields.whatsapp)}"/></td>
+              <td><input class="input" style="min-width:180px" data-edit="email" data-cnpj="${escapeHtml(cnpj)}" value="${escapeHtml(fields.email)}"/></td>
+              <td><input class="input" style="min-width:180px" data-edit="instagram" data-cnpj="${escapeHtml(cnpj)}" value="${escapeHtml(fields.instagram)}"/></td>
+              <td><input class="input" style="min-width:180px" data-edit="site" data-cnpj="${escapeHtml(cnpj)}" value="${escapeHtml(fields.site)}"/></td>
+              <td><input class="input" style="min-width:220px" data-edit="logoURL" data-cnpj="${escapeHtml(cnpj)}" value="${escapeHtml(fields.logoURL)}"/></td>
+              <td><span class="mini">${escapeHtml(r.token||"")}</span></td>
+              <td>${chipAtivo(r.ativo)}</td>
+              <td style="white-space:nowrap">
+                <button class="btn primary" data-act="salvarParceiro" data-cnpj="${escapeHtml(cnpj)}">Salvar</button>
+                <button class="btn" data-act="toggleParceiro" data-cnpj="${escapeHtml(cnpj)}" data-ativo="${on ? "SIM":"NAO"}">
+                  ${on ? "Inativar" : "Ativar"}
+                </button>
+                <button class="btn" data-act="contratoParceiro" data-cnpj="${escapeHtml(cnpj)}">Contrato (PDF)</button>
+              </td>
+            </tr>
+          `;
+        }
+      });
+    }
+
+    async function carregarBeneficios(){
+      if(!state.key) return;
+      try{
+        const r = await listarAba("beneficios");
+        state.cache.beneficios = (r && r.dados) ? r.dados : [];
+        renderBeneficios();
+      }catch(e){
+        toast("Erro ao carregar benefícios");
+      }
+    }
+
+    function renderBeneficios(){
+      const q = String($("#filtroBeneficios").value||"").trim().toLowerCase();
+      const rows = (state.cache.beneficios||[]).filter(o=>{
+        if(!q) return true;
+        return Object.values(o).some(v=> String(v||"").toLowerCase().includes(q));
+      });
+
+      renderTable($("#tblBeneficios"), rows, {
+        columns: ["parceiro","grupo","descricao","regra","ativo","Ações"],
+        rowRenderer: (r, idx)=>{
+          const valorId = idx; // fallback
+          // tentar achar um ID real se existir
+          const id = r.id || r.ID || r.codigo || r.codigoId || "";
+          const campoId = id ? (Object.keys(r).find(k => String(k).toLowerCase().includes("id")) || "id") : "descricao";
+          const idValue = id || (r.descricao || "");
+
+          const on = asSIM(r.ativo);
+          return `
+            <tr>
+              <td><b>${escapeHtml(r.parceiro||"")}</b></td>
+              <td>${escapeHtml(r.grupo||"")}</td>
+              <td>${escapeHtml(r.descricao||"")}</td>
+              <td>${escapeHtml(r.regra||"")}</td>
+              <td>${chipAtivo(r.ativo)}</td>
+              <td style="white-space:nowrap">
+                <button class="btn" data-act="toggleStatusGeneric"
+                        data-aba="beneficios"
+                        data-campo="${escapeHtml(campoId)}"
+                        data-id="${escapeHtml(idValue)}"
+                        data-ativo="${on ? "SIM":"NAO"}">
+                  ${on ? "Inativar" : "Ativar"}
+                </button>
+              </td>
+            </tr>
+          `;
+        }
+      });
+    }
+
+    async function carregarPromocoes(){
+      if(!state.key) return;
+      try{
+        const r = await listarAba("promocoes");
+        state.cache.promocoes = (r && r.dados) ? r.dados : [];
+        renderPromocoes();
+      }catch(e){
+        toast("Erro ao carregar promoções");
+      }
+    }
+
+    function renderPromocoes(){
+      const q = String($("#filtroPromocoes").value||"").trim().toLowerCase();
+      const rows = (state.cache.promocoes||[]).filter(o=>{
+        if(!q) return true;
+        return Object.values(o).some(v=> String(v||"").toLowerCase().includes(q));
+      });
+
+      renderTable($("#tblPromocoes"), rows, {
+        columns: ["parceiro","titulo","descricao","inicio","fim","ativo","Ações"],
+        rowRenderer: (r)=>{
+          const id = r.id || r.ID || "";
+          const campoId = id ? (Object.keys(r).find(k => String(k).toLowerCase().includes("id")) || "id") : "titulo";
+          const idValue = id || (r.titulo || "");
+          const on = asSIM(r.ativo);
+
+          return `
+            <tr>
+              <td><b>${escapeHtml(r.parceiro||"")}</b></td>
+              <td>${escapeHtml(r.titulo||"")}</td>
+              <td>${escapeHtml(r.descricao||"")}</td>
+              <td>${escapeHtml(r.inicio||"")}</td>
+              <td>${escapeHtml(r.fim||"")}</td>
+              <td>${chipAtivo(r.ativo)}</td>
+              <td style="white-space:nowrap">
+                <button class="btn" data-act="toggleStatusGeneric"
+                        data-aba="promocoes"
+                        data-campo="${escapeHtml(campoId)}"
+                        data-id="${escapeHtml(idValue)}"
+                        data-ativo="${on ? "SIM":"NAO"}">
+                  ${on ? "Inativar" : "Ativar"}
+                </button>
+              </td>
+            </tr>
+          `;
+        }
+      });
+    }
+
+    async function carregarLogs(){
+      if(!state.key) return;
+      try{
+        const r = await listarAba("logs");
+        state.cache.logs = (r && r.dados) ? r.dados : [];
+        renderLogs();
+      }catch(e){
+        toast("Erro ao carregar logs");
+      }
+    }
+
+    function renderLogs(){
+      const q = String($("#filtroLogs").value||"").trim().toLowerCase();
+      const rows = (state.cache.logs||[]).filter(o=>{
+        if(!q) return true;
+        return Object.values(o).some(v=> String(v||"").toLowerCase().includes(q));
+      });
+
+      // tenta mapear um campo de data se existir
+      const cols = Object.keys(rows[0]||{});
+      renderTable($("#tblLogs"), rows, {
+        columns: cols,
+        rowRenderer: (r)=>{
+          const tds = cols.map(c=>{
+            let v = r[c];
+            if(String(c).toLowerCase().includes("data")) v = brDateTime(v);
+            return `<td>${escapeHtml(v)}</td>`;
+          }).join("");
+          return `<tr>${tds}</tr>`;
+        }
+      });
+    }
+
+    async function carregarLogAdmin(){
+      if(!state.key) return;
+      try{
+        const r = await listarAba("log_admin");
+        state.cache.log_admin = (r && r.dados) ? r.dados : [];
+        renderLogAdmin();
+      }catch(e){
+        toast("Erro ao carregar log_admin");
+      }
+    }
+
+    function renderLogAdmin(){
+      const q = String($("#filtroLogAdmin").value||"").trim().toLowerCase();
+      const rows = (state.cache.log_admin||[]).filter(o=>{
+        if(!q) return true;
+        return Object.values(o).some(v=> String(v||"").toLowerCase().includes(q));
+      });
+
+      renderTable($("#tblLogAdmin"), rows, {
+        columns: Object.keys(rows[0]||{}),
+        rowRenderer: (r, idx, cols)=>{
+          const tds = cols.map(c=>{
+            let v = r[c];
+            if(String(c).toLowerCase().includes("data")) v = brDateTime(v);
+            return `<td>${escapeHtml(v)}</td>`;
+          }).join("");
+          return `<tr>${tds}</tr>`;
+        }
+      });
+    }
+
+    async function carregarAdmins(){
+      if(!state.key) return;
+      try{
+        const r = await listarAba("admins");
+        state.cache.admins = (r && r.dados) ? r.dados : [];
+        renderAdmins();
+      }catch(e){
+        toast("Erro ao carregar admins");
+      }
+    }
+
+    function renderAdmins(){
+      const q = String($("#filtroAdmins").value||"").trim().toLowerCase();
+      const rows = (state.cache.admins||[]).filter(o=>{
+        if(!q) return true;
+        return Object.values(o).some(v=> String(v||"").toLowerCase().includes(q));
+      });
+
+      renderTable($("#tblAdmins"), rows, {
+        columns: Object.keys(rows[0]||{}),
+      });
+    }
+
+    /**************************************************************
+     * AÇÕES (click handlers)
+     **************************************************************/
+    document.addEventListener("click", async (ev)=>{
+      const btn = ev.target.closest("button[data-act]");
+      if(!btn) return;
+
+      const act = btn.dataset.act;
+
+      try{
+        // CLIENTE: toggle ativo
+        if(act === "toggleCliente"){
+          const cpf = btn.dataset.cpf;
+          const atual = btn.dataset.ativo;
+          const novo = (atual === "SIM") ? "NAO" : "SIM";
+
+          btn.disabled = true;
+          const r = await alterarStatus("clientes", "cpf", cpf, novo);
+          if(r && r.ok){
+            toast("Status do cliente atualizado");
+            await carregarClientes();
+            await carregarDashboard();
+          }else{
+            toast("Falha ao alterar status");
+          }
+          btn.disabled = false;
+        }
+
+        // CLIENTE: termos
+        if(act === "termosCliente"){
+          const cpf = btn.dataset.cpf;
+          btn.disabled = true;
+          const r = await gerarTermosCliente(cpf);
+          btn.disabled = false;
+
+          if(r && r.ok && r.url){
+            toast("Termos gerados");
+            window.open(r.url, "_blank");
+          }else{
+            toast("Falha ao gerar termos");
+          }
+        }
+
+        // PARCEIRO: toggle ativo
+        if(act === "toggleParceiro"){
+          const cnpj = btn.dataset.cnpj;
+          const atual = btn.dataset.ativo;
+          const novo = (atual === "SIM") ? "NAO" : "SIM";
+
+          btn.disabled = true;
+          const r = await alterarStatus("parceiros", "cnpj", cnpj, novo);
+          if(r && r.ok){
+            toast("Status do parceiro atualizado");
+            await carregarParceiros();
+            await carregarDashboard();
+          }else{
+            toast("Falha ao alterar status");
+          }
+          btn.disabled = false;
+        }
+
+        // PARCEIRO: salvar patch
+        if(act === "salvarParceiro"){
+          const cnpj = btn.dataset.cnpj;
+          const inputs = $$(`input[data-cnpj="${CSS.escape(cnpj)}"][data-edit]`);
+          const patch = {};
+          inputs.forEach(inp => patch[inp.dataset.edit] = inp.value);
+
+          btn.disabled = true;
+          const r = await atualizarParceiro(cnpj, patch);
+          btn.disabled = false;
+
+          if(r && r.ok){
+            toast("Parceiro atualizado");
+            await carregarParceiros();
+          }else{
+            toast("Falha ao salvar parceiro");
+          }
+        }
+
+        // PARCEIRO: contrato
+        if(act === "contratoParceiro"){
+          const cnpj = btn.dataset.cnpj;
+          btn.disabled = true;
+          const r = await gerarContrato(cnpj);
+          btn.disabled = false;
+
+          if(r && r.ok && r.url){
+            toast("Contrato gerado");
+            window.open(r.url, "_blank");
+          }else{
+            toast("Falha ao gerar contrato");
+          }
+        }
+
+        // GENERIC: toggle status beneficios/promocoes (e qualquer aba que tenha campo "ativo")
+        if(act === "toggleStatusGeneric"){
+          const aba = btn.dataset.aba;
+          const campo = btn.dataset.campo;
+          const id = btn.dataset.id;
+          const atual = btn.dataset.ativo;
+          const novo = (atual === "SIM") ? "NAO" : "SIM";
+
+          btn.disabled = true;
+          const r = await alterarStatus(aba, campo, id, novo);
+          btn.disabled = false;
+
+          if(r && r.ok){
+            toast(`Status atualizado (${aba})`);
+            if(aba === "beneficios") await carregarBeneficios();
+            if(aba === "promocoes") await carregarPromocoes();
+          }else{
+            toast("Falha ao alterar status");
+          }
+        }
+
+      }catch(e){
+        toast("Erro na ação");
+        btn.disabled = false;
+      }
     });
 
-    h += "</table>";
-    document.getElementById("saida").innerHTML = h;
-  };
+    /**************************************************************
+     * MODAIS SIMPLES (prompt) — criar registros
+     **************************************************************/
+    async function criarClienteUI(){
+      const cpf = prompt("CPF do cliente (somente números):");
+      if(!cpf) return;
+      const nome = prompt("Nome completo:");
+      if(!nome) return;
+      const celular = prompt("Celular/WhatsApp (opcional):") || "";
+      const grupo = prompt("Grupo (ex: individual, empresa X, sindicato...)","individual") || "individual";
+      const cidade = prompt("Cidade:") || "";
+      const nascimento = prompt("Nascimento (dd/MM/aaaa ou yyyy-mm-dd):") || "";
 
-  jsonp({action:"listar_parceiros",key:ADMIN_KEY},"listarCallback");
-}
+      toast("Criando cliente...");
+      const r = await criarCliente({ cpf: onlyDigits(cpf), nome, celular, grupo, cidade, nascimento });
+      if(r && r.ok){
+        toast("Cliente criado");
+        await carregarClientes();
+        await carregarDashboard();
+      }else{
+        toast("Falha ao criar cliente");
+      }
+    }
 
-/* ===== Alterar status ===== */
-function alterarStatus(cnpj,statusNovo){
-  jsonp({
-    action:"alterar_status",
-    key:ADMIN_KEY,
-    aba:"parceiros",
-    campoId:"cnpj",
-    valorId:cnpj,
-    status:statusNovo
-  },"noop");
+    async function criarParceiroUI(){
+      const nomeFantasia = prompt("Nome Fantasia do parceiro:");
+      if(!nomeFantasia) return;
+      const cnpj = prompt("CNPJ (somente números):");
+      if(!cnpj) return;
+      const cidade = prompt("Cidade:") || "";
+      const ramo = prompt("Ramo:") || "";
+      const whatsapp = prompt("WhatsApp:") || "";
+      const email = prompt("E-mail:") || "";
 
-  setTimeout(carregarParceiros,700);
-}
+      toast("Criando parceiro...");
+      const r = await criarParceiro({ nomeFantasia, cnpj: onlyDigits(cnpj), cidade, ramo, whatsapp, email });
+      if(r && r.ok){
+        toast("Parceiro criado (token gerado)");
+        await carregarParceiros();
+        await carregarDashboard();
+        alert("TOKEN do parceiro: " + (r.token || "(não retornou)"));
+      }else{
+        toast("Falha ao criar parceiro");
+      }
+    }
 
-/* ===== Contrato ===== */
-function gerarContrato(cnpj){
-  window.contratoCallback = r=>{
-    if(r.ok && r.url) window.open(r.url,"_blank");
-    else status("Erro contrato");
-  };
+    async function criarBeneficioUI(){
+      const parceiro = prompt("Parceiro (nome igual na planilha):");
+      if(!parceiro) return;
+      const grupo = prompt("Grupo (ex: individual, empresa X...):") || "individual";
+      const descricao = prompt("Descrição do benefício:") || "";
+      const regra = prompt("Regra/condição (opcional):") || "";
 
-  jsonp({
-    action:"gerarContrato",
-    cnpj:cnpj,
-    admin:ADMIN_NOME
-  },"contratoCallback");
-}
+      toast("Criando benefício...");
+      const r = await criarBeneficio({ parceiro, grupo, descricao, regra });
+      if(r && r.ok){
+        toast("Benefício criado");
+        await carregarBeneficios();
+      }else{
+        toast("Falha ao criar benefício");
+      }
+    }
 
-function noop(){}
-</script>
+    async function criarPromocaoUI(){
+      const parceiro = prompt("Parceiro (nome igual na planilha):");
+      if(!parceiro) return;
+      const titulo = prompt("Título:") || "";
+      const descricao = prompt("Descrição:") || "";
+      const inicio = prompt("Início (dd/MM/aaaa ou yyyy-mm-dd):") || "";
+      const fim = prompt("Fim (dd/MM/aaaa ou yyyy-mm-dd):") || "";
 
-<!-- ✅ RODAPÉ PADRÃO -->
-<footer style="
-  background:#dfffe0;
-  padding:12px;
-  text-align:center;
-  font-size:12px;
-  line-height:1.4;
-">
-  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+      toast("Criando promoção...");
+      const r = await criarPromocao({ parceiro, titulo, descricao, inicio, fim });
+      if(r && r.ok){
+        toast("Promoção criada");
+        await carregarPromocoes();
+      }else{
+        toast("Falha ao criar promoção");
+      }
+    }
 
-  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
-  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista em meda corrente, salvo autorização expressa do estabelecimento.
-</footer>
+    /**************************************************************
+     * EVENTOS UI
+     **************************************************************/
+    $$(".navbtn").forEach(btn=>{
+      btn.addEventListener("click", ()=> setView(btn.dataset.view));
+    });
 
+    $("#btnTestarApi").addEventListener("click", testarApi);
+    $("#btnRecarregar").addEventListener("click", ()=> location.reload());
+    $("#btnSair").addEventListener("click", sair);
 
+    $("#btnLogin").addEventListener("click", fazerLogin);
+    $("#inpKey").addEventListener("keydown", (e)=>{ if(e.key==="Enter") fazerLogin(); });
+
+    $("#btnCarregarTudo").addEventListener("click", async ()=>{
+      toast("Carregando...");
+      await carregarDashboard();
+      await carregarClientes();
+      await carregarParceiros();
+      await carregarLogs();
+      toast("Tudo carregado");
+    });
+
+    $("#btnReloadClientes").addEventListener("click", carregarClientes);
+    $("#btnReloadParceiros").addEventListener("click", carregarParceiros);
+    $("#btnReloadBeneficios").addEventListener("click", carregarBeneficios);
+    $("#btnReloadPromocoes").addEventListener("click", carregarPromocoes);
+    $("#btnReloadLogs").addEventListener("click", carregarLogs);
+    $("#btnReloadLogAdmin").addEventListener("click", carregarLogAdmin);
+    $("#btnReloadAdmins").addEventListener("click", carregarAdmins);
+
+    $("#btnNovoCliente").addEventListener("click", criarClienteUI);
+    $("#btnNovoParceiro").addEventListener("click", criarParceiroUI);
+    $("#btnNovoBeneficio").addEventListener("click", criarBeneficioUI);
+    $("#btnNovoPromocao").addEventListener("click", criarPromocaoUI);
+
+    $("#filtroClientes").addEventListener("input", renderClientes);
+    $("#filtroParceiros").addEventListener("input", renderParceiros);
+    $("#filtroBeneficios").addEventListener("input", renderBeneficios);
+    $("#filtroPromocoes").addEventListener("input", renderPromocoes);
+    $("#filtroLogs").addEventListener("input", renderLogs);
+    $("#filtroLogAdmin").addEventListener("input", renderLogAdmin);
+    $("#filtroAdmins").addEventListener("input", renderAdmins);
+
+    /**************************************************************
+     * INIT
+     **************************************************************/
+    (function init(){
+      // última atualização dinâmica mês/ano atual
+      const now = new Date();
+      const mm = String(now.getMonth()+1).padStart(2,"0");
+      $("#ultima").textContent = `${mm}/${now.getFullYear()}`;
+
+      syncTopPill();
+
+      // testa API ao abrir
+      testarApi();
+
+      // login se não tiver sessão
+      if(!state.key || !state.adminName){
+        abrirLogin();
+      }else{
+        carregarDashboard();
+      }
+
+      // view padrão
+      setView("dashboard");
+    })();
+  </script>
 </body>
 </html>
