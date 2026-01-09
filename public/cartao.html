@@ -177,6 +177,12 @@ body{
 <button class="btn-voltar-flutuante" onclick="voltarPagina()">
   ⬅️ Voltar
 </button>
+#qrCode {
+  width: 180px;
+  height: 180px;
+  display: block;
+  margin: 10px auto;
+}
 
 </style>
 </head>
@@ -326,9 +332,8 @@ function jsonp(url){
       encodeURIComponent(idPublicoFinal);
 
     const qrFinal =
-      "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" +
-      encodeURIComponent(urlValidar);
-
+  "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" +
+  encodeURIComponent(urlValidar);
     document.getElementById("qrCode").src = qrFinal;
 
   } catch (err) {
