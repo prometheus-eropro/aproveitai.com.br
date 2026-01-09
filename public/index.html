@@ -171,25 +171,57 @@ function preencherFiltros() {
    RENDERIZAR CARDS
 ========================= */
 function renderizar(lista) {
- parceirosDiv.innerHTML += `
-  <div class="card">
-    <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
-    <h3>${nome}</h3>
-    <p><b>Cidade:</b> ${cidade}</p>
-    <p><b>Ramo:</b> ${ramo}</p>
-    ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
+  parceirosDiv.innerHTML = "";
 
-    <div class="card-contatos-texto">
-      ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
-      ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
-      ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
-      ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
-    </div>
-  </div>
-`;
+  if (!lista.length) {
+    parceirosDiv.innerHTML = "<p>Nenhum parceiro encontrado.</p>";
+    return;
+  }
+
+  lista.forEach(p => {
+    if (String(p.ativo).toLowerCase() !== "sim") return;
+
+    const nome = p.nomeFantasia || p.nome || "Parceiro";
+    const cidade = p.cidade || "-";
+    const ramo = p.ramo || "-";
+    const desconto = p.tipoDesconto || "";
+    const whatsapp = (p.whatsapp || "").replace(/\D/g, "");
+    const instagram = p.instagram || "";
+    const site = p.site || "";
+    const email = p.email || "";
+
+    let logo = (p.logoURL || "").trim();
+    if (!logo.startsWith("http")) logo = "logo-aproveitai.png";
+
+    let contatos = "";
+
+    if (whatsapp) {
+      contatos += `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>`;
+    }
+    if (instagram) {
+      contatos += `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>`;
+    }
+    if (site) {
+      contatos += `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>`;
+    }
+    if (email) {
+      contatos += `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>`;
+    }
+
+    parceirosDiv.innerHTML += `
+      <div class="card">
+        <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
+        <h3>${nome}</h3>
+        <p><b>Cidade:</b> ${cidade}</p>
+        <p><b>Ramo:</b> ${ramo}</p>
+        ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
+        <div class="card-contatos-texto">
+          ${contatos}
+        </div>
+      </div>
+    `;
   });
 }
-
 /* =========================
    FILTRAR
 ========================= */
