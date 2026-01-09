@@ -304,10 +304,10 @@ function jsonp(url){
     const d = await jsonp(API + "?idPublico=" + encodeURIComponent(id));
 
     if(d.erro){
-      alert("Cartão não localizado: " + d.erro);
-      return;
-    }
-
+  document.getElementById("cartao-print").innerHTML =
+    "<p style='color:red;font-weight:bold'>Cartão não localizado</p>";
+  return;
+}
     document.getElementById("nome").textContent = d.nome || "-";
     document.getElementById("cpf").textContent = d.cpf || "-";
     document.getElementById("idPublico").textContent = d.idPublico || id;
@@ -328,14 +328,10 @@ const urlValidar =
 let qrFinal;
 
 if (d.qrBase64) {
-  qrFinal = "data:image/png;base64," + d.qrBase64;
-} else if (d.qrURL) {
-  qrFinal = d.qrURL;
-} else {
   qrFinal =
-    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-    encodeURIComponent(urlValidar);
-}
+  "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" +
+  encodeURIComponent(urlValidar);
+
 
 document.getElementById("qrCode").src = qrFinal;
   }catch(err){

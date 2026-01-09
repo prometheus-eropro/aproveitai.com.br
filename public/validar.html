@@ -287,6 +287,14 @@ if ("serviceWorker" in navigator) {
 const conteudo = document.getElementById("conteudo");
 const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
+<input
+  type="text"
+  id="entradaManual"
+  placeholder="CPF ou ID Público (APV-XXXX)"
+  style="width:90%;padding:14px;font-size:16px;border-radius:8px"
+/>
+
+<button onclick="validarManual()">🔍 Validar</button>
 
 conteudo.innerHTML = `
   <button id="btnCamera">📷 Iniciar câmera</button>
@@ -317,7 +325,7 @@ async function iniciarLeitor() {
     await leitor.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: 220 },
-      texto => processarQR(texto)
+      texto => processarValidacao(idExtraidoDoQR);
     );
   } catch (err) {
     scannerAtivo = false;
@@ -418,6 +426,34 @@ async function processarQR(texto) {
   await pararLeitorSilencioso();
   scannerAtivo = false;
 }
+function validarManual() {
+  const valor = document.getElementById("entradaManual").value.trim();
+  if (!valor) return alert("Informe CPF ou ID");
+
+  processarValidacao(valor);
+}
+
+async function processarValidacao(valor) {
+  let tipo = "idPublico";
+
+  if (/^\d{11}$/.test(valor)) tipo = "cpf";
+  if (valor.startsWith("APV-")) tipo = "idPublico";
+
+  const API_URL = "SUA_URL_GAS";
+
+  const url =
+    API_URL +
+    "?" + tipo + "=" + encodeURIComponent(valor) +
+    "&modo=parceiro" +
+    "&token=" + sessionStorage.getItem("parceiroToken") +
+    "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
+    "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
+
+  const data = await fetch(url).then(r => r.json());
+
+  renderResultado(data);
+}
+
 </script>
 </body>
 </html>
