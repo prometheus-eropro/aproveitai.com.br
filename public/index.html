@@ -229,17 +229,30 @@ function filtrar() {
    CARREGAR PARCEIROS
 ========================= */
 function carregarParceiros() {
-  fetch(API_URL + "?aba=parceiros")
-    .then(r => r.json())
-    .then(res => {
-      if (!res.ok) throw "Erro API";
+  const cb = "cb_" + Date.now();
+  const script = document.createElement("script");
+
+  window[cb] = function (res) {
+    try {
+      if (!res || !res.ok) throw "Erro API";
       parceiros = res.dados || [];
       preencherFiltros();
       renderizar(parceiros);
-    })
-    .catch(() => {
+    } catch (e) {
       parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
-    });
+    } finally {
+      delete window[cb];
+      script.remove();
+    }
+  };
+
+  script.src = API_URL + "?aba=parceiros&callback=" + cb;
+  script.onerror = () => {
+    parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
+  };
+
+  document.body.appendChild(script);
+}
 }
 
 /* =========================
