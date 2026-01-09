@@ -63,24 +63,18 @@
 </div>
 
 <script>
-function abrirWhatsApp() {
-  const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cliente";
-  const telefoneAdmin = "5528999692303";
-
-  const mensagem = `📥 Novo cadastro no Cartão AproveitAI
-
-👤 Nome: ${nome}
-⏳ Status: Aguardando liberação no sistema.`;
-
-  window.open(
-    "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem),
-    "_blank"
-  );
-}
-<button class="btn-voltar-flutuante" onclick="voltarPagina()">
-  ⬅️ Voltar
+  function abrirWhatsApp() {
+    const numero = "5528999692303";
+    const msg = encodeURIComponent(
+      "Olá! Acabei de me cadastrar no Cartão AproveitAI."
+    );
+    window.open(`https://wa.me/${numero}?text=${msg}`, "_blank");
+  }
+</script>
+<button onclick="abrirWhatsApp()">
+📲 Click aqui para avisar administrador no WhatsApp
 </button>
-<script>
+
 function voltarPagina() {
   history.back();
 }

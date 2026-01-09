@@ -179,6 +179,8 @@ body{
 </button>
 
 </style>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
 </head>
 
 <body>
@@ -230,7 +232,16 @@ body{
 
   <div class="cartao-lado cartao-direito">
     <h4>Validação</h4>
-    <img id="qrCode" class="qr-img">
+    <img
+  id="qrCode"
+  src=""
+  alt="QR Code"
+  style="
+    width: 220px;
+    height: 220px;
+    image-rendering: crisp-edges;
+  "
+>
     <div class="aviso">
       Apresente documento com foto se solicitado.<br>
       <span class="atencao">Valide sempre antes da compra.</span>
@@ -363,17 +374,24 @@ function formatarDataBR(iso){
   return d.toLocaleDateString("pt-BR") + " " +
          d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
 }
-<script>
+
 function voltarPagina() {
   history.back();
 }
-</script>
-<script>
+
 function voltarPagina() {
   history.back();
 }
-</script>
 
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const resultado = document.getElementById("resultado");
+    if (resultado) {
+      resultado.innerHTML = "<p>🔄 Validando cartão, aguarde...</p>";
+    }
+  });
+</script>
+
 </body>
 </html>
