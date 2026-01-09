@@ -179,8 +179,6 @@ body{
 </button>
 
 </style>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
 </head>
 
 <body>
@@ -298,16 +296,20 @@ function jsonp(url){
 }
 
 (async () => {
-  if(!id){ alert("ID do cartão não informado."); return; }
+  if (!id) {
+    alert("ID do cartão não informado.");
+    return;
+  }
 
-  try{
+  try {
     const d = await jsonp(API + "?idPublico=" + encodeURIComponent(id));
 
-    if(d.erro){
-  document.getElementById("cartao-print").innerHTML =
-    "<p style='color:red;font-weight:bold'>Cartão não localizado</p>";
-  return;
-}
+    if (d.erro) {
+      document.getElementById("cartao-print").innerHTML =
+        "<p style='color:red;font-weight:bold'>Cartão não localizado</p>";
+      return;
+    }
+
     document.getElementById("nome").textContent = d.nome || "-";
     document.getElementById("cpf").textContent = d.cpf || "-";
     document.getElementById("idPublico").textContent = d.idPublico || id;
@@ -315,26 +317,21 @@ function jsonp(url){
     document.getElementById("cidade").textContent = d.cidade || "-";
     document.getElementById("cadastro").textContent = d.dataCadastro || "-";
 
-    // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
-   // ===============================
-// QR CODE (BLOCO ÚNICO E SEGURO)
-// ===============================
-const idPublicoFinal = (d.idPublico || id).trim();
+    // ===============================
+    // QR CODE (SEMPRE GERADO)
+    // ===============================
+    const idPublicoFinal = (d.idPublico || id).trim();
+    const urlValidar =
+      "https://aproveitai.com.br/validar.html?idPublico=" +
+      encodeURIComponent(idPublicoFinal);
 
-const urlValidar =
-  "https://aproveitai.com.br/validar.html?idPublico=" +
-  encodeURIComponent(idPublicoFinal);
+    const qrFinal =
+      "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" +
+      encodeURIComponent(urlValidar);
 
-let qrFinal;
+    document.getElementById("qrCode").src = qrFinal;
 
-if (d.qrBase64) {
-  qrFinal =
-  "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" +
-  encodeURIComponent(urlValidar);
-
-
-document.getElementById("qrCode").src = qrFinal;
-  }catch(err){
+  } catch (err) {
     console.error(err);
     alert("Erro ao carregar dados do cartão.");
   }
@@ -375,10 +372,6 @@ function voltarPagina() {
   history.back();
 }
 
-function voltarPagina() {
-  history.back();
-}
-
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -388,6 +381,5 @@ function voltarPagina() {
     }
   });
 </script>
-
 </body>
 </html>

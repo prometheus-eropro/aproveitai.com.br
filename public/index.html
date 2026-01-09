@@ -226,7 +226,7 @@ function filtrar() {
 }
 
 /* =========================
-   CARREGAR PARCEIROS
+   CARREGAR PARCEIROS (JSONP)
 ========================= */
 function carregarParceiros() {
   const cb = "cb_" + Date.now();
@@ -253,8 +253,6 @@ function carregarParceiros() {
 
   document.body.appendChild(script);
 }
-}
-
 /* =========================
    INIT
 ========================= */
