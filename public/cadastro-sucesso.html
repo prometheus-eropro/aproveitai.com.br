@@ -96,11 +96,17 @@ if (!telefone || telefone.length < 10) {
   return;
 }
 
-function abrirWhatsApp(numero, mensagem) {
-  const telefone = numero.replace(/\D/g, ""); // remove tudo que não é número
-  const texto = encodeURIComponent(mensagem);
-  const url = `https://wa.me/55${telefone}?text=${texto}`;
+<script>
+function abrirWhatsApp() {
+  const telefoneAdmin = "28999692303"; // ← SEU NÚMERO REAL, só números
+  const mensagem = "📢 Novo cadastro recebido no Cartão AproveitAI. Favor verificar no painel.";
+
+  if (!telefoneAdmin || telefoneAdmin.length < 10) {
+    alert("Telefone do administrador inválido.");
+    return;
+  }
+
+  const url = `https://wa.me/55${telefoneAdmin}?text=${encodeURIComponent(mensagem)}`;
   window.open(url, "_blank");
 }
-
 </script>
