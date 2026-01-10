@@ -112,10 +112,6 @@
   <div class="footer-bottom">
     © 2025 AproveitAI. Todos os direitos reservados.
   </div>
-<a href="/admin.html" style="opacity:0.15;font-size:12px;">
-Área administrativa
-</a>
-
 </footer>
 
 <script>
@@ -123,12 +119,7 @@
    CARTÃO APROVEITAI – SCRIPT ÚNICO OFICIAL (INDEX)
 ===================================================== */
 
-// ============================
-// API OFICIAL – APROVEITAI
-// (JSONP – PRODUÇÃO)
-// ============================
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 const parceirosDiv = document.getElementById("parceiros");
 const buscaNome = document.getElementById("buscaNome");
@@ -186,28 +177,13 @@ function renderizar(lista) {
     const cidade = p.cidade || "-";
     const ramo = p.ramo || "-";
     const desconto = p.tipoDesconto || "";
-    const whatsapp = (p.whatsapp || "").replace(/\D/g, "");
+    const whatsapp = String(p.whatsapp || "").replace(/\D/g, "");
     const instagram = p.instagram || "";
     const site = p.site || "";
     const email = p.email || "";
 
     let logo = (p.logoURL || "").trim();
     if (!logo.startsWith("http")) logo = "logo-aproveitai.png";
-
-    let contatos = "";
-
-    if (whatsapp) {
-      contatos += `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>`;
-    }
-    if (instagram) {
-      contatos += `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>`;
-    }
-    if (site) {
-      contatos += `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>`;
-    }
-    if (email) {
-      contatos += `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>`;
-    }
 
     parceirosDiv.innerHTML += `
       <div class="card">
@@ -216,13 +192,18 @@ function renderizar(lista) {
         <p><b>Cidade:</b> ${cidade}</p>
         <p><b>Ramo:</b> ${ramo}</p>
         ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
+
         <div class="card-contatos-texto">
-          ${contatos}
+          ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
+          ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
+          ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
+          ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
         </div>
       </div>
     `;
   });
 }
+
 /* =========================
    FILTRAR
 ========================= */
@@ -241,36 +222,33 @@ function filtrar() {
 }
 
 /* =========================
-   CARREGAR PARCEIROS (JSONP)
+   CARREGAR PARCEIROS
 ========================= */
-function carregarParceiros() {
-  const cb = "cb_" + Date.now();
-  const script = document.createElement("script");
 
-  window[cb] = function (res) {
-    try {
-      if (!res || !res.ok) throw "Erro API";
-      parceiros = res.dados || [];
-      preencherFiltros();
-      renderizar(parceiros);
-    } catch (e) {
+function carregarParceiros() {
+  const callbackName = "cbParceiros";
+
+  window[callbackName] = function (res) {
+    if (!res || !res.ok) {
       parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
-    } finally {
-      delete window[cb];
-      script.remove();
+      return;
     }
+
+    parceiros = res.dados || [];
+    preencherFiltros();
+    renderizar(parceiros);
   };
 
-  script.src = API_URL + "?aba=parceiros&callback=" + cb;
+  const script = document.createElement("script");
+  script.src = API_URL + "?aba=parceiros&callback=" + callbackName;
   script.onerror = () => {
     parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
   };
 
   document.body.appendChild(script);
 }
-/* =========================
-   INIT
-========================= */
+
+
 document.addEventListener("DOMContentLoaded", () => {
   carregarParceiros();
 });

@@ -57,18 +57,26 @@
 }
 .btn-voltar-flutuante {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 9999;
-  background: #198754;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  background: #0a7a2a;
   color: #fff;
   border: none;
-  border-radius: 50px;
-  padding: 14px 18px;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+}
+
+.btn-voltar-flutuante:hover {
+  background: #086124;
 }
 
 .btn-voltar-flutuante:hover {
@@ -184,9 +192,7 @@
 <input type="hidden" name="userAgent" id="userAgent">
 
 </form>
-  <div style="text-align:center; margin-top: 20px;">
-    <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
-  </div>
+  
 </div>
 
 <!-- ✅ RODAPÉ PADRÃO -->
@@ -204,54 +210,27 @@
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
 <script>
-document.getElementById("userAgent").value = navigator.userAgent;
-</script>
-<script>
-document.querySelectorAll('input[inputmode="numeric"]').forEach(campo => {
-  campo.addEventListener("input", () => {
-    campo.value = campo.value.replace(/\D/g, "");
-  });
-});
-</script>
-<script>
-const form = document.getElementById("formCadastro");
-
-form.addEventListener("submit", function(e){
+document.getElementById("formCadastro").addEventListener("submit", function (e) {
   e.preventDefault();
 
-  const dados = new FormData(form);
+  const nome = this.querySelector('input[name="nome"]').value.trim();
 
-  const nome = dados.get("nome") || "Novo cliente";
+  // ✅ SALVA O NOME CORRETO DO CADASTRO ATUAL
   localStorage.setItem("ultimoCadastroNome", nome);
 
-  if (dados.get("nascimento")) {
-    const [y,m,d] = dados.get("nascimento").split("-");
-    dados.set("nascimento", `${d}/${m}/${y}`);
-  }
+  const formData = new FormData(this);
 
-  fetch(form.action, {
+  fetch("https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec", {
     method: "POST",
-    body: dados,
+    body: formData,
     mode: "no-cors"
   });
 
-  // Redireciona somente depois de salvar o nome
-  window.location.href = "cadastro-sucesso.html";
+  // 🔁 redireciona SEM depender da resposta do Google
+  setTimeout(() => {
+    window.location.href = "cadastro-sucesso.html";
+  }, 300);
 });
 </script>
-<script>
-  const uaField = document.querySelector('input[name="userAgent"]');
-  if (uaField) uaField.value = navigator.userAgent;
-<button class="btn-voltar-flutuante" onclick="voltarPagina()">
-  ⬅️ Voltar
-</button>
-<script>
-function voltarPagina() {
-  history.back();
-}
-</script>
-
-</script>
-
 </body>
 </html>

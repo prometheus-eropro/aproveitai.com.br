@@ -62,19 +62,33 @@
 
 </div>
 
+<button
+  onclick="voltarPagina()"
+  style="
+    margin-top:15px;
+    padding:10px 18px;
+    font-size:14px;
+    border:none;
+    border-radius:8px;
+    background:#0a7a2a;
+    color:#fff;
+    cursor:pointer;
+  "
+>
+  ⬅️ Voltar
+</button>
 <script>
-  function abrirWhatsApp() {
-    const numero = "5528999692303";
-    const msg = encodeURIComponent(
-      "Olá! Acabei de me cadastrar no Cartão AproveitAI."
-    );
-    window.open(`https://wa.me/${numero}?text=${msg}`, "_blank");
-  }
-</script>
+function abrirWhatsApp() {
+  const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cadastro";
+
+  const telefoneAdmin = "55289999692303"; // <-- SEU WHATSAPP
+  const mensagem = `📌 Novo cadastro recebido no Cartão AproveitAI\n\n👤 Nome: ${nome}\n🕒 Aguardando validação.`;
+
+  const url = `https://wa.me/${telefoneAdmin}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, "_blank");
+}
 
 function voltarPagina() {
-  history.back();
+  window.location.href = "cadastro.html";
 }
 </script>
-</body>
-</html>

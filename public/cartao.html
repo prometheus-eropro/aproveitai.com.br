@@ -174,15 +174,6 @@ body{
   body{background:#fff;}
   .botoes,.site-header,.footer{display:none;}
 }
-<button class="btn-voltar-flutuante" onclick="voltarPagina()">
-  ⬅️ Voltar
-</button>
-#qrCode {
-  width: 180px;
-  height: 180px;
-  display: block;
-  margin: 10px auto;
-}
 
 </style>
 </head>
@@ -236,16 +227,7 @@ body{
 
   <div class="cartao-lado cartao-direito">
     <h4>Validação</h4>
-    <img
-  id="qrCode"
-  src=""
-  alt="QR Code"
-  style="
-    width: 220px;
-    height: 220px;
-    image-rendering: crisp-edges;
-  "
->
+    <img id="qrCode" class="qr-img">
     <div class="aviso">
       Apresente documento com foto se solicitado.<br>
       <span class="atencao">Valide sempre antes da compra.</span>
@@ -261,9 +243,12 @@ body{
 
 <!-- BOTÕES -->
 <div class="botoes">
- <button onclick="salvarCartao()">💾 Salvar no celular</button>
- <button onclick="window.print()">🖨️ Imprimir cartão</button>
-  <button class="voltar" onclick="history.back()">⬅ Voltar</button>
+<button onclick="salvarPDF()" class="btn-verde">
+  📄 Salvar PDF
+</button>
+
+<button onclick="window.print()">🖨️ Imprimir cartão</button>
+<button class="voltar" onclick="history.back()">⬅ Voltar</button>
 </div>
 
 <!-- ✅ RODAPÉ PADRÃO -->
@@ -302,17 +287,13 @@ function jsonp(url){
 }
 
 (async () => {
-  if (!id) {
-    alert("ID do cartão não informado.");
-    return;
-  }
+  if(!id){ alert("ID do cartão não informado."); return; }
 
-  try {
+  try{
     const d = await jsonp(API + "?idPublico=" + encodeURIComponent(id));
 
-    if (d.erro) {
-      document.getElementById("cartao-print").innerHTML =
-        "<p style='color:red;font-weight:bold'>Cartão não localizado</p>";
+    if(d.erro){
+      alert("Cartão não localizado: " + d.erro);
       return;
     }
 
@@ -323,48 +304,35 @@ function jsonp(url){
     document.getElementById("cidade").textContent = d.cidade || "-";
     document.getElementById("cadastro").textContent = d.dataCadastro || "-";
 
-    // ===============================
-    // QR CODE (SEMPRE GERADO)
-    // ===============================
-    const idPublicoFinal = (d.idPublico || id).trim();
-    const urlValidar =
-      "https://aproveitai.com.br/validar.html?idPublico=" +
-      encodeURIComponent(idPublicoFinal);
+    // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
+   // ===============================
+// QR CODE (BLOCO ÚNICO E SEGURO)
+// ===============================
+const idPublicoFinal = (d.idPublico || id).trim();
 
-    const qrFinal =
-  "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" +
-  encodeURIComponent(urlValidar);
-    document.getElementById("qrCode").src = qrFinal;
+const urlValidar =
+  "https://aproveitai.com.br/validar.html?idPublico=" +
+  encodeURIComponent(idPublicoFinal);
 
-  } catch (err) {
+let qrFinal;
+
+if (d.qrBase64) {
+  qrFinal = "data:image/png;base64," + d.qrBase64;
+} else if (d.qrURL) {
+  qrFinal = d.qrURL;
+} else {
+  qrFinal =
+    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+    encodeURIComponent(urlValidar);
+}
+
+document.getElementById("qrCode").src = qrFinal;
+  }catch(err){
     console.error(err);
     alert("Erro ao carregar dados do cartão.");
   }
 })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-<script>
-function salvarCartao() {
-  const cartao = document.getElementById("cartao-print");
-  const qr = document.getElementById("qrCode");
-
-  // garante que o QR já carregou
-  if (!qr.complete) {
-    alert("Aguarde o QR Code carregar e tente novamente.");
-    return;
-  }
-
-  html2canvas(cartao, {
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
-    const link = document.createElement("a");
-    link.download = "cartao-aproveitai.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  });
-}
 
 function formatarDataBR(iso){
   if(!iso) return "-";
@@ -376,15 +344,32 @@ function formatarDataBR(iso){
 function voltarPagina() {
   history.back();
 }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-</script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const resultado = document.getElementById("resultado");
-    if (resultado) {
-      resultado.innerHTML = "<p>🔄 Validando cartão, aguarde...</p>";
-    }
-  });
+function salvarPDF() {
+  const elemento = document.getElementById("cartao-print");
+
+  if (!elemento) {
+    alert("Erro: cartão não encontrado.");
+    return;
+  }
+
+  const opt = {
+    margin: 5,
+    filename: 'Cartao-AproveitAI.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+  };
+
+  html2pdf()
+    .set(opt)
+    .from(elemento)
+    .save();
+}
 </script>
+
 </body>
 </html>

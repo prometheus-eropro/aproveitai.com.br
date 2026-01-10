@@ -260,6 +260,9 @@ if ("serviceWorker" in navigator) {
 <main id="conteudo">
 
 <!-- conteúdo dinâmico -->
+<div style="text-align:center; margin-top:25px;">
+  <button onclick="voltarPagina()">⬅️ Voltar</button>
+</div>
 
 </main>
 
@@ -277,9 +280,6 @@ if ("serviceWorker" in navigator) {
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
-<script src="https://unpkg.com/html5-qrcode"></script>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -418,6 +418,14 @@ async function processarQR(texto) {
   await pararLeitorSilencioso();
   scannerAtivo = false;
 }
+
 </script>
+
+<script>
+function voltarPagina() {
+  window.history.back();
+}
+</script>
+
 </body>
 </html>
