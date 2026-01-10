@@ -45,7 +45,10 @@
   </p>
 
   <button
-    onclick="abrirWhatsApp()"
+<button onclick="abrirWhatsApp()" class="btn-whatsapp">
+  📲 Click aqui para avisar administrador no WhatsApp
+</button>
+
     style="
       margin-top:20px;
       padding:14px 22px;
@@ -77,33 +80,19 @@
 >
   ⬅️ Voltar
 </button>
+
 <script>
 function abrirWhatsApp() {
-  const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cadastro";
-
-  const telefoneAdmin = "55289999692303"; // <-- SEU WHATSAPP
-  const mensagem = `📌 Novo cadastro recebido no Cartão AproveitAI\n\n👤 Nome: ${nome}\n🕒 Aguardando validação.`;
-
-  const url = `https://wa.me/${telefoneAdmin}?text=${encodeURIComponent(mensagem)}`;
-  window.open(url, "_blank");
-}
-
-function abrirWhatsApp() {
-  const telefoneAdmin = "55289999692303"; // DDI + DDD + número (SEM +, SEM ESPAÇOS)
-
-  if (!telefoneAdmin || telefoneAdmin.length < 12) {
-    alert("Telefone do administrador inválido.");
-    return;
-  }
+  const telefoneAdmin = "55289999692303"; // 55 + DDD + número (ex: 5528999999999)
 
   const nome = localStorage.getItem("nomeCadastro") || "Novo cadastro";
+
   const mensagem =
     `🆕 Novo cadastro recebido no Cartão AproveitAI\n\n` +
     `👤 Nome: ${nome}\n` +
     `📌 Status: Aguardando liberação no sistema`;
 
-  const url =
-    `https://wa.me/${telefoneAdmin}?text=${encodeURIComponent(mensagem)}`;
+  const url = "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem);
 
   window.open(url, "_blank");
 }
