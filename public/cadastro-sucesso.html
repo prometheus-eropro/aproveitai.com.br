@@ -44,58 +44,62 @@
     ⚠️ Caso seu CPF já possua cadastro ativo, ele será identificado automaticamente.
   </p>
 
-  <button
-<button onclick="abrirWhatsApp()" class="btn-whatsapp">
+<button onclick="abrirWhatsApp()"
+  style="
+    margin-top:20px;
+    padding:14px 22px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:#25d366;
+    color:#fff;
+    cursor:pointer;
+    width:100%;
+  ">
   📲 Click aqui para avisar administrador no WhatsApp
 </button>
 
-    style="
-      margin-top:20px;
-      padding:14px 22px;
-      font-size:16px;
-      border:none;
-      border-radius:8px;
-      background:#25d366;
-      color:#fff;
-      cursor:pointer;
-    "
-  >
-    📲 Click aqui para avisar administrador no WhatsApp
-  </button>
-
 </div>
 
-<button
-  onclick="voltarPagina()"
+<button onclick="voltarPagina()"
   style="
-    margin-top:15px;
-    padding:10px 18px;
-    font-size:14px;
+    margin-top:30px;
+    padding:12px 20px;
+    font-size:15px;
     border:none;
     border-radius:8px;
     background:#0a7a2a;
     color:#fff;
     cursor:pointer;
-  "
->
-  ⬅️ Voltar
+    width:100%;
+  ">
+  🔙 Voltar
 </button>
 
 <script>
+/* =====================================================
+   WHATSAPP – AVISAR ADMINISTRADOR (PADRÃO CORRETO)
+   ===================================================== */
+
 function abrirWhatsApp() {
-  const telefoneAdmin = "55289999692303"; // 55 + DDD + número (ex: 5528999999999)
-
-  const nome = localStorage.getItem("nomeCadastro") || "Novo cadastro";
-
+  const telefoneAdmin = "55289999692303"; // DDI + DDD + NÚMERO (SEM +)
+  
   const mensagem =
-    `🆕 Novo cadastro recebido no Cartão AproveitAI\n\n` +
-    `👤 Nome: ${nome}\n` +
-    `📌 Status: Aguardando liberação no sistema`;
+    "📩 Novo cadastro recebido no Cartão AproveitAI\n" +
+    "📌 Status: Aguardando liberação no sistema";
 
-  const url = "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem);
+  const url =
+    "https://api.whatsapp.com/send?phone=" +
+    telefoneAdmin +
+    "&text=" +
+    encodeURIComponent(mensagem);
 
   window.open(url, "_blank");
 }
+
+/* =====================================================
+   BOTÃO VOLTAR (SEM PERDER SESSÃO)
+   ===================================================== */
 
 function voltarPagina() {
   window.history.back();
