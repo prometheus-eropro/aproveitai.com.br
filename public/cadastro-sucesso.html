@@ -43,8 +43,7 @@
   <p style="margin-top:15px">
     ⚠️ Caso seu CPF já possua cadastro ativo, ele será identificado automaticamente.
   </p>
-
-<button onclick="abrirWhatsApp()"
+<button id="btnZap" onclick="abrirWhatsApp()"
   style="
     margin-top:20px;
     padding:14px 22px;
@@ -58,7 +57,6 @@
   ">
   📲 Click aqui para avisar administrador no WhatsApp
 </button>
-
 </div>
 
 <button onclick="voltarPagina()"
@@ -77,31 +75,47 @@
 </button>
 
 <script>
-/* =====================================================
-   WHATSAPP – AVISAR ADMINISTRADOR (PADRÃO CORRETO)
-   ===================================================== */
+(function () {
 
-function abrirWhatsApp() {
-  const telefoneAdmin = "55289999692303"; // DDI + DDD + NÚMERO (SEM +)
-  
-  const mensagem =
-    "📩 Novo cadastro recebido no Cartão AproveitAI\n" +
-    "📌 Status: Aguardando liberação no sistema";
+  // ✅ TELEFONE DO ADMIN (55 + DDD + número) — SOMENTE NÚMEROS
+  const TELEFONE_ADMIN = "5528999692303"; // 28 99969-2303
 
-  const url =
-    "https://api.whatsapp.com/send?phone=" +
-    telefoneAdmin +
-    "&text=" +
-    encodeURIComponent(mensagem);
+  function somenteDigitos(s) {
+    return String(s || "").replace(/\D/g, "");
+  }
 
-  window.open(url, "_blank");
-}
+  function getNomeCadastro() {
+    // vem do cadastro.html
+    const nome = localStorage.getItem("ultimoCadastroNome");
+    return nome ? nome.trim() : "Novo cadastro";
+  }
 
-/* =====================================================
-   BOTÃO VOLTAR (SEM PERDER SESSÃO)
-   ===================================================== */
+  function montarMensagem() {
+    const nome = getNomeCadastro();
+    return (
+      "📌 Novo cadastro recebido no Cartão AproveitAI\n\n" +
+      "👤 Nome: " + nome + "\n" +
+      "🕒 Status: Aguardando liberação no sistema"
+    );
+  }
 
-function voltarPagina() {
-  window.history.back();
-}
+  window.abrirWhatsApp = function () {
+    const fone = somenteDigitos(TELEFONE_ADMIN);
+
+    if (fone.length < 12 || fone.length > 15) {
+      alert("Telefone do administrador inválido.");
+      return;
+    }
+
+    const msg = montarMensagem();
+    const url = "https://wa.me/" + fone + "?text=" + encodeURIComponent(msg);
+
+    window.open(url, "_blank");
+  };
+
+  window.voltarPagina = function () {
+    window.location.href = "cadastro.html";
+  };
+
+})();
 </script>
