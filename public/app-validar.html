@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Validação por QR Code • Cartão AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest-validar.json">
+<meta name="theme-color" content="#198754">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4fff6;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+.site-header {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.brandline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  max-height: 180px;
+}
+
+.brand-center {
+  flex: 1;
+  text-align: center;
+}
+
+.site-title {
+  font-size: 36px;
+  color: #0a7a2a;
+  font-weight: bold;
+}
+
+.slogan {
+  font-size: 16px;
+  font-style: italic;
+  color: #555;
+}
+
+.boas-vindas {
+  background: #dfffe0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* =========================
+   CONTEÚDO
+========================= */
+main {
+  background: #9ee3ff;
+  min-height: 300px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+#reader {
+  width: 300px;
+  margin: 20px auto;
+  border: 3px dashed #28a745;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+}
+
+button {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 14px 22px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.resultado {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+/* =========================
+   RODAPÉ
+========================= */
+.footer {
+  background: #dfffe0;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.footer-bottom {
+  text-align: center;
+  font-size: 11px;
+  margin-top: 5px;
+}
+/* ===== BLOCO RESULTADO VALIDAÇÃO ===== */
+.bloco-validacao {
+  max-width: 520px;
+  margin: 30px auto;
+  padding: 22px;
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  border: 2px solid transparent;
+  text-align: left;
+}
+
+.bloco-validacao.ativo {
+  background: #d4edda;
+  border-color: #198754;
+  color: #0f5132;
+}
+
+.bloco-validacao.inativo {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #842029;
+}
+
+.bloco-validacao h3 {
+  margin-top: 0;
+  text-align: center;
+  font-size: 20px;
+}
+
+.bloco-validacao .codigo {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+/* ===== CARD DE RESULTADO (DESTAQUE) ===== */
+.status-box {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 24px 26px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 1.7;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  border: 3px solid transparent;
+  background: #fff;
+}
+
+/* ATIVO */
+.status-box.ativo {
+  background: #d4edda;          /* verde claro */
+  border-color: #198754;        /* verde forte */
+  color: #0f5132;
+}
+
+/* INATIVO */
+.status-box.inativo {
+  background: #f8d7da;          /* vermelho claro */
+  border-color: #dc3545;        /* vermelho forte */
+  color: #842029;
+}
+
+/* Título */
+.status-box h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* Linhas de dados */
+.status-box p {
+  margin: 6px 0;
+}
+
+/* Código de autorização */
+.status-box .codigo {
+  margin-top: 18px;
+  padding: 12px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 10px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 17px;
+  border: 1px dashed #999;
+}
+
+/* Botão dentro do card */
+.status-box button {
+  display: block;
+  margin: 22px auto 0;
+  background: #198754;
+  color: #fff;
+  border: none;
+  padding: 14px 26px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Botão vermelho quando inativo */
+.status-box.inativo button {
+  background: #dc3545;
+}
+
+</style>
+</head>
+
+<body>
+<script>
+if (localStorage.getItem("APP_VALIDAR") !== "SIM") {
+  location.href = "login-app.html";
+}
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw-validar.js");
+}
+</script>
+
+<!-- CABEÇALHO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        🏪 <strong>Validação por QR Code</strong><br>
+        Área exclusiva do parceiro
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo">
+  </div>
+</header>
+
+<main id="conteudo">
+<button onclick="sair()">🚪 Sair</button>
+
+<script>
+function sair() {
+  localStorage.clear();
+  location.href = "login-app.html";
+}
+</script>
+
+<!-- conteúdo dinâmico -->
+<div style="text-align:center; margin-top:25px;">
+  <button onclick="voltarPagina()">⬅️ Voltar</button>
+</div>
+
+</main>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
+</footer>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+const conteudo = document.getElementById("conteudo");
+const params = new URLSearchParams(window.location.search);
+const idPublicoInicial = params.get("idPublico");
+
+conteudo.innerHTML = `
+  <button id="btnCamera">📷 Iniciar câmera</button>
+  <div id="reader"></div>
+  <div id="resultado" class="resultado"></div>
+`;
+
+document.getElementById("btnCamera").onclick = iniciarLeitor;
+
+let leitor = null;
+let scannerAtivo = false;
+
+async function pararLeitorSilencioso() {
+  if (!leitor) return;
+  try { await leitor.stop(); } catch {}
+}
+
+async function iniciarLeitor() {
+  if (scannerAtivo) return;
+  scannerAtivo = true;
+
+  await pararLeitorSilencioso();
+
+  if (!leitor) leitor = new Html5Qrcode("reader");
+  document.getElementById("resultado").innerHTML = "";
+
+  try {
+    await leitor.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 220 },
+      texto => processarQR(texto)
+    );
+  } catch (err) {
+    scannerAtivo = false;
+    document.getElementById("resultado").innerHTML = `
+      <div class="status-box inativo">
+        <h3>⚠️ Não foi possível acessar a câmera</h3>
+        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+      </div>
+    `;
+  }
+}
+
+if (idPublicoInicial) {
+  processarQR(idPublicoInicial);
+}
+
+async function processarQR(texto) {
+  if (localStorage.getItem("APP_VALIDAR") !== "SIM") {
+    alert("Sessão expirada.");
+    location.href = "painelparceiro.html";
+    return;
+  }
+
+  const resultado = document.getElementById("resultado");
+  resultado.innerHTML = "⏳ Validando…";
+
+  let id = texto;
+  if (texto.includes("http")) {
+    try {
+      id = new URL(texto).searchParams.get("idPublico") || "";
+    } catch {}
+  }
+
+  if (!id.startsWith("APV-")) {
+    alert("QR Code inválido");
+    return;
+  }
+
+  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+  const url =
+  API_URL +
+  "?idPublico=" + encodeURIComponent(id) +
+  "&modo=app" +
+  "&operador=" + encodeURIComponent(localStorage.getItem("operadorNome")) +
+  "&cpfOperador=" + encodeURIComponent(localStorage.getItem("operadorCPF"));
+  try {
+    const data = await fetch(url).then(r => r.json());
+
+    resultado.innerHTML = `
+      <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+        <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
+
+        <p><b>Nome:</b> ${data.nome || "-"}</p>
+
+        <p><b>CPF:</b> ${
+          data.cpf
+            ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
+            : "-"
+        }</p>
+
+        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
+        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
+        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+
+        <p><b>Cliente desde:</b> ${
+          data.dataCadastro
+            ? new Date(data.dataCadastro).toLocaleString("pt-BR")
+            : "-"
+        }</p>
+
+        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
+
+        ${
+          data.ativo === "SIM"
+            ? `<div class="codigo">✔ Código de Autorização: ${data.codigoERO}</div>`
+            : `<p style="font-weight:bold;color:#b02a37">❌ Desconto não autorizado</p>`
+        }
+
+        <div style="text-align:center;margin-top:18px">
+          <button onclick="iniciarLeitor()">🔄 Validar outro cliente</button>
+        </div>
+      </div>
+    `;
+
+  } catch (err) {
+    console.error(err);
+    resultado.innerHTML = `
+      <div class="status-box inativo">
+        <h3>⚠️ Erro ao validar</h3>
+        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
+      </div>
+    `;
+  }
+
+  await pararLeitorSilencioso();
+  scannerAtivo = false;
+}
+
+</script>
+
+<script>
+function voltarPagina() {
+  window.history.back();
+}
+</script>
+
+</body>
+</html>

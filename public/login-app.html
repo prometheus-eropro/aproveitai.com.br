@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Login • Validação</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#e9f7ef;
+}
+
+input,button{width:100%;padding:12px;margin-top:10px;font-size:16px}
+button{background:#198754;color:#fff;border:none;border-radius:8px}
+/* =========================
+   CABEÇALHO
+========================= */
+.site-header {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.brandline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  max-height: 180px;
+}
+
+.brand-center {
+  flex: 1;
+  text-align: center;
+}
+
+.site-title {
+  font-size: 36px;
+  color: #0a7a2a;
+  font-weight: bold;
+}
+
+.slogan {
+  font-size: 16px;
+  font-style: italic;
+  color: #555;
+}
+
+.boas-vindas {
+  background: #dfffe0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* =========================
+   RODAPÉ
+========================= */
+.footer {
+  background: #dfffe0;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.footer-bottom {
+  text-align: center;
+  font-size: 11px;
+  margin-top: 5px;
+}
+.login-wrapper{
+  min-height: calc(100vh - 220px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:30px 15px;
+}
+
+.box{
+  background:#fff;
+  padding:30px;
+  border-radius:12px;
+  width:100%;
+  max-width:360px;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
+}
+@media (max-width:480px){
+  .site-title{
+    font-size:26px;
+  }
+  .logo{
+    max-height:120px;
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+<!-- CABEÇALHO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        🏪 <strong>Validação por QR Code</strong><br>
+        Área exclusiva do parceiro
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo">
+  </div>
+</header>
+
+<div class="login-wrapper">
+  <div class="box">
+    <h3>🔐 Login Validação</h3>
+    <input id="cpf" placeholder="CPF">
+    <input id="senha" type="password" placeholder="Senha">
+    <button onclick="logar()">Entrar</button>
+  </div>
+</div>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+async function logar() {
+  const cpf = document.getElementById("cpf").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+
+  const url = `${API}?acao=loginApp&cpf=${cpf}&senha=${senha}`;
+  const r = await fetch(url).then(r=>r.json());
+
+  if (!r.ok) {
+    alert("Login inválido ou usuário inativo");
+    return;
+  }
+
+  localStorage.setItem("APP_VALIDAR","SIM");
+  localStorage.setItem("operadorCPF", r.cpf);
+  localStorage.setItem("operadorNome", r.nome);
+
+  location.href = "app-validar.html";
+}
+</script>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
+</footer>
+
+</body>
+</html>
