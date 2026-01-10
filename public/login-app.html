@@ -4,15 +4,14 @@
 <meta charset="UTF-8">
 <title>Login • Validação</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   background:#e9f7ef;
 }
 
-input,button{width:100%;padding:12px;margin-top:10px;font-size:16px}
-button{background:#198754;color:#fff;border:none;border-radius:8px}
 /* =========================
    CABEÇALHO
 ========================= */
@@ -31,7 +30,7 @@ button{background:#198754;color:#fff;border:none;border-radius:8px}
 }
 
 .logo {
-  max-height: 180px;
+  max-height: 160px;
 }
 
 .brand-center {
@@ -40,13 +39,13 @@ button{background:#198754;color:#fff;border:none;border-radius:8px}
 }
 
 .site-title {
-  font-size: 36px;
+  font-size: 34px;
   color: #0a7a2a;
   font-weight: bold;
 }
 
 .slogan {
-  font-size: 16px;
+  font-size: 15px;
   font-style: italic;
   color: #555;
 }
@@ -56,34 +55,15 @@ button{background:#198754;color:#fff;border:none;border-radius:8px}
   padding: 12px;
   border-radius: 8px;
   margin-top: 10px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
 }
 
 /* =========================
-   RODAPÉ
+   LOGIN
 ========================= */
-.footer {
-  background: #dfffe0;
-  padding: 10px;
-  font-size: 13px;
-}
-
-.footer-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  max-width: 1000px;
-  margin: auto;
-}
-
-.footer-bottom {
-  text-align: center;
-  font-size: 11px;
-  margin-top: 5px;
-}
 .login-wrapper{
-  min-height: calc(100vh - 220px);
+  min-height: calc(100vh - 260px);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -98,20 +78,43 @@ button{background:#198754;color:#fff;border:none;border-radius:8px}
   max-width:360px;
   box-shadow:0 4px 12px rgba(0,0,0,.2);
 }
-@media (max-width:480px){
-  .site-title{
-    font-size:26px;
-  }
-  .logo{
-    max-height:120px;
-  }
+
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  font-size:16px;
 }
 
-</style>
+button{
+  background:#198754;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
 
+
+/* =========================
+   RODAPÉ
+========================= */
+.footer{
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+}
+
+@media (max-width:480px){
+  .site-title{ font-size:26px; }
+  .logo{ max-height:120px; }
+}
+</style>
 </head>
 
 <body>
+
 <!-- CABEÇALHO -->
 <header class="site-header">
   <div class="brandline">
@@ -120,7 +123,7 @@ button{background:#198754;color:#fff;border:none;border-radius:8px}
       <h1 class="site-title">Cartão AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
-        🏪 <strong>Validação por QR Code</strong><br>
+        📲 <strong>Validação por QR Code</strong><br>
         Área exclusiva do parceiro
       </p>
     </div>
@@ -128,25 +131,52 @@ button{background:#198754;color:#fff;border:none;border-radius:8px}
   </div>
 </header>
 
+<!-- LOGIN -->
 <div class="login-wrapper">
   <div class="box">
     <h3>🔐 Login Validação</h3>
-    <input id="cpf" placeholder="CPF">
+
+    <input type="text" id="cpf" placeholder="Login">
+
     <input id="senha" type="password" placeholder="Senha">
+<button type="button" onclick="toggleSenha()" style="margin-top:8px">
+  👁 Mostrar senha
+</button>
+
     <button onclick="logar()">Entrar</button>
   </div>
 </div>
+
+<!-- RODAPÉ -->
+<footer class="footer">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista.
+</footer>
+
+<!-- SCRIPT (APENAS JS) -->
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-async function logar() {
+function toggleSenha(){
+  const campo = document.getElementById("senha");
+  campo.type = campo.type === "password" ? "text" : "password";
+}
+
+async function logar(){
   const cpf = document.getElementById("cpf").value.trim();
   const senha = document.getElementById("senha").value.trim();
 
-  const url = `${API}?acao=loginApp&cpf=${cpf}&senha=${senha}`;
+  if(!cpf || !senha){
+    alert("Informe login e senha");
+    return;
+  }
+
+  const url = `${API}?acao=loginApp&cpf=${encodeURIComponent(cpf)}&senha=${encodeURIComponent(senha)}`;
   const r = await fetch(url).then(r=>r.json());
 
-  if (!r.ok) {
+  if(!r.ok){
     alert("Login inválido ou usuário inativo");
     return;
   }
@@ -154,24 +184,12 @@ async function logar() {
   localStorage.setItem("APP_VALIDAR","SIM");
   localStorage.setItem("operadorCPF", r.cpf);
   localStorage.setItem("operadorNome", r.nome);
+  localStorage.setItem("parceiroNome", r.parceiro_nome);
+  localStorage.setItem("parceiroCNPJ", r.parceiro_cnpj);
 
   location.href = "app-validar.html";
 }
 </script>
-<!-- ✅ RODAPÉ PADRÃO -->
-<footer style="
-  background:#dfffe0;
-  padding:12px;
-  text-align:center;
-  font-size:12px;
-  line-height:1.4;
-">
-  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
-
-  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
-  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
-</footer>
 
 </body>
 </html>
