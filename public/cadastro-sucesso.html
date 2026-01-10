@@ -88,25 +88,28 @@ function abrirWhatsApp() {
   window.open(url, "_blank");
 }
 
-function voltarPagina() {
-  window.location.href = "cadastro.html";
-}
-if (!telefone || telefone.length < 10) {
-  alert("Telefone do administrador inválido.");
-  return;
-}
-
 <script>
 function abrirWhatsApp() {
-  const telefoneAdmin = "28999692303"; // ← SEU NÚMERO REAL, só números
-  const mensagem = "📢 Novo cadastro recebido no Cartão AproveitAI. Favor verificar no painel.";
+  const telefoneAdmin = "55289999692303"; // DDI + DDD + número (SEM +, SEM ESPAÇOS)
 
-  if (!telefoneAdmin || telefoneAdmin.length < 10) {
+  if (!telefoneAdmin || telefoneAdmin.length < 12) {
     alert("Telefone do administrador inválido.");
     return;
   }
 
-  const url = `https://wa.me/55${telefoneAdmin}?text=${encodeURIComponent(mensagem)}`;
+  const nome = localStorage.getItem("nomeCadastro") || "Novo cadastro";
+  const mensagem =
+    `🆕 Novo cadastro recebido no Cartão AproveitAI\n\n` +
+    `👤 Nome: ${nome}\n` +
+    `📌 Status: Aguardando liberação no sistema`;
+
+  const url =
+    `https://wa.me/${telefoneAdmin}?text=${encodeURIComponent(mensagem)}`;
+
   window.open(url, "_blank");
+}
+
+function voltarPagina() {
+  window.history.back();
 }
 </script>
