@@ -91,4 +91,16 @@ function abrirWhatsApp() {
 function voltarPagina() {
   window.location.href = "cadastro.html";
 }
+if (!telefone || telefone.length < 10) {
+  alert("Telefone do administrador inválido.");
+  return;
+}
+
+function abrirWhatsApp(numero, mensagem) {
+  const telefone = numero.replace(/\D/g, ""); // remove tudo que não é número
+  const texto = encodeURIComponent(mensagem);
+  const url = `https://wa.me/55${telefone}?text=${texto}`;
+  window.open(url, "_blank");
+}
+
 </script>
