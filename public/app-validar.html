@@ -116,7 +116,6 @@ footer{
 
 <body>
 
-<!-- ===== HEADER ===== -->
 <header>
   <div class="header-wrap">
     <div class="header-left">
@@ -135,7 +134,6 @@ footer{
   </div>
 </header>
 
-<!-- ===== MAIN ===== -->
 <main>
   <div class="card">
 
@@ -156,30 +154,34 @@ footer{
   </div>
 </main>
 
-<!-- ===== FOOTER ===== -->
 <footer>
   © 2025 Cartão AproveitAI - PROMETHEUS EROPRO<br>
   Aviso legal: O Cartão AproveitAI não garante descontos. Benefícios e promoções são definidos exclusivamente pelos parceiros.
 </footer>
 
 <script>
-/* ========= CONFIG ========= */
+/* ===== CONFIG ===== */
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-/* ========= SEGURANÇA ========= */
-const parceiroLogado = JSON.parse(localStorage.getItem("parceiroLogado"));
+/* ===== LOGIN OBRIGATÓRIO ===== */
+let parceiroLogado = null;
+try {
+  parceiroLogado = JSON.parse(localStorage.getItem("parceiroLogado"));
+} catch(e){
+  parceiroLogado = null;
+}
 
 if(!parceiroLogado || parceiroLogado.ativo !== "SIM"){
   alert("Acesso restrito. Faça login como parceiro.");
   window.location.href = "login-app.html";
 }
 
-/* ========= QR ========= */
+/* ===== QR ===== */
 function iniciarQR(){
   alert("Leitor de QR Code ativo.\nUse câmera em ambiente HTTPS.");
 }
 
-/* ========= VALIDAR ========= */
+/* ===== VALIDAR CLIENTE ===== */
 function validarCliente(){
   const cpf = cpfInput.value.trim();
   const id  = idInput.value.trim();
@@ -198,6 +200,11 @@ function validarCliente(){
   if(cpf) url += "&cpf=" + encodeURIComponent(cpf);
   if(id)  url += "&idPublico=" + encodeURIComponent(id);
 
+  // dados do parceiro LOGADO
+  url += "&parceiro=" + encodeURIComponent(parceiroLogado.parceiro_nome);
+  url += "&cnpj_parceiro=" + encodeURIComponent(parceiroLogado.parceiro_cnpj);
+  url += "&origem=validacao_app";
+
   fetch(url)
     .then(r=>r.json())
     .then(d=>{
@@ -205,9 +212,10 @@ function validarCliente(){
         res.style.background="#d4edda";
         res.innerHTML = `
           <b style="color:green;font-size:22px">ATIVO</b><br><br>
-          <b>${d.nome}</b><br>
+          <b>${d.nome}</b><br><br>
           Código de Autorização:<br>
-          <b>${d.codigo}</b>
+          <b>${d.codigo}</b><br><br>
+          <small>Parceiro: ${parceiroLogado.parceiro_nome}</small>
         `;
       }else{
         res.style.background="#f8d7da";
