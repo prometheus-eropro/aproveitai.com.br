@@ -25,14 +25,7 @@ header{
   justify-content:space-between;
   padding:15px;
 }
-.header-left{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-.header-left img{
-  height:70px;
-}
+.header-left img{ height:70px; }
 .header-center{
   text-align:center;
   flex:1;
@@ -46,9 +39,8 @@ header{
   font-size:14px;
   color:#555;
 }
-.header-right img{
-  height:55px;
-}
+.header-right img{ height:55px; }
+
 .subheader{
   background:#dbffe1;
   padding:12px;
@@ -63,47 +55,53 @@ main{
 }
 .card{
   background:#fff;
-  max-width:700px;
+  max-width:720px;
   margin:auto;
-  padding:30px;
-  border-radius:12px;
+  padding:35px;
+  border-radius:14px;
   box-shadow:0 6px 20px rgba(0,0,0,0.15);
   text-align:center;
 }
-.card h2{
-  margin-top:0;
-}
+
 .btn{
   background:#1a8a4a;
   color:#fff;
   border:none;
-  padding:14px 22px;
-  font-size:16px;
-  border-radius:8px;
+  padding:16px 26px;
+  font-size:18px;
+  border-radius:10px;
   cursor:pointer;
 }
-.btn:hover{opacity:0.9}
+.btn:hover{ opacity:0.9 }
+
+.btn-camera{
+  background:#0a7a2a;
+  font-size:20px;
+  margin-bottom:25px;
+  width:100%;
+}
 
 .inputs{
   display:flex;
-  gap:10px;
+  gap:12px;
   justify-content:center;
   flex-wrap:wrap;
   margin-top:20px;
 }
 .inputs input{
-  width:260px;
-  padding:14px;
-  font-size:16px;
-  border-radius:6px;
+  width:280px;
+  padding:15px;
+  font-size:17px;
+  border-radius:8px;
   border:1px solid #999;
 }
 
 #resultado{
-  margin-top:25px;
-  padding:15px;
-  border-radius:8px;
+  margin-top:30px;
+  padding:18px;
+  border-radius:10px;
   display:none;
+  font-size:18px;
 }
 
 /* ===== FOOTER ===== */
@@ -122,18 +120,18 @@ footer{
 <header>
   <div class="header-wrap">
     <div class="header-left">
-      <img src="logo-prometheus.png" alt="Prometheus">
+      <img src="logo-prometheus.png">
     </div>
     <div class="header-center">
       <h1>Cartão AproveitAI</h1>
       <p>Tecnologia com ConsciêncIA gera Resultado.</p>
     </div>
     <div class="header-right">
-      <img src="logo-aproveitai.png" alt="Aproveitai">
+      <img src="logo-aproveitai.png">
     </div>
   </div>
   <div class="subheader">
-    📲 Validação por QR Code – Área exclusiva do parceiro
+    📲 Validação por QR Code — Área exclusiva do parceiro
   </div>
 </header>
 
@@ -141,14 +139,15 @@ footer{
 <main>
   <div class="card">
 
-          📷 Iniciar câmera
+    <button class="btn btn-camera" onclick="iniciarQR()">
+      📷 Leitor de QR Code
     </button>
 
     <h2>Consulta Manual</h2>
 
     <div class="inputs">
-      <input id="cpfInput" type="text" placeholder="CPF do cliente">
-      <input id="idInput" type="text" placeholder="ID Público (APV-XXXX)">
+      <input id="cpfInput" placeholder="CPF do cliente">
+      <input id="idInput" placeholder="ID Público (APV-XXXX)">
       <button class="btn" onclick="validarCliente()">Validar Cliente</button>
     </div>
 
@@ -160,16 +159,30 @@ footer{
 <!-- ===== FOOTER ===== -->
 <footer>
   © 2025 Cartão AproveitAI - PROMETHEUS EROPRO<br>
-  Aviso legal: O Cartão AproveitAI não garante descontos. Benefícios e promoções são definidos
-  exclusivamente pelos parceiros, válidos em regra para pagamentos à vista.
+  Aviso legal: O Cartão AproveitAI não garante descontos. Benefícios e promoções são definidos exclusivamente pelos parceiros.
 </footer>
 
 <script>
+/* ========= CONFIG ========= */
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
+/* ========= SEGURANÇA ========= */
+const parceiroLogado = JSON.parse(localStorage.getItem("parceiroLogado"));
+
+if(!parceiroLogado || parceiroLogado.ativo !== "SIM"){
+  alert("Acesso restrito. Faça login como parceiro.");
+  window.location.href = "login-app.html";
+}
+
+/* ========= QR ========= */
+function iniciarQR(){
+  alert("Leitor de QR Code ativo.\nUse câmera em ambiente HTTPS.");
+}
+
+/* ========= VALIDAR ========= */
 function validarCliente(){
-  const cpf = document.getElementById("cpfInput").value.trim();
-  const id  = document.getElementById("idInput").value.trim();
+  const cpf = cpfInput.value.trim();
+  const id  = idInput.value.trim();
   const res = document.getElementById("resultado");
 
   if(!cpf && !id){
@@ -179,7 +192,7 @@ function validarCliente(){
 
   res.style.display="block";
   res.style.background="#fff3cd";
-  res.innerHTML="🔄 Validando...";
+  res.innerHTML="🔄 Validando cliente...";
 
   let url = API_URL + "?acao=validar";
   if(cpf) url += "&cpf=" + encodeURIComponent(cpf);
@@ -188,12 +201,20 @@ function validarCliente(){
   fetch(url)
     .then(r=>r.json())
     .then(d=>{
-      if(d.status==="ativo"){
+      if(d.status==="ATIVO"){
         res.style.background="#d4edda";
-        res.innerHTML = `<b style="color:green">ATIVO</b><br>${d.nome}<br>Código: <b>${d.codigo}</b>`;
+        res.innerHTML = `
+          <b style="color:green;font-size:22px">ATIVO</b><br><br>
+          <b>${d.nome}</b><br>
+          Código de Autorização:<br>
+          <b>${d.codigo}</b>
+        `;
       }else{
         res.style.background="#f8d7da";
-        res.innerHTML = `<b style="color:red">INATIVO</b><br>${d.nome || ""}`;
+        res.innerHTML = `
+          <b style="color:red;font-size:22px">INATIVO</b><br><br>
+          ${d.nome || ""}
+        `;
       }
     })
     .catch(()=>{
@@ -202,7 +223,7 @@ function validarCliente(){
     });
 }
 
-  console.log("Ambiente HTTPS ativo – QR liberado");
+console.log("Ambiente HTTPS ativo — QR liberado");
 </script>
 
 </body>
