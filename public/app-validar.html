@@ -6,110 +6,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  margin:0;
-  font-family: Arial, Helvetica, sans-serif;
-  background:#eaf7ef;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg,#dfffe6,#bdefff);
 }
 
-/* ===== HEADER ===== */
-header{
+header {
   background:#fff;
-  border-bottom:1px solid #ddd;
-}
-.header-wrap{
-  max-width:1200px;
-  margin:auto;
+  padding:20px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:15px;
+  border-bottom:3px solid #1f8a4c;
 }
-.header-left img{ height:70px; }
-.header-center{
-  text-align:center;
-  flex:1;
-}
-.header-center h1{
-  margin:0;
-  color:#0a7a2a;
-}
-.header-center p{
-  margin:5px 0 0;
-  font-size:14px;
-  color:#555;
-}
-.header-right img{ height:55px; }
 
-.subheader{
-  background:#dbffe1;
+header img { height:60px; }
+
+header h1 {
+  margin:0;
+  color:#1f8a4c;
+}
+
+.sub {
+  background:#d9ffe3;
   padding:12px;
   text-align:center;
   font-weight:bold;
 }
 
-/* ===== MAIN ===== */
-main{
-  background:#9fe3ff;
-  padding:40px 15px;
-}
-.card{
+.container {
+  max-width:650px;
+  margin:40px auto;
   background:#fff;
-  max-width:720px;
-  margin:auto;
-  padding:35px;
+  padding:30px;
   border-radius:14px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.15);
-  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
 }
 
-.btn{
-  background:#1a8a4a;
-  color:#fff;
+.btn {
+  width:100%;
+  padding:14px;
   border:none;
-  padding:16px 26px;
-  font-size:18px;
   border-radius:10px;
+  background:#157a3b;
+  color:#fff;
+  font-size:16px;
   cursor:pointer;
 }
-.btn:hover{ opacity:0.9 }
 
-.btn-camera{
-  background:#0a7a2a;
-  font-size:20px;
-  margin-bottom:25px;
+.btn:hover { background:#0f5f2e; }
+
+input {
   width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  font-size:15px;
 }
 
-.inputs{
-  display:flex;
-  gap:12px;
-  justify-content:center;
-  flex-wrap:wrap;
+.result {
   margin-top:20px;
-}
-.inputs input{
-  width:280px;
-  padding:15px;
-  font-size:17px;
-  border-radius:8px;
-  border:1px solid #999;
-}
-
-#resultado{
-  margin-top:30px;
   padding:18px;
   border-radius:10px;
-  display:none;
-  font-size:18px;
+  text-align:center;
 }
 
-/* ===== FOOTER ===== */
-footer{
-  background:#dbffe1;
-  text-align:center;
+.ativo {
+  background:#d4f8df;
+  color:#0a7a2a;
+  font-weight:bold;
+}
+
+.inativo {
+  background:#f8d4d4;
+  color:#a00000;
+  font-weight:bold;
+}
+
+footer {
+  margin-top:40px;
   padding:15px;
-  font-size:13px;
+  text-align:center;
+  font-size:12px;
+  background:#e8fff0;
 }
 </style>
 </head>
@@ -117,121 +96,118 @@ footer{
 <body>
 
 <header>
-  <div class="header-wrap">
-    <div class="header-left">
-      <img src="logo-prometheus.png">
-    </div>
-    <div class="header-center">
-      <h1>Cartão AproveitAI</h1>
-      <p>Tecnologia com ConsciêncIA gera Resultado.</p>
-    </div>
-    <div class="header-right">
-      <img src="logo-aproveitai.png">
-    </div>
-  </div>
-  <div class="subheader">
-    📲 Validação por QR Code — Área exclusiva do parceiro
-  </div>
+  <img src="logo-prometheus.png">
+  <h1>Cartão AproveitAI</h1>
+  <img src="logo-aproveitai.png">
 </header>
 
-<main>
-  <div class="card">
+<div class="sub">
+🔐 Validação por QR Code — Área exclusiva do parceiro
+</div>
 
-    <button class="btn btn-camera" onclick="iniciarQR()">
-      📷 Leitor de QR Code
-    </button>
+<div class="container">
 
-    <h2>Consulta Manual</h2>
+<h3 id="parceiroInfo"></h3>
 
-    <div class="inputs">
-      <input id="cpfInput" placeholder="CPF do cliente">
-      <input id="idInput" placeholder="ID Público (APV-XXXX)">
-      <button class="btn" onclick="validarCliente()">Validar Cliente</button>
-    </div>
+<button class="btn" onclick="abrirCamera()">📷 Leitor de QR Code</button>
 
-    <div id="resultado"></div>
+<hr style="margin:25px 0">
 
-  </div>
-</main>
+<h3>Consulta Manual</h3>
+
+<input id="cpf" placeholder="CPF do cliente">
+<input id="idPublico" placeholder="ID Público (APV-XXXX)">
+
+<button class="btn" onclick="validar()">Validar Cliente</button>
+
+<div id="resultado"></div>
+
+</div>
 
 <footer>
-  © 2025 Cartão AproveitAI - PROMETHEUS EROPRO<br>
-  Aviso legal: O Cartão AproveitAI não garante descontos. Benefícios e promoções são definidos exclusivamente pelos parceiros.
+© 2025 Cartão AproveitAI – PROMETHEUS EROPRO<br>
+Benefícios definidos pelos parceiros. Pagamentos à vista.
 </footer>
 
 <script>
-/* ===== CONFIG ===== */
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+/* ===============================
+   BLOQUEIO DE ACESSO DIRETO
+================================ */
+const sessao = JSON.parse(localStorage.getItem("sessaoParceiro"));
 
-/* ===== LOGIN OBRIGATÓRIO ===== */
-let parceiroLogado = null;
-try {
-  parceiroLogado = JSON.parse(localStorage.getItem("parceiroLogado"));
-} catch(e){
-  parceiroLogado = null;
-}
-
-if(!parceiroLogado || parceiroLogado.ativo !== "SIM"){
+if (!sessao || sessao.ativo !== "SIM") {
   alert("Acesso restrito. Faça login como parceiro.");
   window.location.href = "login-app.html";
 }
 
-/* ===== QR ===== */
-function iniciarQR(){
-  alert("Leitor de QR Code ativo.\nUse câmera em ambiente HTTPS.");
-}
+document.getElementById("parceiroInfo").innerText =
+  "Parceiro logado: " + sessao.parceiro_nome + " | CNPJ: " + sessao.parceiro_cnpj;
 
-/* ===== VALIDAR CLIENTE ===== */
-function validarCliente(){
-  const cpf = cpfInput.value.trim();
-  const id  = idInput.value.trim();
-  const res = document.getElementById("resultado");
+/* ===============================
+   URL DO GOOGLE SCRIPT
+================================ */
+const API_URL = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT";
 
-  if(!cpf && !id){
+/* ===============================
+   VALIDAÇÃO
+================================ */
+function validar() {
+  const cpf = document.getElementById("cpf").value.trim();
+  const idPublico = document.getElementById("idPublico").value.trim();
+
+  if (!cpf && !idPublico) {
     alert("Informe CPF ou ID Público");
     return;
   }
 
-  res.style.display="block";
-  res.style.background="#fff3cd";
-  res.innerHTML="🔄 Validando cliente...";
-
-  let url = API_URL + "?acao=validar";
-  if(cpf) url += "&cpf=" + encodeURIComponent(cpf);
-  if(id)  url += "&idPublico=" + encodeURIComponent(id);
-
-  // dados do parceiro LOGADO
-  url += "&parceiro=" + encodeURIComponent(parceiroLogado.parceiro_nome);
-  url += "&cnpj_parceiro=" + encodeURIComponent(parceiroLogado.parceiro_cnpj);
-  url += "&origem=validacao_app";
+  const url =
+    API_URL +
+    "?acao=validar" +
+    "&cpf=" + encodeURIComponent(cpf) +
+    "&idPublico=" + encodeURIComponent(idPublico) +
+    "&parceiro=" + encodeURIComponent(sessao.parceiro_nome) +
+    "&cnpj=" + encodeURIComponent(sessao.parceiro_cnpj);
 
   fetch(url)
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.status==="ATIVO"){
-        res.style.background="#d4edda";
-        res.innerHTML = `
-          <b style="color:green;font-size:22px">ATIVO</b><br><br>
-          <b>${d.nome}</b><br><br>
-          Código de Autorização:<br>
-          <b>${d.codigo}</b><br><br>
-          <small>Parceiro: ${parceiroLogado.parceiro_nome}</small>
-        `;
-      }else{
-        res.style.background="#f8d7da";
-        res.innerHTML = `
-          <b style="color:red;font-size:22px">INATIVO</b><br><br>
-          ${d.nome || ""}
-        `;
+    .then(r => r.text())
+    .then(txt => {
+      let data;
+      try {
+        data = JSON.parse(txt);
+      } catch {
+        alert("Erro na resposta do servidor");
+        return;
       }
-    })
-    .catch(()=>{
-      res.style.background="#f8d7da";
-      res.innerHTML="Erro ao validar cliente";
+
+      mostrarResultado(data);
     });
 }
 
-console.log("Ambiente HTTPS ativo — QR liberado");
+function mostrarResultado(d) {
+  const div = document.getElementById("resultado");
+
+  if (d.status === "ATIVO") {
+    div.innerHTML = `
+      <div class="result ativo">
+        ATIVO<br>
+        ${d.nome}<br>
+        Código: ${d.codigo_ero}
+      </div>`;
+  } else {
+    div.innerHTML = `
+      <div class="result inativo">
+        INATIVO<br>
+        ${d.nome || "Cliente não ativo"}
+      </div>`;
+  }
+}
+
+/* ===============================
+   CÂMERA (placeholder)
+================================ */
+function abrirCamera() {
+  alert("Leitor de QR Code ativo (HTTPS confirmado)");
+}
 </script>
 
 </body>

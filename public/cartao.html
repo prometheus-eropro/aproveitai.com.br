@@ -243,8 +243,8 @@ body{
 
 <!-- BOTÕES -->
 <div class="botoes">
-<button onclick="salvarPDF()" class="btn-verde">
-  📄 Salvar PDF
+<button onclick="salvarPDF()" class="btn-pdf">
+  📄 Salvar cartão em PDF
 </button>
 
 <button onclick="window.print()">🖨️ Imprimir cartão</button>
@@ -349,25 +349,33 @@ function voltarPagina() {
 
 <script>
 function salvarPDF() {
-  const elemento = document.getElementById("cartao-print");
-
-  if (!elemento) {
-    alert("Erro: cartão não encontrado.");
-    return;
-  }
+  const elemento = document.getElementById("cartao");
 
   const opt = {
-    margin: 5,
-    filename: 'Cartao-AproveitAI.pdf',
+    margin: 0.5,
+    filename: 'cartao-aproveitai.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
   };
 
   html2pdf()
     .set(opt)
     .from(elemento)
-    .save();
+    .outputPdf('blob')
+    .then(function(blob) {
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cartao-aproveitai.pdf';
+
+      document.body.appendChild(a);
+      a.click();
+
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
 }
 </script>
 
