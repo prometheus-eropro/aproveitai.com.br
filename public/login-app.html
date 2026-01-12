@@ -210,11 +210,11 @@
 
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const API =
+  "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 function loginApp() {
-  const cnpj = document.getElementById("cnpj").value.replace(/\D/g, "");
-
+  const cnpj = document.getElementById("cnpj").value.replace(/\D/g,"");
   const token = document.getElementById("token").value.trim();
 
   if (!cnpj || !token) {
@@ -222,33 +222,30 @@ function loginApp() {
     return;
   }
 
-  const callback = "cb_login_" + Date.now();
-  window[callback] = function(resp) {
-  try {
-    delete window[callback];
-    if (script && script.parentNode) script.parentNode.removeChild(script);
-  } catch (e) {}
+  const cb = "cb_" + Date.now();
+  window[cb] = function(resp) {
+    try { delete window[cb]; script.remove(); } catch(e){}
 
-  if (!resp || !resp.ok) {
-    alert("Login inválido ou parceiro inativo");
-    return;
-  }
+    if (!resp || !resp.ok) {
+      alert("Login inválido ou parceiro inativo");
+      return;
+    }
 
-localStorage.setItem("parceiro_nome", resp.parceiro);
-localStorage.setItem("parceiro_cnpj", resp.cnpj);
-localStorage.setItem("token_app", token);
+    localStorage.setItem("parceiro_nome", resp.parceiro);
+    localStorage.setItem("parceiro_cnpj", resp.cnpj);
+    localStorage.setItem("token", token);
 
-window.location.href = "app-validar.html";
+
+    window.location.href = "app-validar.html";
   };
 
   const script = document.createElement("script");
   script.src =
-    "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
- +
+    API +
     "?acao=loginApp" +
     "&cnpj=" + encodeURIComponent(cnpj) +
     "&token=" + encodeURIComponent(token) +
-    "&callback=" + callback;
+    "&callback=" + cb;
 
   document.body.appendChild(script);
 }
