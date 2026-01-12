@@ -21,9 +21,10 @@
 
       <!-- Tarja -->
       <p class="boas-vindas">
-        🏪 <strong>Área do Parceiro</strong><br>
-        Valide clientes e acompanhe seus relatórios.
-      </p>
+  🏪 <strong>Área do Parceiro</strong><br>
+  Bem-vindo, <strong id="boasVindasParceiro">Parceiro</strong> — valide clientes e acompanhe seus relatórios.
+</p>
+
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
@@ -161,10 +162,20 @@ if (!data || data.erro) {
     document.getElementById("painelBox").style.display = "block";
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("nomeParceiro").textContent = data.parceiro;
-    sessionStorage.setItem("parceiroLogado", "SIM");
+    // sessão (para a aba atual)
+sessionStorage.setItem("parceiroLogado", "SIM");
 sessionStorage.setItem("parceiroNome", data.parceiro || "");
 sessionStorage.setItem("parceiroCNPJ", data.cnpj || "");
 sessionStorage.setItem("parceiroToken", token);
+
+// persistência (para abrir relatório em outra aba)
+localStorage.setItem("parceiroLogado", "SIM");
+localStorage.setItem("parceiroNome", data.parceiro || "");
+localStorage.setItem("parceiroCNPJ", data.cnpj || "");
+localStorage.setItem("parceiroToken", token);
+
+// boas-vindas no topo
+document.getElementById("boasVindasParceiro").textContent = data.parceiro || "Parceiro";
 
   } catch (e) {
     console.error(e);
@@ -277,6 +288,25 @@ if (idQR) {
   document.getElementById("cpfCliente").value = idQR;
   validarCliente();
 }
+(function restaurarSessao() {
+  const nome = sessionStorage.getItem("parceiroNome") || localStorage.getItem("parceiroNome");
+  const cnpj = sessionStorage.getItem("parceiroCNPJ") || localStorage.getItem("parceiroCNPJ");
+  const token = sessionStorage.getItem("parceiroToken") || localStorage.getItem("parceiroToken");
+
+  if (nome && cnpj && token) {
+    // repopula sessionStorage caso tenha vindo do localStorage
+    sessionStorage.setItem("parceiroLogado", "SIM");
+    sessionStorage.setItem("parceiroNome", nome);
+    sessionStorage.setItem("parceiroCNPJ", cnpj);
+    sessionStorage.setItem("parceiroToken", token);
+
+    document.getElementById("painelBox").style.display = "block";
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("nomeParceiro").textContent = nome;
+    const bv = document.getElementById("boasVindasParceiro");
+    if (bv) bv.textContent = nome;
+  }
+})();
 
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->

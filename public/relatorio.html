@@ -86,11 +86,7 @@ document.getElementById("dadosParceiro").innerHTML = `
   <strong>Parceiro:</strong> ${parceiroNome || "-"}<br>
   <strong>CNPJ:</strong> ${parceiroCNPJ || "-"}
 `;
-
-const token = sessionStorage.getItem("parceiroToken") || "";
-fetch(API_URL + "?relatorio=1&token=" + encodeURIComponent(token))
-
-
+fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
 
   .then(r => r.json())
   .then(d => {

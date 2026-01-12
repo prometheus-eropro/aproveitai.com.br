@@ -213,7 +213,8 @@
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 function loginApp() {
-  const cnpj = document.getElementById("cnpj").value.trim();
+  const cnpj = document.getElementById("cnpj").value.replace(/\D/g, "");
+
   const token = document.getElementById("token").value.trim();
 
   if (!cnpj || !token) {
@@ -223,19 +224,21 @@ function loginApp() {
 
   const callback = "cb_login_" + Date.now();
   window[callback] = function(resp) {
+  try {
     delete window[callback];
-    document.body.removeChild(script);
+    if (script && script.parentNode) script.parentNode.removeChild(script);
+  } catch (e) {}
 
-    if (!resp || !resp.ok) {
-      alert("Login inválido");
-      return;
-    }
+  if (!resp || !resp.ok) {
+    alert("Login inválido ou parceiro inativo");
+    return;
+  }
 
-    localStorage.setItem("parceiro_nome", resp.nomeFantasia);
-    localStorage.setItem("parceiro_cnpj", resp.cnpj);
-    localStorage.setItem("token_app", token);
+localStorage.setItem("parceiro_nome", resp.parceiro);
+localStorage.setItem("parceiro_cnpj", resp.cnpj);
+localStorage.setItem("token_app", token);
 
-    window.location.href = "app-validar.html";
+window.location.href = "app-validar.html";
   };
 
   const script = document.createElement("script");
