@@ -174,6 +174,44 @@ body{
   body{background:#fff;}
   .botoes,.site-header,.footer{display:none;}
 }
+#cartao-digital{
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.cartao-container{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cartao-esquerda,
+.cartao-direita{
+  width: 100%;
+}
+
+@media (min-width: 768px){
+  .cartao-esquerda,
+  .cartao-direita{
+    width: 50%;
+  }
+}
+
+img, canvas{
+  max-width: 100%;
+  height: auto;
+}
+#cartao {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  #cartao {
+    transform: scale(0.95);
+    transform-origin: top center;
+  }
+}
 
 </style>
 </head>
@@ -243,10 +281,7 @@ body{
 
 <!-- BOTÕES -->
 <div class="botoes">
-<button onclick="salvarPDF()" class="btn-pdf">
-  📄 Salvar cartão em PDF
-</button>
-
+<button onclick="salvarPDF()">💾 Salvar cartão em PDF</button>
 <button onclick="window.print()">🖨️ Imprimir cartão</button>
 <button class="voltar" onclick="history.back()">⬅ Voltar</button>
 </div>
@@ -345,37 +380,22 @@ function voltarPagina() {
   history.back();
 }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 function salvarPDF() {
-  const elemento = document.getElementById("cartao");
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("landscape", "pt", "a4");
 
-  const opt = {
-    margin: 0.5,
-    filename: 'cartao-aproveitai.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
-  };
+  const card = document.getElementById("cartao");
 
-  html2pdf()
-    .set(opt)
-    .from(elemento)
-    .outputPdf('blob')
-    .then(function(blob) {
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cartao-aproveitai.pdf';
-
-      document.body.appendChild(a);
-      a.click();
-
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
+  pdf.html(card, {
+    callback: function (doc) {
+      doc.save("cartao-aproveitai.pdf");
+    },
+    x: 20,
+    y: 20
+  });
 }
 </script>
 

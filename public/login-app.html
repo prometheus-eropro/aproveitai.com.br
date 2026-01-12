@@ -1,16 +1,80 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Login • Validação</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Login • App Validação | Cartão AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#e9f7ef;
-}
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #e8f7ef, #bfe9ff);
+      font-family: Arial, sans-serif;
+    }
+
+    /* ===== CONTEÚDO ===== */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .card h2 {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #0a7a2a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #066122;
+    }
+
+    .dica {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+    }
 
 /* =========================
    CABEÇALHO
@@ -30,7 +94,10 @@ body{
 }
 
 .logo {
-  max-height: 160px;
+  max-height: 180px;
+  height: auto;
+  width: auto;
+  object-fit: contain;
 }
 
 .brand-center {
@@ -39,157 +106,167 @@ body{
 }
 
 .site-title {
-  font-size: 34px;
+  font-size: 36px;
   color: #0a7a2a;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
   font-weight: bold;
 }
 
 .slogan {
-  font-size: 15px;
+  font-size: 16px;
   font-style: italic;
+  margin-bottom: 5px;
   color: #555;
 }
 
 .boas-vindas {
   background: #dfffe0;
-  padding: 12px;
+  padding: 12px 15px;
   border-radius: 8px;
   margin-top: 10px;
-  font-size: 17px;
+  font-size: 18px; /* AUMENTADO */
+  line-height: 1.5;
   font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
-
-/* =========================
-   LOGIN
-========================= */
-.login-wrapper{
-  min-height: calc(100vh - 260px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:30px 15px;
-}
-
-.box{
-  background:#fff;
-  padding:30px;
-  border-radius:12px;
-  width:100%;
-  max-width:360px;
-  box-shadow:0 4px 12px rgba(0,0,0,.2);
-}
-
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  font-size:16px;
-}
-
-button{
-  background:#198754;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-
 
 /* =========================
    RODAPÉ
 ========================= */
-.footer{
+.footer {
+  background: #dfffe0;
+  color: #222;
+  padding: 10px 10px;
+  font-size: 13px;
+  border-top: 3px solid white;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 5px 0;
+}
+
+.footer a {
+  color: #0066cc;
+  font-size: 13px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>VALIDAÇÃO CARTÃO AproveitAI</strong><br>
+        digite CNPJ e TOKEN APP, valide o cartão.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+<main>
+  <div class="card">
+    <h2>🔐 Login Validação (APP)</h2>
+    <p>Entre com CNPJ e Token do APP</p>
+
+    <input id="cnpj" type="text" inputmode="numeric"
+      placeholder="CNPJ do parceiro (somente números)" />
+
+    <input id="token" type="password"
+      placeholder="Token do APP" />
+
+    <button onclick="login()">Entrar</button>
+
+    <div class="dica">
+      Exemplo de link:<br>
+      <code>login-app.html?cnpj=SEUCNPJ&token=SEUTOKEN</code>
+    </div>
+  </div>
+</main>
+
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+  function login() {
+    const cnpj = document.getElementById("cnpj").value.trim();
+    const token = document.getElementById("token").value.trim();
+
+    if (!cnpj || !token) {
+      alert("Informe CNPJ e Token do APP.");
+      return;
+    }
+
+    const callbackName = "cbLogin_" + Date.now();
+
+    window[callbackName] = function (resp) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+
+      if (!resp || !resp.ok) {
+        alert(resp?.mensagem || "Login inválido");
+        return;
+      }
+
+      // grava sessão
+      localStorage.setItem("app_parceiro_cnpj", resp.cnpj);
+      localStorage.setItem("app_parceiro_nome", resp.nomeFantasia);
+
+      // redireciona
+      location.href = "app-validar.html";
+    };
+
+    const script = document.createElement("script");
+    script.src =
+      API_URL +
+      "?acao=loginApp" +
+      "&cnpj=" + encodeURIComponent(cnpj) +
+      "&token=" + encodeURIComponent(token) +
+      "&callback=" + callbackName;
+
+    document.body.appendChild(script);
+  }
+</script>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
   background:#dfffe0;
   padding:12px;
   text-align:center;
   font-size:12px;
   line-height:1.4;
-}
-
-@media (max-width:480px){
-  .site-title{ font-size:26px; }
-  .logo{ max-height:120px; }
-}
-</style>
-</head>
-
-<body>
-
-<!-- CABEÇALHO -->
-<header class="site-header">
-  <div class="brandline">
-    <img src="logo-prometheus.png" class="logo">
-    <div class="brand-center">
-      <h1 class="site-title">Cartão AproveitAI</h1>
-      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
-      <p class="boas-vindas">
-        📲 <strong>Validação por QR Code</strong><br>
-        Área exclusiva do parceiro
-      </p>
-    </div>
-    <img src="logo-aproveitai.png" class="logo">
-  </div>
-</header>
-
-<!-- LOGIN -->
-<div class="login-wrapper">
-  <div class="box">
-    <h3>🔐 Login Validação</h3>
-
-    <input type="text" id="cpf" placeholder="Login">
-
-    <input id="senha" type="password" placeholder="Senha">
-<button type="button" onclick="toggleSenha()" style="margin-top:8px">
-  👁 Mostrar senha
-</button>
-
-    <button onclick="logar()">Entrar</button>
-  </div>
-</div>
-
-<!-- RODAPÉ -->
-<footer class="footer">
+">
   © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+
   <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
-  Benefícios e promoções são definidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em meda corrente, salvo autorização expressa do estabelecimento.
 </footer>
 
-<!-- SCRIPT (APENAS JS) -->
-<script>
-const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-function toggleSenha(){
-  const campo = document.getElementById("senha");
-  campo.type = campo.type === "password" ? "text" : "password";
-}
 
-async function logar(){
-  const cpf = document.getElementById("cpf").value.trim();
-  const senha = document.getElementById("senha").value.trim();
-
-  if(!cpf || !senha){
-    alert("Informe login e senha");
-    return;
-  }
-
-  const url = `${API}?acao=loginApp&cpf=${encodeURIComponent(cpf)}&senha=${encodeURIComponent(senha)}`;
-  const r = await fetch(url).then(r=>r.json());
-
-  if(!r.ok){
-    alert("Login inválido ou usuário inativo");
-    return;
-  }
-
-  localStorage.setItem("APP_VALIDAR","SIM");
-  localStorage.setItem("operadorCPF", r.cpf);
-  localStorage.setItem("operadorNome", r.nome);
-  localStorage.setItem("parceiroNome", r.parceiro_nome);
-  localStorage.setItem("parceiroCNPJ", r.parceiro_cnpj);
-
-  location.href = "app-validar.html";
-}
-</script>
 
 </body>
 </html>

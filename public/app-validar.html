@@ -1,213 +1,524 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Validação por QR Code - Cartão AproveitAI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App Validação • Cartão AproveitAI</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(180deg,#dfffe6,#bdefff);
-}
+  <link rel="apple-touch-icon" href="logo-aproveitai.png">
+  <meta name="theme-color" content="#0a7a2a">
 
-header {
-  background:#fff;
-  padding:20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:3px solid #1f8a4c;
-}
+  <!-- Leitor de QR -->
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
 
-header img { height:60px; }
+  <style>
+    body{
+      margin:0;
+      font-family:'Segoe UI', Arial, sans-serif;
+      background:#bfefff;
+    }
 
-header h1 {
-  margin:0;
-  color:#1f8a4c;
-}
+    /* =========================
+       CABEÇALHO (IGUAL AO cartao.html)
+    ========================= */
+    .site-header {
+      background: white;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .brandline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .logo {
+      max-height: 180px;
+      height: auto;
+      width: auto;
+      object-fit: contain;
+    }
+    .brand-center {
+      flex: 1;
+      text-align: center;
+    }
+    .site-title {
+      font-size: 36px;
+      color: #0a7a2a;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      font-weight: bold;
+      margin: 0;
+    }
+    .slogan {
+      font-size: 16px;
+      font-style: italic;
+      margin: 6px 0 0;
+      color: #555;
+    }
+    .boas-vindas {
+      background: #dfffe0;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 16px;
+      line-height: 1.5;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      display:inline-block;
+    }
 
-.sub {
-  background:#d9ffe3;
-  padding:12px;
-  text-align:center;
-  font-weight:bold;
-}
+    .warningbar{
+      background:#fff3cd;
+      color:#856404;
+      padding:8px;
+      text-align:center;
+      font-size:13px;
+    }
 
-.container {
-  max-width:650px;
-  margin:40px auto;
-  background:#fff;
-  padding:30px;
-  border-radius:14px;
-  box-shadow:0 10px 25px rgba(0,0,0,.15);
-}
+    /* =========================
+       CONTEÚDO (APP)
+    ========================= */
+    .container{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px 12px 28px;
+    }
 
-.btn {
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  background:#157a3b;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
-}
+    .grid-app{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media(max-width: 900px){
+      .grid-app{ grid-template-columns: 1fr; }
+    }
 
-.btn:hover { background:#0f5f2e; }
+    .card{
+      background:#fff;
+      border-radius:14px;
+      padding:18px;
+      box-shadow:0 10px 25px rgba(0,0,0,.10);
+    }
 
-input {
-  width:100%;
-  padding:12px;
-  margin-bottom:12px;
-  font-size:15px;
-}
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:18px;
+      color:#0a7a2a;
+    }
 
-.result {
-  margin-top:20px;
-  padding:18px;
-  border-radius:10px;
-  text-align:center;
-}
+    .hint{
+      font-size:13px;
+      color:#245;
+      margin-top:6px;
+    }
 
-.ativo {
-  background:#d4f8df;
-  color:#0a7a2a;
-  font-weight:bold;
-}
+    .field{
+      width:100%;
+      padding:14px 16px;
+      border:1px solid #d9d9d9;
+      border-radius:10px;
+      font-size:16px;
+      box-sizing:border-box;
+      outline:none;
+    }
+    .field:focus{
+      border-color:#0a7a2a;
+      box-shadow:0 0 0 3px rgba(10,122,42,.12);
+    }
 
-.inativo {
-  background:#f8d4d4;
-  color:#a00000;
-  font-weight:bold;
-}
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media(max-width: 520px){
+      .row{ grid-template-columns: 1fr; }
+    }
 
-footer {
-  margin-top:40px;
-  padding:15px;
-  text-align:center;
-  font-size:12px;
-  background:#e8fff0;
-}
-</style>
+    .btn{
+      padding:14px 16px;
+      border:none;
+      border-radius:10px;
+      font-size:16px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .btn-primary{ background:#128c4a; color:#fff; }
+    .btn-ghost{ background:#eef7f0; color:#0f6f3a; }
+    .btn-danger{ background:#b42318; color:#fff; }
+
+    .result{
+      margin-top:14px;
+      padding:14px;
+      border-radius:12px;
+      border:2px solid transparent;
+    }
+    .result.ok{ background:#e9f8ef; border-color:#0f6f3a; }
+    .result.no{ background:#ffecec; border-color:#b42318; }
+
+    #qrArea{ display:none; margin-top:12px; }
+    #qr-reader{ width:100%; max-width:480px; margin-top:10px; }
+
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.3px;
+      background:#eef7f0;
+      color:#0f6f3a;
+    }
+
+    .status-pill{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.4px;
+      margin-top:8px;
+    }
+    .status-ok{ background:#e9f8ef; color:#0f6f3a; border:1px solid #0f6f3a; }
+    .status-no{ background:#ffecec; color:#b42318; border:1px solid #b42318; }
+
+    .bigcode{
+      margin-top:10px;
+      padding:12px;
+      border-radius:12px;
+      background:#f7fff9;
+      border:1px dashed #0a7a2a;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.6px;
+      text-align:center;
+    }
+
+    /* =========================
+       RODAPÉ (IGUAL AO cartao.html)
+    ========================= */
+    footer{
+      background:#dfffe0;
+      padding:12px;
+      text-align:center;
+      font-size:12px;
+      line-height:1.4;
+      border-top: 3px solid white;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <img src="logo-prometheus.png">
-  <h1>Cartão AproveitAI</h1>
-  <img src="logo-aproveitai.png">
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus" alt="Prometheus EROPRO">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        🔒 <strong>APP DE VALIDAÇÃO</strong><br>
+        Exclusivo para parceiros (QR / CPF / ID).
+      </p>
+      <div class="hint" id="parceiroInfo"></div>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai" alt="AproveitAI">
+  </div>
 </header>
 
-<div class="sub">
-🔐 Validação por QR Code — Área exclusiva do parceiro
+<div class="warningbar">
+  ⚠️ Este app é exclusivo para parceiros. A validação gera log com CNPJ e pode emitir autorização somente se o cliente estiver ATIVO.
 </div>
 
-<div class="container">
+<main class="container">
+  <div class="grid-app">
 
-<h3 id="parceiroInfo"></h3>
+    <!-- BLOCO 1: VALIDAÇÃO -->
+    <section class="card">
+      <h2>📋 Validar Cliente</h2>
 
-<button class="btn" onclick="abrirCamera()">📷 Leitor de QR Code</button>
+      <div class="row">
+        <input id="cpf" class="field" inputmode="numeric" placeholder="CPF do cliente (opcional)">
+        <input id="idPublico" class="field" placeholder="ID Público (APV-XXXXXX) (opcional)">
+      </div>
 
-<hr style="margin:25px 0">
+      <div class="row" style="margin-top:12px;">
+        <button class="btn btn-ghost" id="btnQr" type="button">📷 Ler QR Code</button>
+        <button class="btn btn-primary" id="btnValidar" type="button">VALIDAR CLIENTE</button>
+      </div>
 
-<h3>Consulta Manual</h3>
+      <div id="qrArea">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-danger" id="btnFecharQr" type="button">Fechar câmera</button>
+          <span class="hint" style="align-self:center;">Aponte para o QR do cartão.</span>
+        </div>
+        <div id="qr-reader"></div>
+      </div>
 
-<input id="cpf" placeholder="CPF do cliente">
-<input id="idPublico" placeholder="ID Público (APV-XXXX)">
+      <div id="resultado"></div>
 
-<button class="btn" onclick="validar()">Validar Cliente</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+                <button class="btn btn-ghost" id="btnSair" type="button">🚪 Sair</button>
+    </div>
 
-<div id="resultado"></div>
+      <div class="hint" style="margin-top:10px;">
+        Dica: para QR e login funcionarem no celular, publique em HTTPS (Vercel). Abrir via <b>file://</b> pode bloquear storage e câmera.
+      </div>
+    </section>
 
-</div>
+    <!-- BLOCO 2: PAINEL DO PARCEIRO (RESUMO) -->
+    <section class="card">
+      <h2>🏪 Parceiro logado</h2>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <span class="badge" id="pnomeFantasia">Parceiro</span>
+        <span class="badge" id="pCnpj">CNPJ: -</span>
+      </div>
 
+      <div class="hint" style="margin-top:10px;">
+        Este app <b>não</b> permite validação pública. Toda consulta exige token do parceiro e grava logs.
+      </div>
+
+      <div class="hint" style="margin-top:10px;">
+        <b>Última atualização:</b> 01/2026.
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ✅ RODAPÉ PADRÃO -->
 <footer>
-© 2025 Cartão AproveitAI – PROMETHEUS EROPRO<br>
-Benefícios definidos pelos parceiros. Pagamentos à vista.
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
 
 <script>
-/* ===============================
-   BLOQUEIO DE ACESSO DIRETO
-================================ */
-const sessao = JSON.parse(localStorage.getItem("sessaoParceiro"));
+  // ====== CONFIGURE A URL DO SEU APPS SCRIPT (MESMA DO SITE) ======
+  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-if (!sessao || sessao.ativo !== "SIM") {
-  alert("Acesso restrito. Faça login como parceiro.");
-  window.location.href = "login-app.html";
-}
+  function apenasNumeros(v){ return String(v||"").replace(/\D/g,""); }
 
-document.getElementById("parceiroInfo").innerText =
-  "Parceiro logado: " + sessao.parceiro_nome + " | CNPJ: " + sessao.parceiro_cnpj;
+  // ====== SESSÃO DO APP (token-app salvo no login) ======
+  function carregarSessao(){
+    // atenção: storage pode ser bloqueado em file://
+    let token = "";
+    let cnpj = "";
+    let nome = "";
 
-/* ===============================
-   URL DO GOOGLE SCRIPT
-================================ */
-const API_URL = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT";
+    try{
+      token = localStorage.getItem("app_token") || "";
+      cnpj  = localStorage.getItem("app_parceiro_cnpj") || "";
+      nome  = localStorage.getItem("app_parceiro_nome") || "";
+    }catch(e){
+      // fallback (se storage for bloqueado)
+      token = sessionStorage.getItem("app_token") || "";
+      cnpj  = sessionStorage.getItem("app_parceiro_cnpj") || "";
+      nome  = sessionStorage.getItem("app_parceiro_nome") || "";
+    }
 
-/* ===============================
-   VALIDAÇÃO
-================================ */
-function validar() {
-  const cpf = document.getElementById("cpf").value.trim();
-  const idPublico = document.getElementById("idPublico").value.trim();
+    if(!token || !cnpj){
+      // se não tem sessão, volta pro login
+      location.href = "login-app.html";
+      return null;
+    }
 
-  if (!cpf && !idPublico) {
-    alert("Informe CPF ou ID Público");
-    return;
+    document.getElementById("parceiroInfo").innerText =
+      "Parceiro logado: " + (nome || "Parceiro") + " • CNPJ: " + cnpj;
+
+    document.getElementById("pnomeFantasia").innerText = (nome || "Parceiro");
+    document.getElementById("pCnpj").innerText = "CNPJ: " + cnpj;
+
+    return { token, cnpj, nome };
   }
 
-  const url =
-    API_URL +
-    "?acao=validar" +
-    "&cpf=" + encodeURIComponent(cpf) +
-    "&idPublico=" + encodeURIComponent(idPublico) +
-    "&parceiro=" + encodeURIComponent(sessao.parceiro_nome) +
-    "&cnpj=" + encodeURIComponent(sessao.parceiro_cnpj);
+  const sessao = carregarSessao();
 
-  fetch(url)
-    .then(r => r.text())
-    .then(txt => {
-      let data;
-      try {
-        data = JSON.parse(txt);
-      } catch {
-        alert("Erro na resposta do servidor");
-        return;
+  document.getElementById("btnSair").addEventListener("click", ()=>{
+    try{
+      localStorage.removeItem("app_token");
+      localStorage.removeItem("app_parceiro_cnpj");
+      localStorage.removeItem("app_parceiro_nome");
+    }catch(e){}
+    sessionStorage.removeItem("app_token");
+    sessionStorage.removeItem("app_parceiro_cnpj");
+    sessionStorage.removeItem("app_parceiro_nome");
+    location.href = "login-app.html";
+  });
+
+  // ===== JSONP helper =====
+  function jsonp(url){
+    return new Promise((resolve, reject) => {
+      const cbName = "cb_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+      const s = document.createElement("script");
+      window[cbName] = (data) => {
+        cleanup();
+        resolve(data);
+      };
+      s.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cbName;
+      s.onerror = () => { cleanup(); reject(new Error("JSONP_FAIL")); };
+      document.body.appendChild(s);
+
+      function cleanup(){
+        try{ delete window[cbName]; }catch(e){ window[cbName]=undefined; }
+        if(s && s.parentNode) s.parentNode.removeChild(s);
       }
-
-      mostrarResultado(data);
     });
-}
-
-function mostrarResultado(d) {
-  const div = document.getElementById("resultado");
-
-  if (d.status === "ATIVO") {
-    div.innerHTML = `
-      <div class="result ativo">
-        ATIVO<br>
-        ${d.nome}<br>
-        Código: ${d.codigo_ero}
-      </div>`;
-  } else {
-    div.innerHTML = `
-      <div class="result inativo">
-        INATIVO<br>
-        ${d.nome || "Cliente não ativo"}
-      </div>`;
   }
+
+  function mostrarResultado(data){
+    const el = document.getElementById("resultado");
+
+    if(!data || data.erro){
+      el.innerHTML = `
+        <div class="result no">
+          <b>Erro:</b> ${data && data.erro ? data.erro : "Falha na consulta"}
+        </div>
+      `;
+      return;
+    }
+
+    const ativo = String(data.ativo||"").toUpperCase() === "SIM";
+
+    el.innerHTML = `
+      <div class="result ${ativo ? "ok" : "no"}">
+        <div style="font-size:18px; font-weight:900;">${data.nome || "-"}</div>
+        <div class="status-pill ${ativo ? "status-ok":"status-no"}">
+          ${ativo ? "ATIVO" : "INATIVO"}
+        </div>
+
+        <div style="margin-top:10px;">
+          <div><b>CPF:</b> ${mesclarCPF(data.cpf)}</div>
+          <div><b>ID Público:</b> ${data.idPublico || "-"}</div>
+          <div><b>Grupo:</b> ${data.grupo || "-"}</div>
+          <div><b>Cidade:</b> ${data.cidade || "-"}</div>
+<div><b>Cadastro:</b> ${data.dataCadastro || "-"}</div>
+        
+</div>
+
+        ${data.mensagemStatus ? `<div style="margin-top:10px; font-size:15px;">${data.mensagemStatus}</div>` : ""}
+
+        ${ativo && data.codigoERO ? `<div class="bigcode">CÓDIGO: ${data.codigoERO}</div>` : ""}
+      </div>
+    `;
+  }
+
+  // ✅ VALIDAÇÃO (JSONP) — UMA ÚNICA FUNÇÃO (SEM DUPLICAR)
+  async function validarCliente(){
+    const cpf = apenasNumeros(document.getElementById("cpf").value);
+    const idPublico = String(document.getElementById("idPublico").value||"").trim();
+
+    if(!cpf && !idPublico){
+      alert("Informe CPF ou ID Público (APV-...).");
+      return;
+    }
+
+    // Mantém compatível com o seu GS atual:
+    // - Se você ainda usa modo=parceiro + token, mantém.
+    // - Se você usar apenas token-app no GS, troque as 2 linhas marcadas abaixo.
+    const params = new URLSearchParams();
+    if(cpf) params.set("cpf", cpf);
+    if(idPublico) params.set("idPublico", idPublico);
+
+    // ====== (A) MODO ATUAL ======
+    params.set("acao", "validarApp");
+params.set("token-app", sessao.token);
+params.set("cnpj", sessao.cnpj);
+
+    // ====== (B) SEU MODO "SÓ token-app" (use se seu GS estiver assim) ======
+    // params.set("acao", "validarApp");
+    // params.set("token-app", sessao.token);
+
+    try{
+      const data = await jsonp(API_URL + "?" + params.toString());
+      mostrarResultado(data);
+    }catch(err){
+      console.error(err);
+      mostrarResultado({ erro: "FALHA_API" });
+    }
+  }
+
+  document.getElementById("btnValidar").addEventListener("click", validarCliente);
+
+  // -------- QR Code --------
+  let qr = null;
+
+  function extrairDeQr(texto){
+    const t = String(texto||"").trim();
+
+    // Se vier uma URL do validar.html?idPublico=...
+    try{
+      const u = new URL(t);
+      const id = u.searchParams.get("idPublico");
+      if(id) return { idPublico: id.trim() };
+    }catch(e){}
+
+    // Se vier APV-...
+    if(/^APV-[A-Z0-9-]{4,}$/i.test(t)) return { idPublico: t };
+
+    // Se vier CPF numérico
+    const n = apenasNumeros(t);
+    if(n.length === 11) return { cpf: n };
+
+    return null;
+  }
+
+  async function abrirQr(){
+    document.getElementById("qrArea").style.display = "block";
+
+    const Html5Qrcode = window.Html5Qrcode;
+    if(!Html5Qrcode){
+      alert("Biblioteca do QR não carregou. Verifique internet/cache.");
+      return;
+    }
+
+    if(qr) return;
+
+    qr = new Html5Qrcode("qr-reader");
+    try{
+      await qr.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 260, height: 260 } },
+        (decodedText) => {
+          const r = extrairDeQr(decodedText);
+          if(!r) return;
+
+          if(r.cpf) document.getElementById("cpf").value = r.cpf;
+          if(r.idPublico) document.getElementById("idPublico").value = r.idPublico;
+
+          fecharQr();
+          validarCliente();
+        }
+      );
+    } catch(err){
+      alert("Não foi possível acessar a câmera. Permita a câmera e use HTTPS (Vercel).");
+      console.error(err);
+      fecharQr();
+    }
+  }
+function mesclarCPF(cpf){
+  const n = String(cpf || "").replace(/\D/g,"");
+  if(n.length !== 11) return cpf;
+  return `${n.slice(0,3)}.***.***-${n.slice(9)}`;
 }
 
-/* ===============================
-   CÂMERA (placeholder)
-================================ */
-function abrirCamera() {
-  alert("Leitor de QR Code ativo (HTTPS confirmado)");
-}
+  async function fecharQr(){
+    document.getElementById("qrArea").style.display = "none";
+    try{
+      if(qr){
+        await qr.stop();
+        await qr.clear();
+      }
+    }catch(e){}
+    qr = null;
+  }
+
+  document.getElementById("btnQr").addEventListener("click", abrirQr);
+  document.getElementById("btnFecharQr").addEventListener("click", fecharQr);
 </script>
 
 </body>
