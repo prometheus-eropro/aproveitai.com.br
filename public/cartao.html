@@ -384,10 +384,19 @@ function voltarPagina() {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
+<script>
 function salvarPDF() {
-  window.print();
-}
-  html2pdf().from(el).save("cartao-aproveitai.pdf");
+  const elemento = document.getElementById("cartao-print");
+
+  const opt = {
+    margin: 5,
+    filename: "cartao-aproveitai.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
+  };
+
+  html2pdf().set(opt).from(elemento).save();
 }
 </script>
 
