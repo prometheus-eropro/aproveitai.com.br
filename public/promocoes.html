@@ -50,39 +50,39 @@
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 fetch(API + "?aba=promocoes")
-.then(r => r.json())
-.then(d => {
-  const lista = document.getElementById("lista");
-  lista.innerHTML = "";
+  .then(r => r.json())
+  .then(d => {
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
 
-  d.dados.forEach(p => {
-    if (String(p.ativo).toLowerCase() !== "sim") return;
-
-    const exclusivo = (p.grupo && p.grupo.trim()) || (p.idPublico && p.idPublico.trim());
-
-    const card = document.createElement("div");
-    card.className = "card";
-    if (exclusivo) {
-      card.style.border = "2px solid #ffcc00";
-      card.style.background = "#fffdf2";
+    if (!d.dados || !Array.isArray(d.dados)) {
+      lista.innerHTML = "<p>Nenhuma promoção ativa.</p>";
+      return;
     }
 
-    card.innerHTML = `
-      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
-      <h3>${p.titulo || ""}</h3>
-      <p>${p.descricao || ""}</p>
-      <p><strong>PARCEIRO:</strong> ${p.parceiro || ""}</p>
-      ${p.zap ? `<p><strong>WhatsApp:</strong> ${p.zap}</p>` : ""}
-      ${p.dataFim ? `<p><strong>Fim:</strong> ${p.dataFim}</p>` : ""}
-    `;
+    const resp = await fetch(url).then(r => r.json());
+const dados = resp.dados || [];
 
-    lista.appendChild(card);
-  });
+dados.forEach(item => {
+  // código existente
 });
 
-function voltarPagina() {
-  history.back();
-}
+      if (String(p.ativo).toLowerCase() !== "sim") return;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <h3>${p.titulo || ""}</h3>
+        <p>${p.descricao || ""}</p>
+        <p><strong>Parceiro:</strong> ${p.parceiro || ""}</p>
+      `;
+      lista.appendChild(div);
+    });
+  })
+  .catch(() => {
+    document.getElementById("lista").innerHTML =
+      "<p>Erro ao carregar promoções.</p>";
+  });
 </script>
 
 <footer style="

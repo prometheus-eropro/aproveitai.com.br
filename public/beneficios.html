@@ -46,35 +46,39 @@
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 fetch(API + "?aba=beneficios")
-.then(r => r.json())
-.then(d => {
-  const lista = document.getElementById("lista");
-  lista.innerHTML = "";
+  .then(r => r.json())
+  .then(d => {
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
 
-  d.dados.forEach(b => {
-    if (String(b.ativo).toLowerCase() !== "sim") return;
-
-    const exclusivo = (b.grupo && b.grupo.trim()) || (b.idPublico && b.idPublico.trim());
-
-    const card = document.createElement("div");
-    card.className = "card";
-    if (exclusivo) {
-      card.style.border = "2px solid #ffcc00";
-      card.style.background = "#fffdf2";
+    if (!d.dados || !Array.isArray(d.dados)) {
+      lista.innerHTML = "<p>Nenhum benefício disponível.</p>";
+      return;
     }
 
-    card.innerHTML = `
-      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
-      <h3>${b.titulo || ""}</h3>
-      <p>${b.descricao || ""}</p>
-      <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
-      ${b.zap ? `<p><strong>WhatsApp:</strong> ${b.zap}</p>` : ""}
-      ${b.dataFim ? `<p><strong>Fim:</strong> ${b.dataFim}</p>` : ""}
-    `;
+const resp = await fetch(url).then(r => r.json());
+const dados = resp.dados || [];
 
-    lista.appendChild(card);
-  });
+dados.forEach(item => {
+  // código existente
 });
+
+      if (String(b.ativo).toLowerCase() !== "sim") return;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <h3>${b.titulo || ""}</h3>
+        <p>${b.descricao || ""}</p>
+        <p><strong>Parceiro:</strong> ${b.parceiro || ""}</p>
+      `;
+      lista.appendChild(div);
+    });
+  })
+  .catch(() => {
+    document.getElementById("lista").innerHTML =
+      "<p>Erro ao carregar benefícios.</p>";
+  });
 </script>
 
 <!-- RODAPÉ (INALTERADO) -->

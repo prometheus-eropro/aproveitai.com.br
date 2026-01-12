@@ -147,6 +147,43 @@ function voltarPainel() {
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+<script>
+async function carregarRelatorio() {
+  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+  const token = sessionStorage.getItem("parceiroToken");
+  if (!token) {
+    alert("Sessão não encontrada");
+    location.href = "login.html";
+    return;
+  }
+
+  const url = API_URL + "?relatorio=1&token=" + encodeURIComponent(token);
+  const resp = await fetch(url).then(r => r.json());
+
+  const tbody = document.querySelector("tbody");
+  tbody.innerHTML = "";
+
+  if (!resp.dados || !Array.isArray(resp.dados)) {
+    tbody.innerHTML = "<tr><td colspan='4'>Nenhum dado</td></tr>";
+    return;
+  }
+
+  resp.dados.forEach(l => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+  <td>${item.data || item["Data"] || "-"}</td>
+  <td>${item.parceiro || "-"}</td>
+  <td>${item.status || "-"}</td>
+  <td>${item.codigoERO || item.codigo_ero || "-"}</td>
+`;
+
+
+document.addEventListener("DOMContentLoaded", carregarRelatorio);
+</script>
 
 </body>
 </html>

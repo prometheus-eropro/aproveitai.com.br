@@ -231,10 +231,10 @@ function loginApp() {
       return;
     }
 
-    localStorage.setItem("parceiro_nome", resp.parceiro);
-    localStorage.setItem("parceiro_cnpj", resp.cnpj);
-    localStorage.setItem("token", token);
-
+    // 🔴 PADRÃO ÚNICO DO APP
+    localStorage.setItem("app_parceiro_nome", resp.parceiro);
+    localStorage.setItem("app_parceiro_cnpj", resp.cnpj);
+    localStorage.setItem("app_token", token);
 
     window.location.href = "app-validar.html";
   };
