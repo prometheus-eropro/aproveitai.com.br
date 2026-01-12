@@ -278,6 +278,7 @@ img, canvas{
   </div>
 
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <!-- BOTÕES -->
 <div class="botoes">
@@ -384,18 +385,8 @@ function voltarPagina() {
 
 <script>
 function salvarPDF() {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("landscape", "pt", "a4");
-
-  const card = document.getElementById("cartao");
-
-  pdf.html(card, {
-    callback: function (doc) {
-      doc.save("cartao-aproveitai.pdf");
-    },
-    x: 20,
-    y: 20
-  });
+  const el = document.getElementById("cartao-digital");
+  html2pdf().from(el).save("cartao-aproveitai.pdf");
 }
 </script>
 

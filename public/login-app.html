@@ -198,7 +198,8 @@
     <input id="token" type="password"
       placeholder="Token do APP" />
 
-    <button onclick="login()">Entrar</button>
+<button onclick="loginApp()">Entrar</button>
+
 
     <div class="dica">
       Exemplo de link:<br>
@@ -211,44 +212,43 @@
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-  function login() {
-    const cnpj = document.getElementById("cnpj").value.trim();
-    const token = document.getElementById("token").value.trim();
+function loginApp() {
+  const cnpj = document.getElementById("cnpj").value.trim();
+  const token = document.getElementById("token").value.trim();
 
-    if (!cnpj || !token) {
-      alert("Informe CNPJ e Token do APP.");
+  if (!cnpj || !token) {
+    alert("Informe CNPJ e Token");
+    return;
+  }
+
+  const callback = "cb_login_" + Date.now();
+  window[callback] = function(resp) {
+    delete window[callback];
+    document.body.removeChild(script);
+
+    if (!resp || !resp.ok) {
+      alert("Login inválido");
       return;
     }
 
-    const callbackName = "cbLogin_" + Date.now();
+    localStorage.setItem("parceiro_nome", resp.nomeFantasia);
+    localStorage.setItem("parceiro_cnpj", resp.cnpj);
+    localStorage.setItem("token_app", token);
 
-    window[callbackName] = function (resp) {
-      delete window[callbackName];
-      document.body.removeChild(script);
+    window.location.href = "app-validar.html";
+  };
 
-      if (!resp || !resp.ok) {
-        alert(resp?.mensagem || "Login inválido");
-        return;
-      }
+  const script = document.createElement("script");
+  script.src =
+    "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
+ +
+    "?acao=loginApp" +
+    "&cnpj=" + encodeURIComponent(cnpj) +
+    "&token=" + encodeURIComponent(token) +
+    "&callback=" + callback;
 
-      // grava sessão
-      localStorage.setItem("app_parceiro_cnpj", resp.cnpj);
-      localStorage.setItem("app_parceiro_nome", resp.nomeFantasia);
-
-      // redireciona
-      location.href = "app-validar.html";
-    };
-
-    const script = document.createElement("script");
-    script.src =
-      API_URL +
-      "?acao=loginApp" +
-      "&cnpj=" + encodeURIComponent(cnpj) +
-      "&token=" + encodeURIComponent(token) +
-      "&callback=" + callbackName;
-
-    document.body.appendChild(script);
-  }
+  document.body.appendChild(script);
+}
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="

@@ -65,8 +65,8 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-const parceiroNome = sessionStorage.getItem("parceiroNome");
-const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+const parceiroNome = localStorage.getItem("parceiro_nome");
+const parceiroCNPJ = localStorage.getItem("parceiro_cnpj");
 
 if (!parceiroNome || !parceiroCNPJ) {
   document.body.innerHTML = `
