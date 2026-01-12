@@ -86,7 +86,9 @@ document.getElementById("dadosParceiro").innerHTML = `
   <strong>CNPJ:</strong> ${parceiroCNPJ || "-"}
 `;
 
-fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
+const token = sessionStorage.getItem("parceiroToken") || "";
+fetch(API_URL + "?relatorio=1&token=" + encodeURIComponent(token))
+
 
   .then(r => r.json())
   .then(d => {
@@ -115,7 +117,8 @@ if (d.periodo && d.periodo.inicio && d.periodo.fim) {
       <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
       <td>${r.grupo || "-"}</td>
       <td>${r.status}</td>
-      <td>${r["codigo-ero"] || r.codigo_ero || "-"}</td>
+      <td>${r.codigoERO || "-"}</td>
+
     </tr>
   `;
 });

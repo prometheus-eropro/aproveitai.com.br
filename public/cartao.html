@@ -385,7 +385,8 @@ function voltarPagina() {
 
 <script>
 function salvarPDF() {
-  const el = document.getElementById("cartao-digital");
+  window.print();
+}
   html2pdf().from(el).save("cartao-aproveitai.pdf");
 }
 </script>
