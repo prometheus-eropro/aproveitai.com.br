@@ -312,25 +312,14 @@ const parceiroNome  = localStorage.getItem("app_parceiro_nome");
 const parceiroCNPJ  = localStorage.getItem("app_parceiro_cnpj");
 const parceiroToken = localStorage.getItem("app_token");
 
-document.addEventListener("DOMContentLoaded", () => {
-
-  const parceiroNome  = sessionStorage.getItem("parceiroNome")  || localStorage.getItem("parceiroNome");
-  const parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ")  || localStorage.getItem("parceiroCNPJ");
-  const parceiroToken = sessionStorage.getItem("parceiroToken") || localStorage.getItem("parceiroToken");
-
-  if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
-    alert("Sessão expirada. Faça login novamente.");
-    window.location.href = "login-app.html";
-    return;
-  }
-
-  document.getElementById("pnomeFantasia").innerText = parceiroNome;
-  document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
-  document.getElementById("parceiroInfo").innerText =
-    "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
-
-});
-
+document.getElementById("pnomeFantasia").innerText = parceiroNome;
+document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
+document.getElementById("parceiroInfo").innerText =
+  "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
+if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
+  alert("Sessão expirada. Faça login novamente.");
+  window.location.href = "login-app.html";
+}
 document.getElementById("pnomeFantasia").innerText = parceiroNome;
 document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
 document.getElementById("parceiroInfo").innerText =

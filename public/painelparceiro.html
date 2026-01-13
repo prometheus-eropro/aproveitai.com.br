@@ -230,8 +230,14 @@ localStorage.setItem("parceiroToken", sessionStorage.getItem("parceiroToken"));
 
 
 async function validarCliente() {
-  const parceiroNome = sessionStorage.getItem("parceiroNome");
-  const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+  const parceiroNome =
+  sessionStorage.getItem("parceiroNome") ||
+  localStorage.getItem("parceiroNome");
+
+const parceiroCNPJ =
+  sessionStorage.getItem("parceiroCNPJ") ||
+  localStorage.getItem("parceiroCNPJ");
+
   const box = document.getElementById("resultadoCliente");
 
   if (!parceiroNome || !parceiroCNPJ) {
