@@ -177,7 +177,22 @@ localStorage.setItem("parceiroCNPJ", data.cnpj || "");
 localStorage.setItem("parceiroToken", token);
 
 // boas-vindas no topo
-document.getElementById("boasVindasParceiro").textContent = data.parceiro || "Parceiro";
+const nomeParceiroOK = (data.nome || data.parceiro || "").trim() || "Parceiro";
+
+document.getElementById("boasVindasParceiro").textContent = nomeParceiroOK;
+document.getElementById("nomeParceiro").textContent = nomeParceiroOK;
+
+// salva sessão (mantém logado)
+sessionStorage.setItem("parceiroLogado", "SIM");
+sessionStorage.setItem("parceiroNome", nomeParceiroOK);
+sessionStorage.setItem("parceiroCNPJ", (data.cnpj || data.cnpj_parceiro || parceiroCNPJ || "").trim());
+sessionStorage.setItem("parceiroToken", (token || "").trim());
+
+// espelha no localStorage para não “cair” ao fechar navegador
+localStorage.setItem("parceiroNome", sessionStorage.getItem("parceiroNome"));
+localStorage.setItem("parceiroCNPJ", sessionStorage.getItem("parceiroCNPJ"));
+localStorage.setItem("parceiroToken", sessionStorage.getItem("parceiroToken"));
+
 
   } catch (e) {
     console.error(e);

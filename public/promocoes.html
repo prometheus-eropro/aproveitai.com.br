@@ -95,6 +95,15 @@ fetch(API + "?aba=promocoes")
 <button class="btn-voltar-flutuante" onclick="voltarPagina()">
   ⬅️ Voltar
 </button>
+<script>
+function voltarPagina(){
+  if (document.referrer) {
+    history.back();
+  } else {
+    window.location.href = "/painelparceiro.html";
+  }
+}
+</script>
 
 </body>
 </html>

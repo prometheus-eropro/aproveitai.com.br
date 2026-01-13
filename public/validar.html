@@ -395,7 +395,8 @@ async function processarQR(texto) {
         }
 
         <div style="text-align:center;margin-top:18px">
-          <button onclick="resetarValidacao()">🔄 Validar outro cliente</button>
+<button onclick="validarOutroCliente()">🔄 Validar outro cliente</button>
+
         </div>
       </div>
     `;
@@ -414,12 +415,16 @@ function resetarValidacao() {
   validacaoEmAndamento = false;
   iniciarLeitor();
 }
-</script>
 
-<script>
 function voltarPagina() {
   window.history.back();
 }
+function validarOutroCliente(){
+  document.getElementById("cpf").value = "";
+  document.getElementById("idPublico").value = "";
+  document.getElementById("resultado").innerHTML = "";
+}
+
 </script>
 
 </body>
