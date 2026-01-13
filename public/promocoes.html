@@ -60,13 +60,7 @@ fetch(API + "?aba=promocoes")
       return;
     }
 
-    const resp = await fetch(url).then(r => r.json());
-const dados = resp.dados || [];
-
-dados.forEach(item => {
-  // código existente
-});
-
+    d.dados.forEach(p => {
       if (String(p.ativo).toLowerCase() !== "sim") return;
 
       const div = document.createElement("div");
@@ -84,7 +78,6 @@ dados.forEach(item => {
       "<p>Erro ao carregar promoções.</p>";
   });
 </script>
-
 <footer style="
   background:#dfffe0;
   padding:12px;

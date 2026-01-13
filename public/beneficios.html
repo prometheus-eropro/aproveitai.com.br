@@ -56,13 +56,7 @@ fetch(API + "?aba=beneficios")
       return;
     }
 
-const resp = await fetch(url).then(r => r.json());
-const dados = resp.dados || [];
-
-dados.forEach(item => {
-  // código existente
-});
-
+    d.dados.forEach(b => {
       if (String(b.ativo).toLowerCase() !== "sim") return;
 
       const div = document.createElement("div");
