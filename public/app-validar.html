@@ -308,10 +308,9 @@
    RESTAURA SESSÃO DO PARCEIRO
 ================================ */
 
-const parceiroNome  = sessionStorage.getItem("parceiroNome")  || localStorage.getItem("parceiroNome");
-const parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ")  || localStorage.getItem("parceiroCNPJ");
-const parceiroToken = sessionStorage.getItem("parceiroToken") || localStorage.getItem("parceiroToken");
-
+const parceiroNome  = localStorage.getItem("app_parceiro_nome");
+const parceiroCNPJ  = localStorage.getItem("app_parceiro_cnpj");
+const parceiroToken = localStorage.getItem("app_token");
 
 document.addEventListener("DOMContentLoaded", () => {
 
