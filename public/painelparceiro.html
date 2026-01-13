@@ -185,7 +185,11 @@ document.getElementById("nomeParceiro").textContent = nomeParceiroOK;
 // salva sessão (mantém logado)
 sessionStorage.setItem("parceiroLogado", "SIM");
 sessionStorage.setItem("parceiroNome", nomeParceiroOK);
-sessionStorage.setItem("parceiroCNPJ", (data.cnpj || data.cnpj_parceiro || parceiroCNPJ || "").trim());
+sessionStorage.setItem(
+  "parceiroCNPJ",
+  (data.cnpj || data.cnpj_parceiro || "").trim()
+);
+
 sessionStorage.setItem("parceiroToken", (token || "").trim());
 
 // espelha no localStorage para não “cair” ao fechar navegador

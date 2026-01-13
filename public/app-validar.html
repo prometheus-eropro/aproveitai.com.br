@@ -316,11 +316,12 @@ if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
   window.location.href = "login-app.html";
   throw new Error("Parceiro não logado");
 }
-if (!token || !cnpj || !parceiroNome) {
+if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
   alert("Acesso restrito a parceiros. Faça login novamente.");
-  window.location.href = "login-app.html"; // ✅ arquivo que EXISTE
-  throw new Error("Sem login parceiro");
+  window.location.href = "login-app.html";
+  throw new Error("Parceiro não logado");
 }
+
 document.getElementById("parceiroInfo").innerText =
   "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
 
@@ -331,52 +332,6 @@ document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
   function apenasNumeros(v){ return String(v||"").replace(/\D/g,""); }
 
   // ====== SESSÃO DO APP (token-app salvo no login) ======
-  function carregarSessao(){
-    // atenção: storage pode ser bloqueado em file://
-    let token = "";
-    let cnpj = "";
-    let nome = "";
-
-    try{
-      token = localStorage.getItem("app_token") || "";
-      cnpj  = localStorage.getItem("app_parceiro_cnpj") || "";
-      nome  = localStorage.getItem("app_parceiro_nome") || "";
-    }catch(e){
-      // fallback (se storage for bloqueado)
-      token = sessionStorage.getItem("app_token") || "";
-      cnpj  = sessionStorage.getItem("app_parceiro_cnpj") || "";
-      nome  = sessionStorage.getItem("app_parceiro_nome") || "";
-    }
-
-    if(!token || !cnpj){
-      // se não tem sessão, volta pro login
-      location.href = "login-app.html";
-      return null;
-    }
-
-    document.getElementById("parceiroInfo").innerText =
-      "Parceiro logado: " + (nome || "Parceiro") + " • CNPJ: " + cnpj;
-
-    document.getElementById("pnomeFantasia").innerText = (nome || "Parceiro");
-    document.getElementById("pCnpj").innerText = "CNPJ: " + cnpj;
-
-    return { token, cnpj, nome };
-  }
-
-  const sessao = carregarSessao();
-
-  document.getElementById("btnSair").addEventListener("click", ()=>{
-    try{
-      localStorage.removeItem("app_token");
-      localStorage.removeItem("app_parceiro_cnpj");
-      localStorage.removeItem("app_parceiro_nome");
-    }catch(e){}
-    sessionStorage.removeItem("app_token");
-    sessionStorage.removeItem("app_parceiro_cnpj");
-    sessionStorage.removeItem("app_parceiro_nome");
-    location.href = "login-app.html";
-  });
-
   // ===== JSONP helper =====
   function jsonp(url){
     return new Promise((resolve, reject) => {
@@ -398,7 +353,9 @@ document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
   }
 
   function mostrarResultado(data){
-    const el = document.getElementById("resultado");
+   
+const ativo = String(data.ativo || "").toUpperCase() === "SIM";
+ const el = document.getElementById("resultado");
 
     if(!data || data.erro){
       el.innerHTML = `
@@ -408,8 +365,6 @@ document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
       `;
       return;
     }
-
-<div><b>Status:</b> ${ativo ? "ATIVO" : "INATIVO"}</div>
 
 
     el.innerHTML = `
@@ -546,10 +501,11 @@ function mesclarCPF(cpf){
   document.getElementById("btnQr").addEventListener("click", abrirQr);
   document.getElementById("btnFecharQr").addEventListener("click", fecharQr);
 function sairApp() {
-  localStorage.removeItem("app_parceiro_nome");
-  localStorage.removeItem("app_parceiro_cnpj");
-  localStorage.removeItem("app_parceiro_token");
-  window.location.href = "login-app.html";
+localStorage.removeItem("app_token");
+localStorage.removeItem("app_parceiro_cnpj");
+localStorage.removeItem("app_parceiro_nome");
+window.location.href = "login-app.html";
+
 }
 
 </script>
