@@ -124,22 +124,19 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
    RESTAURA SESSÃO DO PARCEIRO
 ================================ */
 
-const parceiroNome  =
+const parceiroNome =
   sessionStorage.getItem("parceiroNome") ||
   localStorage.getItem("parceiroNome");
 
-const parceiroCNPJ  =
+const parceiroCNPJ =
   sessionStorage.getItem("parceiroCNPJ") ||
   localStorage.getItem("parceiroCNPJ");
 
-const parceiroToken =
-  sessionStorage.getItem("parceiroToken") ||
-  localStorage.getItem("parceiroToken");
-
-  const titulo = document.getElementById("tituloParceiro");
-  if (titulo) {
-    titulo.innerHTML = `Bem-vindo, <strong>${parceiroNome}</strong>`;
-  }
+if (!parceiroNome || !parceiroCNPJ) {
+  document.getElementById("mensagemSessao").innerText =
+    "❌ Sessão expirada. Faça login novamente.";
+  return;
+}
 
 function jsonp(url) {
   return new Promise((resolve, reject) => {
