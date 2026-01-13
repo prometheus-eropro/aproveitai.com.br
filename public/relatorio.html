@@ -64,75 +64,89 @@
 </table>
 
 <script>
+/* =========================
+   CONFIGURAÇÃO
+========================= */
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-const parceiroNome = sessionStorage.getItem("parceiroNome");
-const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
-const token = sessionStorage.getItem("parceiroToken");
 
-if (!parceiroNome || !parceiroCNPJ) {
+/* =========================
+   SESSÃO DO PARCEIRO (APP)
+========================= */
+const parceiroNome = localStorage.getItem("app_parceiro_nome");
+const parceiroCNPJ = localStorage.getItem("app_parceiro_cnpj");
+const token        = localStorage.getItem("app_token");
+
+/* =========================
+   PROTEÇÃO
+========================= */
+if (!parceiroNome || !parceiroCNPJ || !token) {
   document.body.innerHTML = `
     <div style="padding:40px;text-align:center">
       <h2>⚠️ Sessão não encontrada</h2>
-      <p>Volte ao painel do parceiro para acessar o relatório.</p>
-      <button onclick="window.location.href='painelparceiro.html'">
+      <p>Faça login novamente.</p>
+      <button onclick="location.href='login-app.html'">
         🔐 Ir para Login
       </button>
     </div>
   `;
-  throw new Error("Sessão ausente");
+  throw new Error("Sessão inválida");
 }
 
+/* =========================
+   DADOS DO PARCEIRO
+========================= */
 document.getElementById("dadosParceiro").innerHTML = `
-  <strong>Parceiro:</strong> ${parceiroNome || "-"}<br>
-  <strong>CNPJ:</strong> ${parceiroCNPJ || "-"}
+  <strong>Parceiro:</strong> ${parceiroNome}<br>
+  <strong>CNPJ:</strong> ${parceiroCNPJ}
 `;
-fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
 
-  .then(r => r.json())
-  .then(d => {
-    if (!d.ok) {
-      alert("Erro ao carregar relatório");
-      return;
-    }
-// 👉 Exibir período do relatório (se vier do GS)
-if (d.periodo && d.periodo.inicio && d.periodo.fim) {
-  const ini = new Date(d.periodo.inicio).toLocaleDateString("pt-BR");
-  const fim = new Date(d.periodo.fim).toLocaleDateString("pt-BR");
+/* =========================
+   CARREGAR RELATÓRIO
+========================= */
+fetch(
+  API_URL +
+  "?relatorio=1" +
+  "&cnpj=" + encodeURIComponent(parceiroCNPJ) +
+  "&token=" + encodeURIComponent(token)
+)
+.then(r => r.json())
+.then(resp => {
+  const tbody = document.getElementById("dados");
+  tbody.innerHTML = "";
 
-  document.getElementById("periodoRelatorio").innerText =
-    `Relatório de ${ini} a ${fim}`;
-} else {
-  document.getElementById("periodoRelatorio").innerText =
-    "Relatório padrão (últimos registros)";
-}
+  if (!resp.ok || !Array.isArray(resp.dados)) {
+    tbody.innerHTML =
+      "<tr><td colspan='4'>Nenhum registro encontrado.</td></tr>";
+    return;
+  }
 
-    const tbody = document.getElementById("dados");
-    tbody.innerHTML = "";
+  // período
+  const periodo = document.getElementById("periodoRelatorio");
+  periodo.innerText = "Relatório padrão (últimos registros)";
 
-    d.dados.forEach(r => {
-  tbody.innerHTML += `
-    <tr>
-      <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
-      <td>${r.grupo || "-"}</td>
-      <td>${r.status}</td>
-      <td>${r.codigoERO || "-"}</td>
-
-    </tr>
-  `;
+  resp.dados.forEach(linha => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${linha.data || "-"}</td>
+      <td>${linha.grupo || "-"}</td>
+      <td>${linha.status || "-"}</td>
+      <td>${linha.codigo_ero || linha.codigoERO || "-"}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+})
+.catch(() => {
+  document.getElementById("dados").innerHTML =
+    "<tr><td colspan='4'>Erro ao carregar relatório.</td></tr>";
 });
 
-  });
-function voltarPainel() {
-  window.location.href = "painelparceiro.html";
+/* =========================
+   VOLTAR
+========================= */
+function voltarPagina() {
+  history.back();
 }
-
 </script>
-<div style="margin:20px;text-align:center">
-  <button onclick="history.back()">
-    ⬅️ Voltar
-  </button>
-</div>
-
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
@@ -147,43 +161,5 @@ function voltarPainel() {
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
-<script>
-const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-<script>
-async function carregarRelatorio() {
-  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-  const token = sessionStorage.getItem("parceiroToken");
-  if (!token) {
-    alert("Sessão não encontrada");
-    location.href = "login.html";
-    return;
-  }
-
-  const url = API_URL + "?relatorio=1&token=" + encodeURIComponent(token);
-  const resp = await fetch(url).then(r => r.json());
-
-  const tbody = document.querySelector("tbody");
-  tbody.innerHTML = "";
-
-  if (!resp.dados || !Array.isArray(resp.dados)) {
-    tbody.innerHTML = "<tr><td colspan='4'>Nenhum dado</td></tr>";
-    return;
-  }
-
-  resp.dados.forEach(l => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-  <td>${item.data || item["Data"] || "-"}</td>
-  <td>${item.parceiro || "-"}</td>
-  <td>${item.status || "-"}</td>
-  <td>${item.codigoERO || item.codigo_ero || "-"}</td>
-`;
-
-
-document.addEventListener("DOMContentLoaded", carregarRelatorio);
-</script>
-
 </body>
 </html>

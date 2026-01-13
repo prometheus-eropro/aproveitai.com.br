@@ -107,7 +107,9 @@
 
     <!-- Sair -->
     <div style="margin-top:15px;text-align:center;">
-      <button onclick="location.reload()" class="vermelho">⬅️ Sair / Voltar</button>
+      <button onclick="sairParceiro()" class="vermelho">
+  ⬅️ Sair
+</button>
     </div>
   </div>
 </div>
@@ -307,6 +309,26 @@ if (idQR) {
     if (bv) bv.textContent = nome;
   }
 })();
+function sairParceiro() {
+  // limpa sessão da aba
+  sessionStorage.removeItem("parceiroLogado");
+  sessionStorage.removeItem("parceiroNome");
+  sessionStorage.removeItem("parceiroCNPJ");
+  sessionStorage.removeItem("parceiroToken");
+
+  // limpa persistência
+  localStorage.removeItem("parceiroLogado");
+  localStorage.removeItem("parceiroNome");
+  localStorage.removeItem("parceiroCNPJ");
+  localStorage.removeItem("parceiroToken");
+
+  // opcional: limpa tudo (se quiser radical)
+  // sessionStorage.clear();
+  // localStorage.clear();
+
+  // volta para tela inicial de login
+  location.href = "painelparceiro.html";
+}
 
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->

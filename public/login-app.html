@@ -207,14 +207,12 @@
     </div>
   </div>
 </main>
-
-
 <script>
 const API =
   "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 function loginApp() {
-  const cnpj = document.getElementById("cnpj").value.replace(/\D/g,"");
+  const cnpj  = document.getElementById("cnpj").value.replace(/\D/g,"");
   const token = document.getElementById("token").value.trim();
 
   if (!cnpj || !token) {
@@ -231,12 +229,12 @@ function loginApp() {
       return;
     }
 
-    // 🔴 PADRÃO ÚNICO DO APP
+    // ✅ PADRÃO ÚNICO
     localStorage.setItem("app_parceiro_nome", resp.parceiro);
     localStorage.setItem("app_parceiro_cnpj", resp.cnpj);
     localStorage.setItem("app_token", token);
 
-    window.location.href = "app-validar.html";
+    location.href = "app-validar.html";
   };
 
   const script = document.createElement("script");
