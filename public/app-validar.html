@@ -261,7 +261,10 @@
       <div id="resultado"></div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
-                <button class="btn btn-ghost" id="btnSair" type="button">🚪 Sair</button>
+                <button class="btn btn-ghost" id="btnSair" type="button" onclick="sairApp()">
+  🚪 Sair
+</button>
+
     </div>
 
       <div class="hint" style="margin-top:10px;">
@@ -309,10 +312,26 @@ const parceiroNome  = sessionStorage.getItem("parceiroNome")  || localStorage.ge
 const parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ")  || localStorage.getItem("parceiroCNPJ");
 const parceiroToken = sessionStorage.getItem("parceiroToken") || localStorage.getItem("parceiroToken");
 
-if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
-  alert("Sessão expirada. Faça login novamente.");
-  window.location.href = "login-app.html";
-}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const parceiroNome  = sessionStorage.getItem("parceiroNome")  || localStorage.getItem("parceiroNome");
+  const parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ")  || localStorage.getItem("parceiroCNPJ");
+  const parceiroToken = sessionStorage.getItem("parceiroToken") || localStorage.getItem("parceiroToken");
+
+  if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
+    alert("Sessão expirada. Faça login novamente.");
+    window.location.href = "login-app.html";
+    return;
+  }
+
+  document.getElementById("pnomeFantasia").innerText = parceiroNome;
+  document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
+  document.getElementById("parceiroInfo").innerText =
+    "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
+
+});
+
 document.getElementById("pnomeFantasia").innerText = parceiroNome;
 document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
 document.getElementById("parceiroInfo").innerText =
@@ -329,10 +348,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-/* ===============================
-   CONTROLE DE PARCEIRO LOGADO
-================================ *
 
 document.getElementById("parceiroInfo").innerText =
   "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
@@ -519,6 +534,7 @@ localStorage.removeItem("app_parceiro_nome");
 window.location.href = "login-app.html";
 
 }
+document.getElementById("btnSair").addEventListener("click", sairApp);
 
 </script>
 

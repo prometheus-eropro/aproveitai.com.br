@@ -136,13 +136,6 @@ const parceiroToken =
   sessionStorage.getItem("parceiroToken") ||
   localStorage.getItem("parceiroToken");
 
-if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
-  document.getElementById("mensagemSessao").innerHTML =
-    "❌ Sessão expirada. Faça login novamente.";
-} else {
-  document.getElementById("mensagemSessao").innerHTML =
-    "✅ Parceiro autenticado com sucesso.";
-
   const titulo = document.getElementById("tituloParceiro");
   if (titulo) {
     titulo.innerHTML = `Bem-vindo, <strong>${parceiroNome}</strong>`;
@@ -194,6 +187,8 @@ if (!data || data.erro) {
     document.getElementById("painelBox").style.display = "block";
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("nomeParceiro").textContent = data.parceiro;
+document.getElementById("mensagemSessao").innerHTML = "";
+
     // sessão (para a aba atual)
 sessionStorage.setItem("parceiroLogado", "SIM");
 sessionStorage.setItem("parceiroNome", data.parceiro || "");
