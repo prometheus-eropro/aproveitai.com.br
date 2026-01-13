@@ -302,6 +302,31 @@
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 /* ===============================
+   RESTAURA SESSÃO DO PARCEIRO
+================================ */
+
+const parceiroNome  = sessionStorage.getItem("parceiroNome")  || localStorage.getItem("parceiroNome");
+const parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ")  || localStorage.getItem("parceiroCNPJ");
+const parceiroToken = sessionStorage.getItem("parceiroToken") || localStorage.getItem("parceiroToken");
+
+if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
+  alert("Sessão expirada. Faça login novamente.");
+  window.location.href = "login-app.html";
+}
+
+// mostra na tela
+document.addEventListener("DOMContentLoaded", () => {
+  const box = document.getElementById("dadosParceiro");
+  if (box) {
+    box.innerHTML = `
+      <span class="tag">${parceiroNome}</span>
+      <span class="tag">CNPJ: ${parceiroCNPJ}</span>
+    `;
+  }
+});
+
+
+/* ===============================
    CONTROLE DE PARCEIRO LOGADO
 ================================ */
 // ===============================

@@ -119,6 +119,35 @@
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
+/* ===============================
+   RESTAURA SESSÃO DO PARCEIRO
+================================ */
+
+const parceiroNome  =
+  sessionStorage.getItem("parceiroNome") ||
+  localStorage.getItem("parceiroNome");
+
+const parceiroCNPJ  =
+  sessionStorage.getItem("parceiroCNPJ") ||
+  localStorage.getItem("parceiroCNPJ");
+
+const parceiroToken =
+  sessionStorage.getItem("parceiroToken") ||
+  localStorage.getItem("parceiroToken");
+
+if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
+  document.getElementById("mensagemSessao").innerHTML =
+    "❌ Sessão expirada. Faça login novamente.";
+} else {
+  document.getElementById("mensagemSessao").innerHTML =
+    "✅ Parceiro autenticado com sucesso.";
+
+  const titulo = document.getElementById("tituloParceiro");
+  if (titulo) {
+    titulo.innerHTML = `Bem-vindo, <strong>${parceiroNome}</strong>`;
+  }
+}
+
 function jsonp(url) {
   return new Promise((resolve, reject) => {
     const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
