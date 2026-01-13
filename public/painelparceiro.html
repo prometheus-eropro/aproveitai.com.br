@@ -106,7 +106,8 @@
 
     <!-- Sair -->
     <div style="margin-top:15px;text-align:center;">
-      <button onclick="location.reload()" class="vermelho">⬅️ Sair / Voltar</button>
+<button onclick="sairPainel()">🚪 Sair / Voltar</button>
+
     </div>
   </div>
 </div>
@@ -114,166 +115,74 @@
 <!-- ✅ SCRIPT -->
 <script>
 /* ===============================
-   CONFIG
+   SESSÃO DO PARCEIRO (ÚNICA)
 ================================ */
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-/* ===============================
-   SESSÃO
-================================ */
-let parceiroNome  = sessionStorage.getItem("parceiroNome");
-let parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ");
-let parceiroToken = sessionStorage.getItem("parceiroToken");
+const SESSION_KEY = "aproveitai_parceiro";
 
-/* ===============================
-   AUTO LOGIN
-================================ */
-if (parceiroNome && parceiroCNPJ && parceiroToken) {
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("painelBox").style.display = "block";
-  document.getElementById("nomeParceiro").innerText = parceiroNome;
-}
-
-/* ===============================
-   JSONP (CORS OK)
-================================ */
-function jsonp(url) {
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Date.now();
-    window[cb] = data => {
-      resolve(data);
-      delete window[cb];
-      script.remove();
-    };
-    const script = document.createElement("script");
-    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-    script.onerror = reject;
-    document.body.appendChild(script);
-  });
-}
-
-/* ===============================
-   LOGIN PARCEIRO
-================================ */
-function entrarParceiro() {
-  const cnpj  = document.getElementById("cnpj").value.trim();
+/* ---------- LOGIN ---------- */
+function loginParceiro() {
+  const cnpj = document.getElementById("cnpj").value.trim();
   const token = document.getElementById("token").value.trim();
+  const msg = document.getElementById("mensagem");
+
+  msg.innerHTML = "";
 
   if (!cnpj || !token) {
-    document.getElementById("erroLogin").innerText =
-      "Informe CNPJ e token.";
+    msg.innerHTML = "❌ Informe CNPJ e Token.";
     return;
   }
 
-  fetch(`${API_URL}?acao=loginApp&cnpj=${cnpj}&token=${token}`)
+  fetch(API_URL + "?acao=loginParceiro&cnpj=" + cnpj + "&token=" + token)
     .then(r => r.json())
-    .then(data => {
-      if (!data.ok) {
-        document.getElementById("erroLogin").innerText =
-          "❌ Login inválido ou parceiro inativo";
+    .then(d => {
+      if (!d.sucesso) {
+        msg.innerHTML = "❌ Login inválido ou parceiro inativo";
         return;
       }
 
-      sessionStorage.setItem("parceiroNome", data.parceiro);
-      sessionStorage.setItem("parceiroCNPJ", data.cnpj);
-      sessionStorage.setItem("parceiroToken", token);
+      /* salva sessão */
+      const sessao = {
+        cnpj: d.cnpj,
+        nome: d.nome,
+        ativo: d.ativo,
+        data: Date.now()
+      };
 
-      parceiroNome  = data.parceiro;
-      parceiroCNPJ  = data.cnpj;
-      parceiroToken = token;
-
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("painelBox").style.display = "block";
-      document.getElementById("nomeParceiro").innerText = parceiroNome;
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessao));
+      location.reload();
     })
     .catch(() => {
-      document.getElementById("erroLogin").innerText =
-        "Erro ao conectar com a API";
+      msg.innerHTML = "❌ Erro ao conectar com o servidor.";
     });
 }
 
-/* ===============================
-   VALIDAR CLIENTE
-================================ */
-async function validarCliente() {
-  const valor = document.getElementById("cpfCliente").value.trim();
-  const box = document.getElementById("resultadoCliente");
+/* ---------- CARREGAR PAINEL ---------- */
+function carregarPainel() {
+  const boxLogin = document.getElementById("box-login");
+  const boxPainel = document.getElementById("box-painel");
 
-  if (!parceiroToken) {
-    box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
-    return;
-  }
+  const sessao = sessionStorage.getItem(SESSION_KEY);
+  if (!sessao) return;
 
-  if (!valor) {
-    box.innerHTML = "Informe CPF ou ID Público.";
-    return;
-  }
+  const parceiro = JSON.parse(sessao);
 
-  box.innerHTML = "Consultando...";
+  boxLogin.style.display = "none";
+  boxPainel.style.display = "block";
 
-  const url = valor.startsWith("APV-")
-    ? `${API_URL}?idPublico=${valor}&modo=parceiro&token=${parceiroToken}`
-    : `${API_URL}?cpf=${valor.replace(/\D/g,"")}&modo=parceiro&token=${parceiroToken}`;
-
-  try {
-    const data = await jsonp(url);
-
-    if (!data.nome) {
-      box.innerHTML = "❌ Cliente não encontrado.";
-      return;
-    }
-
-    box.innerHTML = `
-      <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-        <p><b>Nome:</b> ${data.nome}</p>
-        <p><b>CPF:</b> ${data.cpf}</p>
-        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-        <p><b>Grupo:</b> ${data.grupo || "-"}</p>
-        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
-        ${
-          data.ativo === "SIM"
-            ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-            : `<p style="color:#c00">Cliente inativo</p>`
-        }
-        <button onclick="limparValidacao()">Validar outro cliente</button>
-      </div>
-    `;
-  } catch (e) {
-    box.innerHTML = "Erro na validação.";
-  }
+  document.getElementById("nomeParceiro").innerText = parceiro.nome;
 }
 
-/* ===============================
-   LIMPAR / VALIDAR OUTRO
-================================ */
-function limparValidacao() {
-  document.getElementById("cpfCliente").value = "";
-  document.getElementById("resultadoCliente").innerHTML = "";
+/* ---------- SAIR ---------- */
+function sairPainel() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.href = "painelparceiro.html";
 }
 
-/* ===============================
-   RELATÓRIO
-================================ */
-function verRelatorio() {
-  if (!parceiroNome) {
-    alert("Sessão expirada.");
-    return;
-  }
-  window.location.href =
-    `relatorio.html?relatorio=1&parceiro=${encodeURIComponent(parceiroNome)}`;
-}
-
-/* ===============================
-   QR AUTO
-================================ */
-const params = new URLSearchParams(window.location.search);
-const idQR = params.get("idPublico");
-if (idQR) {
-  document.getElementById("cpfCliente").value = idQR;
-  validarCliente();
-}
+/* ---------- AO ABRIR ---------- */
+document.addEventListener("DOMContentLoaded", carregarPainel);
 </script>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;

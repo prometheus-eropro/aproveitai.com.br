@@ -64,79 +64,50 @@
 </table>
 
 <script>
-/* =========================
-   CONFIGURAÇÃO
-========================= */
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const SESSION_KEY = "aproveitai_parceiro";
 
-/* =========================
-   SESSÃO DO PARCEIRO
-========================= */
-const parceiroNome = localStorage.getItem("parceiroNome");
-const parceiroCNPJ = localStorage.getItem("parceiroCNPJ");
-const tokenApp     = localStorage.getItem("parceiroToken");
+function carregarRelatorio() {
+  const sessao = sessionStorage.getItem(SESSION_KEY);
 
-/* =========================
-   PROTEÇÃO
-========================= */
-if (!parceiroNome || !parceiroCNPJ || !tokenApp) {
-  document.body.innerHTML = `
-    <div style="padding:40px;text-align:center">
-      <h2>⚠️ Sessão não encontrada</h2>
+  if (!sessao) {
+    document.body.innerHTML = `
+      <h2>⚠ Sessão não encontrada</h2>
       <p>Faça login novamente no painel do parceiro.</p>
       <button onclick="location.href='painelparceiro.html'">
-        🔐 Ir para o Painel
+        Ir para o Painel
       </button>
-    </div>
-  `;
-  throw new Error("Sessão inválida");
-}
-
-/* =========================
-   EXIBIR DADOS DO PARCEIRO
-========================= */
-document.getElementById("dadosParceiro").innerHTML = `
-  <strong>Parceiro:</strong> ${parceiroNome}<br>
-  <strong>CNPJ:</strong> ${parceiroCNPJ}
-`;
-
-/* =========================
-   CARREGAR RELATÓRIO
-========================= */
-fetch(
-  API_URL +
-  "?relatorio=1" +
-  "&parceiro=" + encodeURIComponent(parceiroNome)
-)
-.then(r => r.json())
-.then(resp => {
-  const tbody = document.getElementById("dados");
-  tbody.innerHTML = "";
-
-  if (!resp.ok || !Array.isArray(resp.dados) || resp.dados.length === 0) {
-    tbody.innerHTML =
-      "<tr><td colspan='4'>Nenhum registro encontrado.</td></tr>";
+    `;
     return;
   }
 
-  document.getElementById("periodoRelatorio").innerText =
-    "Relatório padrão (últimos registros)";
+  const parceiro = JSON.parse(sessao);
 
-  resp.dados.forEach(l => {
+  document.getElementById("parceiroNome").innerText = parceiro.nome;
+  document.getElementById("parceiroCnpj").innerText = parceiro.cnpj;
+
+  fetch(API_URL + "?acao=relatorio&cnpj=" + parceiro.cnpj)
+    .then(r => r.json())
+    .then(d => montarTabela(d))
+    .catch(() => alert("Erro ao carregar relatório"));
+}
+
+function montarTabela(dados) {
+  const tbody = document.getElementById("tbodyRelatorio");
+  tbody.innerHTML = "";
+
+  dados.forEach(l => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${l.data || "-"}</td>
-      <td>${l.grupo || "-"}</td>
-      <td>${l.status || "-"}</td>
-      <td>${l.codigoERO || "-"}</td>
+      <td>${l.data}</td>
+      <td>${l.grupo}</td>
+      <td>${l.status}</td>
+      <td>${l.codigo || "-"}</td>
     `;
     tbody.appendChild(tr);
   });
-})
-.catch(() => {
-  document.getElementById("dados").innerHTML =
-    "<tr><td colspan='4'>Erro ao carregar relatório.</td></tr>";
-});
+}
+
+document.addEventListener("DOMContentLoaded", carregarRelatorio);
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
