@@ -118,6 +118,11 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
 let parceiroNome  = sessionStorage.getItem("parceiroNome");
 let parceiroToken = sessionStorage.getItem("parceiroToken");
 let parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ");
+if (parceiroNome && parceiroCNPJ) {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("painelBox").style.display = "block";
+  document.getElementById("nomeParceiro").innerText = parceiroNome;
+}
 
 function jsonp(url) {
   return new Promise((resolve, reject) => {
@@ -152,23 +157,29 @@ function entrarParceiro() {
   fetch(url)
     .then(r => r.json())
     .then(data => {
-      if (!data.ok) {
-        document.getElementById("erroLogin").innerText = "❌ Login inválido ou parceiro inativo";
-        return;
-      }
+      if (!data.ok || !data.parceiro) {
+  document.getElementById("erroLogin").innerText =
+    "❌ Login inválido ou parceiro inativo";
+  return;
+}
 
-      sessionStorage.setItem("parceiroNome", data.parceiro);
-      sessionStorage.setItem("parceiroCNPJ", data.cnpj);
-      sessionStorage.setItem("parceiroToken", token);
+// salva sessão
+sessionStorage.setItem("parceiroNome", data.parceiro);
+sessionStorage.setItem("parceiroCNPJ", data.cnpj);
+sessionStorage.setItem("parceiroToken", token);
 
-      parceiroNome  = data.parceiro;
-      parceiroCNPJ  = data.cnpj;
-      parceiroToken = token;
+// variáveis globais
+parceiroNome  = data.parceiro;
+parceiroCNPJ  = data.cnpj;
+parceiroToken = token;
 
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("painelBox").style.display = "block";
+// alterna telas
+document.getElementById("loginBox").style.display = "none";
+document.getElementById("painelBox").style.display = "block";
 
-      document.getElementById("nomeParceiro").innerText = parceiroNome;
+// escreve nome corretamente
+document.getElementById("nomeParceiro").innerText =
+  parceiroNome || "Parceiro";
     })
     .catch(() => {
       document.getElementById("erroLogin").innerText = "❌ Erro ao conectar com a API";
