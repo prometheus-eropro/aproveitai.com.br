@@ -304,13 +304,14 @@
 /* ===============================
    CONTROLE DE PARCEIRO LOGADO
 ================================ */
-const parceiroNome = localStorage.getItem("parceiro_nome");
-const parceiroCNPJ = localStorage.getItem("parceiro_cnpj");
-const parceiroToken = localStorage.getItem("parceiro_token");
+const parceiroNome = sessionStorage.getItem("parceiroNome") || localStorage.getItem("parceiroNome");
+const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ") || localStorage.getItem("parceiroCNPJ");
+const parceiroToken = sessionStorage.getItem("parceiroToken") || localStorage.getItem("parceiroToken");
 
 if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
   alert("Acesso restrito a parceiros. Faça login novamente.");
-  window.location.href = "/login-parceiro.html";
+window.location.href = "/login-app.html";
+
 }
 
   function apenasNumeros(v){ return String(v||"").replace(/\D/g,""); }
@@ -440,13 +441,7 @@ if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
     params.set("acao", "validarApp");
 params.set("token-app", sessao.token);
 params.set("cnpj", sessao.cnpj);
-
-    // ====== (B) SEU MODO "SÓ token-app" (use se seu GS estiver assim) ======
-    params.set("acao", "validarApp");
-params.set("token-app", sessao.token);
-params.set("cnpj", sessao.cnpj);
 params.set("parceiro", sessao.nome);
-params.set("cnpj_parceiro", sessao.cnpj);
 params.set("origem", "validacao_parceiro");
 
     try{

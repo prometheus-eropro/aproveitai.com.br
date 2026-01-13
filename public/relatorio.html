@@ -72,9 +72,21 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
 /* =========================
    SESSÃO DO PARCEIRO (APP)
 ========================= */
-const parceiroNome = localStorage.getItem("app_parceiro_nome");
-const parceiroCNPJ = localStorage.getItem("app_parceiro_cnpj");
-const token        = localStorage.getItem("app_token");
+const parceiroNome =
+  sessionStorage.getItem("parceiroNome") ||
+  localStorage.getItem("parceiroNome");
+
+const parceiroCNPJ =
+  sessionStorage.getItem("parceiroCNPJ") ||
+  localStorage.getItem("parceiroCNPJ");
+
+const token =
+  sessionStorage.getItem("parceiroToken") ||
+  localStorage.getItem("parceiroToken");
+document.getElementById("dadosParceiro").innerHTML = `
+  <strong>Parceiro:</strong> ${parceiroNome}<br>
+  <strong>CNPJ:</strong> ${parceiroCNPJ}
+`;
 
 /* =========================
    PROTEÇÃO
