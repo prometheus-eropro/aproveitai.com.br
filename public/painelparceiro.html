@@ -115,9 +115,10 @@
 <script>
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-let parceiroNome = sessionStorage.getItem("parceiroNome") || "";
-let parceiroToken = sessionStorage.getItem("parceiroToken") || "";
-let parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ")  || "";
+let parceiroNome  = sessionStorage.getItem("parceiroNome");
+let parceiroToken = sessionStorage.getItem("parceiroToken");
+let parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ");
+";
 
 function jsonp(url) {
   return new Promise((resolve, reject) => {
@@ -153,7 +154,7 @@ function entrarParceiro() {
     .then(r => r.json())
     .then(data => {
       if (!data.ok) {
-        alert("Login inválido ou parceiro inativo");
+        document.getElementById("erroLogin").innerText = "❌ Login inválido ou parceiro inativo";
         return;
       }
 
@@ -165,19 +166,17 @@ function entrarParceiro() {
       parceiroCNPJ  = data.cnpj;
       parceiroToken = token;
 
-      document.getElementById("areaLogin").style.display = "none";
-      document.getElementById("areaPainel").style.display = "block";
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("painelBox").style.display = "block";
 
-      document.getElementById("parceiroLogadoNome").innerText = parceiroNome;
-      document.getElementById("parceiroLogadoCNPJ").innerText = parceiroCNPJ;
+      document.getElementById("nomeParceiro").innerText = parceiroNome;
     })
     .catch(() => {
-      alert("Erro ao conectar com o servidor");
+      document.getElementById("erroLogin").innerText = "❌ Erro ao conectar com a API";
     });
 }
-
 async function validarCliente() {
-  const parceiroNome = sessionStorage.getItem("parceiroNome");
+  
   const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
   const box = document.getElementById("resultadoCliente");
 
@@ -196,8 +195,6 @@ async function validarCliente() {
     return;
   }
 
-  const parceiroNome = sessionStorage.getItem("parceiroNome");
-const parceiroToken = sessionStorage.getItem("parceiroToken");
 
 const url = valor.startsWith("APV-")
   ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(parceiroToken)}&parceiro=${encodeURIComponent(parceiroNome)}`
