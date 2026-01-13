@@ -316,11 +316,6 @@ if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
   window.location.href = "login-app.html";
   throw new Error("Parceiro não logado");
 }
-if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
-  alert("Acesso restrito a parceiros. Faça login novamente.");
-  window.location.href = "login-app.html";
-  throw new Error("Parceiro não logado");
-}
 
 document.getElementById("parceiroInfo").innerText =
   "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
@@ -409,9 +404,9 @@ const ativo = String(data.ativo || "").toUpperCase() === "SIM";
 
     // ====== (A) MODO ATUAL ======
     params.set("acao", "validarApp");
-params.set("token-app", sessao.token);
-params.set("cnpj", sessao.cnpj);
-params.set("parceiro", sessao.nome);
+params.set("token-app", parceiroToken);
+params.set("cnpj", parceiroCNPJ);
+params.set("parceiro", parceiroNome);
 params.set("origem", "validacao_parceiro");
 
     try{
