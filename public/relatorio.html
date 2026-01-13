@@ -70,34 +70,22 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 /* =========================
-   SESSÃO DO PARCEIRO (APP)
+   SESSÃO DO PARCEIRO
 ========================= */
-const parceiroNome =
-  sessionStorage.getItem("parceiroNome") ||
-  localStorage.getItem("parceiroNome");
-
-const parceiroCNPJ =
-  sessionStorage.getItem("parceiroCNPJ") ||
-  localStorage.getItem("parceiroCNPJ");
-
-const token =
-  sessionStorage.getItem("parceiroToken") ||
-  localStorage.getItem("parceiroToken");
-document.getElementById("dadosParceiro").innerHTML = `
-  <strong>Parceiro:</strong> ${parceiroNome}<br>
-  <strong>CNPJ:</strong> ${parceiroCNPJ}
-`;
+const parceiroNome = localStorage.getItem("parceiroNome");
+const parceiroCNPJ = localStorage.getItem("parceiroCNPJ");
+const tokenApp     = localStorage.getItem("parceiroToken");
 
 /* =========================
    PROTEÇÃO
 ========================= */
-if (!parceiroNome || !parceiroCNPJ || !token) {
+if (!parceiroNome || !parceiroCNPJ || !tokenApp) {
   document.body.innerHTML = `
     <div style="padding:40px;text-align:center">
       <h2>⚠️ Sessão não encontrada</h2>
-      <p>Faça login novamente.</p>
-      <button onclick="location.href='login-app.html'">
-        🔐 Ir para Login
+      <p>Faça login novamente no painel do parceiro.</p>
+      <button onclick="location.href='painelparceiro.html'">
+        🔐 Ir para o Painel
       </button>
     </div>
   `;
@@ -105,7 +93,7 @@ if (!parceiroNome || !parceiroCNPJ || !token) {
 }
 
 /* =========================
-   DADOS DO PARCEIRO
+   EXIBIR DADOS DO PARCEIRO
 ========================= */
 document.getElementById("dadosParceiro").innerHTML = `
   <strong>Parceiro:</strong> ${parceiroNome}<br>
@@ -118,31 +106,29 @@ document.getElementById("dadosParceiro").innerHTML = `
 fetch(
   API_URL +
   "?relatorio=1" +
-  "&cnpj=" + encodeURIComponent(parceiroCNPJ) +
-  "&token=" + encodeURIComponent(token)
+  "&parceiro=" + encodeURIComponent(parceiroNome)
 )
 .then(r => r.json())
 .then(resp => {
   const tbody = document.getElementById("dados");
   tbody.innerHTML = "";
 
-  if (!resp.ok || !Array.isArray(resp.dados)) {
+  if (!resp.ok || !Array.isArray(resp.dados) || resp.dados.length === 0) {
     tbody.innerHTML =
       "<tr><td colspan='4'>Nenhum registro encontrado.</td></tr>";
     return;
   }
 
-  // período
-  const periodo = document.getElementById("periodoRelatorio");
-  periodo.innerText = "Relatório padrão (últimos registros)";
+  document.getElementById("periodoRelatorio").innerText =
+    "Relatório padrão (últimos registros)";
 
-  resp.dados.forEach(linha => {
+  resp.dados.forEach(l => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${linha.data || "-"}</td>
-      <td>${linha.grupo || "-"}</td>
-      <td>${linha.status || "-"}</td>
-      <td>${linha.codigo_ero || linha.codigoERO || "-"}</td>
+      <td>${l.data || "-"}</td>
+      <td>${l.grupo || "-"}</td>
+      <td>${l.status || "-"}</td>
+      <td>${l.codigoERO || "-"}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -151,14 +137,8 @@ fetch(
   document.getElementById("dados").innerHTML =
     "<tr><td colspan='4'>Erro ao carregar relatório.</td></tr>";
 });
-
-/* =========================
-   VOLTAR
-========================= */
-function voltarPagina() {
-  history.back();
-}
 </script>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
