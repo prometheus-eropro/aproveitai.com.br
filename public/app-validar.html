@@ -313,6 +313,10 @@ if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
   alert("Sessão expirada. Faça login novamente.");
   window.location.href = "login-app.html";
 }
+document.getElementById("pnomeFantasia").innerText = parceiroNome;
+document.getElementById("pCnpj").innerText = "CNPJ: " + parceiroCNPJ;
+document.getElementById("parceiroInfo").innerText =
+  "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
 
 // mostra na tela
 document.addEventListener("DOMContentLoaded", () => {
@@ -328,19 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ===============================
    CONTROLE DE PARCEIRO LOGADO
-================================ */
-// ===============================
-// SESSÃO DO PARCEIRO (PADRÃO ÚNICO)
-// ===============================
-const parceiroNome = localStorage.getItem("app_parceiro_nome");
-const parceiroCNPJ = localStorage.getItem("app_parceiro_cnpj");
-const parceiroToken = localStorage.getItem("app_token");
-
-if (!parceiroNome || !parceiroCNPJ || !parceiroToken) {
-  alert("Acesso restrito a parceiros. Faça login novamente.");
-  window.location.href = "login-app.html";
-  throw new Error("Parceiro não logado");
-}
+================================ *
 
 document.getElementById("parceiroInfo").innerText =
   "Parceiro logado: " + parceiroNome + " • CNPJ: " + parceiroCNPJ;
