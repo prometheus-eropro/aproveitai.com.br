@@ -102,111 +102,46 @@ function pegarCampo(obj, campos){
   return "";
 }
 
-async function consultar(){
-  const valor = document.getElementById("cpf").value.trim();
-  const box = document.getElementById("resultado");
+async function consultarCliente() {
+  const input = document.getElementById("cpf").value.trim();
+  const resultado = document.getElementById("resultado");
 
-  box.textContent = "Consultando...";
-
-  if(!valor){
-    box.textContent = "Informe seu CPF ou ID Público.";
+  if (!input) {
+    resultado.innerHTML = "Informe CPF ou ID.";
     return;
   }
 
-  const soDigitos = valor.replace(/\D/g,"");
-  const isCpf = soDigitos.length === 11;
+  const soNumeros = input.replace(/\D/g, "");
+  const param = soNumeros.length >= 11 ? "cpf" : "idPublico";
 
-  const url = isCpf
-    ? `${sheetURL}?cpf=${encodeURIComponent(soDigitos)}`
-    : `${sheetURL}?idPublico=${encodeURIComponent(valor)}`;
+  const url = `https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec?${param}=${encodeURIComponent(soNumeros)}`;
 
-  try{
-    const res = await fetch(url);
-    const achado = await res.json();
+  resultado.innerHTML = "Consultando...";
 
-    if(!achado || !achado.cpf){
-  box.textContent = "❌ Cliente não encontrado.";
-  return;
-}
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
 
-// SALVA O ID CORRETAMENTE
-ultimoIdPublico = achado.idPublico;
+    if (data.erro) {
+      resultado.innerHTML = "❌ Cliente não encontrado.";
+      return;
+    }
 
-    const ativo = isAtivo(achado.ativo);
-    const nascimento = pegarCampo(achado, ["nascimento","dataNascimento","data_nascimento"]);
-    const dataAceite = pegarCampo(achado, ["dataAceite","dataCadastro","cadastro","data_aceite"]);
-
-document.getElementById("bemVindoNome").innerHTML = ativo
-  ? `
-    <span style="color:#000">
-      Olá, <strong style="color:#0a7f2e">${achado.nome}</strong> 👋<br>
-      Que bom ter você por aqui! 😊<br>
-      Seu cadastro está <strong style="color:#0a7f2e">ATIVO</strong>.<br>
-      Aproveite agora todos os benefícios e promoções disponíveis.
-    </span>
-  `
-  : `
-    <span style="color:#000">
-      Olá, <strong style="color:#c62828">${achado.nome}</strong> 👋<br>
-      Seu cadastro está <strong style="color:#c62828">INATIVO</strong> no momento.<br>
-      Regularize seu acesso para voltar a aproveitar os benefícios do Cartão AproveitAI.
-    </span>
-  `;
-const btnBeneficios = document.getElementById("btnBeneficios");
-const btnCartao = document.getElementById("btnCartao");
-
-if (ativo) {
-  btnBeneficios.style.display = "block";
-  btnCartao.style.display = "block";
-} else {
-  btnBeneficios.style.display = "none";
-  btnCartao.style.display = "none";
-}
-
-    box.innerHTML = `
-
-      <div><b>Nome:</b> ${achado.nome}</div>
-      <div><b>CPF:</b> ${achado.cpf}</div>
-      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
-      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
-      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
-      <div><b>Celular:</b> ${achado.celular || "Não informado"}</div>
-      <div><b>Data de Nascimento:</b> ${nascimento ? formatarDataBR(nascimento) : "Não informado"}</div>
-      <div><b>Data de Cadastro/Aceite:</b> ${dataAceite ? formatarDataBR(dataAceite) : "-"}</div>
-      <div style="
-  margin-top:8px;
-  padding:6px 10px;
-  border-radius:8px;
-  font-weight:700;
-  color:#fff;
-  background:${ativo ? "#0a7f2e" : "#c62828"};
-">
-  Status: ${ativo ? "ATIVO" : "INATIVO"}
-</div>
-
-
-      ${!ativo ? `
-        <div style="
-          margin-top:12px;
-          padding:12px;
-          border-radius:10px;
-          background:#ffeaea;
-          border:2px solid #c62828;
-          color:#7a0000;
-          font-weight:600;
-          text-align:center;
-        ">
-          ⚠️ Seu cadastro está <b>INATIVO</b>.<br>
-          Procure o Cartão AproveitAI para regularizar
-          e volte a aproveitar os benefícios.
-        </div>
-      ` : ""}
+    resultado.innerHTML = `
+      <strong>${data.nome}</strong><br>
+      Status: <b style="color:${data.ativo === "SIM" ? "green" : "red"}">
+        ${data.ativo}
+      </b><br>
+      Grupo: ${data.grupo || "-"}<br>
+      Cidade: ${data.cidade || "-"}<br>
+      Código: ${data.codigoERO || "-"}
     `;
-  } catch(e){
+  } catch (e) {
+    resultado.innerHTML = "Erro ao consultar.";
     console.error(e);
-    box.textContent = "⚠️ Erro ao consultar.";
   }
 }
+
 function abrirBeneficios() {
   if (!ultimoIdPublico) {
     alert("ID do cliente não encontrado.");
