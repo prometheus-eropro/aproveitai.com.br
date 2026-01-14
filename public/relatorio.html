@@ -65,65 +65,72 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-const SESSION_KEY = "aproveitai_parceiro";
+const parceiroNome = sessionStorage.getItem("parceiroNome");
+const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
 
-document.addEventListener("DOMContentLoaded", carregarRelatorio);
-
-function carregarRelatorio() {
-  const sessao = sessionStorage.getItem(SESSION_KEY);
-
-  if (!sessao) {
-    document.body.innerHTML = `
-      <h2>⚠ Sessão não encontrada</h2>
-      <p>Faça login novamente no painel do parceiro.</p>
-      <button onclick="location.href='painelparceiro.html'">
-        Ir para o Painel
+if (!parceiroNome || !parceiroCNPJ) {
+  document.body.innerHTML = `
+    <div style="padding:40px;text-align:center">
+      <h2>⚠️ Sessão não encontrada</h2>
+      <p>Volte ao painel do parceiro para acessar o relatório.</p>
+      <button onclick="window.location.href='painelparceiro.html'">
+        🔐 Ir para Login
       </button>
-    `;
-    return;
-  }
-
-  const parceiro = JSON.parse(sessao);
-
-  document.getElementById("dadosParceiro").innerHTML = `
-    <b>Parceiro:</b> ${parceiro.nome}<br>
-    <b>CNPJ:</b> ${parceiro.cnpj}
+    </div>
   `;
-
-  fetch(
-    API_URL +
-    "?acao=relatorio" +
-    "&cnpj=" + encodeURIComponent(parceiro.cnpj)
-  )
-    .then(r => r.json())
-    .then(d => montarTabela(d))
-    .catch(() => alert("Erro ao carregar relatório"));
+  throw new Error("Sessão ausente");
 }
-function montarTabela(dados) {
-  const tbody = document.getElementById("dados");
-  tbody.innerHTML = "";
 
-  const lista = dados.registros || [];
+document.getElementById("dadosParceiro").innerHTML = `
+  <strong>Parceiro:</strong> ${parceiroNome || "-"}<br>
+  <strong>CNPJ:</strong> ${parceiroCNPJ || "-"}
+`;
 
-  if (lista.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro encontrado</td></tr>";
-    return;
-  }
+fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
 
-  lista.forEach(item => {
-    const tr = document.createElement("tr");
+  .then(r => r.json())
+  .then(d => {
+    if (!d.ok) {
+      alert("Erro ao carregar relatório");
+      return;
+    }
+// 👉 Exibir período do relatório (se vier do GS)
+if (d.periodo && d.periodo.inicio && d.periodo.fim) {
+  const ini = new Date(d.periodo.inicio).toLocaleDateString("pt-BR");
+  const fim = new Date(d.periodo.fim).toLocaleDateString("pt-BR");
 
-    tr.innerHTML = `
-      <td>${new Date(item.data).toLocaleString("pt-BR")}</td>
-      <td>${item.grupo || "-"}</td>
-      <td>${item.status || "-"}</td>
-      <td>${item.codigoERO || "-"}</td>
-    `;
+  document.getElementById("periodoRelatorio").innerText =
+    `Relatório de ${ini} a ${fim}`;
+} else {
+  document.getElementById("periodoRelatorio").innerText =
+    "Relatório padrão (últimos registros)";
+}
 
-    tbody.appendChild(tr);
+    const tbody = document.getElementById("dados");
+    tbody.innerHTML = "";
+
+    d.dados.forEach(r => {
+  tbody.innerHTML += `
+    <tr>
+      <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
+      <td>${r.grupo || "-"}</td>
+      <td>${r.status}</td>
+      <td>${r["codigo-ero"] || r.codigo_ero || "-"}</td>
+    </tr>
+  `;
+});
+
   });
+function voltarPainel() {
+  window.location.href = "painelparceiro.html";
 }
+
 </script>
+<div style="margin:20px;text-align:center">
+  <button onclick="history.back()">
+    ⬅️ Voltar
+  </button>
+</div>
 
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
@@ -139,5 +146,6 @@ function montarTabela(dados) {
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
+
 </body>
 </html>

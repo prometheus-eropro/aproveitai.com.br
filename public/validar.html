@@ -260,9 +260,6 @@ if ("serviceWorker" in navigator) {
 <main id="conteudo">
 
 <!-- conteúdo dinâmico -->
-<div style="text-align:center; margin-top:25px;">
-  <button onclick="voltarPagina()">⬅️ Voltar</button>
-</div>
 
 </main>
 
@@ -280,20 +277,13 @@ if ("serviceWorker" in navigator) {
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
-const parceiroNome = localStorage.getItem("parceiro_nome");
-const parceiroCNPJ = localStorage.getItem("parceiro_cnpj");
-
-if (!parceiroNome || !parceiroCNPJ) {
-  alert("Sessão não encontrada. Faça login novamente.");
-  window.location.href = "painelparceiro.html";
-}
-
-let leituraBloqueada = false;
-
 const conteudo = document.getElementById("conteudo");
 const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
@@ -344,19 +334,7 @@ if (idPublicoInicial) {
   processarQR(idPublicoInicial);
 }
 
-
-let validacaoEmAndamento = false;
-
 async function processarQR(texto) {
-if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
-  alert("Sessão expirada. Faça login novamente.");
-  location.href = "painelparceiro.html";
-  return;
-}
-  
-if (validacaoEmAndamento) return;
-  validacaoEmAndamento = true;
-
   if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
     alert("Sessão expirada.");
     location.href = "painelparceiro.html";
@@ -375,29 +353,19 @@ if (validacaoEmAndamento) return;
 
   if (!id.startsWith("APV-")) {
     alert("QR Code inválido");
-    validacaoEmAndamento = false;
     return;
   }
 
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-  const parceiro = JSON.parse(
-  sessionStorage.getItem("aproveitai_parceiro")
-);
+  const url =
+    API_URL +
+    "?idPublico=" + encodeURIComponent(id) +
+    "&modo=parceiro" +
+    "&token=" + sessionStorage.getItem("parceiroToken") +
+    "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
+    "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
 
-if (!parceiro || !parceiro.token) {
-  alert("Sessão expirada. Faça login novamente.");
-  location.href = "painelparceiro.html";
-  return;
-}
-
-const url =
-  API_URL +
-  "?idPublico=" + encodeURIComponent(id) +
-  "&modo=parceiro" +
-  "&token=" + encodeURIComponent(parceiro.token) +
-  "&parceiroNome=" + encodeURIComponent(parceiro.nome) +
-  "&parceiroCNPJ=" + encodeURIComponent(parceiro.cnpj);
   try {
     const data = await fetch(url).then(r => r.json());
 
@@ -406,18 +374,24 @@ const url =
         <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
 
         <p><b>Nome:</b> ${data.nome || "-"}</p>
-        <p><b>CPF:</b> ${data.cpf || "-"}</p>
+
+        <p><b>CPF:</b> ${
+          data.cpf
+            ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
+            : "-"
+        }</p>
+
         <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
         <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-        <p><b>Grupo:</b> ${data.grupo || "-"}</p>
-        <p><b>Cliente desde:</b> ${formatarDataBR(data.dataAceite || data.dataCadastro)}</p>
+        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
 
-        <p><b>Status:</b>
-  <strong style="color:${data.ativo === "SIM" ? "#198754" : "#dc3545"}">
-    ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}
-  </strong>
-</p>
+        <p><b>Cliente desde:</b> ${
+          data.dataCadastro
+            ? new Date(data.dataCadastro).toLocaleString("pt-BR")
+            : "-"
+        }</p>
 
+        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
         ${
           data.ativo === "SIM"
@@ -426,43 +400,24 @@ const url =
         }
 
         <div style="text-align:center;margin-top:18px">
-<button onclick="validarOutroCliente()">🔄 Validar outro cliente</button>
-
+          <button onclick="iniciarLeitor()">🔄 Validar outro cliente</button>
         </div>
       </div>
     `;
+
   } catch (err) {
+    console.error(err);
     resultado.innerHTML = `
       <div class="status-box inativo">
         <h3>⚠️ Erro ao validar</h3>
+        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
       </div>
     `;
   }
 
   await pararLeitorSilencioso();
+  scannerAtivo = false;
 }
-
-function resetarValidacao() {
-  validacaoEmAndamento = false;
-  iniciarLeitor();
-}
-
-function voltarPagina() {
-  window.history.back();
-}
-function validarOutroCliente(){
-  validacaoEmAndamento = false;
-  document.getElementById("resultado").innerHTML = "";
-  iniciarLeitor();
-}
-function formatarDataBR(valor){
-  if(!valor) return "-";
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR");
-}
-
 </script>
-
 </body>
 </html>

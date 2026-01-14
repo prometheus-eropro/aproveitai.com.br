@@ -174,44 +174,9 @@ body{
   body{background:#fff;}
   .botoes,.site-header,.footer{display:none;}
 }
-#cartao-digital{
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.cartao-container{
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.cartao-esquerda,
-.cartao-direita{
-  width: 100%;
-}
-
-@media (min-width: 768px){
-  .cartao-esquerda,
-  .cartao-direita{
-    width: 50%;
-  }
-}
-
-img, canvas{
-  max-width: 100%;
-  height: auto;
-}
-#cartao {
-  max-width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  #cartao {
-    transform: scale(0.95);
-    transform-origin: top center;
-  }
-}
+<button class="btn-voltar-flutuante" onclick="voltarPagina()">
+  ⬅️ Voltar
+</button>
 
 </style>
 </head>
@@ -257,7 +222,7 @@ img, canvas{
       <p><b>ID Público:</b> <span id="idPublico">-</span></p>
       <p><b>Grupo:</b> <span id="grupo">-</span></p>
       <p><b>Cidade:</b> <span id="cidade">-</span></p>
-      <p><b>Cadastro:</b> <span id="dataAceite">-</span></p>
+      <p><b>Cadastro:</b> <span id="cadastro">-</span></p>
     </div>
   </div>
 
@@ -278,13 +243,12 @@ img, canvas{
   </div>
 
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <!-- BOTÕES -->
 <div class="botoes">
-<button onclick="salvarPDF()">💾 Salvar cartão em PDF</button>
-<button onclick="window.print()">🖨️ Imprimir cartão</button>
-<button class="voltar" onclick="history.back()">⬅ Voltar</button>
+ <button onclick="salvarCartao()">💾 Salvar no celular</button>
+ <button onclick="window.print()">🖨️ Imprimir cartão</button>
+  <button class="voltar" onclick="history.back()">⬅ Voltar</button>
 </div>
 
 <!-- ✅ RODAPÉ PADRÃO -->
@@ -322,20 +286,10 @@ function jsonp(url){
   });
 }
 
-function formatarDataBR(valor){
-  if(!valor) return "-";
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR");
-}
-
 (async () => {
-  if(!id){
-    alert("ID do cartão não informado.");
-    return;
-  }
+  if(!id){ alert("ID do cartão não informado."); return; }
 
-  try {
+  try{
     const d = await jsonp(API + "?idPublico=" + encodeURIComponent(id));
 
     if(d.erro){
@@ -343,56 +297,83 @@ function formatarDataBR(valor){
       return;
     }
 
-    // === DADOS DO CLIENTE ===
     document.getElementById("nome").textContent = d.nome || "-";
     document.getElementById("cpf").textContent = d.cpf || "-";
     document.getElementById("idPublico").textContent = d.idPublico || id;
     document.getElementById("grupo").textContent = d.grupo || "-";
     document.getElementById("cidade").textContent = d.cidade || "-";
-    document.getElementById("dataAceite").textContent =
-  formatarDataBR(d.dataCadastro || d.clienteDesde);
+    document.getElementById("cadastro").textContent = d.dataCadastro || "-";
 
+    // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
+   // ===============================
+// QR CODE (BLOCO ÚNICO E SEGURO)
+// ===============================
+const idPublicoFinal = (d.idPublico || id).trim();
 
-    // === QR CODE ===
-    const idPublicoFinal = (d.idPublico || id).trim();
+const urlValidar =
+  "https://aproveitai.com.br/validar.html?idPublico=" +
+  encodeURIComponent(idPublicoFinal);
 
-    const urlValidar =
-      "https://aproveitai.com.br/validar.html?idPublico=" +
-      encodeURIComponent(idPublicoFinal);
+let qrFinal;
 
-    let qrFinal;
+if (d.qrBase64) {
+  qrFinal = "data:image/png;base64," + d.qrBase64;
+} else if (d.qrURL) {
+  qrFinal = d.qrURL;
+} else {
+  qrFinal =
+    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+    encodeURIComponent(urlValidar);
+}
 
-    if (d.qrBase64) {
-      qrFinal = "data:image/png;base64," + d.qrBase64;
-    } else if (d.qrURL) {
-      qrFinal = d.qrURL;
-    } else {
-      qrFinal =
-        "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-        encodeURIComponent(urlValidar);
-    }
-
-    document.getElementById("qrCode").src = qrFinal;
-
-  } catch (err) {
+document.getElementById("qrCode").src = qrFinal;
+  }catch(err){
     console.error(err);
     alert("Erro ao carregar dados do cartão.");
   }
 })();
-function salvarPDF() {
-  const elemento = document.getElementById("cartao-print");
+</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-  const opt = {
-    margin: 5,
-    filename: "cartao-aproveitai.pdf",
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
-  };
+<script>
+function salvarCartao() {
+  const cartao = document.getElementById("cartao-print");
+  const qr = document.getElementById("qrCode");
 
-  html2pdf().set(opt).from(elemento).save();
+  // garante que o QR já carregou
+  if (!qr.complete) {
+    alert("Aguarde o QR Code carregar e tente novamente.");
+    return;
+  }
+
+  html2canvas(cartao, {
+    scale: 2,
+    useCORS: true
+  }).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "cartao-aproveitai.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
+
+function formatarDataBR(iso){
+  if(!iso) return "-";
+  const d = new Date(iso);
+  return d.toLocaleDateString("pt-BR") + " " +
+         d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+}
+<script>
+function voltarPagina() {
+  history.back();
+}
+</script>
+<script>
+function voltarPagina() {
+  history.back();
 }
 </script>
 
+</script>
 </body>
 </html>

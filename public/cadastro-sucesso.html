@@ -43,79 +43,47 @@
   <p style="margin-top:15px">
     ⚠️ Caso seu CPF já possua cadastro ativo, ele será identificado automaticamente.
   </p>
-<button id="btnZap" onclick="abrirWhatsApp()"
-  style="
-    margin-top:20px;
-    padding:14px 22px;
-    font-size:16px;
-    border:none;
-    border-radius:8px;
-    background:#25d366;
-    color:#fff;
-    cursor:pointer;
-    width:100%;
-  ">
-  📲 Click aqui para avisar administrador no WhatsApp
-</button>
+
+  <button
+    onclick="abrirWhatsApp()"
+    style="
+      margin-top:20px;
+      padding:14px 22px;
+      font-size:16px;
+      border:none;
+      border-radius:8px;
+      background:#25d366;
+      color:#fff;
+      cursor:pointer;
+    "
+  >
+    📲 Click aqui para avisar administrador no WhatsApp
+  </button>
+
 </div>
 
-<button onclick="voltarPagina()"
-  style="
-    margin-top:30px;
-    padding:12px 20px;
-    font-size:15px;
-    border:none;
-    border-radius:8px;
-    background:#0a7a2a;
-    color:#fff;
-    cursor:pointer;
-    width:100%;
-  ">
-  🔙 Voltar
-</button>
-
 <script>
-(function () {
+function abrirWhatsApp() {
+  const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cliente";
+  const telefoneAdmin = "5528999692303";
 
-  // ✅ TELEFONE DO ADMIN (55 + DDD + número) — SOMENTE NÚMEROS
-  const TELEFONE_ADMIN = "5528999692303"; // 28 99969-2303
+  const mensagem = `📥 Novo cadastro no Cartão AproveitAI
 
-  function somenteDigitos(s) {
-    return String(s || "").replace(/\D/g, "");
-  }
+👤 Nome: ${nome}
+⏳ Status: Aguardando liberação no sistema.`;
 
-  function getNomeCadastro() {
-    // vem do cadastro.html
-    const nome = localStorage.getItem("ultimoCadastroNome");
-    return nome ? nome.trim() : "Novo cadastro";
-  }
+  window.open(
+    "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem),
+    "_blank"
+  );
+}
+<button class="btn-voltar-flutuante" onclick="voltarPagina()">
+  ⬅️ Voltar
+</button>
+<script>
+function voltarPagina() {
+  history.back();
+}
+</script>
 
-  function montarMensagem() {
-    const nome = getNomeCadastro();
-    return (
-      "📌 Novo cadastro recebido no Cartão AproveitAI\n\n" +
-      "👤 Nome: " + nome + "\n" +
-      "🕒 Status: Aguardando liberação no sistema"
-    );
-  }
-
-  window.abrirWhatsApp = function () {
-    const fone = somenteDigitos(TELEFONE_ADMIN);
-
-    if (fone.length < 12 || fone.length > 15) {
-      alert("Telefone do administrador inválido.");
-      return;
-    }
-
-    const msg = montarMensagem();
-    const url = "https://wa.me/" + fone + "?text=" + encodeURIComponent(msg);
-
-    window.open(url, "_blank");
-  };
-
-  window.voltarPagina = function () {
-    window.location.href = "cadastro.html";
-  };
-
-})();
 </script>

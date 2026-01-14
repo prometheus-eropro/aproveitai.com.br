@@ -177,7 +177,7 @@ function renderizar(lista) {
     const cidade = p.cidade || "-";
     const ramo = p.ramo || "-";
     const desconto = p.tipoDesconto || "";
-    const whatsapp = String(p.whatsapp || "").replace(/\D/g, "");
+    const whatsapp = (p.whatsapp || "").replace(/\D/g, "");
     const instagram = p.instagram || "";
     const site = p.site || "";
     const email = p.email || "";
@@ -224,31 +224,23 @@ function filtrar() {
 /* =========================
    CARREGAR PARCEIROS
 ========================= */
-
 function carregarParceiros() {
-  const callbackName = "cbParceiros";
-
-  window[callbackName] = function (res) {
-  if (!res || !res.dados) {
-    parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
-    return;
-  }
-
-  parceiros = res.dados;
-  preencherFiltros();
-  renderizar(parceiros);
-};
-
-  const script = document.createElement("script");
-  script.src = API_URL + "?aba=parceiros&callback=" + callbackName;
-  script.onerror = () => {
-    parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
-  };
-
-  document.body.appendChild(script);
+  fetch(API_URL + "?aba=parceiros")
+    .then(r => r.json())
+    .then(res => {
+      if (!res.ok) throw "Erro API";
+      parceiros = res.dados || [];
+      preencherFiltros();
+      renderizar(parceiros);
+    })
+    .catch(() => {
+      parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
+    });
 }
 
-
+/* =========================
+   INIT
+========================= */
 document.addEventListener("DOMContentLoaded", () => {
   carregarParceiros();
 });

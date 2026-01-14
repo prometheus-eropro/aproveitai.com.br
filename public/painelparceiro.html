@@ -113,11 +113,9 @@
 
 <!-- ✅ SCRIPT -->
 <script>
+
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-/* =====================
-   JSONP
-===================== */
 function jsonp(url) {
   return new Promise((resolve, reject) => {
     const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
@@ -137,10 +135,8 @@ function jsonp(url) {
   });
 }
 
-/* =====================
-   LOGIN PARCEIRO
-===================== */
-async function entrarParceiro() {
+ async function entrarParceiro() {
+
   const cnpj = document.getElementById("cnpj").value.trim();
   const token = document.getElementById("token").value.trim();
   const box = document.getElementById("resultado");
@@ -153,25 +149,25 @@ async function entrarParceiro() {
   }
 
   try {
-    const url = `${API_URL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
-    const data = await jsonp(url);
+   const url = `${API_URL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
+const data = await jsonp(url);
 
-    if (!data || data.erro) {
-      box.innerHTML = "❌ Acesso negado.";
-      return;
-    }
+if (!data || data.erro) {
+  box.innerHTML = "❌ Acesso negado.";
+  return;
+}
 
-    // salva sessão
-    sessionStorage.setItem("parceiroNome", data.nome);
-    sessionStorage.setItem("parceiroCNPJ", cnpj);
-    sessionStorage.setItem("parceiroToken", token);
-
-    // mostra painel
-    document.getElementById("nomeParceiro").innerText = data.nome;
-    document.getElementById("loginBox").style.display = "none";
+    box.innerHTML = `<div class="status-box"><h3>${data.parceiro}</h3><p><b>Status:</b> ATIVO</p></div>`;
     document.getElementById("painelBox").style.display = "block";
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("nomeParceiro").textContent = data.parceiro;
+    sessionStorage.setItem("parceiroLogado", "SIM");
+sessionStorage.setItem("parceiroToken", token);
+sessionStorage.setItem("parceiroNome", data.parceiro);
+sessionStorage.setItem("parceiroCNPJ", data.cnpj);
 
-    box.innerHTML = "✔️ Acesso autorizado.";
+
+
 
   } catch (e) {
     console.error(e);
@@ -179,21 +175,20 @@ async function entrarParceiro() {
   }
 }
 
-/* =====================
-   VALIDAR CLIENTE
-===================== */
+
 async function validarCliente() {
   const parceiroNome = sessionStorage.getItem("parceiroNome");
   const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
-  const token = sessionStorage.getItem("parceiroToken");
   const box = document.getElementById("resultadoCliente");
 
-  if (!parceiroNome || !parceiroCNPJ || !token) {
+  if (!parceiroNome || !parceiroCNPJ) {
     box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
     return;
   }
 
   const valor = document.getElementById("cpfCliente").value.trim();
+  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
+
   box.innerHTML = "Consultando...";
 
   if (!valor) {
@@ -201,12 +196,9 @@ async function validarCliente() {
     return;
   }
 
-  const soDigitos = valor.replace(/\D/g, "");
-  const isCpf = soDigitos.length === 11;
-
-  const url = isCpf
-    ? `${API_URL}?cpf=${encodeURIComponent(soDigitos)}&modo=parceiro&token=${encodeURIComponent(token)}`
-    : `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(token)}`;
+  const url = valor.startsWith("APV-")
+    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`
+    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
 
   try {
     const data = await jsonp(url);
@@ -216,55 +208,37 @@ async function validarCliente() {
       return;
     }
 
-    const ativo = data.ativo === "SIM";
-    const dataCadastro = data.dataCadastro ? formatarData(data.dataCadastro) : "-";
+    const dataCadastro = data.dataCadastro
+      ? formatarData(data.dataCadastro)
+      : "-";
+
     const cpfMascarado = data.cpf
       ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
       : "-";
 
-    const boxDetalhe = document.getElementById("boxResultado");
-    boxDetalhe.style.display = "block";
-    boxDetalhe.style.borderColor = ativo ? "#198754" : "#dc3545";
-    boxDetalhe.style.background = ativo ? "#f6fff8" : "#fff5f5";
+    box.innerHTML = `
+      <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+        <p><b>Nome:</b> ${data.nome}</p>
+        <p><b>CPF:</b> ${cpfMascarado}</p>
+        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
+        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
+        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
+        <p><b>Cliente desde:</b> ${dataCadastro}</p>
+        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
 
-    boxDetalhe.innerHTML = `
-      <h3 style="color:${ativo ? "#198754" : "#dc3545"};margin-top:0">
-        ${ativo ? "✅ CLIENTE ATIVO" : "⛔ CLIENTE INATIVO"}
-      </h3>
-
-      <p><b>Nome:</b> ${data.nome}</p>
-      <p><b>CPF:</b> ${cpfMascarado}</p>
-      <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-      <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-      <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-      <p><b>Cliente desde:</b> ${dataCadastro}</p>
-
-      <p style="font-weight:800;color:${ativo ? "#198754" : "#dc3545"}">
-        Status: ${ativo ? "ATIVO" : "INATIVO"}
-      </p>
-
-      ${
-        ativo
-          ? `<div style="margin-top:10px;padding:10px;background:#e9ffe9;border-radius:8px">
-               ✔ <b>Autorizado para desconto</b><br>
-               Código: <b>${data.codigoERO}</b>
-             </div>`
-          : `<div style="margin-top:10px;padding:10px;background:#ffecec;border-radius:8px">
-               ⚠ Cliente inativo.<br>
-               Oriente o cliente a ativar o cadastro para aproveitar os benefícios.
-             </div>`
-      }
+        ${
+          data.ativo === "SIM"
+            ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
+            : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
+        }
+      </div>
     `;
-
   } catch (e) {
     console.error(e);
     box.innerHTML = "❌ Erro ao validar cliente.";
   }
 }
 
-/* =====================
-   UTIL
-===================== */
 function formatarData(valor) {
   const d = new Date(valor);
   if (isNaN(d)) return valor;
@@ -272,9 +246,34 @@ function formatarData(valor) {
          d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
-/* =====================
-   QR AUTO
-===================== */
+
+function verRelatorio() {
+  const parceiroObj = JSON.parse(localStorage.getItem("parceiro"));
+  if (!parceiroObj) {
+    alert("Sessão expirada. Faça login novamente.");
+    return;
+  }
+
+  const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiroObj.nome)}`;
+  window.location.href = "relatorio.html";
+
+}
+async function carregarRelatorio() {
+  const parceiro = document.getElementById("nomeParceiro").textContent || "total";
+
+  const url = `${API_URL}&relatorio=1&parceiro=${encodeURIComponent(parceiro)}`;
+
+  const resp = await fetch(url);
+  const data = await resp.json();
+
+  if (!data.ok) {
+    alert("Erro ao carregar relatório");
+    return;
+  }
+
+  montarTabelaRelatorio(data.registros);
+}
+// 🔁 Se veio de QR Code, valida automaticamente
 const params = new URLSearchParams(window.location.search);
 const idQR = params.get("idPublico");
 
@@ -282,8 +281,8 @@ if (idQR) {
   document.getElementById("cpfCliente").value = idQR;
   validarCliente();
 }
-</script>
 
+</script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
