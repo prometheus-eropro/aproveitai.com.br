@@ -88,13 +88,6 @@ function norm(v){
 function isAtivo(v){
   return ["sim","ativo","true","1","yes"].includes(norm(v));
 }
-function formatarDataBR(valor){
-  if(!valor) return "-";
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR") + " " +
-         d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-}
 function pegarCampo(obj, campos){
   for (const c of campos){
     if (obj[c] && String(obj[c]).trim() !== "") return obj[c];

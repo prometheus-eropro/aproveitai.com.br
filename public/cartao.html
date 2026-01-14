@@ -302,7 +302,9 @@ function jsonp(url){
     document.getElementById("idPublico").textContent = d.idPublico || id;
     document.getElementById("grupo").textContent = d.grupo || "-";
     document.getElementById("cidade").textContent = d.cidade || "-";
-    document.getElementById("cadastro").textContent = formatarDataBR(d.dataCadastro);
+document.getElementById("cadastro").textContent =
+  formatarDataBR(d.dataCadastro);
+
 
 
     const idFinal = (d.idPublico || id).trim();
