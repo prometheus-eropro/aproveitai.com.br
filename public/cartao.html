@@ -227,7 +227,9 @@ body{
 
   <div class="cartao-lado cartao-direito">
     <h4>Validação</h4>
-    <img id="qrCode" class="qr-img">
+   <img id="qrCode" class="qr-img" />
+
+
     <div class="aviso">
       Apresente documento com foto se solicitado.<br>
       <span class="atencao">Valide sempre antes da compra.</span>
@@ -266,10 +268,11 @@ body{
 <!-- ================= SCRIPT ================= -->
 <!-- html2canvas PRIMEIRO -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 const id = new URLSearchParams(location.search).get("id");
+
 
 function jsonp(url){
   return new Promise((resolve, reject) => {
