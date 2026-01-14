@@ -46,7 +46,8 @@
 
     <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
 
-    <button onclick="consultarCliente()">Consultar</button>
+    <button onclick="consultar()">Consultar</button>
+
     <div class="small">
       Após a consulta, você poderá acessar seu cartão digital,
       salvar no celular ou imprimir.
@@ -78,48 +79,151 @@
   </div>
 </div>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+let ultimoIdPublico = "";
 
-function consultarCliente() {
-  const input = document.getElementById("cpf").value.trim();
-  const resultado = document.getElementById("resultado");
+function norm(v){
+  return String(v ?? "").toLowerCase().trim();
+}
+function isAtivo(v){
+  return ["sim","ativo","true","1","yes"].includes(norm(v));
+}
+function formatarDataBR(valor){
+  if(!valor) return "-";
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+  return d.toLocaleDateString("pt-BR") + " " +
+         d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+}
+function pegarCampo(obj, campos){
+  for (const c of campos){
+    if (obj[c] && String(obj[c]).trim() !== "") return obj[c];
+  }
+  return "";
+}
 
-  if (!input) {
-    resultado.innerHTML = "Informe CPF ou ID.";
+async function consultar(){
+  const valor = document.getElementById("cpf").value.trim();
+  const box = document.getElementById("resultado");
+
+  box.textContent = "Consultando...";
+
+  if(!valor){
+    box.textContent = "Informe seu CPF ou ID Público.";
     return;
   }
 
-  const soNumeros = input.replace(/\D/g, "");
-  const param = soNumeros.length >= 11 ? "cpf" : "idPublico";
+  const soDigitos = valor.replace(/\D/g,"");
+  const isCpf = soDigitos.length === 11;
 
-  resultado.innerHTML = "Consultando...";
+  const url = isCpf
+    ? `${sheetURL}?cpf=${encodeURIComponent(soDigitos)}`
+    : `${sheetURL}?idPublico=${encodeURIComponent(valor)}`;
 
-  const callback = "cb_" + Date.now();
+  try{
+    const res = await fetch(url);
+    const achado = await res.json();
 
-  window[callback] = function (data) {
-    delete window[callback];
+    if(!achado || !achado.cpf){
+  box.textContent = "❌ Cliente não encontrado.";
+  return;
+}
 
-    if (data.erro) {
-      resultado.innerHTML = "❌ Cliente não encontrado.";
-      return;
-    }
+// SALVA O ID CORRETAMENTE
+ultimoIdPublico = achado.idPublico;
 
-    resultado.innerHTML = `
-      <strong>${data.nome}</strong><br>
-      Status: <b style="color:${data.ativo === "SIM" ? "green" : "red"}">
-        ${data.ativo}
-      </b><br>
-      Grupo: ${data.grupo || "-"}<br>
-      Cidade: ${data.cidade || "-"}<br>
-      Código: ${data.codigoERO || "-"}
+    const ativo = isAtivo(achado.ativo);
+    const nascimento = pegarCampo(achado, ["nascimento","dataNascimento","data_nascimento"]);
+    const dataAceite = pegarCampo(achado, ["dataAceite","dataCadastro","cadastro","data_aceite"]);
+
+document.getElementById("bemVindoNome").innerHTML = ativo
+  ? `
+    <span style="color:#000">
+      Olá, <strong style="color:#0a7f2e">${achado.nome}</strong> 👋<br>
+      Que bom ter você por aqui! 😊<br>
+      Seu cadastro está <strong style="color:#0a7f2e">ATIVO</strong>.<br>
+      Aproveite agora todos os benefícios e promoções disponíveis.
+    </span>
+  `
+  : `
+    <span style="color:#000">
+      Olá, <strong style="color:#c62828">${achado.nome}</strong> 👋<br>
+      Seu cadastro está <strong style="color:#c62828">INATIVO</strong> no momento.<br>
+      Regularize seu acesso para voltar a aproveitar os benefícios do Cartão AproveitAI.
+    </span>
+  `;
+const btnBeneficios = document.getElementById("btnBeneficios");
+const btnCartao = document.getElementById("btnCartao");
+
+if (ativo) {
+  btnBeneficios.style.display = "block";
+  btnCartao.style.display = "block";
+} else {
+  btnBeneficios.style.display = "none";
+  btnCartao.style.display = "none";
+}
+
+    box.innerHTML = `
+
+      <div><b>Nome:</b> ${achado.nome}</div>
+      <div><b>CPF:</b> ${achado.cpf}</div>
+      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+      <div><b>Celular:</b> ${achado.celular || "Não informado"}</div>
+      <div><b>Data de Nascimento:</b> ${nascimento ? formatarDataBR(nascimento) : "Não informado"}</div>
+      <div><b>Data de Cadastro/Aceite:</b> ${dataAceite ? formatarDataBR(dataAceite) : "-"}</div>
+      <div style="
+  margin-top:8px;
+  padding:6px 10px;
+  border-radius:8px;
+  font-weight:700;
+  color:#fff;
+  background:${ativo ? "#0a7f2e" : "#c62828"};
+">
+  Status: ${ativo ? "ATIVO" : "INATIVO"}
+</div>
+
+
+      ${!ativo ? `
+        <div style="
+          margin-top:12px;
+          padding:12px;
+          border-radius:10px;
+          background:#ffeaea;
+          border:2px solid #c62828;
+          color:#7a0000;
+          font-weight:600;
+          text-align:center;
+        ">
+          ⚠️ Seu cadastro está <b>INATIVO</b>.<br>
+          Procure o Cartão AproveitAI para regularizar
+          e volte a aproveitar os benefícios.
+        </div>
+      ` : ""}
     `;
-  };
+  } catch(e){
+    console.error(e);
+    box.textContent = "⚠️ Erro ao consultar.";
+  }
+}
+function abrirBeneficios() {
+  if (!ultimoIdPublico) {
+    alert("ID do cliente não encontrado.");
+    return;
+  }
+  window.location.href = "meus-beneficios.html?id=" + encodeURIComponent(ultimoIdPublico);
+}
 
-  const script = document.createElement("script");
-  script.src = `${API_URL}?${param}=${encodeURIComponent(soNumeros)}&callback=${callback}`;
-  document.body.appendChild(script);
+function abrirCartao() {
+  if (!ultimoIdPublico) {
+    alert("ID do cartão não informado.");
+    return;
+  }
+  window.location.href = "cartao.html?id=" + encodeURIComponent(ultimoIdPublico);
 }
 </script>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
@@ -134,48 +238,6 @@ function consultarCliente() {
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
-<script>
-async function consultarCliente() {
-  const input = document.getElementById("cpf").value.trim();
-  const resultado = document.getElementById("resultado");
-
-  if (!input) {
-    resultado.innerHTML = "Informe CPF ou ID.";
-    return;
-  }
-
-  const soNumeros = input.replace(/\D/g, "");
-  const param = soNumeros.length >= 11 ? "cpf" : "idPublico";
-
-  const url = "https://script.google.com/macros/s/SEU_DEPLOY_ID/exec?" +
-              param + "=" + encodeURIComponent(soNumeros);
-
-  resultado.innerHTML = "Consultando...";
-
-  try {
-    const resp = await fetch(url);
-    const data = await resp.json();
-
-    if (data.erro) {
-      resultado.innerHTML = "❌ Cliente não encontrado.";
-      return;
-    }
-
-    resultado.innerHTML = `
-      <strong>${data.nome}</strong><br>
-      Status: <b style="color:${data.ativo === "SIM" ? "green" : "red"}">
-        ${data.ativo}
-      </b><br>
-      Grupo: ${data.grupo || "-"}<br>
-      Cidade: ${data.cidade || "-"}<br>
-      Código: ${data.codigoERO || "-"}
-    `;
-  } catch (err) {
-    console.error(err);
-    resultado.innerHTML = "Erro ao consultar.";
-  }
-}
-</script>
 
 </body>
 </html>
