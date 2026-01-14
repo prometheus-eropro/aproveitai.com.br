@@ -246,30 +246,8 @@ function carregarParceiros() {
     });
 }
 
-let parceiros = [];
-
-function carregarParceiros() {
-  fetch(API_URL + "?aba=parceiros")
-    .then(res => res.json())
-    .then(res => {
-      console.log("API resposta:", res);
-
-      if (!res || !res.dados) {
-        throw new Error("Resposta inválida da API");
-      }
-
-      parceiros = res.dados;
-      preencherFiltros();
-      renderizar(parceiros);
-    })
-    .catch(err => {
-      console.error("Erro ao carregar parceiros:", err);
-      parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
-    });
-}
 
 document.addEventListener("DOMContentLoaded", carregarParceiros);
-});
 
 </script>
 </body>
