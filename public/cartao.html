@@ -337,8 +337,11 @@ function jsonp(url){
     document.getElementById("cpf").textContent = d.cpf || "-";
     document.getElementById("idPublico").textContent = d.idPublico || id;
     document.getElementById("grupo").textContent = d.grupo || "-";
-    document.getElementById("cidade").textContent = d.cidade || "-";
-    document.getElementById("dataAceite").textContent = d.dataAceite || d.dataCadastro || "-";
+    document.getElementById("cidade").textContent = d.cidade || "-";  
+    document.getElementById("dataCadastro").innerText = formatarDataBR(data.dataAceite);
+
+}
+
 
 
     // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
