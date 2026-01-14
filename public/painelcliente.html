@@ -46,8 +46,7 @@
 
     <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
 
-    <button onclick="consultar()">Consultar</button>
-
+    <button onclick="consultarCliente()">Consultar</button>
     <div class="small">
       Após a consulta, você poderá acessar seu cartão digital,
       salvar no celular ou imprimir.
@@ -180,6 +179,48 @@ function formatarDataBR(valor){
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
+<script>
+async function consultarCliente() {
+  const input = document.getElementById("cpf").value.trim();
+  const resultado = document.getElementById("resultado");
+
+  if (!input) {
+    resultado.innerHTML = "Informe CPF ou ID.";
+    return;
+  }
+
+  const soNumeros = input.replace(/\D/g, "");
+  const param = soNumeros.length >= 11 ? "cpf" : "idPublico";
+
+  const url = "https://script.google.com/macros/s/SEU_DEPLOY_ID/exec?" +
+              param + "=" + encodeURIComponent(soNumeros);
+
+  resultado.innerHTML = "Consultando...";
+
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    if (data.erro) {
+      resultado.innerHTML = "❌ Cliente não encontrado.";
+      return;
+    }
+
+    resultado.innerHTML = `
+      <strong>${data.nome}</strong><br>
+      Status: <b style="color:${data.ativo === "SIM" ? "green" : "red"}">
+        ${data.ativo}
+      </b><br>
+      Grupo: ${data.grupo || "-"}<br>
+      Cidade: ${data.cidade || "-"}<br>
+      Código: ${data.codigoERO || "-"}
+    `;
+  } catch (err) {
+    console.error(err);
+    resultado.innerHTML = "Erro ao consultar.";
+  }
+}
+</script>
 
 </body>
 </html>
