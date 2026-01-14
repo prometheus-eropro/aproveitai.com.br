@@ -377,6 +377,20 @@ function formatarDataBR(valor){
     alert("Erro ao carregar dados do cartão.");
   }
 })();
+function salvarPDF() {
+  const elemento = document.getElementById("cartao-print");
+
+  const opt = {
+    margin: 5,
+    filename: "cartao-aproveitai.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
+  };
+
+  html2pdf().set(opt).from(elemento).save();
+}
 </script>
+
 </body>
 </html>

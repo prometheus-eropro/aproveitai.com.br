@@ -284,6 +284,12 @@ if (idQR) {
   document.getElementById("cpfCliente").value = idQR;
   validarCliente();
 }
+function formatarData(valor){
+  if(!valor) return "-";
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+  return d.toLocaleDateString("pt-BR");
+}
 
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
