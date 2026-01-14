@@ -64,7 +64,10 @@
 </table>
 
 <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 const SESSION_KEY = "aproveitai_parceiro";
+
+document.addEventListener("DOMContentLoaded", carregarRelatorio);
 
 function carregarRelatorio() {
   const sessao = sessionStorage.getItem(SESSION_KEY);
@@ -82,40 +85,39 @@ function carregarRelatorio() {
 
   const parceiro = JSON.parse(sessao);
 
-  document.getElementById("parceiroNome").innerText = parceiro.nome;
-  document.getElementById("parceiroCnpj").innerText = parceiro.cnpj;
-
-  fetch(API_URL + "?acao=relatorio&cnpj=" + parceiro.cnpj)
+  fetch(API_URL + "?acao=relatorio&cnpj=" + encodeURIComponent(parceiro.cnpj))
     .then(r => r.json())
     .then(d => montarTabela(d))
-    .catch(() => alert("Erro ao carregar relatório"));
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao carregar relatório");
+    });
 }
 
 function montarTabela(dados) {
   const tbody = document.getElementById("dados");
-
   tbody.innerHTML = "";
 
   const lista = dados.registros || [];
 
+  if (lista.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro encontrado</td></tr>";
+    return;
+  }
 
-if (lista.length === 0) {
-  tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro encontrado</td></tr>";
-
-} else {
   lista.forEach(item => {
-  tbody.innerHTML += `
-    <tr>
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
       <td>${new Date(item.data).toLocaleString("pt-BR")}</td>
       <td>${item.grupo || "-"}</td>
       <td>${item.status || "-"}</td>
       <td>${item.codigoERO || "-"}</td>
-    </tr>
-  `;
-});
+    `;
 
-
-document.addEventListener("DOMContentLoaded", carregarRelatorio);
+    tbody.appendChild(tr);
+  });
+}
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->
