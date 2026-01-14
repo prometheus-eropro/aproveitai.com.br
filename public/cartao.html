@@ -174,9 +174,6 @@ body{
   body{background:#fff;}
   .botoes,.site-header,.footer{display:none;}
 }
-<button class="btn-voltar-flutuante" onclick="voltarPagina()">
-  ⬅️ Voltar
-</button>
 
 </style>
 </head>
@@ -267,6 +264,9 @@ body{
 </footer>
 
 <!-- ================= SCRIPT ================= -->
+<!-- html2canvas PRIMEIRO -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 const id = new URLSearchParams(location.search).get("id");
@@ -304,52 +304,30 @@ function jsonp(url){
     document.getElementById("cidade").textContent = d.cidade || "-";
     document.getElementById("cadastro").textContent = d.dataCadastro || "-";
 
-    // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
-   // ===============================
-// QR CODE (BLOCO ÚNICO E SEGURO)
-// ===============================
-const idPublicoFinal = (d.idPublico || id).trim();
+    const idFinal = (d.idPublico || id).trim();
+    const urlValidar = "https://aproveitai.com.br/validar.html?idPublico=" + encodeURIComponent(idFinal);
 
-const urlValidar =
-  "https://aproveitai.com.br/validar.html?idPublico=" +
-  encodeURIComponent(idPublicoFinal);
+    document.getElementById("qrCode").src =
+      d.qrURL ||
+      "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+      encodeURIComponent(urlValidar);
 
-let qrFinal;
-
-if (d.qrBase64) {
-  qrFinal = "data:image/png;base64," + d.qrBase64;
-} else if (d.qrURL) {
-  qrFinal = d.qrURL;
-} else {
-  qrFinal =
-    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-    encodeURIComponent(urlValidar);
-}
-
-document.getElementById("qrCode").src = qrFinal;
   }catch(err){
     console.error(err);
     alert("Erro ao carregar dados do cartão.");
   }
 })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-<script>
 function salvarCartao() {
   const cartao = document.getElementById("cartao-print");
   const qr = document.getElementById("qrCode");
 
-  // garante que o QR já carregou
-  if (!qr.complete) {
-    alert("Aguarde o QR Code carregar e tente novamente.");
+  if (!qr || !qr.complete) {
+    alert("Aguarde o QR Code carregar.");
     return;
   }
 
-  html2canvas(cartao, {
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
+  html2canvas(cartao, { scale: 2, useCORS: true }).then(canvas => {
     const link = document.createElement("a");
     link.download = "cartao-aproveitai.png";
     link.href = canvas.toDataURL("image/png");
@@ -357,23 +335,9 @@ function salvarCartao() {
   });
 }
 
-function formatarDataBR(iso){
-  if(!iso) return "-";
-  const d = new Date(iso);
-  return d.toLocaleDateString("pt-BR") + " " +
-         d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
-}
-<script>
 function voltarPagina() {
   history.back();
 }
-</script>
-<script>
-function voltarPagina() {
-  history.back();
-}
-</script>
-
 </script>
 </body>
 </html>

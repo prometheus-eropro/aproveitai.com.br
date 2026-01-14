@@ -224,9 +224,23 @@ function filtrar() {
 /* =========================
    CARREGAR PARCEIROS
 ========================= */
+function jsonp(url){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    window[cb] = (data) => {
+      resolve(data);
+      delete window[cb];
+      script.remove();
+    };
+    const script = document.createElement("script");
+    script.src = url + "&callback=" + cb;
+    script.onerror = reject;
+    document.body.appendChild(script);
+  });
+}
+
 function carregarParceiros() {
-  fetch(API_URL + "?aba=parceiros")
-    .then(r => r.json())
+  jsonp(API_URL + "?aba=parceiros")
     .then(res => {
       if (!res.ok) throw "Erro API";
       parceiros = res.dados || [];
@@ -237,13 +251,6 @@ function carregarParceiros() {
       parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
     });
 }
-
-/* =========================
-   INIT
-========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  carregarParceiros();
-});
 </script>
 </body>
 </html>
