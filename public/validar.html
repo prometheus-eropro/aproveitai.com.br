@@ -385,7 +385,8 @@ async function processarQR(texto) {
         <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
         <p><b>Cidade:</b> ${data.cidade || "-"}</p>
         <p><b>Grupo:</b> ${data.grupo || "-"}</p>
-        <p><b>Cliente desde:</b> ${data.dataCadastro || "-"}</p>
+        <p><b>Cliente desde:</b> ${data.dataAceite || data.dataCadastro || "-"}</p>
+
         <p><b>Status:</b> ${data.ativo}</p>
 
         ${
