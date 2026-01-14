@@ -187,19 +187,26 @@ async function validarCliente() {
   }
 
   const valor = document.getElementById("cpfCliente").value.trim();
-  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
+const token = sessionStorage.getItem("parceiroToken");
 
-  box.innerHTML = "Consultando...";
+box.innerHTML = "Consultando...";
 
-  if (!valor) {
-    box.innerHTML = "❌ Informe o CPF ou ID Público.";
-    return;
-  }
+if (!token) {
+  box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
+  return;
+}
 
-  const url = valor.startsWith("APV-")
-    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`
-    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
+if (!valor) {
+  box.innerHTML = "❌ Informe o CPF ou ID Público.";
+  return;
+}
 
+const soDigitos = valor.replace(/\D/g, "");
+const isCpf = soDigitos.length === 11;
+
+const url = isCpf
+  ? `${API_URL}?cpf=${encodeURIComponent(soDigitos)}&modo=parceiro&token=${encodeURIComponent(token)}`
+  : `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(token)}`;
   try {
     const data = await jsonp(url);
 
