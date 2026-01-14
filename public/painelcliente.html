@@ -222,6 +222,13 @@ function abrirCartao() {
   }
   window.location.href = "cartao.html?id=" + encodeURIComponent(ultimoIdPublico);
 }
+function formatarDataBR(valor) {
+  if (!valor) return "-";
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+  return d.toLocaleDateString("pt-BR");
+}
+
 </script>
 
 <!-- ✅ RODAPÉ PADRÃO -->

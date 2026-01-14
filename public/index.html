@@ -251,6 +251,10 @@ function carregarParceiros() {
       parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
     });
 }
+document.addEventListener("DOMContentLoaded", () => {
+  carregarParceiros();
+});
+
 </script>
 </body>
 </html>

@@ -302,7 +302,8 @@ function jsonp(url){
     document.getElementById("idPublico").textContent = d.idPublico || id;
     document.getElementById("grupo").textContent = d.grupo || "-";
     document.getElementById("cidade").textContent = d.cidade || "-";
-    document.getElementById("cadastro").textContent = d.dataCadastro || "-";
+    document.getElementById("cadastro").textContent = formatarDataBR(d.dataCadastro);
+
 
     const idFinal = (d.idPublico || id).trim();
     const urlValidar = "https://aproveitai.com.br/validar.html?idPublico=" + encodeURIComponent(idFinal);
@@ -338,6 +339,14 @@ function salvarCartao() {
 function voltarPagina() {
   history.back();
 }
+
+function formatarDataBR(data) {
+  if (!data) return "-";
+  const d = new Date(data);
+  if (isNaN(d)) return data;
+  return d.toLocaleDateString("pt-BR");
+}
 </script>
+
 </body>
 </html>
