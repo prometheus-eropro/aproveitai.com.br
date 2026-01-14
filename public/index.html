@@ -259,7 +259,8 @@ function carregarParceiros() {
 
 
     .then(res => {
-      if (!res.ok) throw "Erro API";
+      if (!res || !res.dados) throw "Erro API";
+
       parceiros = res.dados || [];
       preencherFiltros();
       renderizar(parceiros);
