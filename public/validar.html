@@ -385,9 +385,14 @@ async function processarQR(texto) {
         <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
         <p><b>Cidade:</b> ${data.cidade || "-"}</p>
         <p><b>Grupo:</b> ${data.grupo || "-"}</p>
-        <p><b>Cliente desde:</b> ${data.dataAceite || data.dataCadastro || "-"}</p>
+        <p><b>Cliente desde:</b> ${formatarDataBR(data.dataAceite || data.dataCadastro)}</p>
 
-        <p><b>Status:</b> ${data.ativo}</p>
+        <p><b>Status:</b>
+  <strong style="color:${data.ativo === "SIM" ? "#198754" : "#dc3545"}">
+    ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}
+  </strong>
+</p>
+
 
         ${
           data.ativo === "SIM"
@@ -425,6 +430,13 @@ function validarOutroCliente(){
   document.getElementById("resultado").innerHTML = "";
   iniciarLeitor();
 }
+function formatarDataBR(valor){
+  if(!valor) return "-";
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+  return d.toLocaleDateString("pt-BR");
+}
+
 </script>
 
 </body>

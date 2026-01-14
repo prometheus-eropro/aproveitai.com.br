@@ -338,8 +338,7 @@ function jsonp(url){
     document.getElementById("idPublico").textContent = d.idPublico || id;
     document.getElementById("grupo").textContent = d.grupo || "-";
     document.getElementById("cidade").textContent = d.cidade || "-";
-    document.getElementById("dataAceite").textContent =
-  d.dataAceite || d.dataCadastro || "-";
+    document.getElementById("dataAceite").textContent = d.dataAceite || d.dataCadastro || "-";
 
 
     // ✅ QR: tenta vir da planilha (se algum dia vier), senão gera automaticamente
@@ -370,8 +369,6 @@ document.getElementById("qrCode").src = qrFinal;
     alert("Erro ao carregar dados do cartão.");
   }
 })();
-
-
 function formatarDataBR(valor){
   if(!valor) return "-";
   const d = new Date(valor);
@@ -385,14 +382,23 @@ function voltarPagina() {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-function salvarPDF() {
+async function salvarPDF() {
+  const img = document.getElementById("qrCode");
+
+  if (!img.complete) {
+    await new Promise(resolve => {
+      img.onload = resolve;
+      img.onerror = resolve;
+    });
+  }
+
   const elemento = document.getElementById("cartao-print");
 
   const opt = {
     margin: 5,
     filename: "cartao-aproveitai.pdf",
     image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2 },
+    html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: "mm", format: "a4", orientation: "landscape" }
   };
 

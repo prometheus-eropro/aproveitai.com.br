@@ -224,8 +224,6 @@ async function validarCliente() {
         <p><b>Cidade:</b> ${data.cidade || "-"}</p>
         <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
         <p><b>Cliente desde:</b> ${formatarData(data.dataAceite || data.dataCadastro)}</p>
-        <p><b>Celular:</b> ${achado.celular || "Não informado"}</p>
-         <p><b>Data de Nascimento:</b> ${nascimento ? formatarDataBR(nascimento) : "Não informado"}</p>
         <p><b>Status:</b>
   <span style="font-weight:800;color:${data.ativo === "SIM" ? "#198754" : "#dc3545"}">
     ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}
@@ -245,14 +243,12 @@ async function validarCliente() {
     box.innerHTML = "❌ Erro ao validar cliente.";
   }
 }
-
-function formatarData(valor) {
+function formatarDataBR(valor){
+  if(!valor) return "-";
   const d = new Date(valor);
   if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR") + " " +
-         d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleDateString("pt-BR");
 }
-
 
 function verRelatorio() {
   const parceiroObj = JSON.parse(localStorage.getItem("parceiro"));
