@@ -421,11 +421,10 @@ function voltarPagina() {
   window.history.back();
 }
 function validarOutroCliente(){
-  document.getElementById("cpf").value = "";
-  document.getElementById("idPublico").value = "";
+  validacaoEmAndamento = false;
   document.getElementById("resultado").innerHTML = "";
+  iniciarLeitor();
 }
-
 </script>
 
 </body>
