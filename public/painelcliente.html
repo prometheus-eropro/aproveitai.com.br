@@ -132,11 +132,20 @@ async function consultar() {
     const ativo = String(data.ativo).toUpperCase() === "SIM";
 
     document.getElementById("bemVindoNome").innerHTML = `
-      Olá, <strong>${data.nome}</strong><br>
-      Status: <b style="color:${ativo ? 'green' : 'red'}">
-        ${ativo ? 'ATIVO' : 'INATIVO'}
-      </b>
-    `;
+  Olá, <strong>${data.nome}</strong> 👋<br>
+  ${
+    ativo
+      ? `<span style="color:#0a7a2a;font-weight:600">
+           Seu cadastro está ATIVO 🎉<br>
+           Aproveite agora seus benefícios exclusivos.
+         </span>`
+      : `<span style="color:#b80000;font-weight:600">
+           Seu cadastro está INATIVO ⚠️<br>
+           Regularize para aproveitar descontos e promoções.
+         </span>`
+  }
+`;
+
 
     box.innerHTML = `
       <div><b>CPF:</b> ${data.cpf}</div>
