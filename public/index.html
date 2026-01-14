@@ -174,17 +174,17 @@ function renderizar(lista) {
     if (String(p.ativo).toLowerCase() !== "sim") return;
 
     const nome = p.nomeFantasia || p.nome || "Parceiro";
-    const cidade = p.cidade || "-";
-    const ramo = p.ramo || "-";
-    const desconto = p.tipoDesconto || "";
-    const whatsapp = (p.whatsapp || "").replace(/\D/g, "");
-    const instagram = p.instagram || "";
-    const site = p.site || "";
-    const email = p.email || "";
+const cidade = p.cidade || "-";
+const ramo = p.ramo || "-";
+const desconto = p.tipoDesconto || "";
 
-    let logo = (p.logoURL || "").trim();
-    if (!logo.startsWith("http")) logo = "logo-aproveitai.png";
+const whatsapp = String(p.whatsapp || "").replace(/\D/g, "");
+const instagram = String(p.instagram || "");
+const site = String(p.site || "");
+const email = String(p.email || "");
 
+let logo = String(p.logoURL || "").trim();
+if (!logo.startsWith("http")) logo = "logo-aproveitai.png";
     parceirosDiv.innerHTML += `
       <div class="card">
         <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
