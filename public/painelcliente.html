@@ -78,30 +78,9 @@
   </div>
 </div>
 <script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-let ultimoIdPublico = "";
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-function norm(v){
-  return String(v ?? "").toLowerCase().trim();
-}
-function isAtivo(v){
-  return ["sim","ativo","true","1","yes"].includes(norm(v));
-}
-function formatarDataBR(valor){
-  if(!valor) return "-";
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR") + " " +
-         d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-}
-function pegarCampo(obj, campos){
-  for (const c of campos){
-    if (obj[c] && String(obj[c]).trim() !== "") return obj[c];
-  }
-  return "";
-}
-
-async function consultarCliente() {
+function consultarCliente() {
   const input = document.getElementById("cpf").value.trim();
   const resultado = document.getElementById("resultado");
 
@@ -113,13 +92,12 @@ async function consultarCliente() {
   const soNumeros = input.replace(/\D/g, "");
   const param = soNumeros.length >= 11 ? "cpf" : "idPublico";
 
-  const url = `https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec?${param}=${encodeURIComponent(soNumeros)}`;
-
   resultado.innerHTML = "Consultando...";
 
-  try {
-    const resp = await fetch(url);
-    const data = await resp.json();
+  const callback = "cb_" + Date.now();
+
+  window[callback] = function (data) {
+    delete window[callback];
 
     if (data.erro) {
       resultado.innerHTML = "❌ Cliente não encontrado.";
@@ -135,36 +113,13 @@ async function consultarCliente() {
       Cidade: ${data.cidade || "-"}<br>
       Código: ${data.codigoERO || "-"}
     `;
-  } catch (e) {
-    resultado.innerHTML = "Erro ao consultar.";
-    console.error(e);
-  }
-}
+  };
 
-function abrirBeneficios() {
-  if (!ultimoIdPublico) {
-    alert("ID do cliente não encontrado.");
-    return;
-  }
-  window.location.href = "meus-beneficios.html?id=" + encodeURIComponent(ultimoIdPublico);
+  const script = document.createElement("script");
+  script.src = `${API_URL}?${param}=${encodeURIComponent(soNumeros)}&callback=${callback}`;
+  document.body.appendChild(script);
 }
-
-function abrirCartao() {
-  if (!ultimoIdPublico) {
-    alert("ID do cartão não informado.");
-    return;
-  }
-  window.location.href = "cartao.html?id=" + encodeURIComponent(ultimoIdPublico);
-}
-function formatarDataBR(valor){
-  if(!valor) return "-";
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR");
-}
-
 </script>
-
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
