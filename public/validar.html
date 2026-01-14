@@ -340,7 +340,13 @@ if (idPublicoInicial) {
 let validacaoEmAndamento = false;
 
 async function processarQR(texto) {
-  if (validacaoEmAndamento) return;
+if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
+  alert("Sessão expirada. Faça login novamente.");
+  location.href = "painelparceiro.html";
+  return;
+}
+  
+if (validacaoEmAndamento) return;
   validacaoEmAndamento = true;
 
   if (sessionStorage.getItem("parceiroLogado") !== "SIM") {

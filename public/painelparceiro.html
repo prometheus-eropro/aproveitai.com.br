@@ -170,9 +170,6 @@ if (!data || data.erro) {
   })
 );
 
-
-
-
   } catch (e) {
     console.error(e);
     box.innerHTML = "❌ Erro ao validar parceiro.";
@@ -181,8 +178,15 @@ if (!data || data.erro) {
 
 
 async function validarCliente() {
-  const parceiroNome = sessionStorage.getItem("parceiroNome");
-  const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+  const parceiroObj = JSON.parse(
+  sessionStorage.getItem("aproveitai_parceiro")
+);
+
+if (!parceiroObj || !parceiroObj.nome || !parceiroObj.cnpj) {
+  box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
+  return;
+}
+
   const box = document.getElementById("resultadoCliente");
 
   if (!parceiroNome || !parceiroCNPJ) {
@@ -201,9 +205,8 @@ async function validarCliente() {
   }
 
   const url = valor.startsWith("APV-")
-    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`
-    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
-
+  ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(parceiroObj.token)}&parceiroNome=${encodeURIComponent(parceiroObj.nome)}&parceiroCNPJ=${encodeURIComponent(parceiroObj.cnpj)}`
+  : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(parceiroObj.token)}&parceiroNome=${encodeURIComponent(parceiroObj.nome)}&parceiroCNPJ=${encodeURIComponent(parceiroObj.cnpj)}`;
   try {
     const data = await jsonp(url);
 
@@ -255,11 +258,18 @@ function formatarDataBR(valor){
 }
 
 function verRelatorio() {
-  const parceiroObj = JSON.parse(localStorage.getItem("parceiro"));
+  const parceiroObj = JSON.parse(
+    sessionStorage.getItem("aproveitai_parceiro")
+  );
+
   if (!parceiroObj) {
     alert("Sessão expirada. Faça login novamente.");
     return;
   }
+
+  window.location.href = "relatorio.html?relatorio=1";
+}
+
 
   const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiroObj.nome)}`;
   window.location.href = "relatorio.html";
