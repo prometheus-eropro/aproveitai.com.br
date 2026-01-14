@@ -161,10 +161,14 @@ if (!data || data.erro) {
     document.getElementById("painelBox").style.display = "block";
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("nomeParceiro").textContent = data.parceiro;
-    sessionStorage.setItem("parceiroLogado", "SIM");
-sessionStorage.setItem("parceiroToken", token);
-sessionStorage.setItem("parceiroNome", data.parceiro);
-sessionStorage.setItem("parceiroCNPJ", data.cnpj);
+    sessionStorage.setItem(
+  "aproveitai_parceiro",
+  JSON.stringify({
+    nome: data.parceiro,
+    cnpj: data.cnpj,
+    token: token
+  })
+);
 
 
 

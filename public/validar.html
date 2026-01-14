@@ -367,12 +367,23 @@ async function processarQR(texto) {
 
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-  const url =
-    API_URL +
-    "?idPublico=" + encodeURIComponent(id) +
-    "&modo=parceiro" +
-    "&token=" + sessionStorage.getItem("parceiroToken");
+  const parceiro = JSON.parse(
+  sessionStorage.getItem("aproveitai_parceiro")
+);
 
+if (!parceiro || !parceiro.token) {
+  alert("Sessão expirada. Faça login novamente.");
+  location.href = "painelparceiro.html";
+  return;
+}
+
+const url =
+  API_URL +
+  "?idPublico=" + encodeURIComponent(id) +
+  "&modo=parceiro" +
+  "&token=" + encodeURIComponent(parceiro.token) +
+  "&parceiroNome=" + encodeURIComponent(parceiro.nome) +
+  "&parceiroCNPJ=" + encodeURIComponent(parceiro.cnpj);
   try {
     const data = await fetch(url).then(r => r.json());
 

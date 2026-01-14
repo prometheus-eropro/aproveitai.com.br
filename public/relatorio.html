@@ -85,15 +85,20 @@ function carregarRelatorio() {
 
   const parceiro = JSON.parse(sessao);
 
-  fetch(API_URL + "?acao=relatorio&cnpj=" + encodeURIComponent(parceiro.cnpj))
+  document.getElementById("dadosParceiro").innerHTML = `
+    <b>Parceiro:</b> ${parceiro.nome}<br>
+    <b>CNPJ:</b> ${parceiro.cnpj}
+  `;
+
+  fetch(
+    API_URL +
+    "?acao=relatorio" +
+    "&cnpj=" + encodeURIComponent(parceiro.cnpj)
+  )
     .then(r => r.json())
     .then(d => montarTabela(d))
-    .catch(err => {
-      console.error(err);
-      alert("Erro ao carregar relatório");
-    });
+    .catch(() => alert("Erro ao carregar relatório"));
 }
-
 function montarTabela(dados) {
   const tbody = document.getElementById("dados");
   tbody.innerHTML = "";
