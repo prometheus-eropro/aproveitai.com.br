@@ -48,19 +48,20 @@
 <div class="container-parceiros" id="lista"></div>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const lista = document.getElementById("lista");
 
-fetch(API + "?aba=promocoes")
-  .then(r => r.json())
-  .then(d => {
-    const lista = document.getElementById("lista");
+function carregarPromocoes() {
+  const cb = "cbPromocoes";
+
+  window[cb] = function (res) {
     lista.innerHTML = "";
 
-    if (!d.dados || !Array.isArray(d.dados)) {
+    if (!res || !res.dados || !res.dados.length) {
       lista.innerHTML = "<p>Nenhuma promoção ativa.</p>";
       return;
     }
 
-    d.dados.forEach(p => {
+    res.dados.forEach(p => {
       if (String(p.ativo).toLowerCase() !== "sim") return;
 
       const div = document.createElement("div");
@@ -72,11 +73,14 @@ fetch(API + "?aba=promocoes")
       `;
       lista.appendChild(div);
     });
-  })
-  .catch(() => {
-    document.getElementById("lista").innerHTML =
-      "<p>Erro ao carregar promoções.</p>";
-  });
+  };
+
+  const s = document.createElement("script");
+  s.src = API + "?aba=promocoes&callback=" + cb;
+  document.body.appendChild(s);
+}
+
+document.addEventListener("DOMContentLoaded", carregarPromocoes);
 </script>
 <footer style="
   background:#dfffe0;

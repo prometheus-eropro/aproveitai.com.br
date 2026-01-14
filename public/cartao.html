@@ -349,7 +349,9 @@ function formatarDataBR(valor){
     document.getElementById("idPublico").textContent = d.idPublico || id;
     document.getElementById("grupo").textContent = d.grupo || "-";
     document.getElementById("cidade").textContent = d.cidade || "-";
-    document.getElementById("dataAceite").textContent = formatarDataBR(d.dataAceite);
+    document.getElementById("dataAceite").textContent =
+  formatarDataBR(d.dataCadastro || d.clienteDesde);
+
 
     // === QR CODE ===
     const idPublicoFinal = (d.idPublico || id).trim();

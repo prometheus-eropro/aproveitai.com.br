@@ -54,7 +54,20 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    window[cb] = (data) => {
+      resolve(data);
+      delete window[cb];
+      script.remove();
+    };
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    script.onerror = () => reject("Erro JSONP");
+    document.body.appendChild(script);
+  });
+}
 // pegar ID do cliente pela URL
 const params = new URLSearchParams(window.location.search);
 const idCliente = params.get("id");
@@ -76,8 +89,7 @@ async function carregarTudo() {
     return;
   }
 
-  const resCliente = await fetch(`${API_URL}?aba=clientes&idPublico=${idCliente}`);
-  const cliente = await resCliente.json();
+  const cliente = await jsonp(`${API_URL}?aba=clientes&idPublico=${idCliente}`);
 
   // 🔐 BLOQUEIO TOTAL SE NÃO ATIVO
   if (!cliente || String(cliente.ativo).toLowerCase() !== "sim") {
@@ -88,13 +100,11 @@ async function carregarTudo() {
 
   const grupoCliente = cliente.grupo;
 
-  const [resBen, resPro] = await Promise.all([
-    fetch(API_URL + "?aba=beneficios"),
-    fetch(API_URL + "?aba=promocoes")
-  ]);
+  const benResp = await jsonp(API_URL + "?aba=beneficios");
+const proResp = await jsonp(API_URL + "?aba=promocoes");
 
-  const ben = (await resBen.json()).dados || [];
-  const pro = (await resPro.json()).dados || [];
+const ben = benResp.dados || [];
+const pro = proResp.dados || [];
 
   const lista = document.getElementById("lista");
   lista.innerHTML = "";

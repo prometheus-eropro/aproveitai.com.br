@@ -229,15 +229,15 @@ function carregarParceiros() {
   const callbackName = "cbParceiros";
 
   window[callbackName] = function (res) {
-    if (!res || !res.ok) {
-      parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
-      return;
-    }
+  if (!res || !res.dados) {
+    parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
+    return;
+  }
 
-    parceiros = res.dados || [];
-    preencherFiltros();
-    renderizar(parceiros);
-  };
+  parceiros = res.dados;
+  preencherFiltros();
+  renderizar(parceiros);
+};
 
   const script = document.createElement("script");
   script.src = API_URL + "?aba=parceiros&callback=" + callbackName;

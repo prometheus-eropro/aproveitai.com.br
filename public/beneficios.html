@@ -44,19 +44,20 @@
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const lista = document.getElementById("lista");
 
-fetch(API + "?aba=beneficios")
-  .then(r => r.json())
-  .then(d => {
-    const lista = document.getElementById("lista");
+function carregarBeneficios() {
+  const cb = "cbBeneficios";
+
+  window[cb] = function (res) {
     lista.innerHTML = "";
 
-    if (!d.dados || !Array.isArray(d.dados)) {
+    if (!res || !res.dados || !res.dados.length) {
       lista.innerHTML = "<p>Nenhum benefício disponível.</p>";
       return;
     }
 
-    d.dados.forEach(b => {
+    res.dados.forEach(b => {
       if (String(b.ativo).toLowerCase() !== "sim") return;
 
       const div = document.createElement("div");
@@ -68,11 +69,14 @@ fetch(API + "?aba=beneficios")
       `;
       lista.appendChild(div);
     });
-  })
-  .catch(() => {
-    document.getElementById("lista").innerHTML =
-      "<p>Erro ao carregar benefícios.</p>";
-  });
+  };
+
+  const s = document.createElement("script");
+  s.src = API + "?aba=beneficios&callback=" + cb;
+  document.body.appendChild(s);
+}
+
+document.addEventListener("DOMContentLoaded", carregarBeneficios);
 </script>
 
 <!-- RODAPÉ (INALTERADO) -->
