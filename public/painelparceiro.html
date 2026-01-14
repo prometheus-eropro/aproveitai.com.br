@@ -178,35 +178,31 @@ if (!data || data.erro) {
 
 
 async function validarCliente() {
-  const parceiroObj = JSON.parse(
-  sessionStorage.getItem("aproveitai_parceiro")
-);
 
-if (!parceiroObj || !parceiroObj.nome || !parceiroObj.cnpj) {
-  box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
-  return;
-}
+  const parceiroObj = JSON.parse(
+    sessionStorage.getItem("aproveitai_parceiro")
+  );
 
   const box = document.getElementById("resultadoCliente");
 
-  if (!parceiroNome || !parceiroCNPJ) {
+  if (!parceiroObj || !parceiroObj.nome || !parceiroObj.cnpj) {
     box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
     return;
   }
 
   const valor = document.getElementById("cpfCliente").value.trim();
-  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
-
-  box.innerHTML = "Consultando...";
 
   if (!valor) {
-    box.innerHTML = "❌ Informe o CPF ou ID Público.";
+    box.innerHTML = "❌ Informe CPF ou ID Público.";
     return;
   }
 
+  box.innerHTML = "Consultando...";
+
   const url = valor.startsWith("APV-")
-  ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(parceiroObj.token)}&parceiroNome=${encodeURIComponent(parceiroObj.nome)}&parceiroCNPJ=${encodeURIComponent(parceiroObj.cnpj)}`
-  : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(parceiroObj.token)}&parceiroNome=${encodeURIComponent(parceiroObj.nome)}&parceiroCNPJ=${encodeURIComponent(parceiroObj.cnpj)}`;
+    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&parceiroNome=${encodeURIComponent(parceiroObj.nome)}&parceiroCNPJ=${encodeURIComponent(parceiroObj.cnpj)}`
+    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&parceiroNome=${encodeURIComponent(parceiroObj.nome)}&parceiroCNPJ=${encodeURIComponent(parceiroObj.cnpj)}`;
+
   try {
     const data = await jsonp(url);
 
@@ -215,39 +211,19 @@ if (!parceiroObj || !parceiroObj.nome || !parceiroObj.cnpj) {
       return;
     }
 
-    const dataCadastro = data.dataCadastro
-      ? formatarData(data.dataCadastro)
-      : "-";
-
-    const cpfMascarado = data.cpf
-      ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-      : "-";
-
     box.innerHTML = `
       <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
         <p><b>Nome:</b> ${data.nome}</p>
-        <p><b>CPF:</b> ${cpfMascarado}</p>
-        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-        <p><b>Cliente desde:</b> ${formatarData(data.dataAceite || data.dataCadastro)}</p>
-        <p><b>Status:</b>
-  <span style="font-weight:800;color:${data.ativo === "SIM" ? "#198754" : "#dc3545"}">
-    ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}
-  </span>
-</p>
-
-
-        ${
-          data.ativo === "SIM"
-            ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-            : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
-        }
+        <p><b>CPF:</b> ${data.cpf || "-"}</p>
+        <p><b>ID:</b> ${data.idPublico || "-"}</p>
+        <p><b>Grupo:</b> ${data.grupo || "-"}</p>
+        <p><b>Status:</b> <b>${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</b></p>
+        ${data.ativo === "SIM" ? `<p><b>Código:</b> ${data.codigoERO}</p>` : ""}
       </div>
     `;
   } catch (e) {
     console.error(e);
-    box.innerHTML = "❌ Erro ao validar cliente.";
+    box.innerHTML = "❌ Erro na validação.";
   }
 }
 function formatarDataBR(valor){

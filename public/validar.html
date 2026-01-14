@@ -284,6 +284,14 @@ if ("serviceWorker" in navigator) {
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
+const parceiroNome = localStorage.getItem("parceiro_nome");
+const parceiroCNPJ = localStorage.getItem("parceiro_cnpj");
+
+if (!parceiroNome || !parceiroCNPJ) {
+  alert("Sessão não encontrada. Faça login novamente.");
+  window.location.href = "painelparceiro.html";
+}
+
 let leituraBloqueada = false;
 
 const conteudo = document.getElementById("conteudo");
