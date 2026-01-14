@@ -257,6 +257,7 @@ function carregarParceiros() {
   jsonp(API_URL + "?aba=parceiros")
 
 
+
     .then(res => {
       if (!res.ok) throw "Erro API";
       parceiros = res.dados || [];
