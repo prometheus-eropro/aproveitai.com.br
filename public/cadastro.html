@@ -222,8 +222,6 @@ document.querySelectorAll('input[inputmode="numeric"]').forEach(campo => {
 <script>
 const form = document.getElementById("formCadastro");
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
 
   // 🔥 LIMPA QUALQUER DADO ANTIGO
   localStorage.removeItem("ultimoCadastroNome");
