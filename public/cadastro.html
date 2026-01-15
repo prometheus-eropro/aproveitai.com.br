@@ -225,24 +225,7 @@ const form = document.getElementById("formCadastro");
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  // 🔒 limpa lixo antigo
-  localStorage.removeItem("ultimoCadastroNome");
-  localStorage.removeItem("ultimoCadastroCPF");
-
   const dados = new FormData(form);
-
-  const nome = (dados.get("nome") || "").trim();
-  const cpf  = (dados.get("cpf")  || "").trim();
-
-  // guarda SEMPRE o que foi digitado agora
-  localStorage.setItem("ultimoCadastroNome", nome);
-  localStorage.setItem("ultimoCadastroCPF", cpf);
-
-  // nascimento para BR
-  if (dados.get("nascimento")) {
-    const [y, m, d] = dados.get("nascimento").split("-");
-    dados.set("nascimento", `${d}/${m}/${y}`);
-  }
 
   try {
     const resp = await fetch(form.action, {
@@ -252,17 +235,23 @@ form.addEventListener("submit", async function (e) {
 
     const texto = await resp.text();
 
-    // 👇 GAS respondeu erro de CPF duplicado
+    // 🔎 tenta interpretar resposta do GAS
     if (texto.includes("CPF_JA_CADASTRADO")) {
       alert("⚠️ Este CPF já possui cadastro ativo.\nVocê não precisa se cadastrar novamente.");
       return;
     }
 
-    // ✅ cadastro novo → sucesso
+    if (texto.includes("CPF_INVALIDO")) {
+      alert("❌ CPF inválido. Verifique e tente novamente.");
+      return;
+    }
+
+    // ✅ cadastro novo OK
     window.location.href = "cadastro-sucesso.html";
 
   } catch (err) {
     alert("❌ Erro ao enviar cadastro. Tente novamente.");
+    console.error(err);
   }
 });
 </script>
