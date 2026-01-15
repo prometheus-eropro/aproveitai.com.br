@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Contrato de Parceria – Cartão AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Arial, sans-serif; padding:20px; }
+input, button { width:100%; padding:10px; margin:5px 0; }
+#contrato { white-space: pre-wrap; border:1px solid #ccc; padding:15px; margin-top:20px; }
+</style>
+</head>
+<body>
+
+<h2>Gerador de Contrato – Parceiro</h2>
+
+<input id="razao" placeholder="Razão Social / Nome Fantasia">
+<input id="cnpj" placeholder="CNPJ">
+<input id="cidade" placeholder="Cidade / UF">
+<input id="responsavel" placeholder="Responsável Legal">
+<input id="telefone" placeholder="WhatsApp">
+<input id="email" placeholder="E-mail">
+
+<button onclick="gerar()">Gerar Contrato</button>
+<button onclick="window.print()">Imprimir / Salvar PDF</button>
+
+<div id="contrato"></div>
+
+<script>
+function gerar() {
+  const data = {
+    razao: razao.value,
+    cnpj: cnpj.value,
+    cidade: cidade.value,
+    responsavel: responsavel.value,
+    telefone: telefone.value,
+    email: email.value
+  };
+
+  document.getElementById("contrato").innerText = `
+CONTRATO DE PARCERIA COMERCIAL – CARTÃO APROVEITAI
+
+PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA
+CNPJ: 58.584.332/0001-40
+Sede: Guaçuí – ES
+Contato: (28) 99969-2303
+E-mail: cartao.aproveitai@gmail.com
+
+E de outro lado:
+
+Razão Social / Nome Fantasia: ${data.razao}
+CNPJ: ${data.cnpj}
+Cidade/UF: ${data.cidade}
+Responsável Legal: ${data.responsavel}
+Telefone: ${data.telefone}
+E-mail: ${data.email}
+
+CLÁUSULA 1ª – DO OBJETO
+Parceria para divulgação e validação de descontos.
+
+CLÁUSULA 2ª – DA ATUAÇÃO
+A CONTRATADA atua apenas como intermediadora de divulgação e validação.
+Não intermedia pagamentos nem vendas.
+
+CLÁUSULA 3ª – DOS DESCONTOS
+Os descontos são de inteira responsabilidade do PARCEIRO.
+
+CLÁUSULA 4ª – DA DIVULGAÇÃO
+O PARCEIRO compromete-se a divulgar o Cartão AproveitAI.
+
+CLÁUSULA 5ª – DA RESPONSABILIDADE
+A CONTRATADA não se responsabiliza por pagamentos, produtos ou serviços.
+
+CLÁUSULA 6ª – DA VIGÊNCIA
+Prazo indeterminado, com renovação automática.
+
+CLÁUSULA 7ª – DA RESCISÃO
+Rescisão a qualquer tempo, sem ônus.
+
+CLÁUSULA 8ª – DO FORO
+Foro de Guaçuí – ES.
+
+Aceite eletrônico válido como assinatura.
+`;
+}
+</script>
+
+</body>
+</html>

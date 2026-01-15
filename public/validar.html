@@ -232,6 +232,9 @@ button {
 }
 
 </style>
+<link rel="manifest" href="manifest-validar.json">
+<meta name="theme-color" content="#198754">
+
 </head>
 
 <body>
@@ -279,11 +282,17 @@ if ("serviceWorker" in navigator) {
 </footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
-
 <script>
+const logado = localStorage.getItem("parceiroLogado");
+const token  = localStorage.getItem("parceiro_token");
+const cnpj   = localStorage.getItem("parceiro_cnpj");
+
+if (logado !== "sim" || !token || !cnpj) {
+  alert("Acesse pelo painel do parceiro para validar clientes.");
+  window.location.href = "painelparceiro.html";
+}
+
+
 const conteudo = document.getElementById("conteudo");
 const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
@@ -419,5 +428,12 @@ async function processarQR(texto) {
   scannerAtivo = false;
 }
 </script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+
+
 </body>
 </html>
