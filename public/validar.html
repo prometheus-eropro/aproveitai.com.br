@@ -377,6 +377,22 @@ async function processarQR(texto) {
 
   try {
     const data = await fetch(url).then(r => r.json());
+// 🚨 TRATAMENTO DE ERROS DA API
+if (data.erro) {
+  if (data.erro === "CLIENTE_NAO_ENCONTRADO") {
+    alert("❌ Cliente não encontrado.");
+    return;
+  }
+
+  if (data.erro === "PARCEIRO_INVALIDO" || data.erro === "PARCEIRO_NAO_INFORMADO") {
+    alert("⚠️ Acesso negado. Faça login novamente no painel do parceiro.");
+    window.location.href = "painelparceiro.html";
+    return;
+  }
+
+  alert("Erro na validação: " + data.erro);
+  return;
+}
 
     resultado.innerHTML = `
       <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
@@ -395,9 +411,9 @@ async function processarQR(texto) {
         <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
 
         <p><b>Cliente desde:</b> ${
-          data.dataCadastro
-            ? new Date(data.dataCadastro).toLocaleString("pt-BR")
-            : "-"
+  data.dataCadastro || "-"
+}</p>
+
         }</p>
 
         <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>

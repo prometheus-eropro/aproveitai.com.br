@@ -227,9 +227,7 @@ form.addEventListener("submit", function(e){
 
   const dados = new FormData(form);
 
-  const nome = dados.get("nome") || "Novo cliente";
-  localStorage.setItem("ultimoCadastroNome", nome);
-
+  // 🔎 Ajuste da data
   if (dados.get("nascimento")) {
     const [y,m,d] = dados.get("nascimento").split("-");
     dados.set("nascimento", `${d}/${m}/${y}`);
@@ -241,8 +239,14 @@ form.addEventListener("submit", function(e){
     mode: "no-cors"
   });
 
+  alert("✅ Cadastro enviado com sucesso.\nSe o CPF já existir, nossa equipe fará a validação.");
+
+  window.location.href = "cadastro-sucesso.html";
+});
+
   // Redireciona somente depois de salvar o nome
   window.location.href = "cadastro-sucesso.html";
+
 });
 </script>
 <script>
