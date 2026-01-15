@@ -222,46 +222,56 @@ document.querySelectorAll('input[inputmode="numeric"]').forEach(campo => {
 <script>
 const form = document.getElementById("formCadastro");
 
-form.addEventListener("submit", function(e){
+form.addEventListener("submit", async function(e) {
   e.preventDefault();
 
   const dados = new FormData(form);
 
-  // 🔎 Ajuste da data
+  // Converte data para BR
   if (dados.get("nascimento")) {
-    const [y,m,d] = dados.get("nascimento").split("-");
+    const [y, m, d] = dados.get("nascimento").split("-");
     dados.set("nascimento", `${d}/${m}/${y}`);
   }
 
-  fetch(form.action, {
-    method: "POST",
-    body: dados,
-    mode: "no-cors"
-  });
+  try {
+    const resp = await fetch(form.action, {
+      method: "POST",
+      body: dados
+    });
 
-  alert("✅ Cadastro enviado com sucesso.\nSe o CPF já existir, nossa equipe fará a validação.");
+    const json = await resp.json();
 
-  window.location.href = "cadastro-sucesso.html";
-});
+    if (json.erro) {
+      if (json.erro === "CPF_JA_CADASTRADO") {
+        alert("⚠️ CPF já cadastrado.\nSe não localizar seu cartão, fale com o suporte.");
+        return;
+      }
 
-  // Redireciona somente depois de salvar o nome
-  window.location.href = "cadastro-sucesso.html";
+      if (json.erro === "CPF_INVALIDO") {
+        alert("❌ CPF inválido.");
+        return;
+      }
 
+      alert("❌ Erro: " + json.erro);
+      return;
+    }
+
+  } catch (err) {
+    alert("❌ Falha ao enviar cadastro. Verifique sua internet.");
+  }
 });
 </script>
 <script>
   const uaField = document.querySelector('input[name="userAgent"]');
   if (uaField) uaField.value = navigator.userAgent;
-<button class="btn-voltar-flutuante" onclick="voltarPagina()">
-  ⬅️ Voltar
-</button>
-<script>
+
 function voltarPagina() {
   history.back();
 }
 </script>
-
-</script>
+<button class="btn-voltar-flutuante" onclick="voltarPagina()">
+  ⬅️ Voltar
+</button>
 
 </body>
 </html>

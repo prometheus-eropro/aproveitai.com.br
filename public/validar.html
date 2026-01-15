@@ -283,6 +283,16 @@ if ("serviceWorker" in navigator) {
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
+
+const parceiroLogado = sessionStorage.getItem("parceiroLogado");
+const token = sessionStorage.getItem("parceiroToken");
+const cnpj  = sessionStorage.getItem("parceiroCNPJ");
+
+if (parceiroLogado !== "SIM" || !token || !cnpj) {
+  alert("🔒 Acesso restrito.\nFaça login no painel do parceiro para validar clientes.");
+  window.location.href = "painelparceiro.html";
+}
+
 const logado = localStorage.getItem("parceiroLogado");
 const token  = localStorage.getItem("parceiro_token");
 const cnpj   = localStorage.getItem("parceiro_cnpj");
@@ -449,7 +459,5 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");
 }
 </script>
-
-
 </body>
 </html>
