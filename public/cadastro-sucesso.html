@@ -31,19 +31,23 @@
   box-shadow:0 0 10px rgba(0,0,0,0.08);
 ">
 
-  <h2 style="color:#0a7a2a">✅ Cadastro recebido com sucesso</h2>
+<h3 style="color:#198754;">
+✅ Cadastro recebido com sucesso
+</h3>
 
-  <p>Seu cadastro foi recebido e será validado por nossa equipe.</p>
+<p>
+Seu cadastro foi <strong>recebido pelo sistema</strong> e está em análise.
+</p>
 
-  <ul>
-    <li>📌 Número do seu Cartão AproveitAI</li>
-    <li>📲 Acesso ao cartão digital com QR Code</li>
-  </ul>
+<ul>
+  <li>🔎 Caso seu CPF <strong>já possua cadastro ativo</strong>, ele será identificado automaticamente.</li>
+  <li>📲 Você <strong>não precisa se cadastrar novamente</strong>.</li>
+  <li>⏳ Em breve entraremos em contato.</li>
+</ul>
 
-  <p style="margin-top:15px">
-    ⚠️ Caso seu CPF já possua cadastro ativo, ele será identificado automaticamente.
-  </p>
-
+<p style="margin-top:10px;color:#856404;">
+⚠️ Se você já é cliente, este envio serve apenas como confirmação de dados.
+</p>
   <button
     onclick="abrirWhatsApp()"
     style="
@@ -77,11 +81,31 @@ function abrirWhatsApp() {
     "_blank"
   );
 }
+<script>
+function abrirWhatsApp() {
+  const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cliente";
+  const telefoneAdmin = "5528999692303";
+
+  const mensagem = `📥 Cadastro enviado – Cartão AproveitAI
+
+👤 Nome: ${nome}
+📄 CPF: informado no cadastro
+⏳ Status: aguardando análise/liberação
+
+ℹ️ Observação:
+Caso este CPF já possua cadastro ativo, esta mensagem serve apenas como confirmação de dados.`;
+
+  window.open(
+    "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem),
+    "_blank"
+  );
+}
 
 function voltarPagina() {
   history.back();
 }
 </script>
+
 <button class="btn-voltar-flutuante" onclick="voltarPagina()">
   ⬅️ Voltar
 </button>
