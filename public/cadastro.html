@@ -225,12 +225,16 @@ const form = document.getElementById("formCadastro");
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
+  // 🔥 LIMPA QUALQUER DADO ANTIGO
+  localStorage.removeItem("ultimoCadastroNome");
+  localStorage.removeItem("ultimoCadastroCPF");
+
   const dados = new FormData(form);
 
-  const nome = dados.get("nome") || "";
-  const cpf  = dados.get("cpf")  || "";
+  const nome = (dados.get("nome") || "").trim();
+  const cpf  = (dados.get("cpf")  || "").trim();
 
-  // guarda SEMPRE o último envio
+  // 🔒 SALVA SEMPRE O QUE FOI DIGITADO AGORA
   localStorage.setItem("ultimoCadastroNome", nome);
   localStorage.setItem("ultimoCadastroCPF", cpf);
 
@@ -246,7 +250,6 @@ form.addEventListener("submit", function (e) {
     mode: "no-cors"
   });
 
-  // sempre vai para sucesso (mensagem neutra)
   window.location.href = "cadastro-sucesso.html";
 });
 </script>
