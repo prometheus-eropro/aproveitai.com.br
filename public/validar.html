@@ -293,16 +293,6 @@ if (parceiroLogado !== "SIM" || !token || !cnpj) {
   window.location.href = "painelparceiro.html";
 }
 
-const logado = localStorage.getItem("parceiroLogado");
-const token  = localStorage.getItem("parceiro_token");
-const cnpj   = localStorage.getItem("parceiro_cnpj");
-
-if (logado !== "sim" || !token || !cnpj) {
-  alert("Acesse pelo painel do parceiro para validar clientes.");
-  window.location.href = "painelparceiro.html";
-}
-
-
 const conteudo = document.getElementById("conteudo");
 const params = new URLSearchParams(window.location.search);
 const idPublicoInicial = params.get("idPublico");
@@ -394,16 +384,15 @@ if (data.erro) {
     return;
   }
 
-  if (data.erro === "PARCEIRO_INVALIDO" || data.erro === "PARCEIRO_NAO_INFORMADO") {
-    alert("⚠️ Acesso negado. Faça login novamente no painel do parceiro.");
-    window.location.href = "painelparceiro.html";
+  if (data.erro === "PARCEIRO_INVALIDO") {
+    alert("⚠️ Sessão inválida. Faça login novamente.");
+    location.href = "painelparceiro.html";
     return;
   }
 
-  alert("Erro na validação: " + data.erro);
+  alert("Erro: " + data.erro);
   return;
 }
-
     resultado.innerHTML = `
       <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
         <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
