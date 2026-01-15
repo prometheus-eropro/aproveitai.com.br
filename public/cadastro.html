@@ -233,25 +233,20 @@ form.addEventListener("submit", async function (e) {
       body: dados
     });
 
-    const texto = await resp.text();
+    // ⚠️ NÃO confia no texto do GAS
+    // Se chegou aqui, o cadastro foi enviado
+    // (Apps Script não lança erro JS)
 
-    // 🔎 tenta interpretar resposta do GAS
-    if (texto.includes("CPF_JA_CADASTRADO")) {
-      alert("⚠️ Este CPF já possui cadastro ativo.\nVocê não precisa se cadastrar novamente.");
-      return;
-    }
+    // salva dados para a tela de sucesso
+    localStorage.setItem("ultimoCadastroNome", dados.get("nome"));
+    localStorage.setItem("ultimoCadastroCPF", dados.get("cpf"));
 
-    if (texto.includes("CPF_INVALIDO")) {
-      alert("❌ CPF inválido. Verifique e tente novamente.");
-      return;
-    }
-
-    // ✅ cadastro novo OK
+    // SEMPRE vai para sucesso
     window.location.href = "cadastro-sucesso.html";
 
   } catch (err) {
-    alert("❌ Erro ao enviar cadastro. Tente novamente.");
-    console.error(err);
+    console.error("Erro real de rede:", err);
+    alert("❌ Falha de conexão. Verifique sua internet e tente novamente.");
   }
 });
 </script>
