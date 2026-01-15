@@ -68,20 +68,24 @@ Seu cadastro foi <strong>recebido pelo sistema</strong> e está em análise.
 
 <script>
 function abrirWhatsApp() {
-  const nome = localStorage.getItem("ultimoCadastroNome") || "Novo cliente";
+  const nome = localStorage.getItem("ultimoCadastroNome") || "Não informado";
+  const cpf  = localStorage.getItem("ultimoCadastroCPF")  || "Não informado";
+
   const telefoneAdmin = "5528999692303";
 
   const mensagem = `📥 Cadastro enviado – Cartão AproveitAI
 
 👤 Nome: ${nome}
-📄 CPF: informado no cadastro
+📄 CPF: ${cpf}
+
 ⏳ Status: aguardando análise/liberação
 
 ℹ️ Observação:
 Caso este CPF já possua cadastro ativo, esta mensagem serve apenas como confirmação de dados.`;
 
   window.open(
-    "https://wa.me/" + telefoneAdmin + "?text=" + encodeURIComponent(mensagem),
+    "https://api.whatsapp.com/send?phone=" + telefoneAdmin +
+    "&text=" + encodeURIComponent(mensagem),
     "_blank"
   );
 }
