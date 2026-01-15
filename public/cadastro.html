@@ -222,10 +222,9 @@ document.querySelectorAll('input[inputmode="numeric"]').forEach(campo => {
 <script>
 const form = document.getElementById("formCadastro");
 
-form.addEventListener("submit", function (e) {
+form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  // validação simples antes de enviar
   const cpf = form.querySelector('input[name="cpf"]').value;
   if (!/^\d{11}$/.test(cpf)) {
     alert("❌ CPF inválido. Digite apenas números.");
@@ -234,19 +233,22 @@ form.addEventListener("submit", function (e) {
 
   const dados = new FormData(form);
 
-  // salva dados localmente (antes de enviar)
-  localStorage.setItem("ultimoCadastroNome", dados.get("nome"));
-  localStorage.setItem("ultimoCadastroCPF", dados.get("cpf"));
+  try {
+    const resp = await fetch(form.action, {
+      method: "POST",
+      body: dados
+    });
 
-  // ENVIO "CEGO" (padrão correto com GAS)
-  fetch(form.action, {
-    method: "POST",
-    body: dados,
-    mode: "no-cors"
-  });
+    // chegou aqui = GAS recebeu e processou
+    localStorage.setItem("ultimoCadastroNome", dados.get("nome"));
+    localStorage.setItem("ultimoCadastroCPF", dados.get("cpf"));
 
-  // SEMPRE vai para sucesso
-  window.location.href = "cadastro-sucesso.html";
+    window.location.href = "cadastro-sucesso.html";
+
+  } catch (err) {
+    alert("❌ Falha de conexão. Verifique sua internet e tente novamente.");
+    console.error(err);
+  }
 });
 </script>
 </body>
