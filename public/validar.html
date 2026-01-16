@@ -343,27 +343,52 @@ if (idPublicoInicial) {
   processarQR(idPublicoInicial);
 }
 
-async function processarQR(texto) {
-  if (sessionStorage.getItem("parceiroLogado") !== "SIM") {
-    alert("Sessão expirada.");
-    location.href = "painelparceiro.html";
-    return;
-  }
+<script>
+let leitor = null;
+let lendo = false;
+let ultimaLeitura = "";
 
-  const resultado = document.getElementById("resultado");
-  resultado.innerHTML = "⏳ Validando…";
+async function pararLeitor() {
+  if (leitor) {
+    try { await leitor.stop(); } catch {}
+  }
+}
+
+async function iniciarLeitor() {
+  if (lendo) return;
+
+  if (!leitor) leitor = new Html5Qrcode("reader");
+
+  await pararLeitor();
+
+  leitor.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 220 },
+    texto => processarQR(texto)
+  );
+}
+
+async function processarQR(texto) {
+  if (lendo) return;
 
   let id = texto;
   if (texto.includes("http")) {
     try {
-      id = new URL(texto).searchParams.get("idPublico") || "";
+      id = new URL(texto).searchParams.get("idPublico");
     } catch {}
   }
 
-  if (!id.startsWith("APV-")) {
-    alert("QR Code inválido");
-    return;
-  }
+  if (!id || !id.startsWith("APV-")) return;
+
+  if (id === ultimaLeitura) return;
+
+  lendo = true;
+  ultimaLeitura = id;
+
+  await pararLeitor();
+
+  const resultado = document.getElementById("resultado");
+  resultado.innerHTML = "⏳ Validando…";
 
   const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
@@ -371,82 +396,36 @@ async function processarQR(texto) {
     API_URL +
     "?idPublico=" + encodeURIComponent(id) +
     "&modo=parceiro" +
-    "&token=" + sessionStorage.getItem("parceiroToken") +
-    "&parceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroNome")) +
-    "&cnpjParceiro=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ"));
+    "&token=" + sessionStorage.getItem("parceiroToken");
 
   try {
     const data = await fetch(url).then(r => r.json());
-// 🚨 TRATAMENTO DE ERROS DA API
-if (data.erro) {
-  if (data.erro === "CLIENTE_NAO_ENCONTRADO") {
-    alert("❌ Cliente não encontrado.");
-    return;
-  }
 
-  if (data.erro === "PARCEIRO_INVALIDO") {
-    alert("⚠️ Sessão inválida. Faça login novamente.");
-    location.href = "painelparceiro.html";
-    return;
-  }
-
-  alert("Erro: " + data.erro);
-  return;
-}
     resultado.innerHTML = `
       <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
         <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
-
         <p><b>Nome:</b> ${data.nome || "-"}</p>
-
-        <p><b>CPF:</b> ${
-          data.cpf
-            ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-            : "-"
-        }</p>
-
-        <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-        <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-        <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-
-        <p><b>Cliente desde:</b> ${
-  data.dataCadastro || "-"
-}</p>
-
-        }</p>
-
-        <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
-
+        <p><b>ID:</b> ${data.idPublico || "-"}</p>
         ${
-          data.ativo === "SIM"
-            ? `<div class="codigo">✔ Código de Autorização: ${data.codigoERO}</div>`
-            : `<p style="font-weight:bold;color:#b02a37">❌ Desconto não autorizado</p>`
+          data.codigoERO
+            ? `<div class="codigo">✔ Código: ${data.codigoERO}</div>`
+            : `<p style="color:red;font-weight:bold">❌ Não autorizado</p>`
         }
-
-        <div style="text-align:center;margin-top:18px">
-          <button onclick="iniciarLeitor()">🔄 Validar outro cliente</button>
-        </div>
+        <button onclick="resetar()">🔄 Validar outro</button>
       </div>
     `;
-
-  } catch (err) {
-    console.error(err);
-    resultado.innerHTML = `
-      <div class="status-box inativo">
-        <h3>⚠️ Erro ao validar</h3>
-        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
-      </div>
-    `;
+  } catch {
+    resultado.innerHTML = "Erro ao validar";
   }
+}
 
-  await pararLeitorSilencioso();
-  scannerAtivo = false;
+function resetar() {
+  lendo = false;
+  ultimaLeitura = "";
+  iniciarLeitor();
 }
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
-}
+
+document.getElementById("btnCamera").onclick = iniciarLeitor;
 </script>
 </body>
 </html>
