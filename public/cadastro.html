@@ -114,7 +114,7 @@
     <li>Após a confirmação, você receberá seu <strong>Cartão Digital AproveitAI</strong> com QR Code.</li>
     <li>Apresente o QR Code aos parceiros para obter descontos.</li>
   </ol>
-  <p style="margin-top:10px;">📙 <strong>Valor individual:</strong> R$ 20,00/mês.</p>
+  <p style="margin-top:10px;">📙 <strong>Valor individual:</strong> R$ 25,00/mês.</p>
   <p>👥 <strong>Grupos</strong> (empresas, associações, sindicatos, condomínios) têm condições especiais.</p>
 </div>
 
@@ -223,18 +223,18 @@ form.addEventListener("submit", async function (e) {
     });
 
     const texto = await resp.text();
-
-    // tenta converter para JSON
     let data = {};
+
     try {
       data = JSON.parse(texto);
-    } catch (e) {
-      // se não for JSON, mas gravou, considera sucesso
-      console.warn("Resposta não JSON:", texto);
-      localStorage.setItem("tipoCadastro", "novo");
-      window.location.href = "cadastro-sucesso.html";
-      return;
+    } catch {
+      // resposta não era JSON, mas o GAS gravou
+      data = { ok: true };
     }
+
+    // SALVA DADOS SEMPRE
+    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
+    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
 
     if (data.erro === "CPF_JA_CADASTRADO") {
       localStorage.setItem("tipoCadastro", "ja_existente");
@@ -253,18 +253,21 @@ form.addEventListener("submit", async function (e) {
       return;
     }
 
-    // fallback
+    // fallback seguro
     localStorage.setItem("tipoCadastro", "novo");
     window.location.href = "cadastro-sucesso.html";
 
   } catch (err) {
     console.error(err);
-    // MESMO COM ERRO, SE GRAVOU → VAI PARA SUCESSO
+
+    // MESMO COM ERRO DE JS → SE GRAVOU, VAI PARA SUCESSO
+    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
+    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
     localStorage.setItem("tipoCadastro", "novo");
+
     window.location.href = "cadastro-sucesso.html";
   }
 });
 </script>
-
 </body>
 </html>

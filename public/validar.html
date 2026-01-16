@@ -281,46 +281,25 @@ if ("serviceWorker" in navigator) {
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
-
 <script>
-
-const parceiroLogado = sessionStorage.getItem("parceiroLogado");
-const token = sessionStorage.getItem("parceiroToken");
-const cnpj  = sessionStorage.getItem("parceiroCNPJ");
-
-if (parceiroLogado !== "SIM" || !token || !cnpj) {
-  alert("🔒 Acesso restrito.\nFaça login no painel do parceiro para validar clientes.");
-  window.location.href = "painelparceiro.html";
-}
-
 const conteudo = document.getElementById("conteudo");
-const params = new URLSearchParams(window.location.search);
-const idPublicoInicial = params.get("idPublico");
 
 conteudo.innerHTML = `
   <button id="btnCamera">📷 Iniciar câmera</button>
   <div id="reader"></div>
-  <div id="resultado" class="resultado"></div>
+  <div id="resultado"></div>
 `;
+
+let leitor = null;
+let lendo = false;
+let ultimaLeitura = "";
 
 document.getElementById("btnCamera").onclick = iniciarLeitor;
 
-let leitor = null;
-let scannerAtivo = false;
-
-async function pararLeitorSilencioso() {
-  if (!leitor) return;
-  try { await leitor.stop(); } catch {}
-}
-
 async function iniciarLeitor() {
-  if (scannerAtivo) return;
-  scannerAtivo = true;
-
-  await pararLeitorSilencioso();
+  if (lendo) return;
 
   if (!leitor) leitor = new Html5Qrcode("reader");
-  document.getElementById("resultado").innerHTML = "";
 
   try {
     await leitor.start(
@@ -328,43 +307,16 @@ async function iniciarLeitor() {
       { fps: 10, qrbox: 220 },
       texto => processarQR(texto)
     );
-  } catch (err) {
-    scannerAtivo = false;
-    document.getElementById("resultado").innerHTML = `
-      <div class="status-box inativo">
-        <h3>⚠️ Não foi possível acessar a câmera</h3>
-        <button onclick="iniciarLeitor()">🔄 Tentar novamente</button>
-      </div>
-    `;
+  } catch (e) {
+    document.getElementById("resultado").innerHTML =
+      "<p>❌ Não foi possível acessar a câmera</p>";
   }
 }
-
-if (idPublicoInicial) {
-  processarQR(idPublicoInicial);
-}
-
-let leitor = null;
-let lendo = false;
-let ultimaLeitura = "";
 
 async function pararLeitor() {
   if (leitor) {
     try { await leitor.stop(); } catch {}
   }
-}
-
-async function iniciarLeitor() {
-  if (lendo) return;
-
-  if (!leitor) leitor = new Html5Qrcode("reader");
-
-  await pararLeitor();
-
-  leitor.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 220 },
-    texto => processarQR(texto)
-  );
 }
 
 async function processarQR(texto) {
@@ -379,43 +331,36 @@ async function processarQR(texto) {
 
   if (!id || !id.startsWith("APV-")) return;
 
-  if (id === ultimaLeitura) return;
-
   lendo = true;
   ultimaLeitura = id;
 
   await pararLeitor();
 
-  const resultado = document.getElementById("resultado");
-  resultado.innerHTML = "⏳ Validando…";
-
-  const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+  const API =
+    "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
   const url =
-    API_URL +
+    API +
     "?idPublico=" + encodeURIComponent(id) +
     "&modo=parceiro" +
     "&token=" + sessionStorage.getItem("parceiroToken");
 
-  try {
-    const data = await fetch(url).then(r => r.json());
+  const r = await fetch(url);
+  const data = await r.json();
 
-    resultado.innerHTML = `
-      <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-        <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
-        <p><b>Nome:</b> ${data.nome || "-"}</p>
-        <p><b>ID:</b> ${data.idPublico || "-"}</p>
-        ${
-          data.codigoERO
-            ? `<div class="codigo">✔ Código: ${data.codigoERO}</div>`
-            : `<p style="color:red;font-weight:bold">❌ Não autorizado</p>`
-        }
-        <button onclick="resetar()">🔄 Validar outro</button>
-      </div>
-    `;
-  } catch {
-    resultado.innerHTML = "Erro ao validar";
-  }
+  document.getElementById("resultado").innerHTML = `
+    <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+      <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
+      <p><b>Nome:</b> ${data.nome || "-"}</p>
+      <p><b>ID:</b> ${data.idPublico || "-"}</p>
+      ${
+        data.codigoERO
+          ? `<div class="codigo">✔ Código: ${data.codigoERO}</div>`
+          : `<p style="color:red;font-weight:bold">❌ Não autorizado</p>`
+      }
+      <button onclick="resetar()">🔄 Validar outro</button>
+    </div>
+  `;
 }
 
 function resetar() {
@@ -423,8 +368,6 @@ function resetar() {
   ultimaLeitura = "";
   iniciarLeitor();
 }
-
-document.getElementById("btnCamera").onclick = iniciarLeitor;
 </script>
 </body>
 </html>
