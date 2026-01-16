@@ -349,18 +349,26 @@ async function processarQR(texto) {
   const data = await r.json();
 
   document.getElementById("resultado").innerHTML = `
-    <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-      <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
-      <p><b>Nome:</b> ${data.nome || "-"}</p>
-      <p><b>ID:</b> ${data.idPublico || "-"}</p>
-      ${
-        data.codigoERO
-          ? `<div class="codigo">✔ Código: ${data.codigoERO}</div>`
-          : `<p style="color:red;font-weight:bold">❌ Não autorizado</p>`
-      }
-      <button onclick="resetar()">🔄 Validar outro</button>
-    </div>
-  `;
+  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
+    <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
+
+    <p><b>Nome:</b> ${data.nome}</p>
+    <p><b>CPF:</b> ${data.cpf}</p>
+    <p><b>ID Público:</b> ${data.idPublico}</p>
+    <p><b>Cidade:</b> ${data.cidade}</p>
+    <p><b>Grupo:</b> ${data.grupo}</p>
+    <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
+
+    ${
+      data.ativo === "SIM"
+        ? `<div class="codigo">✔ Código: ${data.codigoERO}</div>`
+        : `<p style="font-weight:bold">🚫 Sem liberação</p>`
+    }
+
+    <button onclick="resetar()">🔄 Voltar</button>
+  </div>
+`;
+
 }
 
 function resetar() {
