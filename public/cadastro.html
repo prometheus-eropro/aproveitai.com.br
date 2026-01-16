@@ -221,39 +221,37 @@ form.addEventListener("submit", async function (e) {
 
   const dados = new FormData(form);
 
-  try {
-    const resp = await fetch(form.action, {
-      method: "POST",
-      body: dados
-    });
+ try {
+  const resp = await fetch(form.action, {
+    method: "POST",
+    body: new FormData(form)
+  });
 
-    const json = await resp.json();
+  const data = await resp.json();
 
-    // CPF já existente
-    if (json.erro === "CPF_JA_CADASTRADO") {
-      localStorage.setItem("tipoCadastro", "ja_existente");
-      window.location.href = "cadastro-sucesso.html";
-      return;
-    }
-
-    // CPF inválido
-    if (json.erro === "CPF_INVALIDO") {
-      alert("❌ CPF inválido. Verifique os dados.");
-      return;
-    }
-
-    // Cadastro novo
-    if (json.ok) {
-      localStorage.setItem("tipoCadastro", "novo");
-      window.location.href = "cadastro-sucesso.html";
-      return;
-    }
-
-    alert("❌ Erro no cadastro.");
-
-  } catch (err) {
-    alert("❌ Falha de conexão. Verifique sua internet.");
+  if (data.erro === "CPF_JA_CADASTRADO") {
+    localStorage.setItem("tipoCadastro", "ja_existente");
+    window.location.href = "cadastro-sucesso.html";
+    return;
   }
+
+  if (data.erro === "CPF_INVALIDO") {
+    alert("❌ CPF inválido.");
+    return;
+  }
+
+  if (data.ok) {
+    localStorage.setItem("tipoCadastro", "novo");
+    window.location.href = "cadastro-sucesso.html";
+    return;
+  }
+
+  alert("❌ Erro inesperado no cadastro.");
+
+} catch (err) {
+  alert("❌ Erro inesperado. Tente novamente.");
+}
+
 });
 </script>
 </body>
