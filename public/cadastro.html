@@ -216,21 +216,44 @@
 <script>
 const form = document.getElementById("formCadastro");
 
-form.addEventListener("submit", function () {
-  // salva dados localmente
-  localStorage.setItem(
-    "ultimoCadastroNome",
-    form.querySelector('[name="nome"]').value
-  );
-  localStorage.setItem(
-    "ultimoCadastroCPF",
-    form.querySelector('[name="cpf"]').value
-  );
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-  // aguarda envio real e redireciona
-  setTimeout(() => {
-    window.location.href = "cadastro-sucesso.html";
-  }, 800);
+  const dados = new FormData(form);
+
+  try {
+    const resp = await fetch(form.action, {
+      method: "POST",
+      body: dados
+    });
+
+    const json = await resp.json();
+
+    // CPF já existente
+    if (json.erro === "CPF_JA_CADASTRADO") {
+      localStorage.setItem("tipoCadastro", "ja_existente");
+      window.location.href = "cadastro-sucesso.html";
+      return;
+    }
+
+    // CPF inválido
+    if (json.erro === "CPF_INVALIDO") {
+      alert("❌ CPF inválido. Verifique os dados.");
+      return;
+    }
+
+    // Cadastro novo
+    if (json.ok) {
+      localStorage.setItem("tipoCadastro", "novo");
+      window.location.href = "cadastro-sucesso.html";
+      return;
+    }
+
+    alert("❌ Erro no cadastro.");
+
+  } catch (err) {
+    alert("❌ Falha de conexão. Verifique sua internet.");
+  }
 });
 </script>
 </body>
