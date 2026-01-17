@@ -150,7 +150,7 @@ Status: ${ativo ? "ATIVO ✅" : "INATIVO ❌"}
 
 Responda com:
 - *Nota do PARCEIRO*: número de *1 a 4*
-- *Nota do CARTÃO*: número de *5 a 8*
+- *Nota da Plataforma*: número de *5 a 8*
 
 Exemplo:
 3
@@ -207,12 +207,12 @@ if (/^[1-8]$/.test(up)) {
 
     await sendText(
       phone,
-      "✅ Nota do parceiro registrada! Agora envie a *nota do Cartão* (5 a 8)."
+      "✅ Nota do parceiro registrada! Agora envie a *nota da Plataforma* (5 a 8)."
     );
     return res.status(200).json({ ok: true });
   }
 
-  // nota do cartão (5 a 8)
+  // nota da Plataforma (5 a 8)
   if (nota >= 5 && nota <= 8) {
     await callGS({
       acao: "feedback",
