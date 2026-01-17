@@ -282,6 +282,25 @@ if ("serviceWorker" in navigator) {
 </footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
+/* ==============================
+   PROTEÇÃO – SOMENTE PARCEIRO
+============================== */
+const parceiroToken = sessionStorage.getItem("parceiroToken");
+const parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ");
+
+if (!parceiroToken || !parceiroCNPJ) {
+  document.body.innerHTML = `
+    <div style="
+      padding:40px;
+      text-align:center;
+      font-family:Arial;
+    ">
+      <h2>🚫 Acesso restrito</h2>
+      <p>Esta área é exclusiva para parceiros logados.</p>
+      <a href="painelparceiro.html">🔐 Ir para login</a>
+    </div>
+  `;
+}
 const conteudo = document.getElementById("conteudo");
 
 conteudo.innerHTML = `
