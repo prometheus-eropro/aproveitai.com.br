@@ -5,6 +5,7 @@
   <title>Cadastro | Plataforma AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+
   <style>
     .card-info {
       background: #f1fbff;
@@ -36,50 +37,23 @@
       display: block;
       width: 100%;
     }
-    .checkbox-termo {
+    .aceite-termos {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin-top: 20px;
+      font-size: 0.95rem;
     }
-    .checkbox-termo label {
-      display: inline;
-      font-weight: normal;
+    .aceite-termos input {
+      width: 16px;
+      height: 16px;
     }
-.aceite-termos {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-  font-size: 0.95rem;
-}
-
-.aceite-termos input {
-  width: 16px;
-  height: 16px;
-}
-.btn-voltar-flutuante {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 9999;
-  background: #198754;
-  color: #fff;
-  border: none;
-  border-radius: 50px;
-  padding: 14px 18px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-}
-
-.btn-voltar-flutuante:hover {
-  background: #146c43;
-}
-
   </style>
 </head>
 
 <body>
-<!-- ✅ CABEÇALHO PADRÃO -->
+
+<!-- CABEÇALHO -->
 <header class="site-header">
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
@@ -94,125 +68,82 @@
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
-<div style="
-  background:#fff3cd;
-  color:#856404;
-  padding:8px;
-  text-align:center;
-  font-size:13px;
-">
+
+<div style="background:#fff3cd;color:#856404;padding:8px;text-align:center;font-size:13px;">
   ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
 </div>
 
-<!-- ✅ BLOCO EXPLICAÇÃO -->
+<!-- EXPLICAÇÃO -->
 <div class="card-info">
-  <h2 style="color:#007f30; text-align:center;">📋 Como funciona a Plataforma AproveitAI</h2>
+  <h2 style="color:#007f30;text-align:center;">📋 Como funciona a Plataforma AproveitAI</h2>
   <p>O <strong>Plataforma AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
-  <ol style="margin-top:10px;">
+  <ol>
     <li>Preencha o cadastro e aceite os Termos de Adesão.</li>
     <li>Nossa equipe entrará em contato para confirmar o pagamento.</li>
     <li>Após a confirmação, você receberá seu <strong>Cartão Digital AproveitAI</strong> com QR Code.</li>
     <li>Apresente o QR Code aos parceiros para obter descontos.</li>
   </ol>
-  <p style="margin-top:10px;">📙 <strong>Valor individual:</strong> R$ 25,00/mês.</p>
-  <p>👥 <strong>Grupos</strong> (empresas, associações, sindicatos, condomínios) têm condições especiais.</p>
+  <p><strong>Valor individual:</strong> R$ 25,00/mês.</p>
+  <p><strong>Grupos</strong> têm condições especiais.</p>
 </div>
 
-<!-- ✅ FORMULÁRIO -->
+<!-- FORMULÁRIO (CORRIGIDO) -->
 <div class="form-wrap">
+
 <form
-  id="formCadastro"
   action="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
   method="POST"
   target="hidden_iframe"
- >
+  onsubmit="setTimeout(() => window.location.href='cadastro-sucesso.html', 800);"
+>
 
-<!-- rastreio básico -->
-<input type="hidden" name="userAgent" value="">
-<input type="hidden" name="origemAceite" value="cadastro_site">
-<input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
+  <input type="hidden" name="origem" value="cadastro_site">
+  <input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
+  <input type="hidden" name="userAgent" value="">
 
   <label>Nome completo:</label>
   <input type="text" name="nome" required>
 
-<label>CPF:</label>
-<input
-  type="text"
-  name="cpf"
-  placeholder="Somente números"
-  maxlength="11"
-  pattern="\d{11}"
-  inputmode="numeric"
-  required
->
+  <label>CPF:</label>
+  <input type="text" name="cpf" maxlength="11" pattern="\d{11}" inputmode="numeric" required>
 
-<label>Celular (WhatsApp):</label>
-<input
-  type="text"
-  name="celular"
-  placeholder="DDD + número (ex: 28999990000)"
-  maxlength="11"
-  pattern="\d{10,11}"
-  inputmode="numeric"
-  required
->
+  <label>Celular (WhatsApp):</label>
+  <input type="text" name="celular" maxlength="11" pattern="\d{10,11}" inputmode="numeric" required>
 
-<label>Cidade - Estado:</label>
-<input
-  type="text"
-  name="cidade"
-  placeholder="Ex: Município - UF"
-  required
->
+  <label>Cidade - Estado:</label>
+  <input type="text" name="cidade" required>
 
   <label>Grupo (empresa, sindicato ou particular):</label>
   <input type="text" name="grupo">
 
   <label>Data de nascimento:</label>
-  <input
-  type="date"
-  id="nascimento"
-  name="nascimento"
-  required
->
-
-
-  <!-- CAMPOS OCULTOS PARA BLINDAGEM -->
-  <input type="hidden" name="origem" value="cadastro_site">
+  <input type="date" name="nascimento" required>
 
   <label class="aceite-termos">
     <input type="checkbox" name="aceite" value="SIM" required>
     <span>
-      Li e aceito os 
-      <a href="termos.html" target="_blank">Termos de Adesão</a> e 
+      Li e aceito os
+      <a href="termos.html" target="_blank">Termos de Adesão</a> e
       <a href="privacidade.html" target="_blank">Política de Privacidade</a>
     </span>
   </label>
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
 </form>
+
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 
-  <div style="text-align:center; margin-top: 20px;">
-    <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
-  </div>
+<div style="text-align:center;margin-top:20px;">
+  <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
 </div>
 
-<!-- ✅ RODAPÉ PADRÃO -->
-<footer style="
-  background:#dfffe0;
-  padding:12px;
-  text-align:center;
-  font-size:12px;
-  line-height:1.4;
-">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
+</div>
 
+<!-- RODAPÉ -->
+<footer style="background:#dfffe0;padding:12px;text-align:center;font-size:12px;">
+  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
-  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
-<script>
-function enviarCadastro() {
-  </body>
+
+</body>
 </html>
