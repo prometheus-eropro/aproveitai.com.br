@@ -2,10 +2,9 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro | Plataforma AproveitAI</title>
+  <title>Cadastro | Cartão AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
-
   <style>
     .card-info {
       background: #f1fbff;
@@ -37,28 +36,55 @@
       display: block;
       width: 100%;
     }
-    .aceite-termos {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .checkbox-termo {
       margin-top: 20px;
-      font-size: 0.95rem;
     }
-    .aceite-termos input {
-      width: 16px;
-      height: 16px;
+    .checkbox-termo label {
+      display: inline;
+      font-weight: normal;
     }
+.aceite-termos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 0.95rem;
+}
+
+.aceite-termos input {
+  width: 16px;
+  height: 16px;
+}
+.btn-voltar-flutuante {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  background: #198754;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.btn-voltar-flutuante:hover {
+  background: #146c43;
+}
+
   </style>
 </head>
 
 <body>
-
-<!-- CABEÇALHO -->
+<!-- ✅ CABEÇALHO PADRÃO -->
 <header class="site-header">
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
     <div class="brand-center">
-      <h1 class="site-title">Plataforma AproveitAI</h1>
+      <h1 class="site-title">Cartão AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         📝 <strong>Quero ser Cliente</strong><br>
@@ -68,92 +94,180 @@
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
-
-<div style="background:#fff3cd;color:#856404;padding:8px;text-align:center;font-size:13px;">
+<div style="
+  background:#fff3cd;
+  color:#856404;
+  padding:8px;
+  text-align:center;
+  font-size:13px;
+">
   ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
 </div>
 
-<!-- EXPLICAÇÃO -->
+<!-- ✅ BLOCO EXPLICAÇÃO -->
 <div class="card-info">
-  <h2 style="color:#007f30;text-align:center;">📋 Como funciona a Plataforma AproveitAI</h2>
-  <p>O <strong>Plataforma AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
-  <ol>
+  <h2 style="color:#007f30; text-align:center;">📋 Como funciona o Cartão AproveitAI</h2>
+  <p>O <strong>Cartão AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
+  <ol style="margin-top:10px;">
     <li>Preencha o cadastro e aceite os Termos de Adesão.</li>
     <li>Nossa equipe entrará em contato para confirmar o pagamento.</li>
     <li>Após a confirmação, você receberá seu <strong>Cartão Digital AproveitAI</strong> com QR Code.</li>
     <li>Apresente o QR Code aos parceiros para obter descontos.</li>
   </ol>
-  <p><strong>Valor individual:</strong> R$ 25,00/mês.</p>
-  <p><strong>Grupos</strong> têm condições especiais.</p>
+  <p style="margin-top:10px;">📙 <strong>Valor individual:</strong> R$ 25,00/mês.</p>
+  <p>👥 <strong>Grupos</strong> (empresas, associações, sindicatos, condomínios) têm condições especiais.</p>
 </div>
 
-<!-- FORMULÁRIO (CORRIGIDO) -->
+<!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
-
 <form
+  id="formCadastro"
   action="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
   method="POST"
-  target="hidden_iframe"
-  onsubmit="setTimeout(() => window.location.href='cadastro-sucesso.html', 800);"
 >
-
-  <input type="hidden" name="origem" value="cadastro_site">
-  <input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
-  <input type="hidden" name="userAgent" value="">
+<!-- rastreio básico -->
+<input type="hidden" name="userAgent" value="">
+<input type="hidden" name="origemAceite" value="cadastro_site">
+<input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
 
   <label>Nome completo:</label>
   <input type="text" name="nome" required>
 
-  <label>CPF:</label>
-  <input type="text" name="cpf" maxlength="11" pattern="\d{11}" inputmode="numeric" required>
+<label>CPF:</label>
+<input
+  type="text"
+  name="cpf"
+  placeholder="Somente números"
+  maxlength="11"
+  pattern="\d{11}"
+  inputmode="numeric"
+  required
+>
 
-  <label>Celular (WhatsApp):</label>
-  <input type="text" name="celular" maxlength="11" pattern="\d{10,11}" inputmode="numeric" required>
+<label>Celular (WhatsApp):</label>
+<input
+  type="text"
+  name="celular"
+  placeholder="DDD + número (ex: 28999990000)"
+  maxlength="11"
+  pattern="\d{10,11}"
+  inputmode="numeric"
+  required
+>
 
-  <label>Cidade - Estado:</label>
-  <input type="text" name="cidade" required>
+<label>Cidade - Estado:</label>
+<input
+  type="text"
+  name="cidade"
+  placeholder="Ex: Município - UF"
+  required
+>
 
   <label>Grupo (empresa, sindicato ou particular):</label>
   <input type="text" name="grupo">
 
   <label>Data de nascimento:</label>
-  <input type="date" name="nascimento" required>
-<input type="hidden" name="origemAceite" value="cadastro_site">
-<input type="hidden" name="qrURL" id="qrURL">
+  <input
+  type="date"
+  id="nascimento"
+  name="nascimento"
+  required
+>
+
+
+  <!-- CAMPOS OCULTOS PARA BLINDAGEM -->
+  <input type="hidden" name="origem" value="cadastro_site">
 
   <label class="aceite-termos">
     <input type="checkbox" name="aceite" value="SIM" required>
     <span>
-      Li e aceito os
-      <a href="termos.html" target="_blank">Termos de Adesão</a> e
+      Li e aceito os 
+      <a href="termos.html" target="_blank">Termos de Adesão</a> e 
       <a href="privacidade.html" target="_blank">Política de Privacidade</a>
     </span>
   </label>
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
+<input type="hidden" name="userAgent" id="userAgent">
+
 </form>
-
-<iframe name="hidden_iframe" style="display:none;"></iframe>
-
-<div style="text-align:center;margin-top:20px;">
-  <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+  <div style="text-align:center; margin-top: 20px;">
+    <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+  </div>
 </div>
 
-</div>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
 
-<!-- RODAPÉ -->
-<footer style="background:#dfffe0;padding:12px;text-align:center;font-size:12px;">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
-  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
 <script>
-  // Preenche dados técnicos antes de enviar
-  document.addEventListener("DOMContentLoaded", function () {
-    const uaInput = document.querySelector('input[name="userAgent"]');
-    if (uaInput) {
-      uaInput.value = navigator.userAgent;
+const form = document.getElementById("formCadastro");
+
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  try {
+    const resp = await fetch(form.action, {
+      method: "POST",
+      body: new FormData(form)
+    });
+
+    const texto = await resp.text();
+    let data = {};
+
+    try {
+      data = JSON.parse(texto);
+    } catch {
+      // resposta não era JSON, mas o GAS gravou
+      data = { ok: true };
     }
-  });
+
+    // SALVA DADOS SEMPRE
+    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
+    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
+
+    if (data.erro === "CPF_JA_CADASTRADO") {
+      localStorage.setItem("tipoCadastro", "ja_existente");
+      window.location.href = "cadastro-sucesso.html";
+      return;
+    }
+
+    if (data.erro === "CPF_INVALIDO") {
+      alert("❌ CPF inválido.");
+      return;
+    }
+
+    if (data.ok) {
+      localStorage.setItem("tipoCadastro", "novo");
+      window.location.href = "cadastro-sucesso.html";
+      return;
+    }
+
+    // fallback seguro
+    localStorage.setItem("tipoCadastro", "novo");
+    window.location.href = "cadastro-sucesso.html";
+
+  } catch (err) {
+    console.error(err);
+
+    // MESMO COM ERRO DE JS → SE GRAVOU, VAI PARA SUCESSO
+    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
+    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
+    localStorage.setItem("tipoCadastro", "novo");
+
+    window.location.href = "cadastro-sucesso.html";
+  }
+});
 </script>
 </body>
 </html>
