@@ -2,83 +2,135 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Contrato de Parceria – Plataforma AproveitAI</title>
+<title>Gerador de Contrato – Plataforma AproveitAI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { font-family: Arial, sans-serif; padding:20px; }
-input, button { width:100%; padding:10px; margin:5px 0; }
-#contrato { white-space: pre-wrap; border:1px solid #ccc; padding:15px; margin-top:20px; }
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+}
+h1 {
+  text-align: center;
+}
+label {
+  font-weight: bold;
+}
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0 15px 0;
+}
+button {
+  padding: 12px;
+  background: #0a7a2a;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+button:hover {
+  opacity: 0.9;
+}
+#contrato {
+  white-space: pre-wrap;
+  margin-top: 30px;
+  border-top: 2px solid #ccc;
+  padding-top: 20px;
+}
 </style>
 </head>
+
 <body>
+<div class="container">
 
-<h2>Gerador de Contrato – Parceiro</h2>
+<h1>Gerador de Contrato – Parceiro<br>Plataforma AproveitAI</h1>
 
-<input id="razao" placeholder="Razão Social / Nome Fantasia">
-<input id="cnpj" placeholder="CNPJ">
-<input id="cidade" placeholder="Cidade / UF">
-<input id="responsavel" placeholder="Responsável Legal">
-<input id="telefone" placeholder="WhatsApp">
-<input id="email" placeholder="E-mail">
+<label>Nome do Parceiro / Empresa</label>
+<input id="nomeParceiro">
 
-<button onclick="gerar()">Gerar Contrato</button>
-<button onclick="window.print()">Imprimir / Salvar PDF</button>
+<label>CNPJ</label>
+<input id="cnpj">
+
+<label>Nome do Responsável Legal</label>
+<input id="responsavel">
+
+<label>Cidade / Estado</label>
+<input id="cidade">
+
+<button onclick="gerar()">GERAR CONTRATO</button>
 
 <div id="contrato"></div>
 
+</div>
+
 <script>
 function gerar() {
-  const data = {
-    razao: razao.value,
-    cnpj: cnpj.value,
-    cidade: cidade.value,
-    responsavel: responsavel.value,
-    telefone: telefone.value,
-    email: email.value
-  };
 
-  document.getElementById("contrato").innerText = `
+const nome = document.getElementById("nomeParceiro").value;
+const cnpj = document.getElementById("cnpj").value;
+const resp = document.getElementById("responsavel").value;
+const cidade = document.getElementById("cidade").value;
+
+document.getElementById("contrato").innerText = `
 CONTRATO DE PARCERIA COMERCIAL – PLATAFORMA APROVEITAI
 
+CONTRATADA:
 PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA
 CNPJ: 58.584.332/0001-40
 Sede: Guaçuí – ES
-Contato: (28) 99969-2303
-E-mail: cartao.aproveitai@gmail.com
 
-E de outro lado:
+CONTRATANTE:
+${nome}
+CNPJ: ${cnpj}
+Representante Legal: ${resp}
+Cidade: ${cidade}
 
-Razão Social / Nome Fantasia: ${data.razao}
-CNPJ: ${data.cnpj}
-Cidade/UF: ${data.cidade}
-Responsável Legal: ${data.responsavel}
-Telefone: ${data.telefone}
-E-mail: ${data.email}
+1. DO OBJETO
+Parceria para divulgação e validação de benefícios e descontos aos usuários da Plataforma AproveitAI.
 
-CLÁUSULA 1ª – DO OBJETO
-Parceria para divulgação e validação de descontos.
+2. DA AUTONOMIA DO PARCEIRO
+2.1 O PARCEIRO define livremente os benefícios, percentuais, condições, datas de início e término.
+2.2 Qualquer alteração deverá ser informada previamente à CONTRATADA para divulgação.
+2.3 A CONTRATADA não interfere em preços, produtos ou serviços.
 
-CLÁUSULA 2ª – DA ATUAÇÃO
-A CONTRATADA atua apenas como intermediadora de divulgação e validação.
-Não intermedia pagamentos nem vendas.
+3. DA RESPONSABILIDADE FINANCEIRA
+A CONTRATADA não realiza cobranças, não intermedia pagamentos e não se responsabiliza por compras realizadas entre PARCEIRO e CLIENTE.
 
-CLÁUSULA 3ª – DOS DESCONTOS
-Os descontos são de inteira responsabilidade do PARCEIRO.
+4. DA FORMA DE PAGAMENTO
+Os benefícios são válidos prioritariamente para pagamento em dinheiro (espécie).
+Outras formas de pagamento ficam a critério exclusivo do PARCEIRO.
 
-CLÁUSULA 4ª – DA DIVULGAÇÃO
-O PARCEIRO compromete-se a divulgar a Plataforma AproveitAI.
+5. DA DISPONIBILIDADE
+Em caso de falta de internet, energia elétrica ou falhas de sistema, a concessão do desconto ficará a critério do PARCEIRO.
 
-CLÁUSULA 5ª – DA RESPONSABILIDADE
-A CONTRATADA não se responsabiliza por pagamentos, produtos ou serviços.
+6. DO USO DE MARCA
+O PARCEIRO autoriza o uso de sua marca para divulgação institucional da Plataforma AproveitAI.
+A CONTRATADA autoriza o uso da marca Plataforma AproveitAI pelo PARCEIRO.
 
-CLÁUSULA 6ª – DA VIGÊNCIA
-Prazo indeterminado, com renovação automática.
+7. DA DIVULGAÇÃO
+O PARCEIRO compromete-se a divulgar a Plataforma AproveitAI em seus meios de comunicação.
 
-CLÁUSULA 7ª – DA RESCISÃO
-Rescisão a qualquer tempo, sem ônus.
+8. DO CUSTO
+No momento, esta parceria não possui custo.
+A CONTRATADA poderá estabelecer planos futuros mediante aviso prévio.
 
-CLÁUSULA 8ª – DO FORO
-Foro de Guaçuí – ES.
+9. DA VIGÊNCIA
+Contrato por prazo indeterminado.
+
+10. DA RESCISÃO
+Rescisão mediante aviso prévio mínimo de 15 (quinze) dias, respeitando promoções já divulgadas.
+
+11. DO FORO
+Foro da Comarca de Guaçuí – ES.
 
 Aceite eletrônico válido como assinatura.
 `;
