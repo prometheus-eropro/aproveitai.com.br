@@ -155,24 +155,5 @@
     }
   });
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const base = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=";
-    const validarURL = "https://aproveitai.com.br/validar.html?cpf=";
-
-    const cpfInput = document.querySelector("input[name='cpf']");
-    const qrInput  = document.getElementById("qrURL");
-
-    if (cpfInput && qrInput) {
-      cpfInput.addEventListener("input", () => {
-        const cpf = cpfInput.value.replace(/\D/g, "");
-        if (cpf.length >= 11) {
-          qrInput.value = base + encodeURIComponent(validarURL + cpf);
-        }
-      });
-    }
-  });
-</script>
-
 </body>
 </html>
