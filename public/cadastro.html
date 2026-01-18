@@ -118,6 +118,8 @@
 
   <label>Data de nascimento:</label>
   <input type="date" name="nascimento" required>
+<input type="hidden" name="origemAceite" value="cadastro_site">
+<input type="hidden" name="qrURL" id="qrURL">
 
   <label class="aceite-termos">
     <input type="checkbox" name="aceite" value="SIM" required>
@@ -150,6 +152,24 @@
     const uaInput = document.querySelector('input[name="userAgent"]');
     if (uaInput) {
       uaInput.value = navigator.userAgent;
+    }
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const base = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=";
+    const validarURL = "https://aproveitai.com.br/validar.html?cpf=";
+
+    const cpfInput = document.querySelector("input[name='cpf']");
+    const qrInput  = document.getElementById("qrURL");
+
+    if (cpfInput && qrInput) {
+      cpfInput.addEventListener("input", () => {
+        const cpf = cpfInput.value.replace(/\D/g, "");
+        if (cpf.length >= 11) {
+          qrInput.value = base + encodeURIComponent(validarURL + cpf);
+        }
+      });
     }
   });
 </script>
