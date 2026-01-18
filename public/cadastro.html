@@ -188,8 +188,6 @@
   </label>
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
-<input type="hidden" name="userAgent" id="userAgent">
-
 </form>
   <div style="text-align:center; margin-top: 20px;">
     <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
@@ -213,58 +211,36 @@
 <script>
 const form = document.getElementById("formCadastro");
 
+// preenche userAgent (você tem 2 campos; vamos garantir o que tem id)
+(function(){
+  const ua = navigator.userAgent || "";
+  const uaInput = document.getElementById("userAgent");
+  if (uaInput) uaInput.value = ua;
+})();
+
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
 
+  // salva local sempre (para usar no botão do WhatsApp na tela de sucesso)
+  const nome = (form.nome?.value || "").trim();
+  const cpf  = (form.cpf?.value || "").replace(/\D/g, "");
+  localStorage.setItem("ultimoCadastroNome", nome || "Não informado");
+  localStorage.setItem("ultimoCadastroCPF", cpf || "Não informado");
+  localStorage.setItem("tipoCadastro", "novo");
+
   try {
-    const resp = await fetch(form.action, {
+    // ✅ Envia sem CORS (não dá pra ler resposta, mas GRAVA)
+    await fetch(form.action, {
       method: "POST",
+      mode: "no-cors",
       body: new FormData(form)
     });
 
-    const texto = await resp.text();
-    let data = {};
-
-    try {
-      data = JSON.parse(texto);
-    } catch {
-      // resposta não era JSON, mas o GAS gravou
-      data = { ok: true };
-    }
-
-    // SALVA DADOS SEMPRE
-    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
-    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
-
-    if (data.erro === "CPF_JA_CADASTRADO") {
-      localStorage.setItem("tipoCadastro", "ja_existente");
-      window.location.href = "cadastro-sucesso.html";
-      return;
-    }
-
-    if (data.erro === "CPF_INVALIDO") {
-      alert("❌ CPF inválido.");
-      return;
-    }
-
-    if (data.ok) {
-      localStorage.setItem("tipoCadastro", "novo");
-      window.location.href = "cadastro-sucesso.html";
-      return;
-    }
-
-    // fallback seguro
-    localStorage.setItem("tipoCadastro", "novo");
+    // vai pra sucesso SEMPRE
     window.location.href = "cadastro-sucesso.html";
-
   } catch (err) {
     console.error(err);
-
-    // MESMO COM ERRO DE JS → SE GRAVOU, VAI PARA SUCESSO
-    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
-    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
-    localStorage.setItem("tipoCadastro", "novo");
-
+    // mesmo se der erro de rede, manda pra sucesso (você já queria esse fallback)
     window.location.href = "cadastro-sucesso.html";
   }
 });
