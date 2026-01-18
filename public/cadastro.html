@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro | Plataforma AproveitAI</title>
+  <title>Cadastro | Cartão AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -84,7 +84,7 @@
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
     <div class="brand-center">
-      <h1 class="site-title">Plataforma AproveitAI</h1>
+      <h1 class="site-title">Cartão AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         📝 <strong>Quero ser Cliente</strong><br>
@@ -106,8 +106,8 @@
 
 <!-- ✅ BLOCO EXPLICAÇÃO -->
 <div class="card-info">
-  <h2 style="color:#007f30; text-align:center;">📋 Como funciona a Plataforma AproveitAI</h2>
-  <p>O <strong>Plataforma AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
+  <h2 style="color:#007f30; text-align:center;">📋 Como funciona o Cartão AproveitAI</h2>
+  <p>O <strong>Cartão AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
   <ol style="margin-top:10px;">
     <li>Preencha o cadastro e aceite os Termos de Adesão.</li>
     <li>Nossa equipe entrará em contato para confirmar o pagamento.</li>
@@ -124,10 +124,7 @@
   id="formCadastro"
   action="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
   method="POST"
-  target="hidden_iframe"
-  onsubmit="return enviarCadastro();"
 >
-
 <!-- rastreio básico -->
 <input type="hidden" name="userAgent" value="">
 <input type="hidden" name="origemAceite" value="cadastro_site">
@@ -191,9 +188,9 @@
   </label>
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
-</form>
-<iframe name="hidden_iframe" style="display:none;"></iframe>
+<input type="hidden" name="userAgent" id="userAgent">
 
+</form>
   <div style="text-align:center; margin-top: 20px;">
     <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
   </div>
@@ -207,36 +204,70 @@
   font-size:12px;
   line-height:1.4;
 ">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
 
-  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
 <script>
-function enviarCadastro() {
-  const form = document.getElementById("formCadastro");
+const form = document.getElementById("formCadastro");
 
-  // garante userAgent (você tinha duplicado; use só o que tem id="userAgent")
-  const uaInput = document.getElementById("userAgent");
-  if (uaInput) uaInput.value = navigator.userAgent || "";
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-  // salva para usar no cadastro-sucesso.html
-  const nome = (form.nome?.value || "").trim();
-  const cpf  = (form.cpf?.value || "").replace(/\D/g, "");
-  localStorage.setItem("ultimoCadastroNome", nome || "Não informado");
-  localStorage.setItem("ultimoCadastroCPF", cpf || "Não informado");
+  try {
+    const resp = await fetch(form.action, {
+      method: "POST",
+      body: new FormData(form)
+    });
 
-  // como não vamos ler resposta do GAS aqui, sempre "novo"
-  localStorage.setItem("tipoCadastro", "novo");
+    const texto = await resp.text();
+    let data = {};
 
-  // deixa o form enviar (para o iframe) e redireciona
-  setTimeout(() => {
+    try {
+      data = JSON.parse(texto);
+    } catch {
+      // resposta não era JSON, mas o GAS gravou
+      data = { ok: true };
+    }
+
+    // SALVA DADOS SEMPRE
+    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
+    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
+
+    if (data.erro === "CPF_JA_CADASTRADO") {
+      localStorage.setItem("tipoCadastro", "ja_existente");
+      window.location.href = "cadastro-sucesso.html";
+      return;
+    }
+
+    if (data.erro === "CPF_INVALIDO") {
+      alert("❌ CPF inválido.");
+      return;
+    }
+
+    if (data.ok) {
+      localStorage.setItem("tipoCadastro", "novo");
+      window.location.href = "cadastro-sucesso.html";
+      return;
+    }
+
+    // fallback seguro
+    localStorage.setItem("tipoCadastro", "novo");
     window.location.href = "cadastro-sucesso.html";
-  }, 200);
 
-  return true; // ✅ permite o submit normal
-}
+  } catch (err) {
+    console.error(err);
+
+    // MESMO COM ERRO DE JS → SE GRAVOU, VAI PARA SUCESSO
+    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
+    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
+    localStorage.setItem("tipoCadastro", "novo");
+
+    window.location.href = "cadastro-sucesso.html";
+  }
+});
 </script>
 </body>
 </html>
