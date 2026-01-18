@@ -100,42 +100,5 @@ function voltarPagina() {
   window.location.href = "index.html";
 }
 </script>
-<script>
-const tipo = localStorage.getItem("tipoCadastro");
-
-const titulo = document.getElementById("tituloStatus");
-const msg = document.getElementById("mensagemPrincipal");
-const lista = document.getElementById("listaInfo");
-
-if (tipo === "ja_existente") {
-  titulo.innerText = "ℹ️ CPF já cadastrado";
-  titulo.style.color = "#856404";
-
-  msg.innerHTML = `
-    Seu CPF <strong>já possui cadastro</strong> na Plataforma AproveitAI.
-  `;
-
-  lista.innerHTML = `
-    <li>✔️ Não é necessário realizar novo cadastro</li>
-    <li>📲 Seus dados já constam em nosso sistema</li>
-    <li>⏳ Caso necessário, entraremos em contato</li>
-  `;
-} else {
-  // cadastro novo
-  msg.innerHTML = `
-    Seu cadastro foi <strong>recebido pelo sistema</strong> e está em análise.
-  `;
-
-  lista.innerHTML = `
-    <li>🔎 Seus dados serão analisados</li>
-    <li>📲 Em breve entraremos em contato</li>
-    <li>💳 Após a ativação, você poderá usar o cartão</li>
-  `;
-}
-
-// limpa após uso
-localStorage.removeItem("tipoCadastro");
-</script>
-
 </body>
 </html>
