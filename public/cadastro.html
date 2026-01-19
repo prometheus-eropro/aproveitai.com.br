@@ -241,8 +241,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await resp.json();
 
       if (data.ok) {
-        alert("Cadastro realizado com sucesso!");
-        form.reset();
+
+        // Guarda dados locais
+        localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
+        localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
+        localStorage.setItem("tipoCadastro", "novo");
+
+        // Redireciona
+        window.location.href = "cadastro-sucesso.html";
+
       } else {
         alert(data.erro || "Erro ao cadastrar");
       }
@@ -252,16 +259,9 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Erro de comunicação com o servidor");
     }
   });
-});
 
-
-    // MESMO COM ERRO DE JS → SE GRAVOU, VAI PARA SUCESSO
-    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
-    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
-    localStorage.setItem("tipoCadastro", "novo");
-
-    window.location.href = "cadastro-sucesso.html";
 });
 </script>
+
 </body>
 </html>
