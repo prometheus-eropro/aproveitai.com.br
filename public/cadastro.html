@@ -213,59 +213,47 @@
 
 const form = document.getElementById("formCadastro");
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const uaField = document.getElementById("userAgent");
-    if (uaField) {
-      uaField.value = navigator.userAgent;
-    }
-  });
+document.addEventListener("DOMContentLoaded", () => {
 
-form.addEventListener("submit", async function (e) {
-  e.preventDefault();
+  const form = document.getElementById("formCadastro");
+  if (!form) {
+    console.error("Formulário não encontrado");
+    return;
+  }
 
-  try {
-    const resp = await fetch(form.action, {
-      method: "POST",
-      body: new FormData(form)
-    });
+  // Preenche User-Agent real
+  const uaField = document.getElementById("userAgent");
+  if (uaField) {
+    uaField.value = navigator.userAgent;
+  }
 
-    const texto = await resp.text();
-    let data = {};
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
 
     try {
-      data = JSON.parse(texto);
-    } catch {
-      // resposta não era JSON, mas o GAS gravou
-      data = { ok: true };
+      const resp = await fetch(form.action, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await resp.json();
+
+      if (data.ok) {
+        alert("Cadastro realizado com sucesso!");
+        form.reset();
+      } else {
+        alert(data.erro || "Erro ao cadastrar");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro de comunicação com o servidor");
     }
+  });
+});
 
-    // SALVA DADOS SEMPRE
-    localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
-    localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
-
-    if (data.erro === "CPF_JA_CADASTRADO") {
-      localStorage.setItem("tipoCadastro", "ja_existente");
-      window.location.href = "cadastro-sucesso.html";
-      return;
-    }
-
-    if (data.erro === "CPF_INVALIDO") {
-      alert("❌ CPF inválido.");
-      return;
-    }
-
-    if (data.ok) {
-      localStorage.setItem("tipoCadastro", "novo");
-      window.location.href = "cadastro-sucesso.html";
-      return;
-    }
-
-    // fallback seguro
-    localStorage.setItem("tipoCadastro", "novo");
-    window.location.href = "cadastro-sucesso.html";
-
-  } catch (err) {
-    console.error(err);
 
     // MESMO COM ERRO DE JS → SE GRAVOU, VAI PARA SUCESSO
     localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
