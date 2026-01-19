@@ -211,7 +211,6 @@
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
 
-const form = document.getElementById("formCadastro");
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -221,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Preenche User-Agent real
+  // ✅ PREENCHE USER AGENT REAL
   const uaField = document.getElementById("userAgent");
   if (uaField) {
     uaField.value = navigator.userAgent;
@@ -241,15 +240,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await resp.json();
 
       if (data.ok) {
-
-        // Guarda dados locais
         localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
         localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
-        localStorage.setItem("tipoCadastro", "novo");
-
-        // Redireciona
         window.location.href = "cadastro-sucesso.html";
-
       } else {
         alert(data.erro || "Erro ao cadastrar");
       }
