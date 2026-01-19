@@ -126,9 +126,9 @@
   method="POST"
 >
 <!-- rastreio básico -->
-<input type="hidden" name="userAgent" value="">
 <input type="hidden" name="origemAceite" value="cadastro_site">
 <input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
+<input type="hidden" name="observacoes" value="Cadastro via site">
 
   <label>Nome completo:</label>
   <input type="text" name="nome" required>
@@ -210,8 +210,15 @@
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista, salvo autorização expressa do estabelecimento.
 </footer>
-<script>
+
 const form = document.getElementById("formCadastro");
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const uaField = document.getElementById("userAgent");
+    if (uaField) {
+      uaField.value = navigator.userAgent;
+    }
+  });
 
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
