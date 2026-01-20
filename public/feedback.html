@@ -162,53 +162,78 @@ button{
   <h2>💬 Avaliação e Feedback</h2>
 
   <form id="formFeedback">
-    <label>Tipo</label>
-    <select name="tipo" id="tipo">
-      <option value="plataforma">Avaliar Plataforma</option>
-      <option value="parceiro">Avaliar Parceiro + Plataforma</option>
-      <option value="mensagem">Elogio / Sugestão / Reclamação</option>
-    </select>
+  <label>Tipo</label>
+  <select name="tipo" id="tipo">
+    <option value="plataforma">Avaliar Plataforma</option>
+    <option value="parceiro">Avaliar Parceiro + Plataforma</option>
+    <option value="mensagem">Elogio / Sugestão / Reclamação</option>
+  </select>
 
-    <div id="campoParceiro" style="display:none">
-      <label>Nome do Parceiro</label>
-      <input name="parceiro">
-    </div>
+  <!-- NOME DO PARCEIRO -->
+  <div id="campoParceiro" style="display:none">
+    <label>Nome do Parceiro</label>
+    <input type="text" name="parceiro" placeholder="Ex: Farmácia X, Supermercado Y">
+  </div>
 
+  <!-- NOTA PLATAFORMA -->
+  <div id="notaPlataforma" style="display:none">
     <label>Nota da Plataforma (0 a 10)</label>
     <input type="number" name="nota_plataforma" min="0" max="10">
+  </div>
 
-    <div id="notaParceiro" style="display:none">
-      <label>Nota do Parceiro (0 a 10)</label>
-      <input type="number" name="nota_parceiro" min="0" max="10">
-    </div>
+  <!-- NOTA PARCEIRO -->
+  <div id="notaParceiro" style="display:none">
+    <label>Nota do Parceiro (0 a 10)</label>
+    <input type="number" name="nota_parceiro" min="0" max="10">
+  </div>
 
-    <label>Mensagem</label>
-    <textarea name="mensagem" rows="4"></textarea>
+  <label>Mensagem</label>
+  <textarea name="mensagem" rows="4" placeholder="Escreva sua avaliação, elogio, sugestão ou reclamação..."></textarea>
 
-    <button type="submit">Enviar Feedback</button>
-  </form>
+  <button type="submit">Enviar Feedback</button>
+</form>
 </div>
 <script>
 const tipo = document.getElementById("tipo");
 const campoParceiro = document.getElementById("campoParceiro");
+const notaPlataforma = document.getElementById("notaPlataforma");
 const notaParceiro = document.getElementById("notaParceiro");
 
-tipo.addEventListener("change", () => {
-  const ativo = tipo.value === "parceiro";
-  campoParceiro.style.display = ativo ? "block" : "none";
-  notaParceiro.style.display  = ativo ? "block" : "none";
-});
+function aplicarRegrasUI() {
+  const t = tipo.value;
 
-<script>
+  // Reset
+  campoParceiro.style.display = "none";
+  notaPlataforma.style.display = "none";
+  notaParceiro.style.display = "none";
+
+  // Plataforma: nota plataforma + mensagem
+  if (t === "plataforma") {
+    notaPlataforma.style.display = "block";
+  }
+
+  // Parceiro + plataforma: nome parceiro + nota parceiro + nota plataforma + mensagem
+  if (t === "parceiro") {
+    campoParceiro.style.display = "block";
+    notaPlataforma.style.display = "block";
+    notaParceiro.style.display = "block";
+  }
+
+  // Mensagem: só mensagem (nenhuma nota)
+}
+
+tipo.addEventListener("change", aplicarRegrasUI);
+aplicarRegrasUI(); // aplica ao carregar
+
 document.getElementById("formFeedback").addEventListener("submit", async function(e){
   e.preventDefault();
 
   const payload = {
     tipo: tipo.value,
-    parceiro: document.querySelector('[name="parceiro"]')?.value || "",
-    nota_plataforma: document.querySelector('[name="nota_plataforma"]').value,
+    parceiro: document.querySelector('[name="parceiro"]').value || "",
+    nota_plataforma: document.querySelector('[name="nota_plataforma"]')?.value || "",
     nota_parceiro: document.querySelector('[name="nota_parceiro"]')?.value || "",
-    mensagem: document.querySelector('[name="mensagem"]').value
+    mensagem: document.querySelector('[name="mensagem"]').value || ""
   };
 
   try {
@@ -226,6 +251,7 @@ document.getElementById("formFeedback").addEventListener("submit", async functio
     if (data.ok) {
       alert("✅ Obrigado! Seu feedback foi enviado com sucesso 🙏");
       e.target.reset();
+      aplicarRegrasUI();
     } else {
       alert("⚠️ Não foi possível enviar. Tente novamente.");
     }
