@@ -246,12 +246,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await resp.json();
 
       if (data.ok) {
-        alert("✅ Feedback enviado com sucesso!");
-        form.reset();
-        atualizarCampos();
-      } else {
-        alert("⚠️ Erro ao salvar feedback.");
-      }
+  alert("✅ Feedback enviado com sucesso!");
+} else {
+  alert("⚠️ Erro ao salvar: " + (data.erro || "sem detalhes"));
+}
 
     } catch (err) {
       console.error(err);
