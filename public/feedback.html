@@ -188,16 +188,47 @@ button{
     <button type="submit">Enviar Feedback</button>
   </form>
 </div>
-
 <script>
 const tipo = document.getElementById("tipo");
 const campoParceiro = document.getElementById("campoParceiro");
 const notaParceiro = document.getElementById("notaParceiro");
 
-tipo.onchange = () => {
-  campoParceiro.style.display = tipo.value==="parceiro" ? "block":"none";
-  notaParceiro.style.display  = tipo.value==="parceiro" ? "block":"none";
-};
+tipo.addEventListener("change", () => {
+  const ativo = tipo.value === "parceiro";
+  campoParceiro.style.display = ativo ? "block" : "none";
+  notaParceiro.style.display  = ativo ? "block" : "none";
+});
+
+document.getElementById("formFeedback").addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  try {
+    const resp = await fetch(
+      "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await resp.json();
+
+    if (data.ok) {
+      alert("✅ Obrigado! Seu feedback foi enviado com sucesso.");
+      form.reset();
+      campoParceiro.style.display = "none";
+      notaParceiro.style.display = "none";
+    } else {
+      alert("⚠️ Não foi possível enviar. Tente novamente.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("❌ Erro de conexão. Tente novamente.");
+  }
+});
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
@@ -211,7 +242,7 @@ tipo.onchange = () => {
 
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista em meda corrente, salvo autorização expressa do estabelecimento.
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
 
 </body>
