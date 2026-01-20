@@ -188,7 +188,22 @@ button{
     <input type="number" name="nota_parceiro" min="0" max="10">
   </div>
 
-  <label>Mensagem</label>
+<label>Seu nome (opcional)</label>
+<input
+  type="text"
+  name="nome"
+  placeholder="Se quiser, informe seu nome">
+
+<label>WhatsApp (opcional)</label>
+<input
+  type="tel"
+  name="telefone"
+  placeholder="DDD + número (opcional)">
+<small style="color:#555">
+Se você veio pelo WhatsApp, preencher nome e telefone ajuda a gente a te responder 😊
+</small>
+  
+<label>Mensagem</label>
   <textarea name="mensagem" rows="4"
     placeholder="Escreva sua avaliação, elogio, sugestão ou reclamação..."></textarea>
 
@@ -221,6 +236,15 @@ document.addEventListener("DOMContentLoaded", () => {
       notaPlataforma.style.display = "block";
       notaParceiro.style.display = "block";
     }
+if (t !== "parceiro") {
+  document.querySelector('[name="parceiro"]').value = "";
+  document.querySelector('[name="nota_parceiro"]').value = "";
+}
+
+if (t === "mensagem") {
+  document.querySelector('[name="nota_plataforma"]').value = "";
+}
+
   }
 
   tipo.addEventListener("change", atualizarCampos);
