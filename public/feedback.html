@@ -161,7 +161,8 @@ button{
 <div class="container">
   <h2>💬 Avaliação e Feedback</h2>
 
-  <form id="formFeedback">
+<form id="formFeedback">
+
   <label>Tipo</label>
   <select name="tipo" id="tipo">
     <option value="plataforma">Avaliar Plataforma</option>
@@ -188,7 +189,8 @@ button{
   </div>
 
   <label>Mensagem</label>
-  <textarea name="mensagem" rows="4" placeholder="Escreva sua avaliação, elogio, sugestão ou reclamação..."></textarea>
+  <textarea name="mensagem" rows="4"
+    placeholder="Escreva sua avaliação, elogio, sugestão ou reclamação..."></textarea>
 
   <button type="submit">Enviar Feedback</button>
 </form>
@@ -199,38 +201,33 @@ const campoParceiro = document.getElementById("campoParceiro");
 const notaPlataforma = document.getElementById("notaPlataforma");
 const notaParceiro = document.getElementById("notaParceiro");
 
-function aplicarRegrasUI() {
+function atualizarCampos() {
   const t = tipo.value;
 
-  // Reset
   campoParceiro.style.display = "none";
   notaPlataforma.style.display = "none";
   notaParceiro.style.display = "none";
 
-  // Plataforma: nota plataforma + mensagem
   if (t === "plataforma") {
     notaPlataforma.style.display = "block";
   }
 
-  // Parceiro + plataforma: nome parceiro + nota parceiro + nota plataforma + mensagem
   if (t === "parceiro") {
     campoParceiro.style.display = "block";
     notaPlataforma.style.display = "block";
     notaParceiro.style.display = "block";
   }
-
-  // Mensagem: só mensagem (nenhuma nota)
 }
 
-tipo.addEventListener("change", aplicarRegrasUI);
-aplicarRegrasUI(); // aplica ao carregar
+tipo.addEventListener("change", atualizarCampos);
+atualizarCampos();
 
 document.getElementById("formFeedback").addEventListener("submit", async function(e){
   e.preventDefault();
 
   const payload = {
     tipo: tipo.value,
-    parceiro: document.querySelector('[name="parceiro"]').value || "",
+    parceiro: document.querySelector('[name="parceiro"]')?.value || "",
     nota_plataforma: document.querySelector('[name="nota_plataforma"]')?.value || "",
     nota_parceiro: document.querySelector('[name="nota_parceiro"]')?.value || "",
     mensagem: document.querySelector('[name="mensagem"]').value || ""
@@ -247,15 +244,15 @@ document.getElementById("formFeedback").addEventListener("submit", async functio
     );
 
     const data = await resp.json();
-
     if (data.ok) {
-      alert("✅ Obrigado! Seu feedback foi enviado com sucesso 🙏");
+      alert("✅ Feedback enviado com sucesso!");
       e.target.reset();
-      aplicarRegrasUI();
+      atualizarCampos();
     } else {
-      alert("⚠️ Não foi possível enviar. Tente novamente.");
+      alert("⚠️ Erro ao salvar feedback.");
     }
   } catch (err) {
+    console.error(err);
     alert("❌ Erro de conexão.");
   }
 });
