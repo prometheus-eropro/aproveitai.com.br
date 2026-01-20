@@ -199,34 +199,38 @@ tipo.addEventListener("change", () => {
   notaParceiro.style.display  = ativo ? "block" : "none";
 });
 
+<script>
 document.getElementById("formFeedback").addEventListener("submit", async function(e){
   e.preventDefault();
 
-  const form = e.target;
-  const formData = new FormData(form);
+  const payload = {
+    tipo: tipo.value,
+    parceiro: document.querySelector('[name="parceiro"]')?.value || "",
+    nota_plataforma: document.querySelector('[name="nota_plataforma"]').value,
+    nota_parceiro: document.querySelector('[name="nota_parceiro"]')?.value || "",
+    mensagem: document.querySelector('[name="mensagem"]').value
+  };
 
   try {
     const resp = await fetch(
       "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec",
       {
         method: "POST",
-        body: formData
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       }
     );
 
     const data = await resp.json();
 
     if (data.ok) {
-      alert("✅ Obrigado! Seu feedback foi enviado com sucesso.");
-      form.reset();
-      campoParceiro.style.display = "none";
-      notaParceiro.style.display = "none";
+      alert("✅ Obrigado! Seu feedback foi enviado com sucesso 🙏");
+      e.target.reset();
     } else {
       alert("⚠️ Não foi possível enviar. Tente novamente.");
     }
   } catch (err) {
-    console.error(err);
-    alert("❌ Erro de conexão. Tente novamente.");
+    alert("❌ Erro de conexão.");
   }
 });
 </script>
