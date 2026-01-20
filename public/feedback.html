@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Feedback | Plataforma AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+body{
+  background:#bfefff;
+}
+.container{
+  max-width:500px;
+  margin:30px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+label{
+  font-weight:600;
+}
+
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:#bfefff;
+}
+.container{
+  max-width:600px;
+  margin:20px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+}
+h2{color:#0a7a2a;}
+label{font-weight:bold;display:block;margin-top:10px;}
+input, select, textarea{
+  width:100%;
+  padding:8px;
+  margin-top:4px;
+}
+button{
+  margin-top:15px;
+  padding:10px;
+  background:#1c8f3c;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+/* =========================
+   CABEÇALHO
+========================= */
+.site-header {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.brandline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  max-height: 180px;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-center {
+  flex: 1;
+  text-align: center;
+}
+
+.site-title {
+  font-size: 36px;
+  color: #0a7a2a;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  font-weight: bold;
+}
+
+.slogan {
+  font-size: 16px;
+  font-style: italic;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.boas-vindas {
+  background: #dfffe0;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 18px; /* AUMENTADO */
+  line-height: 1.5;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+/* =========================
+   RODAPÉ
+========================= */
+.footer {
+  background: #dfffe0;
+  color: #222;
+  padding: 10px 10px;
+  font-size: 13px;
+  border-top: 3px solid white;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 5px 0;
+}
+
+.footer a {
+  color: #0066cc;
+  font-size: 13px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+
+</style>
+</head>
+
+<body>
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Plataforma AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>💬 Avaliação e Feedback</strong><br>
+        ELOGIOS, SUGESTÕES E AVALIAÇÕES, Queremos muito ouvir você 😊.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+<div class="container">
+  <h2>💬 Avaliação e Feedback</h2>
+
+  <form id="formFeedback">
+    <label>Tipo</label>
+    <select name="tipo" id="tipo">
+      <option value="plataforma">Avaliar Plataforma</option>
+      <option value="parceiro">Avaliar Parceiro + Plataforma</option>
+      <option value="mensagem">Elogio / Sugestão / Reclamação</option>
+    </select>
+
+    <div id="campoParceiro" style="display:none">
+      <label>Nome do Parceiro</label>
+      <input name="parceiro">
+    </div>
+
+    <label>Nota da Plataforma (0 a 10)</label>
+    <input type="number" name="nota_plataforma" min="0" max="10">
+
+    <div id="notaParceiro" style="display:none">
+      <label>Nota do Parceiro (0 a 10)</label>
+      <input type="number" name="nota_parceiro" min="0" max="10">
+    </div>
+
+    <label>Mensagem</label>
+    <textarea name="mensagem" rows="4"></textarea>
+
+    <button type="submit">Enviar Feedback</button>
+  </form>
+</div>
+
+<script>
+const tipo = document.getElementById("tipo");
+const campoParceiro = document.getElementById("campoParceiro");
+const notaParceiro = document.getElementById("notaParceiro");
+
+tipo.onchange = () => {
+  campoParceiro.style.display = tipo.value==="parceiro" ? "block":"none";
+  notaParceiro.style.display  = tipo.value==="parceiro" ? "block":"none";
+};
+</script>
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em meda corrente, salvo autorização expressa do estabelecimento.
+</footer>
+
+</body>
+</html>
