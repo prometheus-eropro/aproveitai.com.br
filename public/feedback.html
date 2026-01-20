@@ -196,65 +196,69 @@ button{
 </form>
 </div>
 <script>
-const tipo = document.getElementById("tipo");
-const campoParceiro = document.getElementById("campoParceiro");
-const notaPlataforma = document.getElementById("notaPlataforma");
-const notaParceiro = document.getElementById("notaParceiro");
+document.addEventListener("DOMContentLoaded", () => {
 
-function atualizarCampos() {
-  const t = tipo.value;
+  const form = document.getElementById("formFeedback");
+  const tipo = document.getElementById("tipo");
 
-  campoParceiro.style.display = "none";
-  notaPlataforma.style.display = "none";
-  notaParceiro.style.display = "none";
+  const campoParceiro = document.getElementById("campoParceiro");
+  const notaPlataforma = document.getElementById("notaPlataforma");
+  const notaParceiro = document.getElementById("notaParceiro");
 
-  if (t === "plataforma") {
-    notaPlataforma.style.display = "block";
-  }
+  function atualizarCampos() {
+    const t = tipo.value;
 
-  if (t === "parceiro") {
-    campoParceiro.style.display = "block";
-    notaPlataforma.style.display = "block";
-    notaParceiro.style.display = "block";
-  }
-}
+    campoParceiro.style.display = "none";
+    notaPlataforma.style.display = "none";
+    notaParceiro.style.display = "none";
 
-tipo.addEventListener("change", atualizarCampos);
-atualizarCampos();
-
-document.getElementById("formFeedback").addEventListener("submit", async function(e){
-  e.preventDefault();
-
-  const payload = {
-    tipo: tipo.value,
-    parceiro: document.querySelector('[name="parceiro"]')?.value || "",
-    nota_plataforma: document.querySelector('[name="nota_plataforma"]')?.value || "",
-    nota_parceiro: document.querySelector('[name="nota_parceiro"]')?.value || "",
-    mensagem: document.querySelector('[name="mensagem"]').value || ""
-  };
-
-  try {
-    const resp = await fetch(
-      "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }
-    );
-
-    const data = await resp.json();
-    if (data.ok) {
-      alert("✅ Feedback enviado com sucesso!");
-      e.target.reset();
-      atualizarCampos();
-    } else {
-      alert("⚠️ Erro ao salvar feedback.");
+    if (t === "plataforma") {
+      notaPlataforma.style.display = "block";
     }
-  } catch (err) {
-    console.error(err);
-    alert("❌ Erro de conexão.");
+
+    if (t === "parceiro") {
+      campoParceiro.style.display = "block";
+      notaPlataforma.style.display = "block";
+      notaParceiro.style.display = "block";
+    }
   }
+
+  tipo.addEventListener("change", atualizarCampos);
+  atualizarCampos();
+
+  form.addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    // 🔒 blindagem
+    formData.append("origem", "feedback_site");
+
+    try {
+      const resp = await fetch(
+        "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+      const data = await resp.json();
+
+      if (data.ok) {
+        alert("✅ Feedback enviado com sucesso!");
+        form.reset();
+        atualizarCampos();
+      } else {
+        alert("⚠️ Erro ao salvar feedback.");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ Erro de conexão.");
+    }
+  });
+
 });
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
