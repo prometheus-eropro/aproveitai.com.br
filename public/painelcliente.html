@@ -54,6 +54,9 @@
     </div>
 
     <div id="resultado"></div>
+<button id="btnParceiros" style="display:none" class="btn-aproveitai">
+📍 Ver parceiros ativos
+</button>
 
     <button
       id="btnBeneficios"
@@ -70,14 +73,9 @@
       onclick="abrirCartao()">
       💳 Ver / Salvar Cartão
     </button>
-<div style="text-align:center;margin-top:15px">
+
   <a href="index.html" class="voltar">
     ← Voltar ao site
-  </a>
-</div>
-<div style="text-align:center;margin-top:15px">
-  <a href="index.html#parceiros" class="btn2">
-    🏪 Ver parceiros ativos
   </a>
 </div>
 
@@ -103,6 +101,7 @@ function pegarCampo(obj, campos){
 async function consultar(){
   const valor = document.getElementById("cpf").value.trim();
   const box = document.getElementById("resultado");
+document.getElementById("btnParceiros").style.display = "block";
 
   box.textContent = "Consultando...";
 
@@ -152,13 +151,16 @@ document.getElementById("bemVindoNome").innerHTML = ativo
   `;
 const btnBeneficios = document.getElementById("btnBeneficios");
 const btnCartao = document.getElementById("btnCartao");
+const btnParceiros = document.getElementById("btnParceiros");
 
 if (ativo) {
   btnBeneficios.style.display = "block";
   btnCartao.style.display = "block";
+  btnParceiros.style.display = "block";
 } else {
   btnBeneficios.style.display = "none";
   btnCartao.style.display = "none";
+  btnParceiros.style.display = "none";
 }
 
     box.innerHTML = `
@@ -225,6 +227,9 @@ function formatarDataBR(valor) {
   const d = new Date(valor);
   if (isNaN(d)) return valor;
   return d.toLocaleDateString("pt-BR");
+}
+function abrirParceiros(){
+  window.location.href = "index.html";
 }
 
 </script>
