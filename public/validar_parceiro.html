@@ -60,51 +60,40 @@
 </div>
 
 <script>
-  // ======= CONFIG =======
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec";
+/* =============================
+   CONFIGURAÇÃO
+============================= */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec";
 
-  const params = new URLSearchParams(window.location.search);
-  const parceiroId = params.get("p");
-  const exigePlaca = params.get("placa") === "sim";
+const params = new URLSearchParams(window.location.search);
+const parceiroId = params.get("p");
 
-  const elMsg = document.getElementById("msg");
-  const elBtn = document.getElementById("btnValidar");
+const elMsg = document.getElementById("msg");
+const elBtn = document.getElementById("btnValidar");
 
-  function mostrarMsg(msg) {
-    elMsg.innerHTML = msg || "";
-  }
+/* =============================
+   UTILIDADES
+============================= */
+function mostrarMsg(msg) {
+  elMsg.innerHTML = msg || "";
+}
 
-  function somenteNumeros(v) {
-    return String(v || "").replace(/\D/g, "");
-  }
+function somenteNumeros(v) {
+  return String(v || "").replace(/\D/g, "");
+}
 
-  if (!parceiroId) {
-    mostrarMsg("❌ QR Code inválido. Parâmetro do parceiro (p) não encontrado.");
-    elBtn.disabled = true;
-  }
-
-  if (exigePlaca) {
-    document.getElementById("blocoVeiculo").style.display = "block";
-  }
-
-  // ======= JSONP (sem CORS) =======
-  function chamarJSONP(url, cbName) {
-  const s = document.createElement("script");
-  s.src = url;
-  s.async = true;
-  s.onload = () => s.remove(); // ← ISSO É ESSENCIAL
-  s.onerror = () => {
-    mostrarMsg("❌ Erro de conexão com o servidor de validação.");
-    try { delete window[cbName]; } catch(e) {}
-    s.remove();
-    elBtn.disabled = false;
-  };
-  document.body.appendChild(s);<script>
+/* =============================
+   VALIDAÇÃO
+============================= */
 async function validar() {
-  if (!parceiroId) return;
+  if (!parceiroId) {
+    mostrarMsg("❌ QR Code inválido. Parceiro não identificado.");
+    return;
+  }
 
   const cpf = somenteNumeros(document.getElementById("cpf").value);
-  const placa = (document.getElementById("placa").value || "").trim();
+  const placaInput = document.getElementById("placa");
+  const placa = placaInput ? placaInput.value.trim() : "";
 
   if (cpf.length !== 11) {
     mostrarMsg("⚠️ Informe um CPF com 11 dígitos.");
@@ -112,14 +101,12 @@ async function validar() {
   }
 
   elBtn.disabled = true;
-  mostrarMsg("⏳ Validando...");
+  mostrarMsg("⏳ Validando benefício...");
 
   try {
     const resp = await fetch(GAS_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         parceiro_id: parceiroId,
         cpf: cpf,
@@ -141,39 +128,13 @@ async function validar() {
     mostrarMsg("❌ Erro de conexão com o servidor de validação.");
   }
 }
-</script>
 
-  }
-
+/* =============================
+   BLOQUEIO SE QR INVÁLIDO
+============================= */
+if (!parceiroId) {
+  mostrarMsg("❌ QR Code inválido. Parâmetro do parceiro não encontrado.");
   elBtn.disabled = true;
-  mostrarMsg("⏳ Validando...");
-
-  try {
-    const resp = await fetch(GAS_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        parceiro_id: parceiroId,
-        cpf: cpf,
-        placa: placa
-      })
-    });
-
-    const json = await resp.json();
-    elBtn.disabled = false;
-
-    if (json.ok || json.status === "AUTORIZADO") {
-      mostrarMsg(json.mensagem);
-    } else {
-      mostrarMsg("❌ " + (json.mensagem || "Validação não autorizada."));
-    }
-
-  } catch (e) {
-    elBtn.disabled = false;
-    mostrarMsg("❌ Erro de conexão com o servidor de validação.");
-  }
 }
 </script>
 
