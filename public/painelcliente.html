@@ -101,7 +101,7 @@ function pegarCampo(obj, campos){
 async function consultar(){
   const valor = document.getElementById("cpf").value.trim();
   const box = document.getElementById("resultado");
-document.getElementById("btnParceiros").style.display = "block";
+
 
   box.textContent = "Consultando...";
 
@@ -157,7 +157,12 @@ if (ativo) {
   btnBeneficios.style.display = "block";
   btnCartao.style.display = "block";
   btnParceiros.style.display = "block";
-} else {
+} 
+btnParceiros.onclick = () => {
+  window.location.href = "index.html";
+};
+
+else {
   btnBeneficios.style.display = "none";
   btnCartao.style.display = "none";
   btnParceiros.style.display = "none";
