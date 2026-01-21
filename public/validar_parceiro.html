@@ -180,7 +180,7 @@ if (!PARCEIRO_ID) {
 }
 
 const params = new URLSearchParams(window.location.search);
-const parceiroId = params.get("pid"); // ex: POS-0007
+const parceiroId = params.get("p"); // ex: POS-0007
 const exigePlaca = params.get("placa") === "sim";
 
 if (exigePlaca) {
@@ -195,10 +195,11 @@ function validar() {
    method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    parceiro_id: PARCEIRO_ID,
-    cpf: cpf,
-    placa: placa
-  })
+  parceiro_id: parceiroId,
+  cpf: cpf,
+  placa: placa
+})
+
 })
 .then(r => r.json())
 .then(resp => {
