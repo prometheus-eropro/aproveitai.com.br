@@ -4,250 +4,135 @@
 <meta charset="UTF-8">
 <title>Validação de Benefício | Parceiro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #eaf6ff;
-  padding: 20px;
-}
-.container {
-  max-width: 420px;
-  margin: auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-}
-h2 { color:#0a7a3c; text-align:center; }
-label { display:block; margin-top:15px; }
-input, button {
-  width:100%;
-  padding:10px;
-  margin-top:5px;
-}
-button {
-  background:#0a7a3c;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  margin-top:20px;
-}
-.msg { margin-top:15px; font-weight:bold; text-align:center; }
-/* =========================
-   CABEÇALHO
-========================= */
-.site-header {
-  background: white;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.brandline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.logo {
-  max-height: 180px;
-  height: auto;
-  width: auto;
-  object-fit: contain;
-}
-
-.brand-center {
-  flex: 1;
-  text-align: center;
-}
-
-.site-title {
-  font-size: 36px;
-  color: #0a7a2a;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-  font-weight: bold;
-}
-
-.slogan {
-  font-size: 16px;
-  font-style: italic;
-  margin-bottom: 5px;
-  color: #555;
-}
-
-.boas-vindas {
-  background: #dfffe0;
-  padding: 12px 15px;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-size: 18px; /* AUMENTADO */
-  line-height: 1.5;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-/* =========================
-   RODAPÉ
-========================= */
-.footer {
-  background: #dfffe0;
-  color: #222;
-  padding: 10px 10px;
-  font-size: 13px;
-  border-top: 3px solid white;
-}
-
-.footer-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  max-width: 1000px;
-  margin: auto;
-  padding: 5px 0;
-}
-
-.footer a {
-  color: #0066cc;
-  font-size: 13px;
-}
-
-.footer-bottom {
-  text-align: center;
-  margin-top: 5px;
-  font-size: 11px;
-}
-
+  body {
+    font-family: Arial, sans-serif;
+    background: #eaf6ff;
+    padding: 20px;
+  }
+  .container {
+    max-width: 420px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  h2 {
+    color:#0a7a3c;
+    text-align:center;
+  }
+  label {
+    display:block;
+    margin-top:15px;
+  }
+  input, button {
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+  }
+  button {
+    background:#0a7a3c;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    margin-top:20px;
+  }
+  .msg {
+    margin-top:15px;
+    font-weight:bold;
+    text-align:center;
+  }
+  .site-header {
+    background: white;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .brandline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    max-height: 180px;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+  }
+  .brand-center {
+    flex: 1;
+    text-align: center;
+  }
+  .site-title {
+    font-size: 36px;
+    color: #0a7a2a;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    font-weight: bold;
+  }
+  .slogan {
+    font-size: 16px;
+    font-style: italic;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  .boas-vindas {
+    background: #dfffe0;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .footer {
+    background: #dfffe0;
+    color: #222;
+    padding: 10px 10px;
+    font-size: 13px;
+    border-top: 3px solid white;
+    text-align:center;
+  }
 </style>
 </head>
-
 <body>
-<!-- ✅ CABEÇALHO PADRONIZADO -->
 <header class="site-header">
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
     <div class="brand-center">
       <h1 class="site-title">Plataforma AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
-
-      <!-- Tarja -->
       <p class="boas-vindas">
         🏪 <strong>VALIDADOR QR CODE PARCEIRO</strong><br>
-        Valide o QR CODE do parceiro, seu cartão estando ativo você receberá o codigo de autorização do beneficio.
+        Valide o QR CODE do parceiro, seu cartão estando ativo você receberá o código de autorização do benefício.
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
   </div>
 </header>
-<div style="
-  background:#fff3cd;
-  color:#856404;
-  padding:8px;
-  text-align:center;
-  font-size:13px;
-">
+<div style="background:#fff3cd;color:#856404;padding:8px;text-align:center;font-size:13px;">
   ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
 </div>
-
 <div class="container">
-<h2>Validação de Benefício</h2>
-
-<label>CPF do Cliente</label>
-<input id="cpf" placeholder="Somente números">
-
-<label id="blocoVeiculo" style="display:none">
-Placa do veículo
-<input id="placa" placeholder="ABC-1234">
-</label>
-
-<button onclick="validar()">Validar</button>
-
-<div id="msg" class="msg"></div>
+  <h2>Validação de Benefício</h2>
+  <label>CPF do Cliente</label>
+  <input id="cpf" placeholder="Somente números">
+  <label id="blocoVeiculo" style="display:none">
+    Placa do veículo
+    <input id="placa" placeholder="ABC-1234">
+  </label>
+  <button onclick="validar()">Validar</button>
+  <div id="msg" class="msg"></div>
 </div>
-
 <script>
-function getParceiroId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("p");
-}
-
-const PARCEIRO_ID = getParceiroId();
-
-if (!PARCEIRO_ID) {
-  alert("QR Code inválido. Identificação do parceiro não encontrada.");
-}
-
 const params = new URLSearchParams(window.location.search);
-const parceiroId = params.get("p"); // ex: POS-0007
+const parceiroId = params.get("p");
 const exigePlaca = params.get("placa") === "sim";
 
-if (exigePlaca) {
-  document.getElementById("blocoVeiculo").style.display = "block";
-}
-// Consulta o parceiro para saber se exige placa
-fetch(`https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec?parceiroCNPJ=&token=&p=${PARCEIRO_ID}`)
-  .then(r => r.json())
-  .then(resp => {
-    if (resp && resp.ramo) {
-      const ramosQueExigemPlaca = ["combustivel", "oficina", "lavador"];
-      if (ramosQueExigemPlaca.includes(resp.ramo.toLowerCase())) {
-        document.getElementById("blocoVeiculo").style.display = "block";
-      }
-    }
-  });
-
-<script>
-async function validar() {
-  const cpf = document.querySelector("input").value.trim();
-  const parceiroId = new URLSearchParams(window.location.search).get("p");
-
-  if (!cpf || !parceiroId) {
-    alert("Preencha o CPF corretamente.");
-    return;
-  }
-
-  const data = {
-    parceiro_id: parceiroId,
-    cpf: cpf,
-    placa: "", // ou adicione placa se estiver exigindo
-  };
-
-  try {
-    const resp = await fetch("https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" }
-    });
-
-    const resultado = await resp.json();
-
-    if (resultado.status === "AUTORIZADO") {
-      alert("✔ Autorizado!\n" + resultado.mensagem);
-    } else {
-      alert("❌ " + (resultado.mensagem || resultado.motivo || "Erro desconhecido."));
-    }
-
-  } catch (e) {
-    alert("Erro de conexão.");
-    console.error(e);
-  }
-}
-</script>
-
-function getParceiroId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("p");
-}
-
-const PARCEIRO_ID = getParceiroId();
-
-if (!PARCEIRO_ID) {
+if (!parceiroId) {
   alert("QR Code inválido. Identificação do parceiro não encontrada.");
 }
-
-const exigePlaca = new URLSearchParams(window.location.search).get("placa") === "sim";
 
 if (exigePlaca) {
   document.getElementById("blocoVeiculo").style.display = "block";
@@ -261,7 +146,7 @@ function validar() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      parceiro_id: PARCEIRO_ID,
+      parceiro_id: parceiroId,
       cpf: cpf,
       placa: placa
     })
@@ -272,23 +157,14 @@ function validar() {
   })
   .catch(err => {
     document.getElementById("msg").innerHTML = "Erro na validação: " + err;
+    console.error("Erro na requisição:", err);
   });
 }
 </script>
-<!-- ✅ RODAPÉ PADRÃO -->
-<footer style="
-  background:#dfffe0;
-  padding:12px;
-  text-align:center;
-  font-size:12px;
-  line-height:1.4;
-">
+<footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
-
-  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
-  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista em meda corrente, salvo autorização expressa do estabelecimento.
+  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
-
 </body>
 </html>
