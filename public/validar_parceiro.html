@@ -89,18 +89,19 @@
 
   // ======= JSONP (sem CORS) =======
   function chamarJSONP(url, cbName) {
-    const s = document.createElement("script");
-    s.src = url;
-    s.async = true;
-    s.onerror = () => {
-      mostrarMsg("❌ Erro de conexão com o servidor de validação.");
-      try { delete window[cbName]; } catch(e) {}
-      s.remove();
-      elBtn.disabled = false;
-    };
-    document.body.appendChild(s);
-    return s;
-  }
+  const s = document.createElement("script");
+  s.src = url;
+  s.async = true;
+  s.onload = () => s.remove(); // ← ISSO É ESSENCIAL
+  s.onerror = () => {
+    mostrarMsg("❌ Erro de conexão com o servidor de validação.");
+    try { delete window[cbName]; } catch(e) {}
+    s.remove();
+    elBtn.disabled = false;
+  };
+  document.body.appendChild(s);
+}
+
 
   function validar() {
     if (!parceiroId) return;
@@ -119,17 +120,19 @@
     const cbName = "cb_" + Date.now();
 
     window[cbName] = function(resp) {
-      elBtn.disabled = false;
+  elBtn.disabled = false;
 
-      // resp vem do GAS
-      if (resp && resp.ok === false) {
-        mostrarMsg("❌ " + (resp.mensagem || "Não autorizado."));
-      } else {
-        mostrarMsg((resp && resp.mensagem) ? resp.mensagem : "✅ Resposta recebida.");
-      }
+  if (!resp || resp.ok !== true) {
+    mostrarMsg("❌ " + (resp?.mensagem || "Validação não autorizada."));
+  } else {
+    mostrarMsg("🎉 " + resp.mensagem);
+  }
 
-      try { delete window[cbName]; } catch(e) {}
-    };
+  // limpeza segura
+  setTimeout(() => {
+    try { delete window[cbName]; } catch(e) {}
+  }, 0);
+};
 
     const url =
       GAS_URL +
