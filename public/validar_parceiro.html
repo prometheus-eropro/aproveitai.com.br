@@ -85,59 +85,38 @@ function somenteNumeros(v) {
 /* =============================
    VALIDAÇÃO
 ============================= */
-async function validar() {
-  if (!parceiroId) {
-    mostrarMsg("❌ QR Code inválido. Parceiro não identificado.");
-    return;
-  }
-
-  const cpf = somenteNumeros(document.getElementById("cpf").value);
-  const placaInput = document.getElementById("placa");
-  const placa = placaInput ? placaInput.value.trim() : "";
-
+function validar() {
+  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
   if (cpf.length !== 11) {
-    mostrarMsg("⚠️ Informe um CPF com 11 dígitos.");
+    mostrarMsg("⚠️ CPF inválido");
     return;
   }
 
-  elBtn.disabled = true;
+  if (!parceiroId) {
+    mostrarMsg("❌ QR Code inválido");
+    return;
+  }
+
   mostrarMsg("⏳ Validando benefício...");
 
-  try {
-    const resp = await fetch(GAS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        parceiro_id: parceiroId,
-        cpf: cpf,
-        placa: placa
-      })
-    });
+  const script = document.createElement("script");
+  script.src =
+    GAS_URL +
+    "?callback=retornoValidacao" +
+    "&parceiro_id=" + encodeURIComponent(parceiroId) +
+    "&cpf=" + encodeURIComponent(cpf);
 
-    const json = await resp.json();
-    elBtn.disabled = false;
+  document.body.appendChild(script);
+}
 
-    if (json.ok || json.status === "AUTORIZADO") {
-      mostrarMsg(json.mensagem);
-    } else {
-      mostrarMsg("❌ " + (json.mensagem || "Validação não autorizada."));
-    }
-
-  } catch (e) {
-    elBtn.disabled = false;
-    mostrarMsg("❌ Erro de conexão com o servidor de validação.");
+function retornoValidacao(resp) {
+  if (resp.ok || resp.status === "AUTORIZADO") {
+    mostrarMsg(resp.mensagem);
+  } else {
+    mostrarMsg("❌ " + (resp.mensagem || "Validação não autorizada."));
   }
 }
-
-/* =============================
-   BLOQUEIO SE QR INVÁLIDO
-============================= */
-if (!parceiroId) {
-  mostrarMsg("❌ QR Code inválido. Parâmetro do parceiro não encontrado.");
-  elBtn.disabled = true;
-}
 </script>
-
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
