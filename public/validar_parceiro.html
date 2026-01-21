@@ -5,101 +5,29 @@
 <title>Validação de Benefício | Parceiro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #eaf6ff;
-    padding: 20px;
-  }
-  .container {
-    max-width: 420px;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-  }
-  h2 {
-    color:#0a7a3c;
-    text-align:center;
-  }
-  label {
-    display:block;
-    margin-top:15px;
-  }
-  input, button {
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-  }
-  button {
-    background:#0a7a3c;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    margin-top:20px;
-  }
-  .msg {
-    margin-top:15px;
-    font-weight:bold;
-    text-align:center;
-  }
-  .site-header {
-    background: white;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-  .brandline {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  .logo {
-    max-height: 180px;
-    height: auto;
-    width: auto;
-    object-fit: contain;
-  }
-  .brand-center {
-    flex: 1;
-    text-align: center;
-  }
-  .site-title {
-    font-size: 36px;
-    color: #0a7a2a;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    font-weight: bold;
-  }
-  .slogan {
-    font-size: 16px;
-    font-style: italic;
-    margin-bottom: 5px;
-    color: #555;
-  }
-  .boas-vindas {
-    background: #dfffe0;
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-size: 18px;
-    line-height: 1.5;
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-  .footer {
-    background: #dfffe0;
-    color: #222;
-    padding: 10px 10px;
-    font-size: 13px;
-    border-top: 3px solid white;
-    text-align:center;
-  }
+  body { font-family: Arial, sans-serif; background:#eaf6ff; padding:20px; }
+  .container { max-width:420px; margin:auto; background:#fff; padding:20px; border-radius:10px; }
+  h2 { color:#0a7a3c; text-align:center; }
+  label { display:block; margin-top:15px; font-weight:600; }
+  input, button { width:100%; padding:10px; margin-top:5px; box-sizing:border-box; }
+  button { background:#0a7a3c; color:#fff; border:none; border-radius:6px; margin-top:20px; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:not-allowed; }
+  .msg { margin-top:15px; font-weight:bold; text-align:center; min-height:20px; }
+  .site-header { background:white; padding:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  .brandline { display:flex; align-items:center; justify-content:space-between; gap:15px; flex-wrap:wrap; }
+  .logo { max-height:180px; height:auto; width:auto; object-fit:contain; }
+  .brand-center { flex:1; text-align:center; }
+  .site-title { font-size:36px; color:#0a7a2a; text-shadow:1px 1px 3px rgba(0,0,0,0.3); font-weight:bold; margin:0; }
+  .slogan { font-size:16px; font-style:italic; margin:6px 0 5px; color:#555; }
+  .boas-vindas { background:#dfffe0; padding:12px 15px; border-radius:8px; margin-top:10px; font-size:18px; line-height:1.5; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  .footer { background:#dfffe0; color:#222; padding:10px; font-size:13px; border-top:3px solid white; text-align:center; }
 </style>
 </head>
+
 <body>
 <header class="site-header">
   <div class="brandline">
-    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <img src="logo-prometheus.png" class="logo logo-prometheus" alt="Prometheus">
     <div class="brand-center">
       <h1 class="site-title">Plataforma AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
@@ -108,77 +36,117 @@
         Valide o QR CODE do parceiro, seu cartão estando ativo você receberá o código de autorização do benefício.
       </p>
     </div>
-    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai" alt="Aproveitai">
   </div>
 </header>
+
 <div style="background:#fff3cd;color:#856404;padding:8px;text-align:center;font-size:13px;">
   ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
 </div>
+
 <div class="container">
   <h2>Validação de Benefício</h2>
+
   <label>CPF do Cliente</label>
-  <input id="cpf" placeholder="Somente números">
-  <label id="blocoVeiculo" style="display:none">
-    Placa do veículo
+  <input id="cpf" placeholder="Somente números" inputmode="numeric">
+
+  <div id="blocoVeiculo" style="display:none">
+    <label>Placa do veículo</label>
     <input id="placa" placeholder="ABC-1234">
-  </label>
-  <button onclick="validar()">Validar</button>
+  </div>
+
+  <button id="btnValidar" onclick="validar()">Validar</button>
   <div id="msg" class="msg"></div>
 </div>
+
 <script>
-const params = new URLSearchParams(window.location.search);
-const parceiroId = params.get("p");
-const exigePlaca = params.get("placa") === "sim";
+  // ======= CONFIG =======
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec";
 
-if (!parceiroId) {
-  alert("QR Code inválido. Identificação do parceiro não encontrada.");
-}
+  const params = new URLSearchParams(window.location.search);
+  const parceiroId = params.get("p");
+  const exigePlaca = params.get("placa") === "sim";
 
-if (exigePlaca) {
-  document.getElementById("blocoVeiculo").style.display = "block";
-}
+  const elMsg = document.getElementById("msg");
+  const elBtn = document.getElementById("btnValidar");
 
-function validar() {
-  const cpf = document.getElementById("cpf").value;
-  const placa = document.getElementById("placa").value || "";
+  function mostrarMsg(msg) {
+    elMsg.innerHTML = msg || "";
+  }
 
-  const callbackName = "cb_" + Date.now();
+  function somenteNumeros(v) {
+    return String(v || "").replace(/\D/g, "");
+  }
 
-  window[callbackName] = function(resp) {
-    document.getElementById("msg").innerHTML = resp.mensagem || "Resposta recebida.";
-    delete window[callbackName];
-  };
+  if (!parceiroId) {
+    mostrarMsg("❌ QR Code inválido. Parâmetro do parceiro (p) não encontrado.");
+    elBtn.disabled = true;
+  }
 
-  const url =
-    "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec" +
-    "?callback=" + callbackName +
-    "&parceiro_id=" + encodeURIComponent(parceiroId) +
-    "&cpf=" + encodeURIComponent(cpf) +
-    "&placa=" + encodeURIComponent(placa);
+  if (exigePlaca) {
+    document.getElementById("blocoVeiculo").style.display = "block";
+  }
 
-  const script = document.createElement("script");
-  script.src = url;
-  document.body.appendChild(script);
-}
+  // ======= JSONP (sem CORS) =======
+  function chamarJSONP(url, cbName) {
+    const s = document.createElement("script");
+    s.src = url;
+    s.async = true;
+    s.onerror = () => {
+      mostrarMsg("❌ Erro de conexão com o servidor de validação.");
+      try { delete window[cbName]; } catch(e) {}
+      s.remove();
+      elBtn.disabled = false;
+    };
+    document.body.appendChild(s);
+    return s;
+  }
+
+  function validar() {
+    if (!parceiroId) return;
+
+    const cpf = somenteNumeros(document.getElementById("cpf").value);
+    const placa = (document.getElementById("placa").value || "").trim();
+
+    if (cpf.length !== 11) {
+      mostrarMsg("⚠️ Informe um CPF com 11 dígitos.");
+      return;
+    }
+
+    elBtn.disabled = true;
+    mostrarMsg("⏳ Validando...");
+
+    const cbName = "cb_" + Date.now();
+
+    window[cbName] = function(resp) {
+      elBtn.disabled = false;
+
+      // resp vem do GAS
+      if (resp && resp.ok === false) {
+        mostrarMsg("❌ " + (resp.mensagem || "Não autorizado."));
+      } else {
+        mostrarMsg((resp && resp.mensagem) ? resp.mensagem : "✅ Resposta recebida.");
+      }
+
+      try { delete window[cbName]; } catch(e) {}
+    };
+
+    const url =
+      GAS_URL +
+      "?callback=" + encodeURIComponent(cbName) +
+      "&acao=validar" +
+      "&parceiro_id=" + encodeURIComponent(parceiroId) +
+      "&cpf=" + encodeURIComponent(cpf) +
+      "&placa=" + encodeURIComponent(placa);
+
+    chamarJSONP(url, cbName);
+  }
 </script>
 
-function mostrarMsg(msg) {
-  document.getElementById("msg").innerHTML = msg;
-}
-</script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
-<div id="debug" style="font-size:12px;color:#555"></div>
-
-<script>
-window.onerror = function (msg, url, line) {
-  document.getElementById("debug").innerText =
-    "Erro JS: " + msg + " (linha " + line + ")";
-};
-</script>
-
 </body>
 </html>
