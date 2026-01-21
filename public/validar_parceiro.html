@@ -198,22 +198,44 @@ fetch(`https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3v
     }
   });
 
-function validar() {
-  const cpf = document.getElementById("cpf").value;
-  const placa = document.getElementById("placa").value;
-
-  fetch("https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec", {
-   method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-  parceiro_id: parceiroId,
-  cpf: cpf,
-  placa: placa
-})
-
-})
-.then(r => r.json())
 <script>
+async function validar() {
+  const cpf = document.querySelector("input").value.trim();
+  const parceiroId = new URLSearchParams(window.location.search).get("p");
+
+  if (!cpf || !parceiroId) {
+    alert("Preencha o CPF corretamente.");
+    return;
+  }
+
+  const data = {
+    parceiro_id: parceiroId,
+    cpf: cpf,
+    placa: "", // ou adicione placa se estiver exigindo
+  };
+
+  try {
+    const resp = await fetch("https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const resultado = await resp.json();
+
+    if (resultado.status === "AUTORIZADO") {
+      alert("✔ Autorizado!\n" + resultado.mensagem);
+    } else {
+      alert("❌ " + (resultado.mensagem || resultado.motivo || "Erro desconhecido."));
+    }
+
+  } catch (e) {
+    alert("Erro de conexão.");
+    console.error(e);
+  }
+}
+</script>
+
 function getParceiroId() {
   const params = new URLSearchParams(window.location.search);
   return params.get("p");
