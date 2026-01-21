@@ -196,8 +196,8 @@ function validar() {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     parceiro_id: PARCEIRO_ID,
-    cpf: cpfDigitado,
-    placa: placaDigitada
+    cpf: cpf,
+    placa: placa
   })
 })
 .then(r => r.json())

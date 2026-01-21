@@ -6,25 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
 
-<style>
-.btn-padrao {
-  display: inline-block;
-  width: 100%;
-  max-width: 260px;
-  margin-top: 12px;
-  padding: 12px;
-  background: #0a7a3c;
-  color: #fff;
-  text-align: center;
-  border-radius: 8px;
-  font-weight: bold;
-  text-decoration: none;
-  cursor: pointer;
-}
-.btn-padrao:hover {
-  background: #086030;
-}
-</style>
 
 </head>
 
@@ -95,13 +76,9 @@
   </a>
 </div>
 <div style="text-align:center;margin-top:15px">
-  <a href="parceiros.html" 
-   id="btnParceiros"
-   style="display:none;"
-   class="btn-padrao">
-   📍 Ver parceiros ativos
-</a>
-
+  <a href="index.html#parceiros" class="btn2">
+    🏪 Ver parceiros ativos
+  </a>
 </div>
 
   </div>
@@ -175,16 +152,13 @@ document.getElementById("bemVindoNome").innerHTML = ativo
   `;
 const btnBeneficios = document.getElementById("btnBeneficios");
 const btnCartao = document.getElementById("btnCartao");
-const btnParceiros = document.getElementById("btnParceiros");
 
 if (ativo) {
   btnBeneficios.style.display = "block";
   btnCartao.style.display = "block";
-  btnParceiros.style.display = "inline-block";
 } else {
   btnBeneficios.style.display = "none";
   btnCartao.style.display = "none";
-  btnParceiros.style.display = "none";
 }
 
     box.innerHTML = `
