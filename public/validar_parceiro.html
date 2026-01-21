@@ -99,51 +99,82 @@
     s.remove();
     elBtn.disabled = false;
   };
-  document.body.appendChild(s);
-}
+  document.body.appendChild(s);<script>
+async function validar() {
+  if (!parceiroId) return;
 
+  const cpf = somenteNumeros(document.getElementById("cpf").value);
+  const placa = (document.getElementById("placa").value || "").trim();
 
-  function validar() {
-    if (!parceiroId) return;
+  if (cpf.length !== 11) {
+    mostrarMsg("⚠️ Informe um CPF com 11 dígitos.");
+    return;
+  }
 
-    const cpf = somenteNumeros(document.getElementById("cpf").value);
-    const placa = (document.getElementById("placa").value || "").trim();
+  elBtn.disabled = true;
+  mostrarMsg("⏳ Validando...");
 
-    if (cpf.length !== 11) {
-      mostrarMsg("⚠️ Informe um CPF com 11 dígitos.");
-      return;
+  try {
+    const resp = await fetch(GAS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        parceiro_id: parceiroId,
+        cpf: cpf,
+        placa: placa
+      })
+    });
+
+    const json = await resp.json();
+    elBtn.disabled = false;
+
+    if (json.ok || json.status === "AUTORIZADO") {
+      mostrarMsg(json.mensagem);
+    } else {
+      mostrarMsg("❌ " + (json.mensagem || "Validação não autorizada."));
     }
 
-    elBtn.disabled = true;
-    mostrarMsg("⏳ Validando...");
+  } catch (e) {
+    elBtn.disabled = false;
+    mostrarMsg("❌ Erro de conexão com o servidor de validação.");
+  }
+}
+</script>
 
-    const cbName = "cb_" + Date.now();
-
-    window[cbName] = function(resp) {
-  elBtn.disabled = false;
-
-  if (!resp || resp.ok !== true) {
-    mostrarMsg("❌ " + (resp?.mensagem || "Validação não autorizada."));
-  } else {
-    mostrarMsg("🎉 " + resp.mensagem);
   }
 
-  // limpeza segura
-  setTimeout(() => {
-    try { delete window[cbName]; } catch(e) {}
-  }, 0);
-};
+  elBtn.disabled = true;
+  mostrarMsg("⏳ Validando...");
 
-    const url =
-      GAS_URL +
-      "?callback=" + encodeURIComponent(cbName) +
-      "&acao=validar" +
-      "&parceiro_id=" + encodeURIComponent(parceiroId) +
-      "&cpf=" + encodeURIComponent(cpf) +
-      "&placa=" + encodeURIComponent(placa);
+  try {
+    const resp = await fetch(GAS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        parceiro_id: parceiroId,
+        cpf: cpf,
+        placa: placa
+      })
+    });
 
-    chamarJSONP(url, cbName);
+    const json = await resp.json();
+    elBtn.disabled = false;
+
+    if (json.ok || json.status === "AUTORIZADO") {
+      mostrarMsg(json.mensagem);
+    } else {
+      mostrarMsg("❌ " + (json.mensagem || "Validação não autorizada."));
+    }
+
+  } catch (e) {
+    elBtn.disabled = false;
+    mostrarMsg("❌ Erro de conexão com o servidor de validação.");
   }
+}
 </script>
 
 <footer class="footer">
