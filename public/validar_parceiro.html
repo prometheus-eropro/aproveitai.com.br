@@ -186,6 +186,17 @@ const exigePlaca = params.get("placa") === "sim";
 if (exigePlaca) {
   document.getElementById("blocoVeiculo").style.display = "block";
 }
+// Consulta o parceiro para saber se exige placa
+fetch(`https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec?parceiroCNPJ=&token=&p=${PARCEIRO_ID}`)
+  .then(r => r.json())
+  .then(resp => {
+    if (resp && resp.ramo) {
+      const ramosQueExigemPlaca = ["combustivel", "oficina", "lavador"];
+      if (ramosQueExigemPlaca.includes(resp.ramo.toLowerCase())) {
+        document.getElementById("blocoVeiculo").style.display = "block";
+      }
+    }
+  });
 
 function validar() {
   const cpf = document.getElementById("cpf").value;
@@ -202,12 +213,45 @@ function validar() {
 
 })
 .then(r => r.json())
-.then(resp => {
-  document.getElementById("resultado").innerHTML = resp.mensagem;
-});
-
+<script>
+function getParceiroId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("p");
 }
 
+const PARCEIRO_ID = getParceiroId();
+
+if (!PARCEIRO_ID) {
+  alert("QR Code inválido. Identificação do parceiro não encontrada.");
+}
+
+const exigePlaca = new URLSearchParams(window.location.search).get("placa") === "sim";
+
+if (exigePlaca) {
+  document.getElementById("blocoVeiculo").style.display = "block";
+}
+
+function validar() {
+  const cpf = document.getElementById("cpf").value;
+  const placa = document.getElementById("placa").value;
+
+  fetch("https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      parceiro_id: PARCEIRO_ID,
+      cpf: cpf,
+      placa: placa
+    })
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById("msg").innerHTML = resp.mensagem || "Resposta recebida.";
+  })
+  .catch(err => {
+    document.getElementById("msg").innerHTML = "Erro na validação: " + err;
+  });
+}
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
