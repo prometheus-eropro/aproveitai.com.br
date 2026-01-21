@@ -39,6 +39,13 @@
     <li>Enviar comunicações relevantes sobre promoções e atualizações</li>
     <li>Cumprir obrigações legais e regulatórias</li>
   </ul>
+<p>
+O usuário autoriza expressamente o compartilhamento de dados
+estritamente necessários (identificação, status do cadastro e,
+quando informado, dados de veículo) com parceiros da Plataforma
+AproveitAI exclusivamente para fins de validação de benefícios,
+descontos e prevenção a fraudes.
+</p>
 
   <h2>Base legal</h2>
   <p>O tratamento dos dados é realizado com base no seu consentimento, conforme previsto na Lei Geral de Proteção de Dados (Lei nº 13.709/2018 – LGPD).</p>
@@ -55,8 +62,7 @@
   <h2>Contato</h2>
   <p>Para exercer seus direitos, envie um e-mail para: <a href="mailto:cartao.aproveitai@gmail.com">cartao.aproveitai@gmail.com</a> ou mensagem pelo WhatsApp <a href="https://wa.me/5528999692303">(28) 99969-2303</a>.</p>
 
-  <p><strong>Última atualização:</strong> 12/08/2025</p>
-
+<p><strong>Última atualização:</strong> <span id="lastUpdate"></span></p>
 </div>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
@@ -65,14 +71,22 @@
   text-align:center;
   font-size:12px;
 ">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO
+© <span id="yearNow"></span> Plataforma AproveitAI • PROMETHEUS EROPRO
 </footer>
+<script>
+  (function(){
+    const d = new Date();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yyyy = d.getFullYear();
+    const last = `${mm}/${yyyy}`;
+
+    const elLast = document.getElementById("lastUpdate");
+    if (elLast) elLast.textContent = last;
+
+    const elYear = document.getElementById("yearNow");
+    if (elYear) elYear.textContent = yyyy;
+  })();
+</script>
 
 </body>
 </html>
-
-
-
-
-
-

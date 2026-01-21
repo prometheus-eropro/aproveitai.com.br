@@ -62,7 +62,8 @@
   font-size:12px;
   line-height:1.4;
 ">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
+ © <span id="yearNow"></span> Plataforma AproveitAI • PROMETHEUS EROPRO
+
 
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
@@ -98,5 +99,20 @@ fetch(sheetURL + "?aba=faq")
       "<p>Erro ao carregar as dúvidas.</p>";
   });
 </script>
+<script>
+  (function(){
+    const d = new Date();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yyyy = d.getFullYear();
+    const last = `${mm}/${yyyy}`;
+
+    const elLast = document.getElementById("lastUpdate");
+    if (elLast) elLast.textContent = last;
+
+    const elYear = document.getElementById("yearNow");
+    if (elYear) elYear.textContent = yyyy;
+  })();
+</script>
+
 </body>
 </html>

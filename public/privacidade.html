@@ -64,6 +64,14 @@
     <li>Número de telefone</li>
     <li>Histórico de uso e preferências no site</li>
     <li>Informações técnicas de acesso (endereço IP, navegador, cookies)</li>
+<li>CPF</li>
+<li>Data de nascimento</li>
+<li>Cidade/UF</li>
+<li>Grupo de origem (empresa/associação/sindicato/particular)</li>
+<li>Código do cliente (ID público / QR Code)</li>
+<li>Dados de veículo quando informados (tipo, placa e modelo)</li>
+<li>Registros de validação (data/hora, parceiro que validou e status do benefício)</li>
+
   </ul>
 
   <h2>2. Finalidade do tratamento</h2>
@@ -76,11 +84,19 @@
   <p>O tratamento dos dados pessoais é realizado com base nas seguintes hipóteses legais previstas na LGPD:</p>
 </ul>
 <ul>
+
   <li>Consentimento do titular;</li>
   <li>Execução de contrato ou procedimentos preliminares relacionados ao contrato;</li>
   <li>Cumprimento de obrigação legal ou regulatória;</li>
   <li>Legítimo interesse do controlador, desde que respeitados os direitos do titular.</li>
 </ul>
+<p>
+O usuário autoriza expressamente o compartilhamento de dados
+estritamente necessários (identificação, status do cadastro e,
+quando informado, dados de veículo) com parceiros da Plataforma
+AproveitAI exclusivamente para fins de validação de benefícios,
+descontos e prevenção a fraudes.
+</p>
 
 
   <h2>3. Compartilhamento de dados</h2>
@@ -116,7 +132,8 @@
 <p>Utilizamos cookies para melhorar a navegação, entender o comportamento do usuário e oferecer conteúdo personalizado. Você pode gerenciar suas preferências diretamente no seu navegador. Ao continuar navegando, você concorda com essa utilização.</p>
 
 
-  <p><strong>Última atualização:</strong> 12/08/2025</p>
+<p><strong>Última atualização:</strong> <span id="lastUpdate"></span></p>
+
 </div>
 
 <!-- ✅ BOTÃO VOLTAR -->
@@ -130,7 +147,8 @@
   text-align:center;
   font-size:12px;
 ">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO
+© <span id="yearNow"></span> Plataforma AproveitAI • PROMETHEUS EROPRO
+
 </footer>
 
 
@@ -157,6 +175,20 @@
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js");
   }
+</script>
+<script>
+  (function(){
+    const d = new Date();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yyyy = d.getFullYear();
+    const last = `${mm}/${yyyy}`;
+
+    const elLast = document.getElementById("lastUpdate");
+    if (elLast) elLast.textContent = last;
+
+    const elYear = document.getElementById("yearNow");
+    if (elYear) elYear.textContent = yyyy;
+  })();
 </script>
 
 </body>
