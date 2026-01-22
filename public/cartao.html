@@ -65,77 +65,6 @@ body{
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
-
-/* ================= CARTÃO ================= */
-.cartao-dobravel{
-  display:flex;
-  width:17.2cm;
-  min-height:5.4cm;
-  margin:25px auto;
-  background:#f0fff0;
-  border:2px dashed #1c8f3c;
-  border-radius:10px;
-  overflow:hidden;
-}
-.cartao-lado{
-  width:50%;
-  padding:10px;
-  box-sizing:border-box;
-}
-.cartao-esquerdo img{
-  width:80px;
-}
-.dados-cartao p{
-  margin:4px 0;
-  font-size:13px;
-}
-.dados-cartao b{
-  color:#0a7a2a;
-  min-width:120px;
-  display:inline-block;
-}
-.linha-dobra{
-  width:1px;
-  background:#1c8f3c;
-}
-.cartao-direito{
-  text-align:center;
-}
-.qr-img{
-  width:90px;
-  height:90px;
-  margin:8px auto;
-}
-.aviso{
-  font-size:10px;
-}
-.atencao{
-  color:#b80000;
-  font-weight:bold;
-}
-.suporte{
-  font-size:9px;
-}
-
-/* ================= BOTÕES ================= */
-.botoes{
-  text-align:center;
-  margin:20px 0;
-}
-.botoes button{
-  background:#1c8f3c;
-  color:#fff;
-  border:none;
-  padding:10px 22px;
-  margin:6px;
-  border-radius:8px;
-  font-size:15px;
-  cursor:pointer;
-}
-.botoes button.voltar{
-  background:#005bb5;
-}
-
 /* =========================
    RODAPÉ
 ========================= */
@@ -169,10 +98,108 @@ body{
   font-size: 11px;
 }
 
+
+/* ================= CARTÃO (ESTILO FINANCEIRO) ================= */
+
+.cartao-wrapper{
+  max-width:420px;
+  margin:24px auto;
+  padding:16px;
+}
+
+.cartao-digital{
+  background:#ffffff;
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.12);
+  padding:18px;
+}
+
+.cartao-topo{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+.cartao-topo img{
+  height:160px;
+  max-width:180px;
+}
+}
+
+.status{
+  font-size:12px;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius:20px;
+  background:#e6f9ee;
+  color:#0a7a3c;
+}
+
+.dados-cartao p{
+  margin:6px 0;
+  font-size:14px;
+}
+
+.dados-cartao b{
+  color:#0a7a2a;
+}
+
+.qr-container{
+  margin-top:18px;
+  padding:14px;
+  background:#f6fff9;
+  border-radius:14px;
+  text-align:center;
+}
+
+.qr-container img{
+  width:180px;
+  max-width:100%;
+}
+
+.qr-container h4{
+  margin:6px 0 10px;
+  color:#0a7a2a;
+}
+
+.aviso{
+  font-size:12px;
+  margin-top:8px;
+}
+
+.suporte{
+  margin-top:10px;
+  font-size:11px;
+  color:#555;
+}
+
 /* ================= IMPRESSÃO ================= */
 @media print{
   body{background:#fff;}
   .botoes,.site-header,.footer{display:none;}
+  .cartao-wrapper{max-width:100%;}
+}
+.acoes-cartao{
+  max-width:420px;
+  margin:20px auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.acoes-cartao button{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  font-size:15px;
+  background:#1c8f3c;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+
+.acoes-cartao .voltar{
+  background:#005bb5;
 }
 
 </style>
@@ -209,10 +236,15 @@ body{
 
 <!-- CARTÃO -->
 
-<div class="cartao-dobravel" id="cartao-print">
+<div class="cartao-wrapper" id="cartao-print">
 
-  <div class="cartao-lado cartao-esquerdo">
-    <img src="logo-aproveitai.png">
+  <div class="cartao-digital">
+
+    <div class="cartao-topo">
+      <img src="logo-aproveitai.png">
+      
+    </div>
+
     <div class="dados-cartao">
       <p><b>Nome:</b> <span id="nome">-</span></p>
       <p><b>CPF:</b> <span id="cpf">-</span></p>
@@ -221,35 +253,30 @@ body{
       <p><b>Cidade:</b> <span id="cidade">-</span></p>
       <p><b>Cadastro:</b> <span id="cadastro">-</span></p>
     </div>
-  </div>
 
-  <div class="linha-dobra"></div>
-
-  <div class="cartao-lado cartao-direito">
-    <h4>Validação</h4>
-   <img id="qrCode" class="qr-img" />
-
-
-    <div class="aviso">
-      Apresente documento com foto se solicitado.<br>
-      <span class="atencao">Valide sempre antes da compra.</span>
+    <div class="qr-container">
+      <h4>Validação</h4>
+      <img id="qrCode" />
+      <div class="aviso">
+        Apresente documento com foto se solicitado.<br>
+        <strong>Valide sempre antes da compra.</strong>
+      </div>
+      <div class="suporte">
+        SUPORTE – (28) 99969-2303<br>
+        cartao.aproveitai@gmail.com<br>
+        www.aproveitai.com.br
+      </div>
     </div>
-    <div class="suporte">
-      SUPORTE - (28) 99969-2303<br>
-      cartao.aproveitai@gmail.com<br>
-      www.aproveitai.com.br
-    </div>
+
   </div>
 
 </div>
-
 <!-- BOTÕES -->
-<div class="botoes">
- <button onclick="salvarCartao()">💾 Salvar no celular</button>
- <button onclick="window.print()">🖨️ Imprimir cartão</button>
+<div class="acoes-cartao">
+  <button onclick="salvarCartao()">💾 Salvar no celular</button>
+  <button onclick="window.print()">🖨️ Imprimir cartão</button>
   <button class="voltar" onclick="history.back()">⬅ Voltar</button>
 </div>
-
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;

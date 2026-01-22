@@ -1975,3 +1975,15 @@ main {
   cursor: pointer;
   text-decoration: underline;
 }
+body {
+  margin: 0;
+  padding: 0;
+  background: #eaf6ff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px;
+}
