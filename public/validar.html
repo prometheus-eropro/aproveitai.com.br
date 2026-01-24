@@ -272,6 +272,23 @@ if ("serviceWorker" in navigator) {
 <!-- conteúdo dinâmico -->
 
 </main>
+<div id="blocoCodigo" style="display:none" class="status-box ativo">
+  <h3>🎟 Código de Desconto</h3>
+
+  <div id="codigoERO" class="codigo"></div>
+
+  <div id="timer" style="
+    font-size:18px;
+    color:#b91c1c;
+    font-weight:bold;
+    text-align:center;
+    margin-top:10px;
+  "></div>
+
+  <p style="font-size:14px;text-align:center">
+    Apresente este código ao parceiro antes do tempo acabar.
+  </p>
+</div>
 
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
@@ -385,23 +402,59 @@ async function processarQR(texto) {
     <p><b>Grupo:</b> ${data.grupo}</p>
     <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
 
-    ${
-      data.ativo === "SIM"
-        ? `<div class="codigo">✔ Código: ${data.codigoERO}</div>`
-        : `<p style="font-weight:bold">🚫 Sem liberação</p>`
-    }
-
+    
     <button onclick="resetar()">🔄 Voltar</button>
   </div>
 `;
-
+if (data.ativo === "SIM" && data.codigoERO && data.validoAte) {
+  document.getElementById("blocoCodigo").style.display = "block";
+  mostrarCodigo({
+    codigo: data.codigoERO,
+    validoAte: data.validoAte
+  });
+}
+}
+function getQueryParam(nome) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(nome);
 }
 
+// uso
+const idPublico = getQueryParam("idPublico");
+const parceiroId = getQueryParam("parceiro");
+
+function mostrarCodigo(dados){
+  if (intervaloCronometro) clearInterval(intervaloCronometro);
+
+  document.getElementById("codigoERO").innerText = dados.codigo;
+
+  const expira = new Date(dados.validoAte).getTime();
+
+  intervaloCronometro = setInterval(()=>{
+    const agora = Date.now();
+    const diff = expira - agora;
+
+    if(diff <= 0){
+      clearInterval(intervaloCronometro);
+      document.getElementById("timer").innerText = "⛔ Código expirado";
+      return;
+    }
+
+    const min = Math.floor(diff / 60000);
+    const seg = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById("timer").innerText =
+      `⏳ Válido por ${min}:${String(seg).padStart(2,"0")}`;
+  },1000);
+}
 function resetar() {
   lendo = false;
   ultimaLeitura = "";
+  document.getElementById("blocoCodigo").style.display = "none";
+  document.getElementById("timer").innerText = "";
   iniciarLeitor();
 }
+let intervaloCronometro = null;
 </script>
 </body>
 </html>

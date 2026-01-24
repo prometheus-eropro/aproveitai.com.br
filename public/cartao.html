@@ -173,14 +173,59 @@ body{
   color:#555;
 }
 
-/* ================= IMPRESSÃO ================= */
-@media print{
-  body{background:#fff;}
-  .botoes,.site-header,.footer{display:none;}
-  .cartao-wrapper{max-width:100%;}
+/* ================= IMPRESSÃO – CARTÃO DE BOLSO ================= */
+@media print {
+
+  body {
+    background: #fff !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Esconde tudo que não é o cartão */
+  .botoes,
+  .acoes-cartao,
+  .site-header,
+  .footer {
+    display: none !important;
+  }
+
+  /* Área do cartão */
+  .cartao-wrapper {
+    width: 8.5cm;
+    height: 5.4cm;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Cartão */
+  .cartao {
+    width: 100%;
+    height: 100%;
+    box-shadow: none !important;
+    border-radius: 5mm;
+    padding: 4mm;
+    font-size: 9pt;
+  }
+
+  /* QR Code – tamanho ideal para leitura */
+  .qr img {
+    width: 2.8cm;
+    height: 2.8cm;
+  }
+
+  /* Textos compactos */
+  .cartao h1,
+  .cartao h2,
+  .cartao p {
+    margin: 2mm 0;
+    line-height: 1.2;
+  }
 }
+
+/* ================= BOTÕES (TELA) ================= */
 .acoes-cartao{
-  max-width:420px;
+  max-width:360px;
   margin:20px auto;
   display:flex;
   flex-direction:column;

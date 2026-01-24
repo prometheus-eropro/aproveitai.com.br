@@ -43,7 +43,13 @@
                   var(--bg);
     }
 
-    .wrap{max-width:1200px;margin:0 auto;padding:18px;}
+    .wrap{
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 18px;
+}
+
     .topbar{
       background: linear-gradient(90deg, rgba(14,165,233,.18), rgba(34,197,94,.14));
       border:1px solid var(--line);
@@ -110,11 +116,12 @@
     }
 
     .grid{
-      margin-top:16px;
-      display:grid;
-      grid-template-columns: 280px 1fr;
-      gap:14px;
-    }
+  margin-top:16px;
+  display:grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap:14px;
+}
+
 
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
@@ -227,16 +234,22 @@
     .status.bad .dot{background: var(--bad)}
 
     .tableWrap{
-      overflow:auto;
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.9);
-    }
-    table{
-      border-collapse:collapse;
-      width:100%;
-      min-width: 900px;
-    }
+  width: 100%;
+  overflow-x: auto;
+}
+
+table{
+  width: 100%;
+  min-width: 1600px; /* força abrir scroll horizontal */
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th, td{
+  word-break: break-word;
+  white-space: normal;
+}
+
     th, td{
       border-bottom:1px solid var(--line);
       padding:10px 10px;
@@ -362,6 +375,147 @@
   line-height: 1.5;
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.main-content {
+  max-width: 100%;
+  padding: 16px;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th, td {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+@media (max-width: 1200px) {
+  }
+}
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.main-content,
+.container,
+.dashboard,
+.table-wrapper {
+  max-width: 100%;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th, td {
+  word-wrap: break-word;
+}
+table td, table th {
+  padding: 10px 12px;
+  font-size: 14px;
+  white-space: normal;
+}
+
+button {
+  min-width: 90px;
+  padding: 8px 12px;
+  margin: 4px 0;
+}
+/* =========================
+   AJUSTE VISUAL TABELAS ADMIN
+========================= */
+
+/* Container da tabela */
+.table-container,
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 12px;
+  border-radius: 12px;
+}
+
+/* Tabela base */
+table {
+  width: 100%;
+  min-width: 1200px; /* FORÇA largura mínima */
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: #fff;
+}
+
+/* Cabeçalho */
+table thead th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 10px 8px;
+  border-bottom: 2px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Corpo */
+table tbody td {
+  padding: 10px 8px;
+  font-size: 13px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* Zebra */
+table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+/* Status */
+td[data-status="sim"] {
+  color: #166534;
+  font-weight: 700;
+}
+
+td[data-status="nao"] {
+  color: #991b1b;
+  font-weight: 700;
+}
+
+/* Botões */
+table button {
+  padding: 6px 10px;
+  margin: 2px 0;
+  border-radius: 8px;
+  font-size: 12px;
+  min-width: 90px;
+  cursor: pointer;
+}
+
+/* Coluna ações */
+td.acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Scroll bonito */
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 10px;
 }
 
 
@@ -537,6 +691,7 @@
             <div class="row">
               <input class="input" id="filtroClientes" placeholder="Buscar (nome / cpf / cidade / idPublico)"/>
               <button class="btn" id="btnReloadClientes">Recarregar</button>
+              <button class="btn" id="btnCsvClientes">Exportar CSV</button>
               <button class="btn primary" id="btnNovoCliente">+ Criar Cliente</button>
             </div>
             <div class="hint">Dica: o botão de status altera a coluna <b>ativo</b> para <b>SIM</b> ou <b>NAO</b>.</div>
@@ -551,6 +706,7 @@
             <div class="row">
               <input class="input" id="filtroParceiros" placeholder="Buscar (nome / cnpj / cidade / ramo)"/>
               <button class="btn" id="btnReloadParceiros">Recarregar</button>
+              <button class="btn" id="btnCsvParceiros">Exportar CSV</button>
               <button class="btn primary" id="btnNovoParceiro">+ Criar Parceiro</button>
             </div>
             <div class="hint">Parceiros permitem <b>edição</b> via action=atualizar_parceiro (patch).</div>
@@ -565,6 +721,7 @@
             <div class="row">
               <input class="input" id="filtroBeneficios" placeholder="Buscar (parceiro / grupo / descrição)"/>
               <button class="btn" id="btnReloadBeneficios">Recarregar</button>
+              <button class="btn" id="btnCsvBeneficios">Exportar CSV</button>
               <button class="btn primary" id="btnNovoBeneficio">+ Criar Benefício</button>
             </div>
             <div class="hr"></div>
@@ -578,6 +735,7 @@
             <div class="row">
               <input class="input" id="filtroPromocoes" placeholder="Buscar (parceiro / título / descrição)"/>
               <button class="btn" id="btnReloadPromocoes">Recarregar</button>
+              <button class="btn" id="btnCsvPromocoes">Exportar CSV</button>
               <button class="btn primary" id="btnNovoPromocao">+ Criar Promoção</button>
             </div>
             <div class="hr"></div>
@@ -591,6 +749,7 @@
             <div class="row">
               <input class="input" id="filtroLogs" placeholder="Buscar (cpf / nome / parceiro / status / tipo)"/>
               <button class="btn" id="btnReloadLogs">Recarregar</button>
+              <button class="btn" id="btnCsvLogs">Exportar CSV</button>
             </div>
             <div class="hint">Somente leitura. Mostra exatamente a aba <b>logs</b>.</div>
             <div class="hr"></div>
@@ -604,6 +763,7 @@
             <div class="row">
               <input class="input" id="filtroLogAdmin" placeholder="Buscar (admin / ação / entidade / id)"/>
               <button class="btn" id="btnReloadLogAdmin">Recarregar</button>
+              <button class="btn" id="btnCsvLogAdmin">Exportar CSV</button>
             </div>
             <div class="hint">Somente leitura. Mostra a aba <b>log_admin</b>.</div>
             <div class="hr"></div>
@@ -617,6 +777,7 @@
             <div class="row">
               <input class="input" id="filtroAdmins" placeholder="Buscar (usuario / nome)"/>
               <button class="btn" id="btnReloadAdmins">Recarregar</button>
+              <button class="btn" id="btnCsvAdmins">Exportar CSV</button>
             </div>
             <div class="hint">Somente leitura. Mostra a aba <b>admins</b> (atenção: aqui aparecem senhas).</div>
             <div class="hr"></div>
@@ -647,343 +808,1021 @@
       </div>
     </div>
   </div>
+  <!-- EDIT MODAL (necessário para Editar/Criar) -->
+  <div class="overlay" id="overlayEdit">
+    <div class="modal">
+      <header>
+        <b id="editTitle">Editar</b>
+        <button class="btn" id="btnEditClose">Fechar</button>
+      </header>
 
-  <div class="toast" id="toast"></div>
+      <div class="body">
+        <p id="editHint" class="hint"></p>
+
+        <div class="row" id="editForm" style="align-items:flex-start;flex-wrap:wrap"></div>
+
+        <div class="row" style="justify-content:flex-end;margin-top:12px">
+          <button class="btn" id="btnEditCancel">Cancelar</button>
+          <button class="btn primary" id="btnEditSave">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script>
-    /**************************************************************
-     * CONFIG — COLE AQUI SUA URL /exec DO APPS SCRIPT
-     **************************************************************/
-    const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"; 
+/**************************************************************
+ * ADMIN — AproveitAI (compatível com seu Google Apps Script)
+ * - JSONP (sem CORS) via callback
+ * - Login: action=loginAdmin&key=...
+ * - CRUD:
+ *   - clientes: criar_cliente / atualizar_registro / alterar_status / gerar_termos_cliente
+ *   - parceiros: criar_parceiro / atualizar_parceiro / atualizar_registro / alterar_status / gerarContrato / listar_parceiros
+ *   - beneficios: criar_beneficio / atualizar_registro / alterar_status
+ *   - promocoes: criar_promocao / atualizar_registro / alterar_status
+ *   - logs, log_admin, admins: somente leitura via ?aba=
+ **************************************************************/
 
-const state = { key:null, admin:null };
+/*** 1) CONFIG — cole aqui a URL /exec do Apps Script ***/
+const API_URL = "https://script.google.com/macros/s/AKfycbwMMQ2FR2JBpo7xvWVazw4dAV6t_t90UxTASLcGfo1t7fA-beDqJDC-4z-Y7DL9vRunVg/exec";
 
+/*** 2) ESTADO ***/
+const store = {
+  get(k){ try{return localStorage.getItem(k)}catch(e){return null} },
+  set(k,v){ try{localStorage.setItem(k,v)}catch(e){} },
+  del(k){ try{localStorage.removeItem(k)}catch(e){} },
+};
+const state = {
+  key: store.get("apv_admin_key") || null,
+  admin: store.get("apv_admin_name") || null,
+  cache: { clientes:[], parceiros:[], beneficios:[], promocoes:[], logs:[], log_admin:[], admins:[] },
+  loaded: { clientes:false, parceiros:false, beneficios:false, promocoes:false, logs:false, log_admin:false, admins:false, dashboard:false }
+};
+function formatarDataBR(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    dateStyle: "short",
+    timeStyle: "medium"
+  });
+}
+
+/*** 3) HELPERS UI ***/
+const $ = (id)=>document.getElementById(id);
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2600);
+}
+function setPill(text){
+  $("pillAdmin").textContent = text;
+}
+function setApiStatus(ok, msg){
+  const el = $("statusApi");
+  el.classList.remove("ok","bad");
+  if(ok){ el.classList.add("ok"); el.querySelector(".dot").style.background="var(--good)"; }
+  else { el.classList.add("bad"); el.querySelector(".dot").style.background="var(--bad)"; }
+  el.childNodes[1].textContent = " " + msg;
+}
+function showOverlay(id, show){
+  const el = $(id);
+  if(!el) return;
+  el.classList.toggle("show", !!show);
+}
 function apenasNumeros(v){ return String(v||"").replace(/\D/g,""); }
-
-function callAPI(params, onOk, onErr){
-  const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1000);
-  params.callback = cb;
-
-  window[cb] = function(res){
-    delete window[cb];
-    script.remove();
-    if (res && res.ok !== false) (onOk && onOk(res));
-    else (onErr && onErr(res));
-  };
-
-  const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
-  const script = document.createElement("script");
-  script.src = API_URL + "?" + qs;
-  document.body.appendChild(script);
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
 }
 
-function loginAdmin(){
-  const key = document.getElementById("adminKey").value.trim();
-  if(!key) return alert("Informe a chave");
-  callAPI({ action:"loginAdmin", key }, (res)=>{
-    state.key = key;
-    state.admin = res.admin;
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("adminBox").style.display="block";
-    refreshAll();
-  }, ()=>alert("Acesso negado"));
+/*** 4) JSONP CALL ***/
+async function callAPI(params = {}){
+  if(state.key){
+    params.key = state.key;
+  }
+  const url = API_URL + "?" + new URLSearchParams(params);
+  const r = await fetch(url);
+  return r.json();
 }
 
-function refreshAll(){
-  carregarClientes();
-  carregarParceiros();
-  carregarBeneficios();
-  carregarPromocoes();
-  carregarLogs();
-  relatorioGeral();
+
+
+/*** 5) LOGIN ***/
+async function ensureLogin(){
+  if(!state.key){
+    showOverlay("overlayLogin", true);
+    setPill("Não autenticado");
+    return false;
+  }
+  try{
+    const res = await callAPI({ action:"loginAdmin", key: state.key });
+    if(res && res.ok){
+      state.admin = res.admin || "Admin";
+      store.set("apv_admin_key", state.key);
+      store.set("apv_admin_name", state.admin);
+      setPill("Logado: " + state.admin);
+      showOverlay("overlayLogin", false);
+      return true;
+    }
+    throw res;
+  }catch(err){
+    state.key = null;
+    state.admin = null;
+    store.del("apv_admin_key");
+    store.del("apv_admin_name");
+    setPill("Não autenticado");
+    showOverlay("overlayLogin", true);
+    $("loginMsg").textContent = "Acesso negado. Verifique a key na aba 'admins'.";
+    return false;
+  }
 }
 
-/* =========================
-   LISTAGENS (ABA)
-========================= */
-function listarAba(aba, cb){
-  callAPI({ aba }, (res)=>cb(res.dados || []), ()=>cb([]));
+function logout(){
+  state.key=null; state.admin=null;
+  store.del("apv_admin_key"); store.del("apv_admin_name");
+  setPill("Não autenticado");
+  toast("Saiu do admin");
+  showOverlay("overlayLogin", true);
 }
 
-/* =========================
-   CLIENTES
-========================= */
-function carregarClientes(){
-  listarAba("clientes", (dados)=>{
-    const tb = document.getElementById("clientesBody");
-    tb.innerHTML = "";
-    dados.forEach(c=>{
-      const ativo = String(c.ativo||"").toLowerCase()==="sim";
-      tb.innerHTML += `
-      <tr>
-        <td>${c.nome||""}</td>
-        <td>${c.cpf||""}</td>
-        <td>${c.celular||""}</td>
-        <td>${c.cidade||""}</td>
-        <td>${c.grupo||""}</td>
-        <td><b style="color:${ativo?"green":"red"}">${ativo?"SIM":"NAO"}</b></td>
-        <td>
-          <button onclick="toggleStatus('clientes','cpf','${c.cpf}','${ativo?"SIM":"NAO"}')">${ativo?"Inativar":"Ativar"}</button>
-          <button onclick="editarClientePrompt('${c.cpf}')">Editar</button>
-          <button onclick="gerarTermosCliente('${c.cpf}')">Termos (PDF)</button>
-        </td>
-      </tr>`;
-    });
+/*** 6) NAV / VIEW ***/
+const views = {
+  dashboard: { title:"Dashboard", desc:"Resumo geral do banco e validações." },
+  clientes: { title:"Clientes", desc:"Criar, editar, ativar/desativar e gerar termos." },
+  parceiros: { title:"Parceiros", desc:"Criar, editar, ativar/desativar, token e contrato." },
+  beneficios: { title:"Benefícios", desc:"Criar, editar e ativar/desativar benefícios." },
+  promocoes: { title:"Promoções", desc:"Criar, editar e ativar/desativar promoções." },
+  logs: { title:"Logs", desc:"Somente leitura (validações)." },
+  log_admin: { title:"Log Admin", desc:"Somente leitura (auditoria)." },
+  admins: { title:"Admins", desc:"Somente leitura (atenção às senhas)." }
+};
+
+function showView(name){
+  // nav state
+  document.querySelectorAll(".navbtn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.view === name);
   });
-}
-
-function criarCliente(){
-  const cpf = apenasNumeros(document.getElementById("c_cpf").value);
-  if(cpf.length!==11) return alert("CPF inválido");
-
-  const payload = {
-    action:"criar_cliente",
-    key: state.key,
-    cpf: cpf,
-    nome: document.getElementById("c_nome").value,
-    celular: apenasNumeros(document.getElementById("c_celular").value),
-    grupo: document.getElementById("c_grupo").value,
-    cidade: document.getElementById("c_cidade").value,
-    nascimento: document.getElementById("c_nascimento").value
-  };
-
-  callAPI(payload, (res)=>{
-    alert("Cliente criado: " + (res.idPublico||"OK"));
-    carregarClientes();
-  }, ()=>alert("Erro ao criar cliente"));
-}
-
-function editarClientePrompt(cpf){
-  const novoTel = prompt("Novo telefone (somente números):");
-  if(novoTel===null) return;
-  const novaCidade = prompt("Nova cidade:");
-  if(novaCidade===null) return;
-
-  atualizarRegistro("clientes","cpf",cpf,{
-    celular: apenasNumeros(novoTel),
-    cidade: novaCidade
-  }, carregarClientes);
-}
-
-/* =========================
-   PARCEIROS
-========================= */
-function carregarParceiros(){
-  callAPI({ action:"listar_parceiros", key: state.key }, (res)=>{
-    const tb = document.getElementById("parceirosBody");
-    tb.innerHTML = "";
-    (res.parceiros||[]).forEach(p=>{
-      const ativo = String(p.ativo||"").toLowerCase()==="sim";
-      tb.innerHTML += `
-      <tr>
-        <td>${p.nomeFantasia||""}</td>
-        <td>${p.cnpj||""}</td>
-        <td>${p.cidade||""}</td>
-        <td>${p.ramo||""}</td>
-        <td>${p.token||""}</td>
-        <td><b style="color:${ativo?"green":"red"}">${ativo?"SIM":"NAO"}</b></td>
-        <td>
-          <button onclick="toggleStatus('parceiros','cnpj','${p.cnpj}','${ativo?"SIM":"NAO"}')">${ativo?"Inativar":"Ativar"}</button>
-          <button onclick="editarParceiroPrompt('${p.cnpj}')">Editar</button>
-          <button onclick="gerarContrato('${p.cnpj}')">Contrato (PDF)</button>
-        </td>
-      </tr>`;
-    });
-  }, ()=>alert("Erro ao listar parceiros"));
-}
-
-function criarParceiro(){
-  const cnpj = apenasNumeros(document.getElementById("p_cnpj").value);
-  if(cnpj.length!==14) return alert("CNPJ inválido");
-
-  const payload = {
-    action:"criar_parceiro",
-    key: state.key,
-    cnpj: cnpj,
-    nomeFantasia: document.getElementById("p_nome").value,
-    cidade: document.getElementById("p_cidade").value,
-    ramo: document.getElementById("p_ramo").value,
-    whatsapp: apenasNumeros(document.getElementById("p_whatsapp").value),
-    email: document.getElementById("p_email").value,
-    site: document.getElementById("p_site").value
-  };
-
-  callAPI(payload, (res)=>{
-    alert("Parceiro criado | Token: " + (res.token||""));
-    carregarParceiros();
-  }, ()=>alert("Erro ao criar parceiro"));
-}
-
-function editarParceiroPrompt(cnpj){
-  const novoWhats = prompt("Novo WhatsApp (somente números):");
-  if(novoWhats===null) return;
-  atualizarRegistro("parceiros","cnpj",cnpj,{ whatsapp: apenasNumeros(novoWhats) }, carregarParceiros);
-}
-
-/* =========================
-   BENEFÍCIOS
-========================= */
-function carregarBeneficios(){
-  listarAba("beneficios", (dados)=>{
-    const tb = document.getElementById("beneficiosBody");
-    tb.innerHTML = "";
-    dados.forEach(b=>{
-      const ativo = String(b.ativo||"").toLowerCase()==="sim";
-      tb.innerHTML += `
-      <tr>
-        <td>${b.parceiro||""}</td>
-        <td>${b.grupo||""}</td>
-        <td>${b.descricao||""}</td>
-        <td>${b.regra||""}</td>
-        <td><b style="color:${ativo?"green":"red"}">${ativo?"SIM":"NAO"}</b></td>
-        <td>
-          <button onclick="toggleStatus('beneficios','descricao','${String(b.descricao||"").replace(/'/g,"")}','${ativo?"SIM":"NAO"}')">${ativo?"Inativar":"Ativar"}</button>
-          <button onclick="editarBeneficioPrompt('${String(b.descricao||"").replace(/'/g,"")}')">Editar</button>
-        </td>
-      </tr>`;
-    });
+  // title
+  $("viewTitle").textContent = views[name]?.title || name;
+  $("viewDesc").textContent = views[name]?.desc || "";
+  // section
+  document.querySelectorAll("section[data-section]").forEach(s=>{
+    s.style.display = (s.dataset.section === name) ? "" : "none";
   });
+
+  // lazy load
+  loadView(name).catch(()=>{});
 }
 
-function criarBeneficio(){
-  const payload = {
-    action:"criar_beneficio",
-    key: state.key,
-    parceiro: document.getElementById("b_parceiro").value,
-    grupo: document.getElementById("b_grupo").value,
-    descricao: document.getElementById("b_descricao").value,
-    regra: document.getElementById("b_regra").value
-  };
-  callAPI(payload, ()=>{
-    alert("Benefício criado");
-    carregarBeneficios();
-  }, ()=>alert("Erro ao criar benefício"));
+async function loadView(name){
+  if(!(await ensureLogin())) return;
+
+  if(name === "dashboard") return loadDashboard(true);
+  if(name === "clientes") return loadClientes(true);
+  if(name === "parceiros") return loadParceiros(true);
+  if(name === "beneficios") return loadBeneficios(true);
+  if(name === "promocoes") return loadPromocoes(true);
+  if(name === "logs") return loadLogs(true);
+  if(name === "log_admin") return loadLogAdmin(true);
+  if(name === "admins") return loadAdmins(true);
 }
 
-function editarBeneficioPrompt(descricao){
-  const novaRegra = prompt("Nova regra:");
-  if(novaRegra===null) return;
-  atualizarRegistro("beneficios","descricao",descricao,{ regra:novaRegra }, carregarBeneficios);
+/*** 7) RENDER TABLES ***/
+function chipAtivo(v){
+  const on = String(v||"").trim().toLowerCase() === "sim";
+  return `<span class="chip ${on?'green':'red'}">${on?'ATIVO':'INATIVO'}</span>`;
 }
 
-/* =========================
-   PROMOÇÕES
-========================= */
-function carregarPromocoes(){
-  listarAba("promocoes", (dados)=>{
-    const tb = document.getElementById("promocoesBody");
-    tb.innerHTML = "";
-    dados.forEach(p=>{
-      const ativo = String(p.ativo||"").toLowerCase()==="sim";
-      tb.innerHTML += `
-      <tr>
-        <td>${p.parceiro||""}</td>
-        <td>${p.titulo||""}</td>
-        <td>${p.descricao||""}</td>
-        <td>${p.inicio||""}</td>
-        <td>${p.fim||""}</td>
-        <td><b style="color:${ativo?"green":"red"}">${ativo?"SIM":"NAO"}</b></td>
-        <td>
-          <button onclick="toggleStatus('promocoes','titulo','${String(p.titulo||"").replace(/'/g,"")}','${ativo?"SIM":"NAO"}')">${ativo?"Inativar":"Ativar"}</button>
-          <button onclick="editarPromocaoPrompt('${String(p.titulo||"").replace(/'/g,"")}')">Editar</button>
-        </td>
-      </tr>`;
-    });
+function renderTable(tableId, rows, columns, options={}){
+  const tbl = $(tableId);
+  const cols = columns.filter(Boolean);
+
+  const thead = `<thead><tr>${
+    cols.map(c=>`<th>${escapeHtml(c.label||c.key)}</th>`).join("")
+  }${options.actions ? "<th>Ações</th>" : ""}</tr></thead>`;
+
+  const tbody = `<tbody>${
+    rows.map((r, idx)=>{
+      return `<tr>${
+        cols.map(c=>{
+          const val = (typeof c.render === "function") ? c.render(r) : (r[c.key] ?? "");
+          return `<td>${escapeHtml(val)}</td>`;
+        }).join("")
+      }${
+        options.actions
+        ? `<td>${options.actions(r, idx)}</td>`
+        : ""
+      }</tr>`;
+    }).join("")
+  }</tbody>`;
+
+  tbl.innerHTML = thead + tbody;
+}
+
+function downloadCSV(filename, rows){
+  if(!rows || !rows.length){ toast("Nada para exportar"); return; }
+  const headers = Object.keys(rows[0]);
+  const esc = (v)=>('"'+String(v??"").replaceAll('"','""')+'"');
+  const csv = [headers.map(esc).join(",")].concat(
+    rows.map(r => headers.map(h=>esc(r[h])).join(","))
+  ).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/*** 8) EDIT MODAL (GENÉRICO) ***/
+let editCtx = null;
+
+function openEditModal({title, hint, fields, initial, onSave}){
+  editCtx = { fields, onSave, initial: initial||{} };
+
+  $("editTitle").textContent = title || "Editar";
+  $("editHint").textContent = hint || "";
+
+  const form = $("editForm");
+  form.innerHTML = "";
+
+  fields.forEach(f=>{
+    const wrap = document.createElement("div");
+    wrap.style.minWidth = f.w || "220px";
+    wrap.style.flex = f.flex || "0 0 auto";
+
+    const lab = document.createElement("div");
+    lab.className = "hint";
+    lab.style.fontWeight = "900";
+    lab.style.marginBottom = "6px";
+    lab.textContent = f.label || f.key;
+
+    let input;
+    if(f.type === "textarea"){
+      input = document.createElement("textarea");
+    }else if(f.type === "select"){
+      input = document.createElement("select");
+      (f.options||[]).forEach(opt=>{
+        const o=document.createElement("option");
+        o.value=opt.value; o.textContent=opt.label;
+        input.appendChild(o);
+      });
+    }else{
+      input = document.createElement("input");
+      input.type = f.type || "text";
+      input.className = "input";
+    }
+    input.classList.add("input");
+    input.dataset.key = f.key;
+    input.value = (initial && initial[f.key] != null) ? String(initial[f.key]) : (f.default ?? "");
+    if(f.readonly) input.setAttribute("readonly","readonly");
+
+    wrap.appendChild(lab);
+    wrap.appendChild(input);
+    form.appendChild(wrap);
   });
+
+  showOverlay("overlayEdit", true);
 }
 
-function criarPromocao(){
-  const payload = {
-    action:"criar_promocao",
-    key: state.key,
-    parceiro: document.getElementById("pr_parceiro").value,
-    titulo: document.getElementById("pr_titulo").value,
-    descricao: document.getElementById("pr_descricao").value,
-    inicio: document.getElementById("pr_inicio").value,
-    fim: document.getElementById("pr_fim").value
-  };
-  callAPI(payload, ()=>{
-    alert("Promoção criada");
-    carregarPromocoes();
-  }, ()=>alert("Erro ao criar promoção"));
+function closeEditModal(){
+  editCtx = null;
+  showOverlay("overlayEdit", false);
 }
 
-function editarPromocaoPrompt(titulo){
-  const novaDesc = prompt("Nova descrição:");
-  if(novaDesc===null) return;
-  atualizarRegistro("promocoes","titulo",titulo,{ descricao:novaDesc }, carregarPromocoes);
-}
+async function saveEditModal(){
+  if(!editCtx) return;
 
-/* =========================
-   LOGS
-========================= */
-function carregarLogs(){
-  listarAba("logs", (dados)=>{
-    const tb = document.getElementById("logsBody");
-    tb.innerHTML = "";
-    dados.slice(-200).reverse().forEach(l=>{
-      tb.innerHTML += `
-      <tr>
-        <td>${l.data||l.timestamp||""}</td>
-        <td>${l.cpf||""}</td>
-        <td>${l.nome||""}</td>
-        <td>${l.parceiro||""}</td>
-        <td>${l.codigoERO||l["codigo-ero"]||""}</td>
-        <td>${l.status||""}</td>
-        <td>${l.tipoValidacao||""}</td>
-      </tr>`;
-    });
+  const patch = {};
+  document.querySelectorAll("#editForm .input, #editForm textarea, #editForm select").forEach(el=>{
+    const k = el.dataset.key;
+    if(!k) return;
+    patch[k] = el.value;
   });
+
+  try{
+    $("btnEditSave").disabled = true;
+    await editCtx.onSave(patch, editCtx.initial);
+    closeEditModal();
+  }catch(err){
+    console.error(err);
+    toast("Erro ao salvar");
+  }finally{
+    $("btnEditSave").disabled = false;
+  }
 }
 
-/* =========================
-   RELATÓRIO GERAL
-========================= */
-function relatorioGeral(){
-  callAPI({ action:"relatorioGeral", key: state.key }, (res)=>{
-    const out = document.getElementById("relatorioOut");
-    if(!out) return;
-    out.innerHTML = `
-      <div><b>Clientes:</b> ${res.clientes.total} (Ativos: ${res.clientes.ativos} | Inativos: ${res.clientes.inativos})</div>
-      <div><b>Parceiros:</b> ${res.parceiros.total} (Ativos: ${res.parceiros.ativos} | Inativos: ${res.parceiros.inativos})</div>
-      <div><b>Validações (logs):</b> ${res.validacoes}</div>
-    `;
-  }, ()=>{});
-}
-
-/* =========================
-   AÇÕES COMUNS
-========================= */
-function toggleStatus(aba, campoId, valorId, atual){
-  callAPI({
-    action:"alterar_status",
-    aba, campoId, valorId,
-    status: (String(atual).toUpperCase()==="SIM") ? "NAO" : "SIM",
-    key: state.key
-  }, ()=>refreshAll(), ()=>alert("Erro ao alterar status"));
-}
-
-function atualizarRegistro(aba, campoId, valorId, patchObj, cb){
-  callAPI({
+/*** 9) API ACTIONS ***/
+async function apiAtualizarRegistro(aba, campoId, valorId, patchObj){
+  return callAPI({
     action:"atualizar_registro",
+    key: state.key,
     aba, campoId, valorId,
-    patch: JSON.stringify(patchObj),
-    key: state.key
-  }, ()=>{ cb && cb(); }, ()=>alert("Erro ao atualizar registro"));
+    patch: JSON.stringify(patchObj)
+  });
 }
 
-function gerarContrato(cnpj){
-  callAPI({ action:"gerarContrato", cnpj, key: state.key }, (res)=>{
-    window.open(res.url, "_blank");
-  }, ()=>alert("Erro ao gerar contrato"));
+async function apiAlterarStatus(aba, campoId, valorId, novo){
+  return callAPI({
+    action:"alterar_status",
+    key: state.key,
+    aba, campoId, valorId,
+    status: novo
+  });
 }
 
-function gerarTermosCliente(cpf){
-  callAPI({ action:"gerar_termos_cliente", cpf, key: state.key }, (res)=>{
-    window.open(res.url, "_blank");
-  }, ()=>alert("Erro ao gerar termos"));
+/*** 10) LOADERS (DADOS) ***/
+async function testApi(){
+  try{
+    const r = await callAPI({ action:"loginAdmin", key: state.key });
+    if(r && r.ok){
+      setApiStatus(true, "API OK");
+      return true;
+    }
+    throw r;
+  }catch(err){
+    setApiStatus(false, "Falha na API");
+    return false;
+  }
 }
+
+
+async function loadDashboard(force=false){
+  if(state.loaded.dashboard && !force) return;
+
+  await Promise.all([
+    loadClientes(true),
+    loadParceiros(true),
+    loadLogs(true)
+  ]);
+
+  const clientes = state.cache.clientes;
+  const parceiros = state.cache.parceiros;
+
+  const cliAtivos = clientes.filter(c => String(c.ativo).toLowerCase()==="sim").length;
+  const cliInativos = clientes.length - cliAtivos;
+
+  const parAtivos = parceiros.filter(p => String(p.ativo).toLowerCase()==="sim").length;
+  const parInativos = parceiros.length - parAtivos;
+
+  $("mClientes").textContent = clientes.length;
+  $("mClientes2").textContent = `Ativos: ${cliAtivos} | Inativos: ${cliInativos}`;
+
+  $("mParceiros").textContent = parceiros.length;
+  $("mParceiros2").textContent = `Ativos: ${parAtivos} | Inativos: ${parInativos}`;
+
+  $("mLogs").textContent = state.cache.logs.length;
+  $("mStatus").textContent = state.admin ? "Logado" : "—";
+
+  setApiStatus(true, "API OK");
+  state.loaded.dashboard = true;
+}
+
+/* ---------- CLIENTES ---------- */
+async function loadClientes(force=false){
+  if(state.loaded.clientes && !force) return;
+  const r = await callAPI({ aba:"clientes" });
+  state.cache.clientes = r.dados || [];
+  state.loaded.clientes = true;
+  renderClientes();
+}
+function renderClientes(){
+  const q = ($("filtroClientes").value||"").trim().toLowerCase();
+  const rows = state.cache.clientes.filter(c=>{
+    if(!q) return true;
+    const blob = JSON.stringify(c).toLowerCase();
+    return blob.includes(q);
+  });
+
+renderTable("tblClientes", rows, [
+  {key:"idPublico", label:"ID Público"},
+  {key:"cpf", label:"CPF"},
+  {key:"nome", label:"Nome"},
+  {key:"celular", label:"Celular"},
+  {key:"grupo", label:"Grupo"},
+  {key:"cidade", label:"Cidade"},
+  {key:"nascimento", label:"Nascimento"},
+  {key:"ativo", label:"Status"},
+  {key:"placa_1", label:"Placa 1"},
+  {key:"modelo_1", label:"Modelo 1"},
+  {key:"placa_2", label:"Placa 2"},
+  {key:"modelo_2", label:"Modelo 2"},
+  {key:"zap_status_enviado", label:"WhatsApp Enviado"},
+],{
+    actions: (c)=> {
+      const ativo = String(c.ativo||"").trim().toLowerCase()==="sim";
+      const cpf = c.cpf || "";
+      const cpfId = apenasNumeros(cpf) || cpf; // GAS compara por números
+      return `
+   <td class="acoes">
+  <button onclick="alterarStatusCliente('${c.cpf}','SIM')">Ativar</button>
+  <button onclick="alterarStatusCliente('${c.cpf}','NAO')">Inativar</button>
+  <button onclick="editarCliente('${c.cpf}')">Editar</button>
+  <button onclick="gerarTermosCliente('${c.cpf}')">Termos (PDF)</button>
+</td>
+
+
+      `;
+    }
+  });
+}
+
+async function toggleCliente(cpf, ativo){
+  try{
+    await apiAlterarStatus("clientes","cpf",cpf, ativo ? "NAO" : "SIM");
+    toast("Status atualizado");
+    await loadClientes(true);
+    await loadDashboard(true);
+  }catch(err){ toast("Erro ao alterar status"); }
+}
+
+function editarCliente(cpf){
+  const c = state.cache.clientes.find(x => apenasNumeros(x.cpf) === apenasNumeros(cpf)) || {};
+  openEditModal({
+    title: "Editar cliente",
+    hint: "Salva via action=atualizar_registro (aba=clientes, campoId=cpf).",
+    initial: c,
+    fields: [
+      {key:"cpf", label:"CPF (id)", readonly:true, w:"240px"},
+      {key:"nome", label:"Nome"},
+      {key:"celular", label:"Celular"},
+      {key:"cidade", label:"Cidade"},
+      {key:"grupo", label:"Grupo"},
+      {key:"nascimento", label:"Nascimento"},
+      {key:"idPublico", label:"ID Público"},
+      {key:"observacoes", label:"Observações", type:"textarea", w:"460px", flex:"1 1 460px"},
+    ],
+    onSave: async (patch)=>{
+      // normalizações
+      if(patch.cpf) delete patch.cpf;
+      if(patch.celular) patch.celular = apenasNumeros(patch.celular);
+      await apiAtualizarRegistro("clientes","cpf",cpf, patch);
+      toast("Cliente atualizado");
+      await loadClientes(true);
+    }
+  });
+}
+
+async function termosCliente(cpf){
+  try{
+    const r = await callAPI({ action:"gerar_termos_cliente", key: state.key, cpf });
+    if(r.url) window.open(r.url, "_blank");
+    else toast("PDF não gerado");
+  }catch(err){ toast("Erro ao gerar termos"); }
+}
+
+function novoCliente(){
+  openEditModal({
+    title: "Criar cliente (manual)",
+    hint: "Cria na aba clientes com ativo=NAO (você ativa quando pagamento estiver OK).",
+    initial: {},
+    fields: [
+      {key:"cpf", label:"CPF", w:"240px"},
+      {key:"nome", label:"Nome"},
+      {key:"celular", label:"Celular"},
+      {key:"grupo", label:"Grupo", default:"individual"},
+      {key:"cidade", label:"Cidade"},
+      {key:"nascimento", label:"Nascimento (YYYY-MM-DD)"},
+    ],
+    onSave: async (data)=>{
+      const cpf = apenasNumeros(data.cpf);
+      if(cpf.length !== 11) throw new Error("CPF_INVALIDO");
+      const r = await callAPI({
+        action:"criar_cliente",
+        key: state.key,
+        cpf,
+        nome: data.nome||"",
+        celular: apenasNumeros(data.celular||""),
+        grupo: data.grupo||"individual",
+        cidade: data.cidade||"",
+        nascimento: data.nascimento||""
+      });
+      toast("Cliente criado: " + (r.idPublico || "OK"));
+      await loadClientes(true);
+      await loadDashboard(true);
+    }
+  });
+}
+
+/* ---------- PARCEIROS ---------- */
+async function loadParceiros(force=false){
+  if(state.loaded.parceiros && !force) return;
+
+  const r = await callAPI({ aba:"parceiros" });
+  state.cache.parceiros = r.dados || [];
+
+  state.loaded.parceiros = true;
+  renderParceiros();
+}
+
+function renderParceiros(){
+  const q = ($("filtroParceiros").value||"").trim().toLowerCase();
+  const rows = state.cache.parceiros.filter(p=>{
+    if(!q) return true;
+    const blob = JSON.stringify(p).toLowerCase();
+    return blob.includes(q);
+  });
+
+  renderTable("tblParceiros", rows, [
+    {key:"nomeFantasia", label:"Nome Fantasia"},
+    {key:"cnpj", label:"CNPJ"},
+    {key:"cidade", label:"Cidade"},
+    {key:"ramo", label:"Ramo"},
+    {key:"whatsapp", label:"WhatsApp"},
+    {key:"token", label:"Token"},
+    {key:"ativo", label:"Status", render:(r)=> (String(r.ativo||"").toLowerCase()==="sim" ? "SIM" : "NAO") },
+  ],{
+    actions: (p)=>{
+      const ativo = String(p.ativo||"").trim().toLowerCase()==="sim";
+      const cnpj = p.cnpj || "";
+      const cnpjId = apenasNumeros(cnpj) || cnpj;
+      return `
+        <button class="btn" onclick="toggleParceiro('${cnpjId}', ${ativo})">${ativo?'Inativar':'Ativar'}</button>
+        <button class="btn" onclick="editarParceiro('${cnpjId}')">Editar</button>
+        <button class="btn" onclick="contratoParceiro('${cnpjId}')">Contrato (PDF)</button>
+      `;
+    }
+  });
+}
+
+async function toggleParceiro(cnpj, ativo){
+  try{
+    await apiAlterarStatus("parceiros","cnpj",cnpj, ativo ? "NAO" : "SIM");
+    toast("Status atualizado");
+    await loadParceiros(true);
+    await loadDashboard(true);
+  }catch(err){ toast("Erro ao alterar status"); }
+}
+
+function editarParceiro(cnpj){
+  const p = state.cache.parceiros.find(x => apenasNumeros(x.cnpj) === apenasNumeros(cnpj)) || {};
+  openEditModal({
+    title: "Editar parceiro",
+    hint: "Salva via action=atualizar_parceiro (patch) + action=alterar_status quando necessário.",
+    initial: p,
+    fields: [
+      {key:"cnpj", label:"CNPJ (id)", readonly:true, w:"260px"},
+      {key:"nomeFantasia", label:"Nome Fantasia"},
+      {key:"cidade", label:"Cidade"},
+      {key:"ramo", label:"Ramo"},
+      {key:"whatsapp", label:"WhatsApp"},
+      {key:"instagram", label:"Instagram"},
+      {key:"site", label:"Site"},
+      {key:"email", label:"Email"},
+      {key:"logoURL", label:"Logo URL", w:"420px", flex:"1 1 420px"},
+      {key:"contato", label:"Contato"},
+    ],
+    onSave: async (patch)=>{
+      delete patch.cnpj;
+      if(patch.whatsapp) patch.whatsapp = apenasNumeros(patch.whatsapp);
+      // sua função atualizar_parceiro aplica patch por cabeçalho
+      await callAPI({
+        action:"atualizar_parceiro",
+        key: state.key,
+        cnpj,
+        patch: JSON.stringify(patch)
+      });
+      toast("Parceiro atualizado");
+      await loadParceiros(true);
+    }
+  });
+}
+
+function novoParceiro(){
+  openEditModal({
+    title: "Criar parceiro",
+    hint: "Cria parceiro e gera token automático.",
+    initial: {},
+    fields: [
+      {key:"cnpj", label:"CNPJ", w:"260px"},
+      {key:"nomeFantasia", label:"Nome Fantasia"},
+      {key:"cidade", label:"Cidade"},
+      {key:"ramo", label:"Ramo"},
+      {key:"whatsapp", label:"WhatsApp"},
+      {key:"instagram", label:"Instagram"},
+      {key:"site", label:"Site"},
+      {key:"email", label:"Email"},
+      {key:"logoURL", label:"Logo URL", w:"420px", flex:"1 1 420px"},
+      {key:"contato", label:"Contato"},
+    ],
+    onSave: async (data)=>{
+      const cnpj = apenasNumeros(data.cnpj);
+      if(cnpj.length !== 14) throw new Error("CNPJ_INVALIDO");
+      const r = await callAPI({
+        action:"criar_parceiro",
+        key: state.key,
+        cnpj,
+        nomeFantasia: data.nomeFantasia||"",
+        cidade: data.cidade||"",
+        ramo: data.ramo||"",
+        whatsapp: apenasNumeros(data.whatsapp||""),
+        instagram: data.instagram||"",
+        site: data.site||"",
+        email: data.email||"",
+        logoURL: data.logoURL||"",
+        contato: data.contato||""
+      });
+      toast("Parceiro criado. Token: " + (r.token||""));
+      await loadParceiros(true);
+      await loadDashboard(true);
+    }
+  });
+}
+
+async function contratoParceiro(cnpj){
+  try{
+    const r = await callAPI({ action:"gerarContrato", key: state.key, cnpj });
+    if(r.url) window.open(r.url, "_blank");
+    else toast("PDF não gerado");
+  }catch(err){ toast("Erro ao gerar contrato"); }
+}
+
+/* ---------- BENEFÍCIOS ---------- */
+async function loadBeneficios(force=false){
+  if(state.loaded.beneficios && !force) return;
+  const r = await callAPI({ aba:"beneficios" });
+  state.cache.beneficios = r.dados || [];
+  state.loaded.beneficios = true;
+  renderBeneficios();
+}
+function renderBeneficios(){
+  const q = ($("filtroBeneficios").value||"").trim().toLowerCase();
+  const rows = state.cache.beneficios.filter(b=>{
+    if(!q) return true;
+    const blob = JSON.stringify(b).toLowerCase();
+    return blob.includes(q);
+  });
+
+  renderTable("tblBeneficios", rows, [
+    {key:"parceiro", label:"Parceiro"},
+    {key:"grupo", label:"Grupo"},
+    {key:"descricao", label:"Descrição"},
+    {key:"regra", label:"Regra"},
+    {key:"ativo", label:"Status", render:(r)=> (String(r.ativo||"").toLowerCase()==="sim" ? "SIM" : "NAO") },
+  ],{
+    actions: (b)=>{
+      const ativo = String(b.ativo||"").trim().toLowerCase()==="sim";
+      const id = (b.descricao || "").trim();
+      return `
+        <button class="btn" onclick="toggleBeneficio('${escapeJs(id)}', ${ativo})">${ativo?'Inativar':'Ativar'}</button>
+        <button class="btn" onclick="editarBeneficio('${escapeJs(id)}')">Editar</button>
+      `;
+    }
+  });
+}
+function escapeJs(s){
+  return String(s??"").replaceAll("\\","\\\\").replaceAll("'","\\'");
+}
+async function toggleBeneficio(descricao, ativo){
+  try{
+    await apiAlterarStatus("beneficios","descricao",descricao, ativo ? "NAO" : "SIM");
+    toast("Status atualizado");
+    await loadBeneficios(true);
+  }catch(err){ toast("Erro ao alterar status"); }
+}
+function editarBeneficio(descricao){
+  const b = state.cache.beneficios.find(x => String(x.descricao||"").trim() === String(descricao||"").trim()) || {};
+  openEditModal({
+    title:"Editar benefício",
+    hint:"Identificador usado: descricao (precisa existir e bater exatamente).",
+    initial: b,
+    fields:[
+      {key:"descricao", label:"Descrição (id)", readonly:true, w:"520px", flex:"1 1 520px"},
+      {key:"parceiro", label:"Parceiro"},
+      {key:"grupo", label:"Grupo"},
+      {key:"regra", label:"Regra", type:"textarea", w:"520px", flex:"1 1 520px"},
+    ],
+    onSave: async (patch)=>{
+      delete patch.descricao;
+      await apiAtualizarRegistro("beneficios","descricao",descricao, patch);
+      toast("Benefício atualizado");
+      await loadBeneficios(true);
+    }
+  });
+}
+function novoBeneficio(){
+  openEditModal({
+    title:"Criar benefício",
+    hint:"Cria via action=criar_beneficio.",
+    initial:{},
+    fields:[
+      {key:"parceiro", label:"Parceiro"},
+      {key:"grupo", label:"Grupo"},
+      {key:"descricao", label:"Descrição", w:"520px", flex:"1 1 520px"},
+      {key:"regra", label:"Regra", type:"textarea", w:"520px", flex:"1 1 520px"},
+    ],
+    onSave: async (data)=>{
+      if(!data.descricao) throw new Error("DESCRICAO_OBRIGATORIA");
+      await callAPI({
+        action:"criar_beneficio",
+        key: state.key,
+        parceiro: data.parceiro||"",
+        grupo: data.grupo||"",
+        descricao: data.descricao||"",
+        regra: data.regra||""
+      });
+      toast("Benefício criado");
+      await loadBeneficios(true);
+    }
+  });
+}
+
+/* ---------- PROMOÇÕES ---------- */
+async function loadPromocoes(force=false){
+  if(state.loaded.promocoes && !force) return;
+  const r = await callAPI({ aba:"promocoes" });
+  state.cache.promocoes = r.dados || [];
+  state.loaded.promocoes = true;
+  renderPromocoes();
+}
+function renderPromocoes(){
+  const q = ($("filtroPromocoes").value||"").trim().toLowerCase();
+  const rows = state.cache.promocoes.filter(p=>{
+    if(!q) return true;
+    const blob = JSON.stringify(p).toLowerCase();
+    return blob.includes(q);
+  });
+
+  renderTable("tblPromocoes", rows, [
+    {key:"parceiro", label:"Parceiro"},
+    {key:"titulo", label:"Título"},
+    {key:"descricao", label:"Descrição"},
+    {key:"inicio", label:"Início"},
+    {key:"fim", label:"Fim"},
+    {key:"ativo", label:"Status", render:(r)=> (String(r.ativo||"").toLowerCase()==="sim" ? "SIM" : "NAO") },
+  ],{
+    actions: (p)=>{
+      const ativo = String(p.ativo||"").trim().toLowerCase()==="sim";
+      const id = (p.titulo || "").trim();
+      return `
+        <button class="btn" onclick="togglePromocao('${escapeJs(id)}', ${ativo})">${ativo?'Inativar':'Ativar'}</button>
+        <button class="btn" onclick="editarPromocao('${escapeJs(id)}')">Editar</button>
+      `;
+    }
+  });
+}
+async function togglePromocao(titulo, ativo){
+  try{
+    await apiAlterarStatus("promocoes","titulo",titulo, ativo ? "NAO" : "SIM");
+    toast("Status atualizado");
+    await loadPromocoes(true);
+  }catch(err){ toast("Erro ao alterar status"); }
+}
+function editarPromocao(titulo){
+  const p = state.cache.promocoes.find(x => String(x.titulo||"").trim() === String(titulo||"").trim()) || {};
+  openEditModal({
+    title:"Editar promoção",
+    hint:"Identificador usado: titulo (precisa existir e bater exatamente).",
+    initial:p,
+    fields:[
+      {key:"titulo", label:"Título (id)", readonly:true, w:"520px", flex:"1 1 520px"},
+      {key:"parceiro", label:"Parceiro"},
+      {key:"descricao", label:"Descrição", type:"textarea", w:"520px", flex:"1 1 520px"},
+      {key:"inicio", label:"Início"},
+      {key:"fim", label:"Fim"},
+    ],
+    onSave: async (patch)=>{
+      delete patch.titulo;
+      await apiAtualizarRegistro("promocoes","titulo",titulo, patch);
+      toast("Promoção atualizada");
+      await loadPromocoes(true);
+    }
+  });
+}
+function novoPromocao(){
+  openEditModal({
+    title:"Criar promoção",
+    hint:"Cria via action=criar_promocao.",
+    initial:{},
+    fields:[
+      {key:"parceiro", label:"Parceiro"},
+      {key:"titulo", label:"Título"},
+      {key:"descricao", label:"Descrição", type:"textarea", w:"520px", flex:"1 1 520px"},
+      {key:"inicio", label:"Início (YYYY-MM-DD)"},
+      {key:"fim", label:"Fim (YYYY-MM-DD)"},
+    ],
+    onSave: async (data)=>{
+      if(!data.titulo) throw new Error("TITULO_OBRIGATORIO");
+      await callAPI({
+        action:"criar_promocao",
+        key: state.key,
+        parceiro: data.parceiro||"",
+        titulo: data.titulo||"",
+        descricao: data.descricao||"",
+        inicio: data.inicio||"",
+        fim: data.fim||""
+      });
+      toast("Promoção criada");
+      await loadPromocoes(true);
+    }
+  });
+}
+
+/* ---------- LOGS / LOG_ADMIN / ADMINS ---------- */
+async function loadLogs(force=false){
+  if(state.loaded.logs && !force) return;
+  const r = await callAPI({ aba:"logs" });
+  state.cache.logs = r.dados || [];
+  state.loaded.logs = true;
+  renderLogs();
+}
+function renderLogs(){
+  const q = ($("filtroLogs").value||"").trim().toLowerCase();
+  const rows = state.cache.logs
+    .slice().reverse()
+    .filter(l => !q ? true : JSON.stringify(l).toLowerCase().includes(q))
+    .slice(0, 500);
+
+  renderTable("tblLogs", rows, [
+    {key:"data", label:"Data", render:(r)=>formatarDataBR(r.data)},
+
+    {key:"cpf", label:"CPF"},
+    {key:"nome", label:"Nome"},
+    {key:"parceiro", label:"Parceiro"},
+    {key:"codigoERO", label:"Código", render:(r)=> r.codigoERO || r["codigo-ero"] || "" },
+    {key:"status", label:"Status"},
+    {key:"tipoValidacao", label:"Tipo"},
+  ]);
+}
+
+async function loadLogAdmin(force=false){
+  if(state.loaded.log_admin && !force) return;
+  const r = await callAPI({ aba:"log_admin" });
+  state.cache.log_admin = r.dados || [];
+  state.loaded.log_admin = true;
+  renderLogAdmin();
+}
+function renderLogAdmin(){
+  const q = ($("filtroLogAdmin").value||"").trim().toLowerCase();
+  const rows = state.cache.log_admin
+    .slice().reverse()
+    .filter(l => !q ? true : JSON.stringify(l).toLowerCase().includes(q))
+    .slice(0, 500);
+
+  renderTable("tblLogAdmin", rows, [
+    {key:"data", label:"Data", render:(r)=>formatarDataBR(r.data)},
+
+    {key:"admin", label:"Admin"},
+    {key:"acao", label:"Ação"},
+    {key:"entidade", label:"Entidade"},
+    {key:"id", label:"ID"},
+    {key:"detalhes", label:"Detalhes"},
+  ]);
+}
+
+async function loadAdmins(force=false){
+  if(state.loaded.admins && !force) return;
+  const r = await callAPI({ aba:"admins" });
+  state.cache.admins = r.dados || [];
+  state.loaded.admins = true;
+  renderAdmins();
+}
+function renderAdmins(){
+  const q = ($("filtroAdmins").value||"").trim().toLowerCase();
+  const rows = state.cache.admins.filter(a=>{
+    if(!q) return true;
+    return JSON.stringify(a).toLowerCase().includes(q);
+  });
+  renderTable("tblAdmins", rows, [
+    {key:"usuario", label:"Usuário"},
+    {key:"senha", label:"Senha"},
+    {key:"nome", label:"Nome"},
+    {key:"ativo", label:"Ativo"},
+  ]);
+}
+
+/*** 11) WIRES (EVENTS) ***/
+function bind(){
+  // date label
+  const d = new Date();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yyyy = d.getFullYear();
+  $("ultima").textContent = `${mm}/${yyyy}`;
+
+  // top buttons
+  $("btnTestarApi").addEventListener("click", ()=>loadDashboard(true));
+$("btnCarregarTudo").addEventListener("click", async ()=>{
+  if(!(await ensureLogin())) return;
+  toast("Carregando dados...");
+  await Promise.allSettled([
+    loadDashboard(true),
+    loadClientes(true),
+    loadParceiros(true),
+    loadBeneficios(true),
+    loadPromocoes(true),
+    loadLogs(true),
+    loadLogAdmin(true)
+  ]);
+  toast("Relatório carregado");
+});
+
+  // nav
+  document.querySelectorAll(".navbtn").forEach(b=>{
+    b.addEventListener("click", ()=>showView(b.dataset.view));
+  });
+
+  // login modal
+  $("btnLogin").addEventListener("click", async ()=>{
+    const key = ($("inpKey").value||"").trim();
+    if(!key) return;
+    state.key = key;
+    $("loginMsg").textContent = "Verificando...";
+    const ok = await ensureLogin();
+    if(ok){
+      toast("Bem-vindo, " + state.admin);
+      showView("dashboard");
+      $("loginMsg").textContent = "";
+    }
+  });
+  $("inpKey").addEventListener("keydown", (ev)=>{
+    if(ev.key === "Enter") $("btnLogin").click();
+  });
+
+  // edit modal
+  $("btnEditClose") && $("btnEditClose").addEventListener("click", closeEditModal);
+$("btnEditCancel") && $("btnEditCancel").addEventListener("click", closeEditModal);
+$("btnEditSave") && $("btnEditSave").addEventListener("click", saveEditModal);
+
+
+  // filters
+  $("filtroClientes").addEventListener("input", renderClientes);
+  $("filtroParceiros").addEventListener("input", renderParceiros);
+  $("filtroBeneficios").addEventListener("input", renderBeneficios);
+  $("filtroPromocoes").addEventListener("input", renderPromocoes);
+  $("filtroLogs").addEventListener("input", renderLogs);
+  $("filtroLogAdmin").addEventListener("input", renderLogAdmin);
+  $("filtroAdmins").addEventListener("input", renderAdmins);
+
+  // reload buttons + create
+  $("btnReloadClientes").addEventListener("click", ()=>loadClientes(true));
+  $("btnNovoCliente").addEventListener("click", novoCliente);
+
+  $("btnReloadParceiros").addEventListener("click", ()=>loadParceiros(true));
+  $("btnNovoParceiro").addEventListener("click", novoParceiro);
+
+  $("btnReloadBeneficios").addEventListener("click", ()=>loadBeneficios(true));
+  $("btnNovoBeneficio").addEventListener("click", novoBeneficio);
+
+  $("btnReloadPromocoes").addEventListener("click", ()=>loadPromocoes(true));
+  $("btnNovoPromocao").addEventListener("click", novoPromocao);
+
+  $("btnReloadLogs").addEventListener("click", ()=>loadLogs(true));
+  $("btnReloadLogAdmin").addEventListener("click", ()=>loadLogAdmin(true));
+  $("btnReloadAdmins").addEventListener("click", ()=>loadAdmins(true));
+
+  // export CSV
+  $("btnCsvClientes")?.addEventListener("click", ()=>downloadCSV("clientes.csv", state.cache.clientes));
+  $("btnCsvParceiros")?.addEventListener("click", ()=>downloadCSV("parceiros.csv", state.cache.parceiros));
+  $("btnCsvBeneficios")?.addEventListener("click", ()=>downloadCSV("beneficios.csv", state.cache.beneficios));
+  $("btnCsvPromocoes")?.addEventListener("click", ()=>downloadCSV("promocoes.csv", state.cache.promocoes));
+  $("btnCsvLogs")?.addEventListener("click", ()=>downloadCSV("logs.csv", state.cache.logs));
+  $("btnCsvLogAdmin")?.addEventListener("click", ()=>downloadCSV("log_admin.csv", state.cache.log_admin));
+  $("btnCsvAdmins")?.addEventListener("click", ()=>downloadCSV("admins.csv", state.cache.admins));
+}
+
+function getCurrentViewName(){
+  const active = document.querySelector(".navbtn.active");
+  return active ? active.dataset.view : "dashboard";
+}
+
+function mapearPorCabecalho(headers, row) {
+  const obj = {};
+  headers.forEach((h, i) => {
+    obj[h.trim()] = row[i] ?? "";
+  });
+  return obj;
+}
+function getQueryParam(nome) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(nome);
+}
+
+// uso
+const idPublico = getQueryParam("idPublico");
+const parceiroId = getQueryParam("parceiro");
+
+function formatarDataBR(data) {
+  if (!data) return '';
+  const d = new Date(data);
+  return d.toLocaleDateString('pt-BR');
+}
+/*** 12) START ***/
+bind();
+ensureLogin().then(ok=>{
+  if(ok){
+    showView("dashboard");
+    loadDashboard(true);
+  }else{
+    showView("dashboard"); // mantém dashboard visível por trás
+  }
+});
 </script>
+<div class="toast" id="toast"></div>
 
 </body>
 </html>

@@ -69,6 +69,41 @@ body {
   </div>
 
   <button id="btnValidar" onclick="validar()">Validar</button>
+<div id="blocoCodigo" style="display:none; margin-top:20px;" class="msg">
+  <div style="
+    background:#d4edda;
+    border:2px solid #198754;
+    border-radius:10px;
+    padding:15px;
+  ">
+    <div style="font-size:22px;font-weight:bold;color:#0a7a3c">
+      🎟 Código: <span id="codigoERO"></span>
+    </div>
+
+    <div id="timer" style="
+      margin-top:10px;
+      font-size:16px;
+      color:#b91c1c;
+      font-weight:bold;
+    "></div>
+<button onclick="confirmarUso()" style="
+  margin-top:12px;
+  background:#198754;
+  color:#fff;
+  border:none;
+  padding:10px;
+  border-radius:6px;
+  font-size:15px;
+">
+✅ Confirmar desconto concedido
+</button>
+
+    <div style="font-size:13px;margin-top:8px;color:#444">
+      Apresente este código ao parceiro antes do tempo acabar.
+    </div>
+  </div>
+</div>
+
   <div id="msg" class="msg"></div>
 </div>
 
@@ -113,23 +148,87 @@ function validar() {
 
   mostrarMsg("⏳ Validando benefício...");
 
+const old = document.getElementById("jsonpReq");
+if(old) old.remove();
+
+const script = document.createElement("script");
+script.id = "jsonpReq";
+script.src = GAS_URL + "...";
+document.body.appendChild(script);
+
+  document.body.appendChild(script);
+}
+// =============================
+// CONTROLE DO CRONÔMETRO
+// =============================
+let intervaloCronometro = null;
+
+function retornoValidacao(resp) {
+  if (resp.ok || resp.status === "AUTORIZADO") {
+    mostrarMsg(resp.mensagem || "✅ Benefício autorizado");
+
+    if (resp.codigoERO && resp.validoAte) {
+      document.getElementById("codigoERO").innerText = resp.codigoERO;
+      iniciarCronometro(resp.validoAte);
+    }
+  } else {
+    mostrarMsg("❌ " + (resp.mensagem || "Validação não autorizada."));
+    document.getElementById("blocoCodigo").style.display = "none";
+  }
+}
+let intervaloCronometro = null;
+
+function iniciarCronometro(validoAte) {
+  if (intervaloCronometro) clearInterval(intervaloCronometro);
+
+  const expira = new Date(validoAte).getTime();
+  document.getElementById("blocoCodigo").style.display = "block";
+
+  intervaloCronometro = setInterval(() => {
+    const agora = Date.now();
+    const diff = expira - agora;
+
+    if (diff <= 0) {
+      clearInterval(intervaloCronometro);
+      document.getElementById("timer").innerText = "⛔ Código expirado";
+      return;
+    }
+
+    const min = Math.floor(diff / 60000);
+    const seg = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById("timer").innerText =
+      `⏳ Válido por ${min}:${String(seg).padStart(2, "0")}`;
+  }, 1000);
+}
+function confirmarUso(){
+  const codigo = document.getElementById("codigoERO").innerText;
+  if(!codigo){
+    alert("Código não encontrado");
+    return;
+  }
+
   const script = document.createElement("script");
   script.src =
     GAS_URL +
-    "?callback=retornoValidacao" +
-    "&parceiro_id=" + encodeURIComponent(parceiroId) +
-    "&cpf=" + encodeURIComponent(cpf);
+    "?callback=retornoConfirmacao" +
+    "&acao=confirmarERO" +
+    "&codigoERO=" + encodeURIComponent(codigo);
 
   document.body.appendChild(script);
 }
 
-function retornoValidacao(resp) {
-  if (resp.ok || resp.status === "AUTORIZADO") {
-    mostrarMsg(resp.mensagem);
+function retornoConfirmacao(resp){
+  if(resp.ok){
+    document.getElementById("timer").innerText =
+      "✅ Desconto confirmado no sistema";
+    clearInterval(intervaloCronometro);
   } else {
-    mostrarMsg("❌ " + (resp.mensagem || "Validação não autorizada."));
+    document.getElementById("timer").innerText =
+      "❌ " + (resp.msg || "Erro ao confirmar");
   }
 }
+let intervaloCronometro = null;
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>

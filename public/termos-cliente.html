@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Termos de Uso – Cartão AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f4f7fb;
+  padding:20px;
+}
+.container{
+  max-width:800px;
+  margin:auto;
+  background:#fff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+h1,h2{
+  color:#0a7a2a;
+}
+small{
+  color:#555;
+}
+.assinatura{
+  margin-top:40px;
+  border-top:1px solid #ccc;
+  padding-top:20px;
+}
+.print{
+  margin-top:20px;
+  text-align:right;
+}
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:6px;
+  background:#0a7a2a;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>Termos de Uso – Cartão AproveitAI</h1>
+  <small>Última atualização: <span id="dataHoje"></span></small>
+
+  <hr>
+
+  <p>
+    Pelo presente instrumento, o(a) cliente abaixo identificado(a) adere aos
+    termos e condições de uso do <strong>Cartão AproveitAI</strong>, plataforma
+    de benefícios e descontos oferecida pela <strong>Prometheus EROPRO</strong>.
+  </p>
+
+  <h2>Dados do Cliente</h2>
+  <ul>
+    <li><strong>Nome:</strong> <span id="nome"></span></li>
+    <li><strong>CPF:</strong> <span id="cpf"></span></li>
+    <li><strong>Cidade:</strong> <span id="cidade"></span></li>
+    <li><strong>Grupo:</strong> <span id="grupo"></span></li>
+    <li><strong>Data de Nascimento:</strong> <span id="nascimento"></span></li>
+  </ul>
+
+  <h2>Regras Gerais</h2>
+  <ul>
+    <li>O cartão é pessoal e intransferível.</li>
+    <li>Os descontos são concedidos exclusivamente pelos parceiros.</li>
+    <li>O status <b>ativo</b> depende de pagamento ou vínculo válido.</li>
+    <li>O uso indevido pode acarretar bloqueio imediato.</li>
+  </ul>
+
+  <div class="assinatura">
+    <p>
+      Declaro que li e concordo com os termos acima.
+    </p>
+
+    <p>
+      <strong>Assinatura do Cliente:</strong> _______________________________
+    </p>
+  </div>
+
+  <div class="print">
+    <button onclick="window.print()">Imprimir / Salvar PDF</button>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwMMQ2FR2JBpo7xvWVazw4dAV6t_t90UxTASLcGfo1t7fA-beDqJDC-4z-Y7DL9vRunVg/exec";
+
+// pega CPF da URL
+const params = new URLSearchParams(window.location.search);
+const cpf = params.get("cpf");
+
+// data
+document.getElementById("dataHoje").textContent =
+  new Date().toLocaleDateString("pt-BR");
+
+async function carregarCliente(){
+  if(!cpf){
+    alert("CPF não informado");
+    return;
+  }
+
+  const r = await fetch(API_URL + "?aba=clientes");
+  const j = await r.json();
+
+  const cliente = (j.dados || []).find(c =>
+    String(c.cpf).replace(/\D/g,"") === String(cpf).replace(/\D/g,"")
+  );
+
+  if(!cliente){
+    alert("Cliente não encontrado");
+    return;
+  }
+
+  document.getElementById("nome").textContent = cliente.nome || "";
+  document.getElementById("cpf").textContent = cliente.cpf || "";
+  document.getElementById("cidade").textContent = cliente.cidade || "";
+  document.getElementById("grupo").textContent = cliente.grupo || "";
+  document.getElementById("nascimento").textContent = cliente.nascimento || "";
+}
+
+carregarCliente();
+</script>
+
+</body>
+</html>
