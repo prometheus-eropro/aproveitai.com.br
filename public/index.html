@@ -187,7 +187,8 @@ const whatsapp = String(p.whatsapp || "").replace(/\D/g, "");
 const instagram = String(p.instagram || "");
 const site = String(p.site || "");
 const email = String(p.email || "");
-const maps = String(p.maps || "");
+const maps = String(p.link_maps || "");
+
 
 let logo = String(p.logoURL || "").trim();
 if (!logo.startsWith("http")) logo = "logo-aproveitai.png";
