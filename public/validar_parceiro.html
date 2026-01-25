@@ -108,7 +108,8 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD
 let intervaloCronometro = null;
 
 const params = new URLSearchParams(window.location.search);
-const parceiroId = params.get("p");
+const parceiroId = params.get("p") || params.get("parceiro_id") || params.get("id") || params.get("parceiro");
+
 
 const elMsg = document.getElementById("msg");
 const elBtn = document.getElementById("btnValidar");
@@ -160,14 +161,27 @@ document.body.appendChild(script);
 function retornoValidacao(resp) {
   console.log("RETORNO GAS:", resp);
 
-  if (!resp || !resp.ok || !resp.codigoERO) {
-    mostrarMsg("❌ Falha ao gerar código de autorização");
+  if (!resp || !resp.ok) {
+    mostrarMsg(resp?.mensagem || "❌ Falha ao gerar código de autorização");
     return;
   }
 
-  document.getElementById("codigoERO").innerText = resp.codigoERO;
+  // 🔥 AQUI ESTÁ O AJUSTE
+  const codigo = resp.codigoERO || resp.codigo;
+  if (!codigo) {
+    mostrarMsg("❌ Código não retornado pelo sistema");
+    return;
+  }
+
+  document.getElementById("codigoERO").innerText = codigo;
   document.getElementById("blocoCodigo").style.display = "block";
-  iniciarCronometro(resp.validoAte);
+
+  // se o GAS não mandar validoAte, não quebra
+  if (resp.validoAte) {
+    iniciarCronometro(resp.validoAte);
+  } else {
+    document.getElementById("timer").innerText = "⏳ Válido por 10 minutos";
+  }
 }
 function confirmarUso(){
   const codigo = document.getElementById("codigoERO").innerText;
