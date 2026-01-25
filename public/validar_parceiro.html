@@ -154,7 +154,13 @@ if(old) old.remove();
 
 const script = document.createElement("script");
 script.id = "jsonpReq";
-script.src = GAS_URL + "...";
+script.src =
+  GAS_URL +
+  "?callback=retornoValidacao" +
+  "&acao=validarParceiro" +
+  "&cpf=" + encodeURIComponent(cpf) +
+  "&parceiro=" + encodeURIComponent(parceiroId);
+
 document.body.appendChild(script);
 
   document.body.appendChild(script);
