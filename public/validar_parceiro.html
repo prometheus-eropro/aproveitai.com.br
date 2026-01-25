@@ -113,6 +113,7 @@ body {
 ============================= */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec";
 
+let intervaloCronometro = null;
 
 const params = new URLSearchParams(window.location.search);
 const parceiroId = params.get("p");
@@ -161,8 +162,6 @@ document.body.appendChild(script);
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
-let intervaloCronometro = null;
-
 function retornoValidacao(resp) {
   if (resp.ok || resp.status === "AUTORIZADO") {
     mostrarMsg(resp.mensagem || "✅ Benefício autorizado");
@@ -176,7 +175,7 @@ function retornoValidacao(resp) {
     document.getElementById("blocoCodigo").style.display = "none";
   }
 }
-let intervaloCronometro = null;
+
 
 function iniciarCronometro(validoAte) {
   if (intervaloCronometro) clearInterval(intervaloCronometro);
@@ -228,7 +227,7 @@ function retornoConfirmacao(resp){
       "❌ " + (resp.msg || "Erro ao confirmar");
   }
 }
-let intervaloCronometro = null;
+
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
