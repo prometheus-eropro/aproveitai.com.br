@@ -72,7 +72,28 @@ fetch(API + "?aba=promocoes")
       <h3>${p.titulo || ""}</h3>
       <p>${p.descricao || ""}</p>
       <p><strong>PARCEIRO:</strong> ${p.parceiro || ""}</p>
-      ${p.zap ? `<p><strong>WhatsApp:</strong> ${p.zap}</p>` : ""}
+      <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+  ${p.zap ? `
+    <a href="https://wa.me/55${p.zap.replace(/\D/g,'')}"
+       target="_blank"
+       class="btn-link">📲 WhatsApp</a>` : ""}
+
+  ${p.instagram ? `
+    <a href="${p.instagram}"
+       target="_blank"
+       class="btn-link">📸 Instagram</a>` : ""}
+
+  ${p.site ? `
+    <a href="${p.site}"
+       target="_blank"
+       class="btn-link">🌐 Site</a>` : ""}
+
+  ${p.endereco ? `
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.endereco)}"
+       target="_blank"
+       class="btn-link">📍 Como chegar</a>` : ""}
+</div>
+
       ${p.dataFim ? `<p><strong>Fim:</strong> ${p.dataFim}</p>` : ""}
     `;
 

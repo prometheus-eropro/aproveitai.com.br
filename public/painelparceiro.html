@@ -247,6 +247,15 @@ ${
     `
     : ""
 }
+${
+  data.exige_placa === "SIM"
+    ? `
+      ${data.placa1 ? `<p><b>Veículo 1:</b> ${data.placa1} – ${data.modelo1 || "-"}</p>` : ""}
+      ${data.placa2 ? `<p><b>Veículo 2:</b> ${data.placa2} – ${data.modelo2 || "-"}</p>` : ""}
+    `
+    : ""
+}
+
   </div>
 `;
 

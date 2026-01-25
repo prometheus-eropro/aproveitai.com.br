@@ -68,7 +68,28 @@ fetch(API + "?aba=beneficios")
       <h3>${b.titulo || ""}</h3>
       <p>${b.descricao || ""}</p>
       <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
-      ${b.zap ? `<p><strong>WhatsApp:</strong> ${b.zap}</p>` : ""}
+      <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+  ${b.zap ? `
+    <a href="https://wa.me/55${b.zap.replace(/\D/g,'')}"
+       target="_blank"
+       class="btn-link">📲 WhatsApp</a>` : ""}
+
+  ${b.instagram ? `
+    <a href="${b.instagram}"
+       target="_blank"
+       class="btn-link">📸 Instagram</a>` : ""}
+
+  ${b.site ? `
+    <a href="${b.site}"
+       target="_blank"
+       class="btn-link">🌐 Site</a>` : ""}
+
+  ${b.endereco ? `
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
+       target="_blank"
+       class="btn-link">📍 Como chegar</a>` : ""}
+</div>
+
       ${b.dataFim ? `<p><strong>Fim:</strong> ${b.dataFim}</p>` : ""}
     `;
 

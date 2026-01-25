@@ -401,8 +401,15 @@ async function processarQR(texto) {
     <p><b>Cidade:</b> ${data.cidade}</p>
     <p><b>Grupo:</b> ${data.grupo}</p>
 <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
-${data.placa ? `<p><b>Placa do veículo:</b> ${data.placa}</p>` : ""}
-${data.modelo ? `<p><b>Modelo:</b> ${data.modelo}</p>` : ""}
+${
+  data.exige_placa === "SIM"
+    ? `
+      ${data.placa1 ? `<p><b>Veículo 1:</b> ${data.placa1} – ${data.modelo1 || "-"}</p>` : ""}
+      ${data.placa2 ? `<p><b>Veículo 2:</b> ${data.placa2} – ${data.modelo2 || "-"}</p>` : ""}
+    `
+    : ""
+}
+
 
 
     
