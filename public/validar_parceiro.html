@@ -158,18 +158,17 @@ document.body.appendChild(script);
 // CONTROLE DO CRONÔMETRO
 // =============================
 function retornoValidacao(resp) {
-  if (!resp.ok) {
-    alert(resp.mensagem || "Erro");
+  console.log("RETORNO GAS:", resp);
+
+  if (!resp || !resp.ok || !resp.codigoERO) {
+    mostrarMsg("❌ Falha ao gerar código de autorização");
     return;
   }
 
   document.getElementById("codigoERO").innerText = resp.codigoERO;
   document.getElementById("blocoCodigo").style.display = "block";
-
-
   iniciarCronometro(resp.validoAte);
 }
-
 function confirmarUso(){
   const codigo = document.getElementById("codigoERO").innerText;
   if(!codigo){
@@ -209,7 +208,8 @@ function iniciarCronometro(validoAteISO) {
     const diff = fim - agora;
 
     if (diff <= 0) {
-      clearInterval(timer);
+      clearInterval(intervaloCronometro);
+
       el.innerText = "⛔ Expirado";
       document.getElementById("btnConfirmar").style.display = "none";
       return;
