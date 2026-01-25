@@ -86,16 +86,8 @@ body {
       color:#b91c1c;
       font-weight:bold;
     "></div>
-<button onclick="confirmarUso()" style="
-  margin-top:12px;
-  background:#198754;
-  color:#fff;
-  border:none;
-  padding:10px;
-  border-radius:6px;
-  font-size:15px;
-">
-✅ Confirmar desconto concedido
+<button id="btnConfirmar" onclick="confirmarUso()">
+  ✅ Confirmar desconto concedido
 </button>
 
     <div style="font-size:13px;margin-top:8px;color:#444">
@@ -166,43 +158,18 @@ document.body.appendChild(script);
 // CONTROLE DO CRONÔMETRO
 // =============================
 function retornoValidacao(resp) {
-  if (resp.ok || resp.status === "AUTORIZADO") {
-    mostrarMsg(resp.mensagem || "✅ Benefício autorizado");
-
-    if (resp.codigoERO && resp.validoAte) {
-      document.getElementById("codigoERO").innerText = resp.codigoERO;
-      iniciarCronometro(resp.validoAte);
-    }
-  } else {
-    mostrarMsg("❌ " + (resp.mensagem || "Validação não autorizada."));
-    document.getElementById("blocoCodigo").style.display = "none";
+  if (!resp.ok) {
+    alert(resp.mensagem || "Erro");
+    return;
   }
-}
 
-
-function iniciarCronometro(validoAte) {
-  if (intervaloCronometro) clearInterval(intervaloCronometro);
-
-  const expira = new Date(validoAte).getTime();
+  document.getElementById("codigoERO").innerText = resp.codigoERO;
   document.getElementById("blocoCodigo").style.display = "block";
 
-  intervaloCronometro = setInterval(() => {
-    const agora = Date.now();
-    const diff = expira - agora;
 
-    if (diff <= 0) {
-      clearInterval(intervaloCronometro);
-      document.getElementById("timer").innerText = "⛔ Código expirado";
-      return;
-    }
-
-    const min = Math.floor(diff / 60000);
-    const seg = Math.floor((diff % 60000) / 1000);
-
-    document.getElementById("timer").innerText =
-      `⏳ Válido por ${min}:${String(seg).padStart(2, "0")}`;
-  }, 1000);
+  iniciarCronometro(resp.validoAte);
 }
+
 function confirmarUso(){
   const codigo = document.getElementById("codigoERO").innerText;
   if(!codigo){
@@ -230,6 +197,30 @@ function retornoConfirmacao(resp){
       "❌ " + (resp.msg || "Erro ao confirmar");
   }
 }
+function iniciarCronometro(validoAteISO) {
+  const fim = new Date(validoAteISO).getTime();
+
+  const el = document.getElementById("timer");
+
+
+  intervaloCronometro = setInterval(() => {
+
+    const agora = Date.now();
+    const diff = fim - agora;
+
+    if (diff <= 0) {
+      clearInterval(timer);
+      el.innerText = "⛔ Expirado";
+      document.getElementById("btnConfirmar").style.display = "none";
+      return;
+    }
+
+    const min = Math.floor(diff / 60000);
+    const seg = Math.floor((diff % 60000) / 1000);
+    el.innerText = `⏳ ${min}:${seg.toString().padStart(2,"0")}`;
+  }, 1000);
+}
+
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
