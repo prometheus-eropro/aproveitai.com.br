@@ -230,11 +230,11 @@ function confirmarUso(){
     GAS_URL +
     "?callback=retornoConfirmacao" +
     "&acao=confirmarERO" +
-    "&codigoERO=" + encodeURIComponent(codigo);
+    "&codigoERO=" + encodeURIComponent(codigo) +
+    "&p=" + encodeURIComponent(parceiroId);
 
   document.body.appendChild(script);
 }
-
 function retornoConfirmacao(resp){
   if(resp.ok){
     document.getElementById("timer").innerText =
