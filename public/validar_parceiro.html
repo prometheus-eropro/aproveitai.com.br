@@ -187,34 +187,27 @@ function retornoValidacao(resp) {
     return;
   }
 
-document.getElementById("codigoERO").innerText = codigo;
+// ===== MOSTRAR BLOCO =====
 document.getElementById("blocoCodigo").style.display = "block";
 
+// ===== CÓDIGO ERO =====
+document.getElementById("codigoERO").innerText =
+  resp.codigo || "-";
+
+// ===== DADOS ESSENCIAIS =====
 document.getElementById("nomeParceiro").innerText =
-  resp.parceiro?.nome || "-";
+  resp.nomeParceiro || "-";
 
 document.getElementById("nomeCliente").innerText =
-  resp.cliente?.nome || "-";
+  resp.nomeCliente || "-";
 
-document.getElementById("grupoCliente").innerText =
-  resp.cliente?.grupo || "-";
+// ===== CAMPOS NÃO IMPLEMENTADOS (VERSÃO 1) =====
+document.getElementById("grupoCliente").innerText = "-";
+document.getElementById("idPublicoCliente").innerText = "-";
 
-document.getElementById("idPublicoCliente").innerText =
-  resp.cliente?.idPublico || "-";
-  // ===== PARCEIRO =====
-  document.getElementById("nomeParceiro").innerText =
-    resp.parceiro?.nome || "-";
-
-  // ===== CLIENTE =====
-  document.getElementById("nomeCliente").innerText =
-    resp.cliente?.nome || "-";
-
-  document.getElementById("grupoCliente").innerText =
-    resp.cliente?.grupo || "-";
-
-  document.getElementById("idPublicoCliente").innerText =
-    resp.cliente?.idPublico || "-";
-
+// ===== TIMER SIMPLES =====
+document.getElementById("timer").innerText =
+  "⏳ Válido por 10 minutos";
   // ===== VEÍCULO (SE EXISTIR) =====
   if (resp.veiculo?.placa || resp.placa) {
     document.getElementById("infoVeiculo").style.display = "block";
