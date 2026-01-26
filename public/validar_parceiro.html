@@ -167,7 +167,8 @@ document.body.appendChild(script);
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
-function retornoValidacao(data) {
+function retornoValidacao(resp) {
+
   console.log("RETORNO GAS:", resp);
 
   if (!resp || resp.ok !== true) {
@@ -186,12 +187,21 @@ function retornoValidacao(data) {
     return;
   }
 
-  document.getElementById("codigoERO").innerText = codigo;
-  document.getElementById("blocoCodigo").style.display = "block";
-document.getElementById("nomeParceiro").innerText = data.nomeParceiro || "-";
-document.getElementById("nomeCliente").innerText = data.nomeCliente || "-";
-document.getElementById("grupoCliente").innerText = data.grupo || "-";
-document.getElementById("idPublicoCliente").innerText = data.idPublico || "-";
+document.getElementById("codigoERO").innerText = data.codigo || "-";
+document.getElementById("blocoCodigo").style.display = "block";
+
+document.getElementById("nomeParceiro").innerText =
+  data.parceiro?.nome || "-";
+
+document.getElementById("nomeCliente").innerText =
+  data.cliente?.nome || "-";
+
+document.getElementById("grupoCliente").innerText =
+  data.cliente?.grupo || "-";
+
+document.getElementById("idPublicoCliente").innerText =
+  data.cliente?.idPublico || "-";
+
 
   // ===== PARCEIRO =====
   document.getElementById("nomeParceiro").innerText =
