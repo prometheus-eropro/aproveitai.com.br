@@ -187,22 +187,20 @@ function retornoValidacao(resp) {
     return;
   }
 
-document.getElementById("codigoERO").innerText = data.codigo || "-";
+document.getElementById("codigoERO").innerText = codigo;
 document.getElementById("blocoCodigo").style.display = "block";
 
 document.getElementById("nomeParceiro").innerText =
-  data.parceiro?.nome || "-";
+  resp.parceiro?.nome || "-";
 
 document.getElementById("nomeCliente").innerText =
-  data.cliente?.nome || "-";
+  resp.cliente?.nome || "-";
 
 document.getElementById("grupoCliente").innerText =
-  data.cliente?.grupo || "-";
+  resp.cliente?.grupo || "-";
 
 document.getElementById("idPublicoCliente").innerText =
-  data.cliente?.idPublico || "-";
-
-
+  resp.cliente?.idPublico || "-";
   // ===== PARCEIRO =====
   document.getElementById("nomeParceiro").innerText =
     resp.parceiro?.nome || "-";
