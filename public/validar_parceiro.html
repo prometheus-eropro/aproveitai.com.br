@@ -188,6 +188,10 @@ function retornoValidacao(resp) {
 
   document.getElementById("codigoERO").innerText = codigo;
   document.getElementById("blocoCodigo").style.display = "block";
+document.getElementById("nomeParceiro").innerText = data.nomeParceiro || "-";
+document.getElementById("nomeCliente").innerText = data.nomeCliente || "-";
+document.getElementById("grupoCliente").innerText = data.grupo || "-";
+document.getElementById("idPublicoCliente").innerText = data.idPublico || "-";
 
   // ===== PARCEIRO =====
   document.getElementById("nomeParceiro").innerText =
