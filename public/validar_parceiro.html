@@ -170,28 +170,48 @@ document.body.appendChild(script);
 function retornoValidacao(resp) {
   console.log("RETORNO GAS:", resp);
 
-  if (!resp || !resp.ok) {
-    mostrarMsg(resp?.mensagem || "❌ Falha ao gerar código de autorização");
+  if (!resp || resp.ok !== true) {
+    mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
     return;
   }
 
-  // Código ERO
-  document.getElementById("codigoERO").innerText = resp.codigoERO;
-  document.getElementById("blocoCodigo").style.display = "block";
+  // 🔥 Código ERO (tolerante)
+  const codigo =
+    resp.codigoERO ||
+    resp.codigo ||
+    resp.ero ||
+    "";
 
-  // Dados
-  document.getElementById("nomeParceiro").innerText = resp.parceiro?.nome || "-";
-  document.getElementById("nomeCliente").innerText = resp.cliente?.nome || "-";
-  document.getElementById("grupoCliente").innerText = resp.cliente?.grupo || "-";
-  document.getElementById("idPublicoCliente").innerText = resp.cliente?.idPublico || "-";
-
-  // Veículo (opcional)
-  if (resp.veiculo?.placa) {
-    document.getElementById("infoVeiculo").style.display = "block";
-    document.getElementById("placaVeiculo").innerText = resp.veiculo.placa;
+  if (!codigo) {
+    mostrarMsg("❌ Código ERO não retornado pelo sistema");
+    return;
   }
 
-  // Cronômetro
+  document.getElementById("codigoERO").innerText = codigo;
+  document.getElementById("blocoCodigo").style.display = "block";
+
+  // 🔹 Parceiro
+  document.getElementById("nomeParceiro").innerText =
+    resp.parceiro?.nome || resp.parceiro || "-";
+
+  // 🔹 Cliente
+  document.getElementById("nomeCliente").innerText =
+    resp.cliente?.nome || resp.cliente || "-";
+
+  document.getElementById("grupoCliente").innerText =
+    resp.cliente?.grupo || resp.grupo || "-";
+
+  document.getElementById("idPublicoCliente").innerText =
+    resp.cliente?.idPublico || resp.idPublico || "-";
+
+  // 🔹 Veículo
+  if (resp.veiculo?.placa || resp.placa) {
+    document.getElementById("infoVeiculo").style.display = "block";
+    document.getElementById("placaVeiculo").innerText =
+      resp.veiculo?.placa || resp.placa;
+  }
+
+  // 🔹 Cronômetro
   if (resp.validoAte) {
     iniciarCronometro(resp.validoAte);
   } else {
