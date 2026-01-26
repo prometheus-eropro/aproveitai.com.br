@@ -224,22 +224,35 @@ document.getElementById("timer").innerText =
       "⏳ Válido por 10 minutos";
   }
 }
-function confirmarUso(){
+function confirmarDesconto() {
   const codigo = document.getElementById("codigoERO").innerText;
-  if(!codigo){
-    alert("Código não encontrado");
+
+  if (!codigo) {
+    mostrarMsg("Código inválido");
     return;
   }
 
   const script = document.createElement("script");
-  script.src =
-    GAS_URL +
+  script.src = GAS_URL +
     "?callback=retornoConfirmacao" +
     "&acao=confirmarERO" +
-    "&codigoERO=" + encodeURIComponent(codigo) +
-    "&p=" + encodeURIComponent(parceiroId);
-
+    "&codigo=" + encodeURIComponent(codigo) +
+    "&canal=SITE";
   document.body.appendChild(script);
+}
+
+function retornoConfirmacao(resp) {
+  console.log("RETORNO CONFIRMAÇÃO:", resp);
+document.querySelector("#botaoConfirmar").disabled = true;
+
+  if (!resp || resp.ok !== true) {
+    mostrarMsg(resp?.msg || "❌ Erro ao confirmar desconto");
+    pararCronometro(); // <=== ADICIONE ISSO
+    return;
+  }
+
+  mostrarMsg("✅ Desconto confirmado com sucesso!", "verde");
+  pararCronometro(); // <=== ADICIONE ISSO
 }
 function retornoConfirmacao(resp){
   if(resp.ok){
@@ -251,31 +264,23 @@ function retornoConfirmacao(resp){
       "❌ " + (resp.msg || "Erro ao confirmar");
   }
 }
-function iniciarCronometro(validoAteISO) {
-  const fim = new Date(validoAteISO).getTime();
+let timerInterval;
 
-  const el = document.getElementById("timer");
-
-
-  intervaloCronometro = setInterval(() => {
-
-    const agora = Date.now();
-    const diff = fim - agora;
-
-    if (diff <= 0) {
-      clearInterval(intervaloCronometro);
-
-      el.innerText = "⛔ Expirado";
-      document.getElementById("btnConfirmar").style.display = "none";
-      return;
+function iniciarCronometro(segundos) {
+  let tempo = segundos;
+  timerInterval = setInterval(() => {
+    tempo--;
+    atualizarDisplay(tempo);
+    if (tempo <= 0) {
+      clearInterval(timerInterval);
+      mostrarMsg("⏰ Tempo esgotado!");
     }
-
-    const min = Math.floor(diff / 60000);
-    const seg = Math.floor((diff % 60000) / 1000);
-    el.innerText = `⏳ ${min}:${seg.toString().padStart(2,"0")}`;
   }, 1000);
 }
 
+function pararCronometro() {
+  clearInterval(timerInterval);
+}
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
