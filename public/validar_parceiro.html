@@ -191,7 +191,18 @@ function retornoValidacao(resp) {
   document.getElementById("blocoCodigo").style.display = "block";
 
   // 🔹 Parceiro
-  document.getElementById("nomeParceiro").innerText =
+  document.getElementById("parceiro").innerText =
+  data.parceiro?.nome || "-";
+
+document.getElementById("cliente").innerText =
+  data.cliente?.nome || "-";
+
+document.getElementById("grupo").innerText =
+  data.cliente?.grupo || "-";
+
+document.getElementById("idPublico").innerText =
+  data.cliente?.idPublico || "-";
+
     resp.parceiro?.nome || resp.parceiro || "-";
 
   // 🔹 Cliente
