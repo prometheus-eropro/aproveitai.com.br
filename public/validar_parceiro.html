@@ -175,58 +175,47 @@ function retornoValidacao(resp) {
     return;
   }
 
-  // 🔥 Código ERO (tolerante)
+  // ===== CÓDIGO ERO =====
   const codigo =
     resp.codigoERO ||
     resp.codigo ||
-    resp.ero ||
     "";
 
   if (!codigo) {
-    mostrarMsg("❌ Código ERO não retornado pelo sistema");
+    mostrarMsg("❌ Código ERO não retornado");
     return;
   }
 
   document.getElementById("codigoERO").innerText = codigo;
   document.getElementById("blocoCodigo").style.display = "block";
 
-  // 🔹 Parceiro
-  document.getElementById("parceiro").innerText =
-  data.parceiro?.nome || "-";
+  // ===== PARCEIRO =====
+  document.getElementById("nomeParceiro").innerText =
+    resp.parceiro?.nome || "-";
 
-document.getElementById("cliente").innerText =
-  data.cliente?.nome || "-";
-
-document.getElementById("grupo").innerText =
-  data.cliente?.grupo || "-";
-
-document.getElementById("idPublico").innerText =
-  data.cliente?.idPublico || "-";
-
-    resp.parceiro?.nome || resp.parceiro || "-";
-
-  // 🔹 Cliente
+  // ===== CLIENTE =====
   document.getElementById("nomeCliente").innerText =
-    resp.cliente?.nome || resp.cliente || "-";
+    resp.cliente?.nome || "-";
 
   document.getElementById("grupoCliente").innerText =
-    resp.cliente?.grupo || resp.grupo || "-";
+    resp.cliente?.grupo || "-";
 
   document.getElementById("idPublicoCliente").innerText =
-    resp.cliente?.idPublico || resp.idPublico || "-";
+    resp.cliente?.idPublico || "-";
 
-  // 🔹 Veículo
+  // ===== VEÍCULO (SE EXISTIR) =====
   if (resp.veiculo?.placa || resp.placa) {
     document.getElementById("infoVeiculo").style.display = "block";
     document.getElementById("placaVeiculo").innerText =
       resp.veiculo?.placa || resp.placa;
   }
 
-  // 🔹 Cronômetro
+  // ===== CRONÔMETRO =====
   if (resp.validoAte) {
     iniciarCronometro(resp.validoAte);
   } else {
-    document.getElementById("timer").innerText = "⏳ Válido por 10 minutos";
+    document.getElementById("timer").innerText =
+      "⏳ Válido por 10 minutos";
   }
 }
 function confirmarUso(){
