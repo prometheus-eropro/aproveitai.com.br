@@ -202,8 +202,9 @@ document.getElementById("nomeCliente").innerText =
   resp.nomeCliente || "-";
 
 // ===== CAMPOS NÃO IMPLEMENTADOS (VERSÃO 1) =====
-document.getElementById("grupoCliente").innerText = "-";
-document.getElementById("idPublicoCliente").innerText = "-";
+document.getElementById("grupoCliente").innerText = resp.grupo || "-";
+document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
+
 
 // ===== TIMER SIMPLES =====
 document.getElementById("timer").innerText =
