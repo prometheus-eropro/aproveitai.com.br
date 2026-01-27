@@ -85,8 +85,9 @@ body {
   <strong>Grupo:</strong> <span id="grupoCliente"></span><br>
   <strong>ID Público:</strong> <span id="idPublicoCliente"></span><br>
   <div id="infoVeiculo" style="display:none">
-    <strong>Veículo:</strong> <span id="placaVeiculo"></span>
-  </div>
+  <strong>Veículo:</strong> <span id="placaVeiculo"></span> – <span id="modeloVeiculo"></span>
+</div>
+
 </div>
 
     <div id="timer" style="
@@ -95,7 +96,7 @@ body {
       color:#b91c1c;
       font-weight:bold;
     "></div>
-<button id="btnConfirmar" onclick="confirmarUso()">
+<button id="btnConfirmar" onclick="confirmarDesconto()">
   ✅ Confirmar desconto concedido
 </button>
 
@@ -175,6 +176,11 @@ function retornoValidacao(resp) {
     mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
     return;
   }
+if (resp.veiculo?.placa || resp.placa) {
+  document.getElementById("infoVeiculo").style.display = "block";
+  document.getElementById("placaVeiculo").innerText = resp.placa || resp.veiculo?.placa || "-";
+  document.getElementById("modeloVeiculo").innerText = resp.modelo || resp.veiculo?.modelo || "-";
+}
 
   // ===== CÓDIGO ERO =====
   const codigo =
@@ -256,31 +262,84 @@ document.querySelector("#botaoConfirmar").disabled = true;
 }
 function retornoConfirmacao(resp){
   if(resp.ok){
-    document.getElementById("timer").innerText =
-      "✅ Desconto confirmado no sistema";
+    document.getElementById("timer").innerText = "✅ Desconto confirmado no sistema";
     clearInterval(intervaloCronometro);
+
+    // PEGAR OS DADOS PARA WHATSAPP
+    const nomeCliente = document.getElementById("nomeCliente").innerText;
+    const nomeParceiro = document.getElementById("nomeParceiro").innerText;
+    const codigoERO = document.getElementById("codigoERO").innerText;
+    const celularCliente = "5527999999999"; // ← você pode pegar do Google Sheets futuramente
+
+    enviarWhatsAppZAPI(celularCliente, nomeCliente, nomeParceiro, codigoERO);
   } else {
-    document.getElementById("timer").innerText =
-      "❌ " + (resp.msg || "Erro ao confirmar");
+    document.getElementById("timer").innerText = "❌ " + (resp.msg || "Erro ao confirmar");
   }
 }
 let timerInterval;
 
-function iniciarCronometro(segundos) {
-  let tempo = segundos;
-  timerInterval = setInterval(() => {
-    tempo--;
-    atualizarDisplay(tempo);
-    if (tempo <= 0) {
-      clearInterval(timerInterval);
-      mostrarMsg("⏰ Tempo esgotado!");
+function iniciarCronometro(validoAte) {
+  const fim = new Date(validoAte).getTime();
+
+  intervaloCronometro = setInterval(() => {
+    const agora = Date.now();
+    const restante = Math.floor((fim - agora) / 1000);
+
+    if (restante <= 0) {
+      clearInterval(intervaloCronometro);
+      document.getElementById("timer").innerText = "⏰ Tempo esgotado!";
+      return;
     }
+
+    const minutos = Math.floor(restante / 60);
+    const segundos = restante % 60;
+    document.getElementById("timer").innerText =
+      `⏳ Tempo restante: ${minutos}m ${segundos}s`;
   }, 1000);
 }
 
 function pararCronometro() {
   clearInterval(timerInterval);
 }
+function enviarWhatsAppZAPI(celular, nomeCliente, nomeParceiro, codigoERO) {
+  const instancia = "SEU_ID_INSTANCIA";
+  const token = "SEU_TOKEN_API";
+
+  const mensagem = `✅ Olá, ${nomeCliente}!\n\nSeu desconto foi confirmado no parceiro ${nomeParceiro}.\n\n🚀 Obrigado por usar a Plataforma AproveitAI.\n\n📝 Avalie sua experiência:\nhttps://aproveitai.com.br/feedback.html`;
+
+  const url = `https://api.z-api.io/instances/${instancia}/token/${token}/send-messages`;
+
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      phone: celular, // Ex: "5527999999999"
+      message: mensagem
+    })
+  })
+  .then(res => res.json())
+  .then(res => {
+    console.log("Z-API WHATSAPP Enviado:", res);
+  })
+  .catch(err => {
+    console.error("Erro ao enviar WhatsApp via Z-API:", err);
+  });
+function enviarWhatsApp() {
+  const numero = "55" + somenteNumeros(resp.celular || ""); // usar telefone do cliente
+  const nome = resp.nomeCliente || "";
+  const parceiro = resp.nomeParceiro || "";
+
+  const msg = encodeURIComponent(
+    `✅ Olá ${nome}!\n\nSeu benefício foi validado com sucesso na plataforma AproveitAI no parceiro ${parceiro}.\n\nNos ajude avaliando a experiência clicando no link abaixo:\nhttps://aproveitai.com.br/feedback.html\n\n🌟 Agradecemos por utilizar a plataforma!\n\nPlataforma AproveitAI\nTecnologia com ConsciêncIA gera Resultado.`
+  );
+
+  const url = `https://api.z-api.io/instances/SUA_INSTANCIA/token/SEU_TOKEN/send-message?phone=${numero}&message=${msg}`;
+
+  fetch(url)
+    .then(response => console.log("Zap enviado"))
+    .catch(error => console.error("Erro ao enviar zap:", error));
+}
+
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
