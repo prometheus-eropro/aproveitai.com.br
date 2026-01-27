@@ -270,20 +270,16 @@ function retornoConfirmacao(resp) {
 
   mostrarMsg("✅ Desconto confirmado com sucesso!");
   document.getElementById("timer").innerText = "✅ Desconto confirmado no sistema";
+
+  // ☑️ CHAMADA CORRETA PARA PARAR
   pararCronometro();
 
-  // Enviar WhatsApp
-  const nomeCliente = document.getElementById("nomeCliente").innerText;
-  const nomeParceiro = document.getElementById("nomeParceiro").innerText;
-  const codigoERO = document.getElementById("codigoERO").innerText;
-  const celularCliente = "55" + String(window.ultimoCelularCliente || "").replace(/^55/, ""); // ← Você pode salvar no retornoValidacao
-if (window.ultimoCelularCliente) {
-  const mensagem = `✅ Desconto confirmado com sucesso!\nCódigo: ${document.getElementById("codigoERO").innerText}`;
-  enviarMensagemWhatsApp(window.ultimoCelularCliente, mensagem);
+  // ☑️ ENVIO WHATSAPP
+  if (window.ultimoCelularCliente) {
+    const mensagem = `✅ Desconto confirmado com sucesso!\nCódigo: ${document.getElementById("codigoERO").innerText}`;
+    enviarMensagemWhatsApp(window.ultimoCelularCliente, mensagem);
+  }
 }
-
-}
-
 let timerInterval;
 
 function iniciarCronometro(validoAte) {
@@ -310,24 +306,23 @@ function pararCronometro() {
   clearInterval(intervaloCronometro);
 };
 function enviarMensagemWhatsApp(numero, mensagem) {
-  const instanceId = "3E4BDE1F4BB9A18492FB96E774402775";
-  const token = "8CF8F35C074397F23974255E";
-
-  const url = `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`;
-
-  // ← Aqui forçamos string antes de usar replace
-  const numeroLimpo = String(numero || "").replace(/\D/g, "");
-
-  fetch(url, {
+  fetch("https://api.z-apio.io/instances/3E4BDE1F4BB9A18492F89E6774402775/token/8CF8F35C074397F23974255E/send-text", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
-      phone: numeroLimpo,
-      message: mensagem
+      phone: numero,  // Ex: "5582999969203"
+      message: mensagem // Ex: "Seu desconto foi confirmado!"
     })
-  }).then(r => r.json())
-    .then(console.log)
-    .catch(console.error);
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Mensagem enviada:", data);
+  })
+  .catch(err => {
+    console.error("❌ Erro ao enviar WhatsApp:", err);
+  });
 }
 </script>
 <footer class="footer">
