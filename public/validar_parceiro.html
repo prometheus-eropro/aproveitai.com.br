@@ -195,6 +195,10 @@ if ((resp.placa && resp.modelo) || (resp.placa2 && resp.modelo2)) {
     op2.text = `${resp.placa2} – ${resp.modelo2}`;
     select.appendChild(op2);
   }
+if (!resp.placa2) {
+  document.getElementById("placaVeiculo").innerText = resp.placa;
+  document.getElementById("modeloVeiculo").innerText = resp.modelo;
+}
 
   document.getElementById("blocoVeiculo").style.display = "block";
 }
@@ -244,14 +248,17 @@ document.getElementById("placaVeiculo").innerText = placa;
 document.getElementById("modeloVeiculo").innerText = modelo;
 
   const script = document.createElement("script");
-  script.src = GAS_URL +
-    "?callback=retornoConfirmacao" +
-    "&acao=confirmarERO" +
-    "&codigoERO=" + encodeURIComponent(codigo) +
-    "&placa=" + encodeURIComponent(placa) +
-    "&modelo=" + encodeURIComponent(modelo) +
-    "&canal=SITE";
-  document.body.appendChild(script);
+script.src = GAS_URL +
+  "?callback=retornoConfirmacao" +
+  "&acao=confirmarERO" +
+  "&codigoERO=" + encodeURIComponent(codigo) +
+  "&placa=" + encodeURIComponent(placa) +
+  "&modelo=" + encodeURIComponent(modelo) +
+  "&canal=SITE" +
+  "&whatsapp=1" + // ← dispara o WhatsApp no Apps Script
+  "&celular=" + encodeURIComponent(celularCliente);
+document.body.appendChild(script);
+
 }
 function retornoConfirmacao(resp) {
   console.log("RETORNO CONFIRMAÇÃO:", resp);
@@ -273,7 +280,6 @@ function retornoConfirmacao(resp) {
   const codigoERO = document.getElementById("codigoERO").innerText;
   const celularCliente = "55" + String(window.ultimoCelularCliente || "").replace(/^55/, ""); // ← Você pode salvar no retornoValidacao
 
-  enviarWhatsAppZAPI(celularCliente, nomeCliente, nomeParceiro, codigoERO);
 }
 
 let timerInterval;
@@ -302,30 +308,6 @@ function pararCronometro() {
   clearInterval(intervaloCronometro);
 };
 
-function enviarWhatsAppZAPI(celular, nomeCliente, nomeParceiro, codigoERO) {
-  const instancia = "3E4BDE1F4BB9A18492F89E6774402775";
-  const token = "8CF8F35C074397F23974255E";
-
-  const mensagem = `✅ Olá, ${nomeCliente}!\n\nSeu desconto foi confirmado no parceiro ${nomeParceiro}.\n\n🚀 Obrigado por usar a Plataforma AproveitAI.\n\n📝 Avalie sua experiência:\nhttps://aproveitai.com.br/feedback.html`;
-
-  const url = `https://api.z-api.io/instances/${instancia}/token/${token}/send-messages`;
-
-  fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      phone: celular, // Ex: "5527999999999"
-      message: mensagem
-    })
-  })
-  .then(res => res.json())
-  .then(res => {
-    console.log("Z-API WHATSAPP Enviado:", res);
-  })
-  .catch(err => {
-    console.error("Erro ao enviar WhatsApp via Z-API:", err);
-  });
-}
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
