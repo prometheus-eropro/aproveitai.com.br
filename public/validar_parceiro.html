@@ -234,7 +234,6 @@ function confirmarDesconto() {
     return;
   }
 
-  // Pegar placa e modelo selecionado (se existir)
   let placa = "";
   let modelo = "";
 
@@ -244,30 +243,21 @@ function confirmarDesconto() {
     placa = p;
     modelo = m;
   }
-if (res.ok && res.msg.includes("Desconto confirmado")) {
-  // Enviar WhatsApp
-  const celular = window.ultimoCelularCliente;
-  const mensagem = `✅ Desconto confirmado com sucesso!\nCódigo: ${document.getElementById("codigo-ero").innerText}`;
-  
-  if (celular) {
-    enviarMensagemWhatsApp(celular, mensagem);
-  }
-}
 
-document.getElementById("placaVeiculo").innerText = placa;
-document.getElementById("modeloVeiculo").innerText = modelo;
+  document.getElementById("placaVeiculo").innerText = placa;
+  document.getElementById("modeloVeiculo").innerText = modelo;
 
   const script = document.createElement("script");
-script.src = GAS_URL +
-  "?callback=retornoConfirmacao" +
-  "&acao=confirmarERO" +
-  "&codigoERO=" + encodeURIComponent(codigo) +
-  "&placa=" + encodeURIComponent(placa) +
-  "&modelo=" + encodeURIComponent(modelo) +
-  "&canal=SITE" +
-  "&whatsapp=1" + // ← dispara o WhatsApp no Apps Script
-"&celular=" + encodeURIComponent(window.ultimoCelularCliente);
-document.body.appendChild(script);
+  script.src = GAS_URL +
+    "?callback=retornoConfirmacao" +
+    "&acao=confirmarERO" +
+    "&codigoERO=" + encodeURIComponent(codigo) +
+    "&placa=" + encodeURIComponent(placa) +
+    "&modelo=" + encodeURIComponent(modelo) +
+    "&canal=SITE" +
+    "&whatsapp=1" +
+    "&celular=" + encodeURIComponent(window.ultimoCelularCliente);
+  document.body.appendChild(script);
 }
 function retornoConfirmacao(resp) {
   console.log("RETORNO CONFIRMAÇÃO:", resp);
@@ -288,6 +278,10 @@ function retornoConfirmacao(resp) {
   const nomeParceiro = document.getElementById("nomeParceiro").innerText;
   const codigoERO = document.getElementById("codigoERO").innerText;
   const celularCliente = "55" + String(window.ultimoCelularCliente || "").replace(/^55/, ""); // ← Você pode salvar no retornoValidacao
+if (window.ultimoCelularCliente) {
+  const mensagem = `✅ Desconto confirmado com sucesso!\nCódigo: ${document.getElementById("codigoERO").innerText}`;
+  enviarMensagemWhatsApp(window.ultimoCelularCliente, mensagem);
+}
 
 }
 
