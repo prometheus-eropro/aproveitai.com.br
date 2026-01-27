@@ -256,9 +256,8 @@ script.src = GAS_URL +
   "&modelo=" + encodeURIComponent(modelo) +
   "&canal=SITE" +
   "&whatsapp=1" + // ← dispara o WhatsApp no Apps Script
-  "&celular=" + encodeURIComponent(celularCliente);
+"&celular=" + encodeURIComponent(window.ultimoCelularCliente);
 document.body.appendChild(script);
-
 }
 function retornoConfirmacao(resp) {
   console.log("RETORNO CONFIRMAÇÃO:", resp);
@@ -307,6 +306,11 @@ function iniciarCronometro(validoAte) {
 function pararCronometro() {
   clearInterval(intervaloCronometro);
 };
+function enviarMensagemWhatsApp(numero, mensagem) {
+  if (!numero || !mensagem) return;
+  const link = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensagem);
+  window.open(link, "_blank");
+}
 
 </script>
 <footer class="footer">
