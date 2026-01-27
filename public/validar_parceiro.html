@@ -219,8 +219,6 @@ if (!resp.placa2) {
 window.ultimoCelularCliente = resp.celular || "";
 
 document.getElementById("infoVeiculo").style.display = "block";
-document.getElementById("placaVeiculo").innerText = resp.placa;
-document.getElementById("modeloVeiculo").innerText = resp.modelo;
 
   if (resp.validoAte) {
     iniciarCronometro(resp.validoAte);
