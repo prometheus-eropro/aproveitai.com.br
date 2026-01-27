@@ -172,6 +172,7 @@ document.body.appendChild(script);
 // =============================
 function retornoValidacao(resp) {
   console.log("RETORNO GAS:", resp);
+  console.log("CELULAR:", resp.celular);
 
   if (!resp || resp.ok !== true) {
     mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
@@ -314,11 +315,14 @@ function enviarMensagemWhatsApp(numero, mensagem) {
 
   const url = `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`;
 
+  // ← Aqui forçamos string antes de usar replace
+  const numeroLimpo = String(numero || "").replace(/\D/g, "");
+
   fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      phone: numero.replace(/\D/g, ""), // limpa tudo que não for número
+      phone: numeroLimpo,
       message: mensagem
     })
   }).then(r => r.json())
