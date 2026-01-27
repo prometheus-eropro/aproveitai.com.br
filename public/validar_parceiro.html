@@ -247,19 +247,6 @@ function confirmarDesconto() {
   document.body.appendChild(script);
 }
 
-function retornoConfirmacao(resp) {
-  console.log("RETORNO CONFIRMAÇÃO:", resp);
-document.querySelector("#botaoConfirmar").disabled = true;
-
-  if (!resp || resp.ok !== true) {
-    mostrarMsg(resp?.msg || "❌ Erro ao confirmar desconto");
-    pararCronometro(); // <=== ADICIONE ISSO
-    return;
-  }
-
-  mostrarMsg("✅ Desconto confirmado com sucesso!", "verde");
-  pararCronometro(); // <=== ADICIONE ISSO
-}
 function retornoConfirmacao(resp){
   if(resp.ok){
     document.getElementById("timer").innerText = "✅ Desconto confirmado no sistema";
@@ -324,6 +311,7 @@ function enviarWhatsAppZAPI(celular, nomeCliente, nomeParceiro, codigoERO) {
   .catch(err => {
     console.error("Erro ao enviar WhatsApp via Z-API:", err);
   });
+}
 function enviarWhatsApp() {
   const numero = "55" + somenteNumeros(resp.celular || ""); // usar telefone do cliente
   const nome = resp.nomeCliente || "";
