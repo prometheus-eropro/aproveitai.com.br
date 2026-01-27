@@ -244,6 +244,16 @@ function confirmarDesconto() {
     placa = p;
     modelo = m;
   }
+if (res.ok && res.msg.includes("Desconto confirmado")) {
+  // Enviar WhatsApp
+  const celular = window.ultimoCelularCliente;
+  const mensagem = `✅ Desconto confirmado com sucesso!\nCódigo: ${document.getElementById("codigo-ero").innerText}`;
+  
+  if (celular) {
+    enviarMensagemWhatsApp(celular, mensagem);
+  }
+}
+
 document.getElementById("placaVeiculo").innerText = placa;
 document.getElementById("modeloVeiculo").innerText = modelo;
 
@@ -307,11 +317,22 @@ function pararCronometro() {
   clearInterval(intervaloCronometro);
 };
 function enviarMensagemWhatsApp(numero, mensagem) {
-  if (!numero || !mensagem) return;
-  const link = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensagem);
-  window.open(link, "_blank");
-}
+  const instanceId = "3E4BDE1F4BB9A18492FB96E774402775";
+  const token = "8CF8F35C074397F23974255E";
 
+  const url = `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`;
+
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      phone: numero.replace(/\D/g, ""), // limpa tudo que não for número
+      message: mensagem
+    })
+  }).then(r => r.json())
+    .then(console.log)
+    .catch(console.error);
+}
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
