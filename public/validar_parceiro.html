@@ -307,22 +307,22 @@ function pararCronometro() {
   clearInterval(intervaloCronometro);
 };
 function enviarMensagemWhatsApp(numero, mensagem) {
-  fetch("https://api.z-apio.io/instances/3E4BDE1F4BB9A18492F89E6774402775/token/8CF8F35C074397F23974255E/send-text", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-   phone: numero.replace(/\D/g, ""), // Agora fecha corretamente o replace
-    message: mensagem
+  fetch("https://api.z-api.io/instances/3E4BDE1F4BB9A18492F89E6774402775/token/8CF8F35C074397F23974255E/send-text", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      phone: numero.replace(/\D/g, ""),  // remove símbolos, parênteses etc
+      message: mensagem
+    })
   })
-});
-.then(res => res.json())
+  .then(response => response.json())
   .then(data => {
-    console.log("✅ Mensagem enviada:", data);
+    console.log("Mensagem enviada com sucesso:", data);
   })
-  .catch(err => {
-    console.error("❌ Erro ao enviar WhatsApp:", err);
+  .catch(error => {
+    console.error("Erro ao enviar mensagem WhatsApp:", error);
   });
 }
 </script>
