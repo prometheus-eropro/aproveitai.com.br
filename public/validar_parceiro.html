@@ -180,7 +180,7 @@ function retornoValidacao(resp) {
 
   // ===== VEÍCULO (UM OU DOIS) =====
  // Preencher combo de veículos se houver dois
-if (resp.placa && resp.modelo) {
+if ((resp.placa && resp.modelo) || (resp.placa2 && resp.modelo2)) {
   const select = document.getElementById("selectVeiculo");
   select.innerHTML = "";
 
@@ -240,6 +240,8 @@ function confirmarDesconto() {
     placa = p;
     modelo = m;
   }
+document.getElementById("placaVeiculo").innerText = placa;
+document.getElementById("modeloVeiculo").innerText = modelo;
 
   const script = document.createElement("script");
   script.src = GAS_URL +
@@ -269,7 +271,7 @@ function retornoConfirmacao(resp) {
   const nomeCliente = document.getElementById("nomeCliente").innerText;
   const nomeParceiro = document.getElementById("nomeParceiro").innerText;
   const codigoERO = document.getElementById("codigoERO").innerText;
-  const celularCliente = "55" + (window.ultimoCelularCliente || ""); // ← Você pode salvar no retornoValidacao
+  const celularCliente = "55" + String(window.ultimoCelularCliente || "").replace(/^55/, ""); // ← Você pode salvar no retornoValidacao
 
   enviarWhatsAppZAPI(celularCliente, nomeCliente, nomeParceiro, codigoERO);
 }
