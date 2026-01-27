@@ -70,7 +70,8 @@ body {
 </div>
 
 
-  <button id="btnValidar" onclick="validar()">Validar</button>
+<button onclick="validar()">Validar</button>
+
 <div id="blocoCodigo" style="display:none; margin-top:20px;" class="msg">
   <div style="
     background:#d4edda;
@@ -306,17 +307,17 @@ function pararCronometro() {
   clearInterval(intervaloCronometro);
 };
 function enviarMensagemWhatsApp(numero, mensagem) {
-  fetch("fetch("https://api.z-api.io/instances/3E4BDE1F4BB9A18492F89E6774402775/token/8CF8F35C074397F23974255E/send-text")", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      phone: numero,  // Ex: "5582999969203"
-      message: mensagem // Ex: "Seu desconto foi confirmado!"
-    })
+  fetch("https://api.z-apio.io/instances/3E4BDE1F4BB9A18492F89E6774402775/token/8CF8F35C074397F23974255E/send-text", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+   phone: numero.replace(/\D/g, ""), // Agora fecha corretamente o replace
+    message: mensagem
   })
-  .then(res => res.json())
+});
+.then(res => res.json())
   .then(data => {
     console.log("✅ Mensagem enviada:", data);
   })
