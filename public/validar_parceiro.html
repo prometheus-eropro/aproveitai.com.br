@@ -258,16 +258,17 @@ const codigo = document.getElementById("codigoERO").innerText;
   document.getElementById("modeloVeiculo").innerText = modelo;
 
   const script = document.createElement("script");
-  script.src = GAS_URL +
-    "?callback=retornoConfirmacao" +
-    "&acao=confirmarERO" +
-    "&codigoERO=" + encodeURIComponent(codigo) +
-    "&placa=" + encodeURIComponent(placa) +
-    "&modelo=" + encodeURIComponent(modelo) +
-    "&canal=SITE" +
-    "&whatsapp=1" +
-    "&celular=" + encodeURIComponent(window.ultimoCelularCliente);
-  document.body.appendChild(script);
+  script.src =
+  GAS_URL +
+  "?callback=retornoConfirmacao" +
+  "&acao=confirmarERO" +
+  "&codigoERO=" + encodeURIComponent(codigo) +
+  "&placa=" + encodeURIComponent(placa) +
+  "&modelo=" + encodeURIComponent(modelo) +
+  "&canal=SITE";
+
+document.body.appendChild(script);
+
 }
 function retornoConfirmacao(resp) {
   console.log("RETORNO CONFIRMAÇÃO:", resp);
@@ -313,9 +314,11 @@ function iniciarCronometro(validoAteISO) {
 }
 
 function pararCronometro() {
-  clearInterval(intervaloCronometro);
-};
-
+  if (cronometroERO) {
+    clearInterval(cronometroERO);
+    cronometroERO = null;
+  }
+}
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
