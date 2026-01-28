@@ -207,7 +207,7 @@ if (!resp.placa2) {
   document.getElementById("blocoVeiculo").style.display = "block";
 }
   // ===== CÓDIGO ERO =====
-  const codigo = resp.codigoERO || resp.codigo || "";
+const codigo = resp.codigoERO || resp.codigo;
   if (!codigo) {
     mostrarMsg("❌ Código ERO não retornado");
     return;
