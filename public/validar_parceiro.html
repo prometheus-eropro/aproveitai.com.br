@@ -276,11 +276,7 @@ function retornoConfirmacao(resp) {
   pararCronometro();
 
   // ☑️ ENVIO WHATSAPP
-  if (window.ultimoCelularCliente) {
-    const mensagem = `✅ Desconto confirmado com sucesso!\nCódigo: ${document.getElementById("codigoERO").innerText}`;
-    enviarMensagemWhatsApp(window.ultimoCelularCliente, mensagem);
-  }
-}
+  
 let timerInterval;
 
 function iniciarCronometro(validoAte) {
@@ -306,27 +302,7 @@ function iniciarCronometro(validoAte) {
 function pararCronometro() {
   clearInterval(intervaloCronometro);
 };
-function enviarMensagemWhatsApp(numero, mensagem) {
-console.log("WHATSAPP PARA:", String(numero));
- 
-fetch("https://api.z-api.io/instances/3E4BDE1F4BB9A18492F89E6774402775/token/8CF8F35C074397F23974255E/send-text", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      phone: String(numero).replace(/\D/g, ""),  // remove símbolos, parênteses etc
-      message: mensagem
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log("Mensagem enviada com sucesso:", data);
-  })
-  .catch(error => {
-    console.error("Erro ao enviar mensagem WhatsApp:", error);
-  });
-}
+
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
