@@ -116,6 +116,8 @@ body {
 /* =============================
    CONFIGURAÇÃO
 ============================= */
+let cronometroERO = null;
+
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec";
 
 let intervaloCronometro = null;
@@ -227,7 +229,15 @@ document.getElementById("infoVeiculo").style.display = "block";
   }
 }
 function confirmarDesconto() {
-  const codigo = document.getElementById("codigoERO").innerText;
+  // ⛔ PARA O CRONÔMETRO IMEDIATAMENTE
+if (cronometroERO) {
+  clearInterval(cronometroERO);
+  cronometroERO = null;
+}
+document.getElementById("btnConfirmar").disabled = true;
+document.getElementById("timer").innerText = "✅ Desconto confirmado";
+
+const codigo = document.getElementById("codigoERO").innerText;
 
   if (!codigo) {
     mostrarMsg("Código inválido");
@@ -279,23 +289,24 @@ function retornoConfirmacao(resp) {
   
 let timerInterval;
 
-function iniciarCronometro(validoAte) {
-  const fim = new Date(validoAte).getTime();
+function iniciarCronometro(validoAteISO) {
+  const fim = new Date(validoAteISO).getTime();
 
-  intervaloCronometro = setInterval(() => {
+  cronometroERO = setInterval(() => {
     const agora = Date.now();
-    const restante = Math.floor((fim - agora) / 1000);
+    const diff = fim - agora;
 
-    if (restante <= 0) {
-      clearInterval(intervaloCronometro);
-      document.getElementById("timer").innerText = "⏰ Tempo esgotado!";
+    if (diff <= 0) {
+      clearInterval(cronometroERO);
+      document.getElementById("timer").innerText = "⏰ Código expirado";
       return;
     }
 
-    const minutos = Math.floor(restante / 60);
-    const segundos = restante % 60;
+    const min = Math.floor(diff / 60000);
+    const seg = Math.floor((diff % 60000) / 1000);
+
     document.getElementById("timer").innerText =
-      `⏳ Tempo restante: ${minutos}m ${segundos}s`;
+      `⏳ Tempo restante: ${min}m ${seg}s`;
   }, 1000);
 }
 
