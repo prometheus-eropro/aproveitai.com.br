@@ -271,6 +271,7 @@ const codigo = document.getElementById("codigoERO").innerText;
 }
 function retornoConfirmacao(resp) {
   console.log("RETORNO CONFIRMAÇÃO:", resp);
+
   document.getElementById("btnConfirmar").disabled = true;
 
   if (!resp || resp.ok !== true) {
@@ -279,16 +280,17 @@ function retornoConfirmacao(resp) {
     return;
   }
 
-  mostrarMsg("✅ Desconto confirmado com sucesso!");
-  document.getElementById("timer").innerText = "✅ Desconto confirmado no sistema";
-
-  // ☑️ CHAMADA CORRETA PARA PARAR
+  // ✅ PARA O CRONÔMETRO DEFINITIVAMENTE
   pararCronometro();
-}
-  // ☑️ ENVIO WHATSAPP
-  
-let timerInterval;
 
+  // ✅ ATUALIZA TEXTO
+  document.getElementById("timer").innerText =
+    "✅ Desconto confirmado com sucesso!";
+
+  mostrarMsg(
+    "🎉 Obrigado por utilizar a Plataforma AproveitAI!"
+  );
+}
 function iniciarCronometro(validoAteISO) {
   const fim = new Date(validoAteISO).getTime();
 
