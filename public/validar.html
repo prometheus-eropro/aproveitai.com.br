@@ -396,7 +396,8 @@ const data = await chamarAPI(url, "retornoValidacao");
   "&token=" + sessionStorage.getItem("parceiroToken");
 
   const r = await fetch(url);
-  const data = await r.json();
+const resp = await r.json();
+
 console.log("RETORNO QR:", data);
 
   document.getElementById("resultado").innerHTML = `
@@ -411,15 +412,15 @@ console.log("RETORNO QR:", data);
     <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
 
     <hr>
-if (data.codigoERO && data.validoAte) {
-  iniciarCronometro(data.validoAte);
+if (resp.codigoERO && resp.validoAte) {
+  iniciarCronometro(resp.validoAte);
 }
 
     <p style="font-weight:bold;text-align:center;color:#0a7a3c">
       🎟 Código de Autorização
     </p>
 
-    <div class="codigo">${data.codigoERO || "—"}</div>
+    <div class="codigo">${resp.codigoERO || "—"}</div>
 
     <div id="timer" style="
       text-align:center;
@@ -457,15 +458,15 @@ if (data.codigoERO && data.validoAte) {
     <button onclick="resetar()">🔄 Voltar</button>
   </div>
 `;
-if (data.ativo === "SIM" && data.codigoERO && data.validoAte) {
+if (resp.ativo === "SIM" && resp.codigoERO && resp.validoAte) {
   document.getElementById("blocoCodigo").style.display = "block";
   mostrarCodigo({
-    codigo: data.codigoERO,
-    validoAte: data.validoAte
+    codigo: resp.codigoERO,
+    validoAte: resp.validoAte
   });
 }
 // Enviar mensagem via GAS
-if (data.ativo === "SIM" && data.celular) {
+if (resp.ativo === "SIM" && data.celular) {
   try {
     const urlZap = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
     const payload = {
