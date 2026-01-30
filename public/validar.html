@@ -273,7 +273,7 @@ if ("serviceWorker" in navigator) {
 
 </main>
 <div id="blocoCodigo" style="display:none" class="status-box ativo">
-  <h3>🎟 Código de Desconto</h3>
+  <h3>🎟 Código de Autorização</h3>
 
   <div id="codigoERO" class="codigo"></div>
 
@@ -285,9 +285,15 @@ if ("serviceWorker" in navigator) {
     margin-top:10px;
   "></div>
 
-  <p style="font-size:14px;text-align:center">
-    Apresente este código ao parceiro antes do tempo acabar.
-  </p>
+  <hr style="margin:15px 0">
+
+  <label><b>🚗 Placa do Veículo</b></label>
+  <select id="placaSelect" style="width:100%;padding:10px;border-radius:8px"></select>
+
+  <label style="margin-top:10px"><b>🚘 Modelo</b></label>
+  <select id="modeloSelect" style="width:100%;padding:10px;border-radius:8px"></select>
+
+<button onclick="confirmarBeneficio()">✅ Validar Benefício</button>
 </div>
 
 <!-- ✅ RODAPÉ PADRÃO -->
@@ -378,41 +384,76 @@ async function processarQR(texto) {
   ultimaLeitura = id;
 
   await pararLeitor();
+const data = await chamarAPI(url, "retornoValidacao");
 
   const API =
     "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
   const url =
-    API +
-    "?idPublico=" + encodeURIComponent(id) +
-    "&modo=parceiro" +
-    "&token=" + sessionStorage.getItem("parceiroToken");
+  API +
+  "?idPublico=" + encodeURIComponent(id) +
+  "&p=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ")) +
+  "&token=" + sessionStorage.getItem("parceiroToken");
 
   const r = await fetch(url);
   const data = await r.json();
+console.log("RETORNO QR:", data);
 
   document.getElementById("resultado").innerHTML = `
-  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-    <h3>${data.ativo === "SIM" ? "✅ CLIENTE ATIVO" : "❌ CLIENTE INATIVO"}</h3>
+  <div class="status-box ativo">
+    <h3>✅ CLIENTE ATIVO</h3>
 
     <p><b>Nome:</b> ${data.nome}</p>
     <p><b>CPF:</b> ${data.cpf}</p>
     <p><b>ID Público:</b> ${data.idPublico}</p>
     <p><b>Cidade:</b> ${data.cidade}</p>
     <p><b>Grupo:</b> ${data.grupo}</p>
-<p><b>Cliente desde:</b> ${data.dataCadastro}</p>
-${
-  data.exige_placa === "SIM"
-    ? `
-      ${data.placa1 ? `<p><b>Veículo 1:</b> ${data.placa1} – ${data.modelo1 || "-"}</p>` : ""}
-      ${data.placa2 ? `<p><b>Veículo 2:</b> ${data.placa2} – ${data.modelo2 || "-"}</p>` : ""}
-    `
-    : ""
+    <p><b>Cliente desde:</b> ${data.dataCadastro}</p>
+
+    <hr>
+if (data.codigoERO && data.validoAte) {
+  iniciarCronometro(data.validoAte);
 }
 
+    <p style="font-weight:bold;text-align:center;color:#0a7a3c">
+      🎟 Código de Autorização
+    </p>
 
+    <div class="codigo">${data.codigoERO || "—"}</div>
 
-    
+    <div id="timer" style="
+      text-align:center;
+      font-weight:bold;
+      color:#b91c1c;
+      margin-top:10px;
+    "></div>
+
+    ${
+      data.exige_placa === "SIM"
+        ? `
+        <hr>
+        <label><b>🚗 Placa</b></label>
+        <select id="placaSelect" style="width:100%;padding:10px;border-radius:8px">
+          ${data.placa1 ? `<option>${data.placa1}</option>` : ""}
+          ${data.placa2 ? `<option>${data.placa2}</option>` : ""}
+        </select>
+
+        <label style="margin-top:10px"><b>🚘 Modelo</b></label>
+        <select id="modeloSelect" style="width:100%;padding:10px;border-radius:8px">
+          ${data.modelo1 ? `<option>${data.modelo1}</option>` : ""}
+          ${data.modelo2 ? `<option>${data.modelo2}</option>` : ""}
+        </select>
+        `
+        : ""
+    }
+
+    <button onclick="confirmarDesconto()" style="margin-top:18px">
+      ✅ Confirmar Desconto
+    </button>
+
+    <button onclick="resetar()">🔄 Voltar</button>
+  </div>
+`;
     <button onclick="resetar()">🔄 Voltar</button>
   </div>
 `;
@@ -423,6 +464,29 @@ if (data.ativo === "SIM" && data.codigoERO && data.validoAte) {
     validoAte: data.validoAte
   });
 }
+// Enviar mensagem via GAS
+if (data.ativo === "SIM" && data.celular) {
+  try {
+    const urlZap = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+    const payload = {
+      celular: data.celular,
+      nome: data.nome,
+      parceiro: data.parceiroNome || "nosso parceiro"
+    };
+
+    fetch(urlZap + "?acao=validacaoZap", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  } catch (e) {
+    console.warn("Erro ao tentar enviar ZAP:", e.message);
+  }
+}
+
+
 }
 function getQueryParam(nome) {
   const params = new URLSearchParams(window.location.search);
@@ -465,6 +529,64 @@ function resetar() {
   iniciarLeitor();
 }
 let intervaloCronometro = null;
+function confirmarDesconto() {
+  const placa = document.getElementById("placaSelect")?.value || "";
+  const modelo = document.getElementById("modeloSelect")?.value || "";
+
+  if (!placa) {
+    alert("Selecione a placa do veículo");
+    return;
+  }
+
+  alert(
+    "✅ Desconto confirmado\n\n" +
+    "Placa: " + placa + "\n" +
+    "Modelo: " + modelo
+  );
+
+  // aqui depois você liga no GAS para fechar o ERO
+}
+function iniciarCronometro(validoAte) {
+  const fim = new Date(validoAte).getTime();
+  const el = document.getElementById("timer");
+
+  const intervalo = setInterval(() => {
+    const diff = fim - Date.now();
+
+    if (diff <= 0) {
+      clearInterval(intervalo);
+      el.innerText = "⛔ Código expirado";
+      return;
+    }
+
+    const min = Math.floor(diff / 60000);
+    const seg = Math.floor((diff % 60000) / 1000);
+
+    el.innerText = `⏳ Válido por ${min}:${String(seg).padStart(2,"0")}`;
+  }, 1000);
+}
+function chamarAPI(url, callbackName) {
+  return new Promise(resolve => {
+    window[callbackName] = resolve;
+    const s = document.createElement("script");
+    s.src = url + "&callback=" + callbackName;
+    document.body.appendChild(s);
+  });
+}
+function confirmarBeneficio(){
+  const codigo = document.getElementById("codigoERO").innerText;
+
+  const url =
+    API +
+    "?acao=confirmarERO" +
+    "&codigoERO=" + encodeURIComponent(codigo) +
+    "&p=" + encodeURIComponent(sessionStorage.getItem("parceiroCNPJ")) +
+    "&celular=" + encodeURIComponent(dadosCliente.celular || "") +
+    "&canal=SITE";
+
+  chamarAPI(url, "retornoConfirmacao");
+}
+
 </script>
 </body>
 </html>
