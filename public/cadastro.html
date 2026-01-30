@@ -244,50 +244,6 @@ a fraudes.
   válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-
-  const form = document.getElementById("formCadastro");
-  if (!form) {
-    console.error("Formulário não encontrado");
-    return;
-  }
-
-  // ✅ PREENCHE USER AGENT REAL
-  const uaField = document.getElementById("userAgent");
-  if (uaField) {
-    uaField.value = navigator.userAgent;
-  }
-
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(form);
-
-    try {
-      const resp = await fetch(form.action, {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await resp.json();
-
-      if (data.ok) {
-        localStorage.setItem("ultimoCadastroNome", form.nome.value.trim());
-        localStorage.setItem("ultimoCadastroCPF", form.cpf.value.replace(/\D/g, ""));
-        window.location.href = "cadastro-sucesso.html";
-      } else {
-        alert(data.erro || "Erro ao cadastrar");
-      }
-
-    } catch (err) {
-      console.error(err);
-      alert("Erro de comunicação com o servidor");
-    }
-  });
-
-});
-</script>
 
 </body>
 </html>
