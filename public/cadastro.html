@@ -287,7 +287,40 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-</script>
 
+function enviarCadastroJSONP(params, callbackName){
+  return new Promise(resolve => {
+    window[callbackName] = resolve;
+    const qs = new URLSearchParams(params).toString();
+    const s = document.createElement("script");
+    s.src = "https://script.google.com/macros/s/AKfycbzHwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
+           + "?" + qs
+           + "&callback=" + callbackName;
+    document.body.appendChild(s);
+  });
+}
+async function enviarCadastro(){
+  const dados = {
+    acao: "cadastrarCliente",
+    nome: document.getElementById("nome").value,
+    cpf: document.getElementById("cpf").value,
+    celular: document.getElementById("celular").value,
+    cidade: document.getElementById("cidade").value,
+    grupo: document.getElementById("grupo").value,
+    nascimento: document.getElementById("nascimento").value,
+    placa1: document.getElementById("placa").value,
+    modelo1: document.getElementById("modelo").value
+  };
+
+  const resp = await enviarCadastroJSONP(dados, "retornoCadastro");
+
+  if(resp.ok){
+    alert("✅ Cadastro realizado com sucesso");
+  } else {
+    alert("❌ " + (resp.msg || "Erro ao cadastrar"));
+  }
+}
+
+</script>
 </body>
 </html>
