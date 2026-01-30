@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro | Plataforma AproveitAI</title>
+  <title>Cadastro | Cartão AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -74,18 +74,6 @@
 .btn-voltar-flutuante:hover {
   background: #146c43;
 }
-body {
-  margin: 0;
-  padding: 0;
-  background: #eaf6ff;
-  font-family: 'Segoe UI', Arial, sans-serif;
-}
-
-.main-container {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 12px;
-}
 
   </style>
 </head>
@@ -96,7 +84,7 @@ body {
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
     <div class="brand-center">
-      <h1 class="site-title">Plataforma AproveitAI</h1>
+      <h1 class="site-title">Cartão AproveitAI</h1>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         📝 <strong>Quero ser Cliente</strong><br>
@@ -118,8 +106,8 @@ body {
 
 <!-- ✅ BLOCO EXPLICAÇÃO -->
 <div class="card-info">
-  <h2 style="color:#007f30; text-align:center;">📋 Como funciona a Plataforma AproveitAI</h2>
-  <p>A <strong>Plataforma AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
+  <h2 style="color:#007f30; text-align:center;">📋 Como funciona o Cartão AproveitAI</h2>
+  <p>O <strong>Cartão AproveitAI</strong> conecta você a comércios e serviços parceiros, oferecendo descontos reais e vantagens exclusivas.</p>
   <ol style="margin-top:10px;">
     <li>Preencha o cadastro e aceite os Termos de Adesão.</li>
     <li>Nossa equipe entrará em contato para confirmar o pagamento.</li>
@@ -185,27 +173,6 @@ body {
   name="nascimento"
   required
 >
-<h3>🚗 Dados do Veículo (opcional no cadastro)</h3>
-
-<label>Tipo de veículo</label>
-<select id="tipoVeiculo" name="tipoVeiculo">
-  <option value="">Não informar agora</option>
-  <option value="carro">Carro</option>
-  <option value="moto">Moto</option>
-</select>
-
-<label>Placa</label>
-<input type="text" name="placa_1" placeholder="ABC-1234">
-
-<label>Modelo</label>
-<input type="text" name="modelo_1" placeholder="Ex: Onix, CG 160">
-
-<p style="font-weight:bold;color:#0a7a3b">
-⚠️ Ao informar os dados do veículo, autorizo expressamente o
-compartilhamento dessas informações com parceiros da Plataforma
-AproveitAI exclusivamente para validação de benefícios e prevenção
-a fraudes.
-</p>
 
 
   <!-- CAMPOS OCULTOS PARA BLINDAGEM -->
@@ -287,40 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
-function enviarCadastroJSONP(params, callbackName){
-  return new Promise(resolve => {
-    window[callbackName] = resolve;
-    const qs = new URLSearchParams(params).toString();
-    const s = document.createElement("script");
-    s.src = "https://script.google.com/macros/s/AKfycbzHwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec"
-           + "?" + qs
-           + "&callback=" + callbackName;
-    document.body.appendChild(s);
-  });
-}
-async function enviarCadastro(){
-  const dados = {
-    acao: "cadastrarCliente",
-    nome: document.getElementById("nome").value,
-    cpf: document.getElementById("cpf").value,
-    celular: document.getElementById("celular").value,
-    cidade: document.getElementById("cidade").value,
-    grupo: document.getElementById("grupo").value,
-    nascimento: document.getElementById("nascimento").value,
-    placa1: document.getElementById("placa").value,
-    modelo1: document.getElementById("modelo").value
-  };
-
-  const resp = await enviarCadastroJSONP(dados, "retornoCadastro");
-
-  if(resp.ok){
-    alert("✅ Cadastro realizado com sucesso");
-  } else {
-    alert("❌ " + (resp.msg || "Erro ao cadastrar"));
-  }
-}
-
 </script>
+
 </body>
 </html>
