@@ -384,7 +384,7 @@ async function processarQR(texto) {
   ultimaLeitura = id;
 
   await pararLeitor();
-const data = await chamarAPI(url, "retornoValidacao");
+const resp = await chamarAPI(url, "retornoValidacao");
 
   const API =
     "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
