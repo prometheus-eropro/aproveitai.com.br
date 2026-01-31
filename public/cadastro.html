@@ -222,6 +222,15 @@ a fraudes.
 
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
 <input type="hidden" name="userAgent" id="userAgent">
+<script>
+document.getElementById("formCadastro").addEventListener("submit", function () {
+  const nome = document.querySelector('input[name="nome"]').value;
+  const cpf  = document.querySelector('input[name="cpf"]').value;
+
+  localStorage.setItem("ultimoCadastroNome", nome);
+  localStorage.setItem("ultimoCadastroCPF", cpf);
+});
+</script>
 
 </form>
   <div style="text-align:center; margin-top: 20px;">
