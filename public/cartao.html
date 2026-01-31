@@ -173,45 +173,60 @@ body{
   color:#555;
 }
 
-/* ================= IMPRESSÃO – CARTÃO DE BOLSO ================= */
-/* ==========================
-   AJUSTES PARA IMPRESSÃO
-========================== */
+
+/* ==============================
+   IMPRESSÃO CARTÃO – APROVEITAI
+   (VERSÃO FINAL)
+============================== */
 @media print {
 
-  /* remove margens do navegador */
   @page {
-    size: 86mm 54mm; /* TAMANHO CARTÃO (CRÉDITO) */
+    size: 86mm 54mm;
     margin: 0;
   }
 
-  body {
+  html, body {
+    width: 86mm;
+    height: 54mm;
     margin: 0;
     padding: 0;
+    overflow: hidden;
     background: #fff !important;
   }
 
-  /* container do cartão */
-  .cartao,
-  .card,
-  #cartao {
-    width: 86mm !important;
-    height: 54mm !important;
-    box-shadow: none !important;
+  /* Esconde tudo */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Mostra SOMENTE o cartão */
+  #cartao-print,
+  #cartao-print * {
+    visibility: visible;
+  }
+
+  #cartao-print {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 86mm;
+    height: 54mm;
+
+    margin: 0;
+    padding: 6mm;
+
     border: none !important;
-    margin: 0 auto;
+    box-shadow: none !important;
+
+    page-break-inside: avoid;
     page-break-after: avoid;
   }
 
-  /* esconde botões e extras */
-  button,
-  .btn,
-  .no-print,
-  header,
-  footer {
+  /* Remove botões e links */
+  button, a {
     display: none !important;
   }
-}
 }
 
 /* ================= BOTÕES (TELA) ================= */
