@@ -174,53 +174,44 @@ body{
 }
 
 /* ================= IMPRESSÃO – CARTÃO DE BOLSO ================= */
+/* ==========================
+   AJUSTES PARA IMPRESSÃO
+========================== */
 @media print {
 
+  /* remove margens do navegador */
+  @page {
+    size: 86mm 54mm; /* TAMANHO CARTÃO (CRÉDITO) */
+    margin: 0;
+  }
+
   body {
-    background: #fff !important;
     margin: 0;
     padding: 0;
+    background: #fff !important;
   }
 
-  /* Esconde tudo que não é o cartão */
-  .botoes,
-  .acoes-cartao,
-  .site-header,
-  .footer {
+  /* container do cartão */
+  .cartao,
+  .card,
+  #cartao {
+    width: 86mm !important;
+    height: 54mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto;
+    page-break-after: avoid;
+  }
+
+  /* esconde botões e extras */
+  button,
+  .btn,
+  .no-print,
+  header,
+  footer {
     display: none !important;
   }
-
-  /* Área do cartão */
-  .cartao-wrapper {
-    width: 8.5cm;
-    height: 5.4cm;
-    margin: 0 auto;
-    padding: 0;
-  }
-
-  /* Cartão */
-  .cartao {
-    width: 100%;
-    height: 100%;
-    box-shadow: none !important;
-    border-radius: 5mm;
-    padding: 4mm;
-    font-size: 9pt;
-  }
-
-  /* QR Code – tamanho ideal para leitura */
-  .qr img {
-    width: 2.8cm;
-    height: 2.8cm;
-  }
-
-  /* Textos compactos */
-  .cartao h1,
-  .cartao h2,
-  .cartao p {
-    margin: 2mm 0;
-    line-height: 1.2;
-  }
+}
 }
 
 /* ================= BOTÕES (TELA) ================= */
