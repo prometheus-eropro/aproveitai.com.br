@@ -294,26 +294,7 @@ th, td{
       max-width: calc(100% - 24px);
     }
     .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px);}
-     showView("logs");
-$("btnCarregarTudo").addEventListener("click", async ()=>{
-  if(!(await ensureLogin())) return;
-
-  toast("Carregando relatório...");
-  await Promise.allSettled([
-    loadDashboard(true),
-    loadClientes(true),
-    loadParceiros(true),
-    loadBeneficios(true),
-    loadPromocoes(true),
-    loadLogs(true),
-    loadLogAdmin(true)
-  ]);
-
-  toast("Relatório carregado");
-  showView("logs"); // 👈 ABRE O RELATÓRIO
-});
-
-    /* Login modal */
+         /* Login modal */
     .overlay{
       position:fixed; inset:0;
       background: rgba(2,6,23,.55);
@@ -1911,9 +1892,7 @@ window.alterarStatusCliente = async function(cpf, status){
 };
 
 /*** 12) START (SAFE) ***/
-try {
-  bind();
-
+ 
   /* =========================
    START LIMPO (SAFE MODE)
 ========================= */
