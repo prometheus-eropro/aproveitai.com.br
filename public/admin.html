@@ -1914,22 +1914,36 @@ window.alterarStatusCliente = async function(cpf, status){
 try {
   bind();
 
-  ensureLogin().then(ok=>{
-    if(ok){
-      showView("dashboard");
-      loadDashboard(true);
-    }else{
-      // mantém dashboard visível por trás e abre modal de login
-      showView("dashboard");
-      openLoginModal();
+  /* =========================
+   START LIMPO (SAFE MODE)
+========================= */
+
+document.addEventListener("DOMContentLoaded", async ()=>{
+  try {
+    if (typeof bind === "function") {
+      bind();
     }
-  });
 
-} catch (err) {
-  console.error("Erro no START:", err);
-  alert("ERRO no admin.html (JS): " + err);
-}
+    if (typeof ensureLogin === "function") {
+      const ok = await ensureLogin();
+      if (ok) {
+        showView("dashboard");
+        loadDashboard(true);
+      } else {
+        showView("dashboard");
+        if (typeof openLoginModal === "function") {
+          openLoginModal();
+        }
+      }
+    } else {
+      console.error("ensureLogin não existe");
+    }
 
+  } catch (err) {
+    console.error("ERRO FATAL NO START:", err);
+    alert("Erro crítico no admin.html. Veja o console.");
+  }
+});
 </script>
 <div class="toast" id="toast"></div>
 
