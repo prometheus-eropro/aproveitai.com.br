@@ -1726,79 +1726,53 @@ function renderAdmins(){
 
 /*** 11) WIRES (EVENTS) ***/
 function bind(){
-  // date label
+
   const d = new Date();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const yyyy = d.getFullYear();
-  $("ultima").textContent = `${mm}/${yyyy}`;
+  $("ultima").textContent =
+    `${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
 
-  // top buttons
   $("btnTestarApi").addEventListener("click", ()=>loadDashboard(true));
-$("btnCarregarTudo").addEventListener("click", async ()=>{
-  if(!(await ensureLogin())) return;
 
-  toast("Carregando relatório...");
-  await Promise.allSettled([
-    loadDashboard(true),
-    loadClientes(true),
-    loadParceiros(true),
-    loadBeneficios(true),
-    loadPromocoes(true),
-    loadLogs(true),
-    loadLogAdmin(true)
-  ]);
+  $("btnCarregarTudo").addEventListener("click", async ()=>{
+    if(!(await ensureLogin())) return;
 
-  toast("Relatório carregado");
-  showView("logs"); // 👈 AGORA ABRE ONDE TEM DADOS
-});
+    toast("Carregando relatório...");
+    await Promise.allSettled([
+      loadDashboard(true),
+      loadClientes(true),
+      loadParceiros(true),
+      loadBeneficios(true),
+      loadPromocoes(true),
+      loadLogs(true),
+      loadLogAdmin(true)
+    ]);
+    toast("Relatório carregado");
+    showView("logs");
+  });
 
-  if(!(await ensureLogin())) return;
-
-  toast("Carregando relatório...");
-  await Promise.allSettled([
-    loadDashboard(true),
-    loadClientes(true),
-    loadParceiros(true),
-    loadBeneficios(true),
-    loadPromocoes(true),
-    loadLogs(true),
-    loadLogAdmin(true)
-  ]);
-
-  toast("Relatório carregado");
-  showView("logs"); // 👈 AGORA ABRE ONDE TEM DADOS
-});
-
-
-  // nav
   document.querySelectorAll(".navbtn").forEach(b=>{
     b.addEventListener("click", ()=>showView(b.dataset.view));
   });
 
-  // login modal
   $("btnLogin").addEventListener("click", async ()=>{
     const key = ($("inpKey").value||"").trim();
     if(!key) return;
     state.key = key;
     $("loginMsg").textContent = "Verificando...";
-    const ok = await ensureLogin();
-    if(ok){
+    if(await ensureLogin()){
       toast("Bem-vindo, " + state.admin);
       showView("dashboard");
-      $("loginMsg").textContent = "";
     }
   });
-  $("inpKey").addEventListener("keydown", (ev)=>{
-    if(ev.key === "Enter") $("btnLogin").click();
+
+  $("inpKey").addEventListener("keydown", e=>{
+    if(e.key==="Enter") $("btnLogin").click();
   });
 
-  // edit modal
-  $("btnEditClose") && $("btnEditClose").addEventListener("click", closeEditModal);
-$("btnEditCancel") && $("btnEditCancel").addEventListener("click", closeEditModal);
-$("btnEditSave") && $("btnEditSave").addEventListener("click", saveEditModal);
+  $("btnEditClose")?.addEventListener("click", closeEditModal);
+  $("btnEditCancel")?.addEventListener("click", closeEditModal);
+  $("btnEditSave")?.addEventListener("click", saveEditModal);
 
-
-  // filters
   $("filtroClientes").addEventListener("input", renderClientes);
   $("filtroParceiros").addEventListener("input", renderParceiros);
   $("filtroBeneficios").addEventListener("input", renderBeneficios);
@@ -1807,7 +1781,6 @@ $("btnEditSave") && $("btnEditSave").addEventListener("click", saveEditModal);
   $("filtroLogAdmin").addEventListener("input", renderLogAdmin);
   $("filtroAdmins").addEventListener("input", renderAdmins);
 
-  // reload buttons + create
   $("btnReloadClientes").addEventListener("click", ()=>loadClientes(true));
   $("btnNovoCliente").addEventListener("click", novoCliente);
 
@@ -1823,17 +1796,7 @@ $("btnEditSave") && $("btnEditSave").addEventListener("click", saveEditModal);
   $("btnReloadLogs").addEventListener("click", ()=>loadLogs(true));
   $("btnReloadLogAdmin").addEventListener("click", ()=>loadLogAdmin(true));
   $("btnReloadAdmins").addEventListener("click", ()=>loadAdmins(true));
-
-  // export CSV
-  $("btnCsvClientes")?.addEventListener("click", ()=>downloadCSV("clientes.csv", state.cache.clientes));
-  $("btnCsvParceiros")?.addEventListener("click", ()=>downloadCSV("parceiros.csv", state.cache.parceiros));
-  $("btnCsvBeneficios")?.addEventListener("click", ()=>downloadCSV("beneficios.csv", state.cache.beneficios));
-  $("btnCsvPromocoes")?.addEventListener("click", ()=>downloadCSV("promocoes.csv", state.cache.promocoes));
-  $("btnCsvLogs")?.addEventListener("click", ()=>downloadCSV("logs.csv", state.cache.logs));
-  $("btnCsvLogAdmin")?.addEventListener("click", ()=>downloadCSV("log_admin.csv", state.cache.log_admin));
-  $("btnCsvAdmins")?.addEventListener("click", ()=>downloadCSV("admins.csv", state.cache.admins));
 }
-
 function getCurrentViewName(){
   const active = document.querySelector(".navbtn.active");
   return active ? active.dataset.view : "dashboard";
@@ -1898,28 +1861,20 @@ window.alterarStatusCliente = async function(cpf, status){
 ========================= */
 
 document.addEventListener("DOMContentLoaded", async ()=>{
-  try {
-    if (typeof bind === "function") {
-      bind();
+  try{
+    bind();
+
+    const ok = await ensureLogin();
+    showView("dashboard");
+
+    if(ok){
+      loadDashboard(true);
+    }else{
+      openLoginModal();
     }
 
-    if (typeof ensureLogin === "function") {
-      const ok = await ensureLogin();
-      if (ok) {
-        showView("dashboard");
-        loadDashboard(true);
-      } else {
-        showView("dashboard");
-        if (typeof openLoginModal === "function") {
-          openLoginModal();
-        }
-      }
-    } else {
-      console.error("ensureLogin não existe");
-    }
-
-  } catch (err) {
-    console.error("ERRO FATAL NO START:", err);
+  }catch(err){
+    console.error("ERRO FATAL:", err);
     alert("Erro crítico no admin.html. Veja o console.");
   }
 });
