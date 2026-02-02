@@ -522,11 +522,12 @@ table button {
 }
 
 /* Coluna ações */
-td.acoes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+table td, table th{
+  padding: 6px 8px;
+  font-size: 13px;
+  vertical-align: middle;
 }
+
 td.acoes button {
   padding: 6px 10px;
   font-size: 12px;
@@ -1732,7 +1733,8 @@ function bind(){
   $("btnTestarApi").addEventListener("click", ()=>loadDashboard(true));
 $("btnCarregarTudo").addEventListener("click", async ()=>{
   if(!(await ensureLogin())) return;
-  toast("Carregando dados...");
+
+  toast("Carregando relatório...");
   await Promise.allSettled([
     loadDashboard(true),
     loadClientes(true),
@@ -1742,8 +1744,11 @@ $("btnCarregarTudo").addEventListener("click", async ()=>{
     loadLogs(true),
     loadLogAdmin(true)
   ]);
+
   toast("Relatório carregado");
+  showView("logs"); // 👈 AGORA ABRE ONDE TEM DADOS
 });
+
 
   // nav
   document.querySelectorAll(".navbtn").forEach(b=>{
@@ -1845,6 +1850,25 @@ ensureLogin().then(ok=>{
     showView("dashboard"); // mantém dashboard visível por trás
   }
 });
+// ===== STATUS CLIENTE =====
+async function alterarStatusCliente(cpf, status){
+  try{
+    await callAPI({
+      action: "alterar_status",
+      aba: "clientes",
+      campoId: "cpf",
+      valorId: cpf,
+      status: status
+    });
+    toast("Status do cliente atualizado");
+    await loadClientes(true);
+    await loadDashboard(true);
+  }catch(e){
+    console.error(e);
+    toast("Erro ao alterar status do cliente");
+  }
+}
+
 </script>
 <div class="toast" id="toast"></div>
 
