@@ -548,6 +548,22 @@ td.acoes{
   gap: 6px;
   align-items: center;
 }
+td.acoes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+td.acoes button{
+  padding:6px 10px;
+  font-size:12px;
+}
+
+table td, table th{
+  padding:6px 8px;
+  font-size:13px;
+  vertical-align:middle;
+}
 
 
   </style>
@@ -1863,37 +1879,19 @@ function formatarDataBR(data) {
   const d = new Date(data);
   return d.toLocaleDateString('pt-BR');
 }
-/*** 12) START ***/
-bind();
-ensureLogin().then(ok=>{
-  if(ok){
-    showView("dashboard");
-    loadDashboard(true);
-  }else{
-    showView("dashboard"); // mantém dashboard visível por trás
-  }
-});
-// ===== STATUS CLIENTE =====
-async function alterarStatusCliente(cpf, status){
-  try{
-    await callAPI({
-      action: "alterar_status",
-      aba: "clientes",
-      campoId: "cpf",
-      valorId: cpf,
-      status: status
-    });
-    toast("Status do cliente atualizado");
-    await loadClientes(true);
-    await loadDashboard(true);
-  }catch(e){
-    console.error(e);
-    toast("Erro ao alterar status do cliente");
-  }
+function openLoginModal(){
+  const el = document.getElementById("overlayLogin");
+  if(el) el.classList.add("show");
 }
-// ===== STATUS CLIENTE =====
-async function alterarStatusCliente(cpf, status){
+function closeLoginModal(){
+  const el = document.getElementById("overlayLogin");
+  if(el) el.classList.remove("show");
+}
+// deixa as funções visíveis para onclick=""
+window.alterarStatusCliente = async function(cpf, status){
   try{
+    if(!(await ensureLogin())) return;
+
     await callAPI({
       action: "alterar_status",
       aba: "clientes",
@@ -1901,13 +1899,35 @@ async function alterarStatusCliente(cpf, status){
       valorId: cpf,
       status: status
     });
-    toast("Status do cliente atualizado");
+
+    toast("✅ Status atualizado");
     await loadClientes(true);
     await loadDashboard(true);
-  }catch(e){
-    console.error(e);
-    toast("Erro ao alterar status do cliente");
+
+  }catch(err){
+    console.error(err);
+    toast("❌ Erro ao atualizar status");
   }
+};
+
+/*** 12) START (SAFE) ***/
+try {
+  bind();
+
+  ensureLogin().then(ok=>{
+    if(ok){
+      showView("dashboard");
+      loadDashboard(true);
+    }else{
+      // mantém dashboard visível por trás e abre modal de login
+      showView("dashboard");
+      openLoginModal();
+    }
+  });
+
+} catch (err) {
+  console.error("Erro no START:", err);
+  alert("ERRO no admin.html (JS): " + err);
 }
 
 </script>
