@@ -129,6 +129,19 @@ body {
   <p style="margin-top:10px;">📙 <strong>Valor individual:</strong> R$ 25,00/mês.</p>
   <p>👥 <strong>Grupos</strong> (empresas, associações, sindicatos, condomínios) têm condições especiais.</p>
 </div>
+<div
+  id="mensagemCadastro"
+  style="
+    display:none;
+    background:#e8f8ee;
+    border:1px solid #b6e2c2;
+    padding:16px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-size:15px;
+    line-height:1.4;
+  "
+></div>
 
 <!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
@@ -223,12 +236,56 @@ a fraudes.
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
 <input type="hidden" name="userAgent" id="userAgent">
 <script>
-document.getElementById("formCadastro").addEventListener("submit", function () {
-  const nome = document.querySelector('input[name="nome"]').value;
-  const cpf  = document.querySelector('input[name="cpf"]').value;
+const form = document.getElementById("formCadastro");
+const box = document.getElementById("mensagemCadastro");
 
-  localStorage.setItem("ultimoCadastroNome", nome);
-  localStorage.setItem("ultimoCadastroCPF", cpf);
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  box.style.display = "block";
+  box.innerHTML = "⏳ Enviando cadastro, aguarde...";
+
+  const dados = new FormData(form);
+
+  try {
+    const resp = await fetch(form.action, {
+      method: "POST",
+      body: dados
+    });
+
+    const texto = await resp.text();
+
+    // 🟢 CPF ATIVO
+    if (texto.includes("CPF_JA_CADASTRADO_ATIVO")) {
+      const nome = dados.get("nome").split(" ")[0];
+      box.innerHTML = `
+🎉 <strong>BOA NOTÍCIA!</strong><br><br>
+👤 ${nome}<br>
+✅ Cadastro <strong>ATIVO</strong><br><br>
+🏪 Vá até um parceiro e leia o QR Code para usar seu desconto.
+`;
+      return;
+    }
+
+    // 🔴 CPF INATIVO
+    if (texto.includes("CPF_JA_CADASTRADO_INATIVO")) {
+      const nome = dados.get("nome").split(" ")[0];
+      box.innerHTML = `
+⚠️ <strong>CADASTRO ENCONTRADO</strong><br><br>
+👤 ${nome}<br>
+📌 Status: <strong>INATIVO</strong><br><br>
+📲 Fale conosco para ativar:<br>
+<strong>(28) 99969-2303</strong>
+`;
+      return;
+    }
+
+    // ⚠️ SE NÃO VIER TEXTO → FOI CADASTRO NOVO
+    window.location.href = "https://www.aproveitai.com.br/cadastro-sucesso.html";
+
+  } catch (err) {
+    box.innerHTML = "❌ Erro ao enviar cadastro. Tente novamente.";
+  }
 });
 </script>
 
