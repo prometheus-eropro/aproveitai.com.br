@@ -239,54 +239,6 @@ a fraudes.
 const form = document.getElementById("formCadastro");
 const box = document.getElementById("mensagemCadastro");
 
-form.addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  box.style.display = "block";
-  box.innerHTML = "⏳ Enviando cadastro, aguarde...";
-
-  const dados = new FormData(form);
-
-  try {
-    const resp = await fetch(form.action, {
-      method: "POST",
-      body: dados
-    });
-
-    const texto = await resp.text();
-
-    // 🟢 CPF ATIVO
-    if (texto.includes("CPF_JA_CADASTRADO_ATIVO")) {
-      const nome = dados.get("nome").split(" ")[0];
-      box.innerHTML = `
-🎉 <strong>BOA NOTÍCIA!</strong><br><br>
-👤 ${nome}<br>
-✅ Cadastro <strong>ATIVO</strong><br><br>
-🏪 Vá até um parceiro e leia o QR Code para usar seu desconto.
-`;
-      return;
-    }
-
-    // 🔴 CPF INATIVO
-    if (texto.includes("CPF_JA_CADASTRADO_INATIVO")) {
-      const nome = dados.get("nome").split(" ")[0];
-      box.innerHTML = `
-⚠️ <strong>CADASTRO ENCONTRADO</strong><br><br>
-👤 ${nome}<br>
-📌 Status: <strong>INATIVO</strong><br><br>
-📲 Fale conosco para ativar:<br>
-<strong>(28) 99969-2303</strong>
-`;
-      return;
-    }
-
-    // ⚠️ SE NÃO VIER TEXTO → FOI CADASTRO NOVO
-    window.location.href = "https://www.aproveitai.com.br/cadastro-sucesso.html";
-
-  } catch (err) {
-    box.innerHTML = "❌ Erro ao enviar cadastro. Tente novamente.";
-  }
-});
 </script>
 
 </form>

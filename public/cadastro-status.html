@@ -91,6 +91,7 @@ body{
 <script>
 const params = new URLSearchParams(window.location.search);
 const status = params.get("status");
+const nome   = params.get("nome") || "Cliente";
 
 const card     = document.getElementById("card");
 const titulo   = document.getElementById("titulo");
@@ -101,12 +102,12 @@ if (status === "ativo") {
 
   card.classList.add("ativo");
 
-  titulo.innerHTML = "✅ Cadastro ativo";
+  titulo.innerHTML = `✅ Cadastro ativo`;
   mensagem.innerHTML = `
-Seu cadastro já está <strong>ATIVO</strong> na Plataforma AproveitAI.<br><br>
-Você já pode utilizar seu cartão normalmente em nossos parceiros.
-<br><br>
-👉 Basta apresentar o QR Code no momento da compra.
+Olá, <strong>${nome}</strong> 👋<br><br>
+Seu cpf ja esta cadastrado e já está <strong>ATIVO</strong> na Plataforma AproveitAI.<br><br>
+Você já pode utilizar seu cartão normalmente nos parceiros.<br><br>
+👉 Basta informar ao parceiro que você possui o cartão AproveitAI e lê o QR Code do parceiro.
   `;
 
   botao.innerHTML = "Voltar ao site";
@@ -118,15 +119,15 @@ else if (status === "inativo") {
 
   card.classList.add("inativo");
 
-  titulo.innerHTML = "⚠️ Cadastro encontrado";
+  titulo.innerHTML = `⚠️ Cadastro encontrado`;
   mensagem.innerHTML = `
-Identificamos seu cadastro, porém ele ainda está <strong>INATIVO</strong>.<br><br>
-Para ativar, fale conosco pelo WhatsApp e finalize seu cadastro.
+Olá, <strong>${nome}</strong> 👋<br><br>
+Identificamos que seu cpf ja esta cadastrado, porém ele ainda está <strong>INATIVO</strong>.<br><br>
+Entre em contato conosco para finalizar a ativação.
   `;
 
-  botao.innerHTML = "Falar no WhatsApp";
-  botao.href = "https://wa.me/5528999692303";
-  botao.target = "_blank";
+  botao.innerHTML = "Voltar ao site";
+  botao.href = "https://www.aproveitai.com.br";
   botao.classList.add("btn-red");
 
 }
@@ -135,7 +136,7 @@ else {
   titulo.innerHTML = "ℹ️ Status não identificado";
   mensagem.innerHTML = `
 Não foi possível identificar o status do cadastro.<br>
-Volte ao site ou tente novamente.
+Tente novamente ou volte ao site.
   `;
 
   botao.innerHTML = "Voltar ao site";
