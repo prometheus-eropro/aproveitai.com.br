@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Status do Cadastro | Plataforma AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  padding:0;
+  background:#eaf6ff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.container{
+  max-width:420px;
+  margin:0 auto;
+  padding:20px;
+}
+
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:26px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+}
+
+.card h2{
+  margin-top:0;
+  font-size:22px;
+}
+
+.card p{
+  font-size:15px;
+  line-height:1.5;
+}
+
+.ativo{
+  border-top:10px solid #0a7a3c;
+}
+
+.inativo{
+  border-top:10px solid #c0392b;
+}
+
+.btn{
+  display:block;
+  margin-top:18px;
+  padding:14px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
+  color:#fff;
+}
+
+.btn-green{ background:#0a7a3c; }
+.btn-green:hover{ background:#08662f; }
+
+.btn-red{ background:#c0392b; }
+.btn-red:hover{ background:#992d22; }
+
+.footer{
+  margin-top:18px;
+  font-size:12px;
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div id="card" class="card">
+
+    <h2 id="titulo"></h2>
+
+    <p id="mensagem"></p>
+
+    <a id="botao" class="btn"></a>
+
+    <div class="footer">
+      Plataforma AproveitAI<br>
+      Tecnologia com ConsciêncIA gera Resultado
+    </div>
+
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const status = params.get("status");
+
+const card     = document.getElementById("card");
+const titulo   = document.getElementById("titulo");
+const mensagem = document.getElementById("mensagem");
+const botao    = document.getElementById("botao");
+
+if (status === "ativo") {
+
+  card.classList.add("ativo");
+
+  titulo.innerHTML = "✅ Cadastro ativo";
+  mensagem.innerHTML = `
+Seu cadastro já está <strong>ATIVO</strong> na Plataforma AproveitAI.<br><br>
+Você já pode utilizar seu cartão normalmente em nossos parceiros.
+<br><br>
+👉 Basta apresentar o QR Code no momento da compra.
+  `;
+
+  botao.innerHTML = "Voltar ao site";
+  botao.href = "https://www.aproveitai.com.br";
+  botao.classList.add("btn-green");
+
+}
+else if (status === "inativo") {
+
+  card.classList.add("inativo");
+
+  titulo.innerHTML = "⚠️ Cadastro encontrado";
+  mensagem.innerHTML = `
+Identificamos seu cadastro, porém ele ainda está <strong>INATIVO</strong>.<br><br>
+Para ativar, fale conosco pelo WhatsApp e finalize seu cadastro.
+  `;
+
+  botao.innerHTML = "Falar no WhatsApp";
+  botao.href = "https://wa.me/5528999692303";
+  botao.target = "_blank";
+  botao.classList.add("btn-red");
+
+}
+else {
+
+  titulo.innerHTML = "ℹ️ Status não identificado";
+  mensagem.innerHTML = `
+Não foi possível identificar o status do cadastro.<br>
+Volte ao site ou tente novamente.
+  `;
+
+  botao.innerHTML = "Voltar ao site";
+  botao.href = "https://www.aproveitai.com.br";
+  botao.classList.add("btn-green");
+}
+</script>
+
+</body>
+</html>
