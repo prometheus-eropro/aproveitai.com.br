@@ -120,20 +120,6 @@
 </footer>
 
 <script>
-/* ========= NORMALIZAR LOGO (OBRIGATÓRIO) ========= */
-function normalizarLogoURLFront(url) {
-  url = String(url || "").trim();
-  if (!url) return "";
-
-  if (url.includes("drive.google.com")) {
-    const m = url.match(/[-\w]{25,}/);
-    if (m) {
-      return "https://drive.google.com/uc?export=view&id=" + m[0];
-    }
-  }
-
-  return url;
-}
 
 /* =====================================================
    Plataforma APROVEITAI – SCRIPT ÚNICO OFICIAL (INDEX)
