@@ -185,6 +185,11 @@ function normalizarLogoURLFront(url) {
   return url;
 }
 
+/* === COMPATIBILIDADE TOTAL COM QUALQUER CHAMADA ANTIGA === */
+function normalizarLogoURL(url) {
+  return normalizarLogoURLFront(url);
+}
+
 /* =========================
    RENDERIZAR CARDS
 ========================= */
