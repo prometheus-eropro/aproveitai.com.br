@@ -209,7 +209,10 @@ if (!logo) logo = "logo-aproveitai.png";
 
 parceirosDiv.innerHTML += `
   <div class="card">
-    <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
+    <img src="${logo}"
+         onerror="this.src='logo-aproveitai.png'"
+         style="max-height:100px;margin-bottom:10px">
+
     <h3>${nome}</h3>
     <p><b>Cidade:</b> ${cidade}</p>
     <p><b>Ramo:</b> ${ramo}</p>
