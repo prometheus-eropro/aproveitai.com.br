@@ -73,7 +73,6 @@
 <div class="cards-wrapper">
   <div id="parceiros" class="container-parceiros">
 
-
   </div>
 </div>
 
@@ -120,12 +119,6 @@
 </footer>
 
 <script>
-alert("HTML NOVO CARREGADO");
-function normalizarLogoURLFront(url){
-  return "TESTE_OK";
-}
-
-
 /* =====================================================
    Plataforma APROVEITAI – SCRIPT ÚNICO OFICIAL (INDEX)
 ===================================================== */
@@ -170,26 +163,6 @@ function preencherFiltros() {
     });
 }
 
-function normalizarLogoURLFront(url) {
-  url = String(url || "").trim();
-  if (!url) return "";
-
-  // Se for link do Google Drive (open?id= ou /d/)
-  if (url.includes("drive.google.com")) {
-    const match = url.match(/[-\w]{25,}/);
-    if (match) {
-      return "https://drive.google.com/uc?export=view&id=" + match[0];
-    }
-  }
-
-  return url;
-}
-
-/* === COMPATIBILIDADE TOTAL COM QUALQUER CHAMADA ANTIGA === */
-function normalizarLogoURL(url) {
-  return normalizarLogoURLFront(url);
-}
-
 /* =========================
    RENDERIZAR CARDS
 ========================= */
@@ -216,32 +189,37 @@ const email = String(p.email || "");
 const maps = String(p.link_maps || "");
 
 
-let logo = normalizarLogoURLFront(
-  p.logoURL || p.logourl || p.logoUrl || ""
-);
+let logo = String(p.logoURL || "").trim();
 
-if (!logo) logo = "logo-aproveitai.png";
+if (logo.includes("drive.google.com")) {
+  const match = logo.match(/[-\w]{25,}/);
+  if (match) {
+    logo = "https://drive.google.com/uc?export=view&id=" + match[0];
+  }
+}
 
-parceirosDiv.innerHTML += `
-  <div class="card">
-    <img src="${logo}"
-         onerror="this.src='logo-aproveitai.png'"
-         style="max-height:100px;margin-bottom:10px">
+if (!logo.startsWith("http")) {
+  logo = "logo-aproveitai.png";
+}
 
-    <h3>${nome}</h3>
-    <p><b>Cidade:</b> ${cidade}</p>
-    <p><b>Ramo:</b> ${ramo}</p>
-    ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
+    parceirosDiv.innerHTML += `
+      <div class="card">
+        <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
+        <h3>${nome}</h3>
+        <p><b>Cidade:</b> ${cidade}</p>
+        <p><b>Ramo:</b> ${ramo}</p>
+        ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
 
-    <div class="card-contatos-texto">
-      ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
-      ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
-      ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
-      ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
-      ${maps ? `<a href="${maps}" target="_blank">📍 Como chegar</a>` : ""}
-    </div>
-  </div>
-`;
+        <div class="card-contatos-texto">
+          ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
+          ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
+          ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
+          ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
+          ${maps ? `<a href="${maps}" target="_blank">📍 Como chegar</a>` : ""}
+
+        </div>
+      </div>
+    `;
   });
 }
 
@@ -273,11 +251,12 @@ function carregarParceiros() {
     .then(res => {
       console.log("Resposta da API:", res);
 
-      if (!res || !res.dados) {
-        throw new Error("Resposta inválida da API");
+      parceiros = res.dados || res;
+
+      if (!Array.isArray(parceiros)) {
+        throw new Error("Formato inesperado da API");
       }
 
-      parceiros = res.dados;
       preencherFiltros();
       renderizar(parceiros);
     })
