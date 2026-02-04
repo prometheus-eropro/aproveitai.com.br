@@ -163,17 +163,7 @@ function preencherFiltros() {
       buscaRamo.innerHTML += `<option value="${r}">${r}</option>`;
     });
 }
-function normalizarLogoURLFront(url){
-  url = String(url || "").trim();
-  if (!url) return "";
 
-  // pega qualquer ID do Drive dentro do link
-  const m = url.match(/[-\w]{25,}/);
-  if (url.includes("drive.google.com") && m) {
-    return "https://drive.google.com/uc?export=view&id=" + m[0];
-  }
-  return url;
-}
 
 /* =========================
    RENDERIZAR CARDS
