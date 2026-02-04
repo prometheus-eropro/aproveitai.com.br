@@ -124,7 +124,7 @@
    Plataforma APROVEITAI – SCRIPT ÚNICO OFICIAL (INDEX)
 ===================================================== */
 
- API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
 const parceirosDiv = document.getElementById("parceiros");
 const buscaNome = document.getElementById("buscaNome");
@@ -164,6 +164,20 @@ function preencherFiltros() {
     });
 }
 
+function normalizarLogoURLFront(url) {
+  url = String(url || "").trim();
+  if (!url) return "";
+
+  // Se for link do Google Drive (open?id= ou /d/)
+  if (url.includes("drive.google.com")) {
+    const match = url.match(/[-\w]{25,}/);
+    if (match) {
+      return "https://drive.google.com/uc?export=view&id=" + match[0];
+    }
+  }
+
+  return url;
+}
 
 /* =========================
    RENDERIZAR CARDS
