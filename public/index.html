@@ -72,7 +72,7 @@
 
 <div class="cards-wrapper">
   <div id="parceiros" class="container-parceiros">
-</a>
+
 
   </div>
 </div>
@@ -163,6 +163,17 @@ function preencherFiltros() {
       buscaRamo.innerHTML += `<option value="${r}">${r}</option>`;
     });
 }
+function normalizarLogoURLFront(url){
+  url = String(url || "").trim();
+  if (!url) return "";
+
+  // pega qualquer ID do Drive dentro do link
+  const m = url.match(/[-\w]{25,}/);
+  if (url.includes("drive.google.com") && m) {
+    return "https://drive.google.com/uc?export=view&id=" + m[0];
+  }
+  return url;
+}
 
 /* =========================
    RENDERIZAR CARDS
@@ -190,26 +201,29 @@ const email = String(p.email || "");
 const maps = String(p.link_maps || "");
 
 
-let logo = String(p.logoURL || "").trim();
-if (!logo.startsWith("http")) logo = "logo-aproveitai.png";
-    parceirosDiv.innerHTML += `
-      <div class="card">
-        <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
-        <h3>${nome}</h3>
-        <p><b>Cidade:</b> ${cidade}</p>
-        <p><b>Ramo:</b> ${ramo}</p>
-        ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
+let logo = normalizarLogoURLFront(
+  p.logoURL || p.logourl || p.logoUrl || ""
+);
 
-        <div class="card-contatos-texto">
-          ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
-          ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
-          ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
-          ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
-          ${maps ? `<a href="${maps}" target="_blank">📍 Como chegar</a>` : ""}
+if (!logo) logo = "logo-aproveitai.png";
 
-        </div>
-      </div>
-    `;
+parceirosDiv.innerHTML += `
+  <div class="card">
+    <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
+    <h3>${nome}</h3>
+    <p><b>Cidade:</b> ${cidade}</p>
+    <p><b>Ramo:</b> ${ramo}</p>
+    ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
+
+    <div class="card-contatos-texto">
+      ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
+      ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
+      ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
+      ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
+      ${maps ? `<a href="${maps}" target="_blank">📍 Como chegar</a>` : ""}
+    </div>
+  </div>
+`;
   });
 }
 

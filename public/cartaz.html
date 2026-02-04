@@ -2,93 +2,128 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>AproveitAI • Benefícios Aqui</title>
+<title>Cartaz A4 - AproveitAI</title>
+
 <style>
-body{
-  background:#eaf6ff;
-  font-family:Arial, sans-serif;
-  margin:0;
-  padding:20px;
-}
-.cartaz{
-  width:420px;
-  margin:auto;
-  background:#ffffff;
-  border-radius:18px;
-  padding:22px;
-  text-align:center;
-  box-shadow:0 6px 18px rgba(0,0,0,.25);
-  border-top:12px solid #0a7a3c;
-}
-.logo{
-  max-width:160px;
-  margin-bottom:10px;
-}
-.titulo{
-  font-size:22px;
-  font-weight:700;
-  color:#0a7a3c;
-}
-.sub{
-  font-size:14px;
-  color:#444;
-  margin-bottom:14px;
-}
-.parceiro{
-  font-size:18px;
-  font-weight:bold;
-  margin-top:8px;
-}
-.cidade{
-  font-size:14px;
-  color:#666;
-  margin-bottom:14px;
-}
-.qr img{
-  width:220px;
-  height:220px;
-  border:6px solid #0a7a3c;
-  border-radius:14px;
-}
-.frase{
-  margin-top:14px;
-  font-size:15px;
-  color:#222;
-}
-.footer{
-  margin-top:14px;
-  font-size:12px;
-  color:#666;
-}
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff;
+  }
+
+  .a4 {
+    width: 210mm;
+    height: 297mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topo {
+    height: 50%;
+    display: flex;
+  }
+
+  .a6 {
+    width: 105mm;
+    height: 148mm;
+    box-sizing: border-box;
+    padding: 10mm;
+    border-right: 1px dashed #ccc;
+    text-align: center;
+  }
+
+  .a6:last-child {
+    border-right: none;
+  }
+
+  .logo {
+    width: 80px;
+    margin-bottom: 10px;
+  }
+
+  .qr {
+    width: 90mm;
+    margin: 10px auto;
+  }
+
+  .rodape {
+    height: 50%;
+    background: #0a7a3c;
+    color: #fff;
+    padding: 20mm;
+    text-align: center;
+  }
+
+  .rodape h2 {
+    margin-top: 0;
+    font-size: 28px;
+  }
+
+  .cta {
+    font-size: 20px;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+
+  .site {
+    margin-top: 20px;
+    font-size: 16px;
+  }
 </style>
 </head>
+
 <body>
+<div class="a4">
 
-<div class="cartaz">
+  <!-- TOPO: DOIS A6 -->
+  <div class="topo">
 
-  <img src="https://aproveitai.com.br/logo-aproveitai.png" class="logo">
+    <!-- A6 1 -->
+    <div class="a6">
+      <img class="logo" src="https://aproveitai.com.br/logo.png">
+      <h3>Aqui tem benefícios AproveitAI</h3>
+      <strong><?= parceiro.nome ?></strong><br>
+      <?= parceiro.cidade ?>
+      <img class="qr" src="<?= parceiro.qr ?>">
+      <small>Aponte a câmera e valide seu benefício</small>
+    </div>
 
-  <div class="titulo">Aqui tem benefícios AproveitAI</div>
-  <div class="sub">Descontos reais, validados na hora</div>
+    <!-- A6 2 (duplicado automático) -->
+    <div class="a6">
+      <img class="logo" src="https://aproveitai.com.br/logo.png">
+      <h3>Aqui tem benefícios AproveitAI</h3>
+      <strong><?= parceiro.nome ?></strong><br>
+      <?= parceiro.cidade ?>
+      <img class="qr" src="<?= parceiro.qr ?>">
+      <small>Aponte a câmera e valide seu benefício</small>
+    </div>
 
-  <div class="parceiro">NOME DO PARCEIRO</div>
-  <div class="cidade">CIDADE – UF</div>
-
-  <div class="qr">
-    <img src="COLE_AQUI_O_QRIMG_DA_PLANILHA">
   </div>
 
-  <div class="frase">
-    Aponte a câmera do celular,<br>
-    informe seu CPF e valide seu benefício.
-  </div>
+  <!-- PROPAGANDA -->
+  <div class="rodape">
+    <h2>💳 Cartão AproveitAI</h2>
+    <p>
+      Descontos reais, sem pegadinha.<br>
+      Use aqui em <strong><?= parceiro.nome ?></strong> e em vários parceiros da cidade.
+    </p>
 
-  <div class="footer">
-    www.aproveitai.com.br<br>
-    Tecnologia com ConsciêncIA gera Resultado
+    <div class="cta">
+      👉 Quer economizar também?<br>
+      Seja cliente AproveitAI!
+    </div>
+
+    <div class="site">
+      www.aproveitai.com.br<br>
+      Tecnologia com ConsciêncIA gera resultado
+    </div>
   </div>
 
 </div>
-
 </body>
 </html>
