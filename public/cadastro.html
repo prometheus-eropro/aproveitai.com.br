@@ -154,6 +154,9 @@ body {
 <input type="hidden" name="origemAceite" value="cadastro_site">
 <input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
 <input type="hidden" name="observacoes" value="Cadastro via site">
+<!-- 🔐 RASTREAMENTO JURÍDICO DO TERMO -->
+<input type="hidden" name="aceiteTermo" value="Aceito cadastro online">
+<input type="hidden" name="dataAceite" id="dataAceite">
 
   <label>Nome completo:</label>
   <input type="text" name="nome" required>
@@ -264,6 +267,13 @@ const box = document.getElementById("mensagemCadastro");
 
 <script>
   document.getElementById("userAgent").value = navigator.userAgent;
+
+  // data e hora do aceite (Brasil)
+  const agora = new Date();
+  const dataFormatada = agora.toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo"
+  });
+  document.getElementById("dataAceite").value = dataFormatada;
 </script>
 
 </body>

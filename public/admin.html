@@ -691,7 +691,8 @@ table td, table th{
                 <tbody>
                   <tr>
                     <td><b>Clientes</b></td>
-                    <td>Ativar/Inativar, criar novo, gerar termos do cliente (PDF)</td>
+                    <td>Ativar/Inativar e gerar termos do cliente (PDF)</td>
+
                     <td>Controle principal do pagamento via campo <b>ativo</b></td>
                   </tr>
                   <tr>
@@ -720,8 +721,7 @@ table td, table th{
               <input class="input" id="filtroClientes" placeholder="Buscar (nome / cpf / cidade / idPublico)"/>
               <button class="btn" id="btnReloadClientes">Recarregar</button>
               <button class="btn" id="btnCsvClientes">Exportar CSV</button>
-              <button class="btn primary" id="btnNovoCliente">+ Criar Cliente</button>
-            </div>
+              <div>
             <div class="hint">Dica: o botão de status altera a coluna <b>ativo</b> para <b>SIM</b> ou <b>NAO</b>.</div>
             <div class="hr"></div>
             <div class="tableWrap">
@@ -1304,38 +1304,6 @@ async function termosCliente(cpf){
   }catch(err){ toast("Erro ao gerar termos"); }
 }
 
-function novoCliente(){
-  openEditModal({
-    title: "Criar cliente (manual)",
-    hint: "Cria na aba clientes com ativo=NAO (você ativa quando pagamento estiver OK).",
-    initial: {},
-    fields: [
-      {key:"cpf", label:"CPF", w:"240px"},
-      {key:"nome", label:"Nome"},
-      {key:"celular", label:"Celular"},
-      {key:"grupo", label:"Grupo", default:"individual"},
-      {key:"cidade", label:"Cidade"},
-      {key:"nascimento", label:"Nascimento (YYYY-MM-DD)"},
-    ],
-    onSave: async (data)=>{
-      const cpf = apenasNumeros(data.cpf);
-      if(cpf.length !== 11) throw new Error("CPF_INVALIDO");
-      const r = await callAPI({
-        action:"criar_cliente",
-        key: state.key,
-        cpf,
-        nome: data.nome||"",
-        celular: apenasNumeros(data.celular||""),
-        grupo: data.grupo||"individual",
-        cidade: data.cidade||"",
-        nascimento: data.nascimento||""
-      });
-      toast("Cliente criado: " + (r.idPublico || "OK"));
-      await loadClientes(true);
-      await loadDashboard(true);
-    }
-  });
-}
 
 /* ---------- PARCEIROS ---------- */
 async function loadParceiros(force=false){
@@ -1782,8 +1750,6 @@ function bind(){
   $("filtroAdmins").addEventListener("input", renderAdmins);
 
   $("btnReloadClientes").addEventListener("click", ()=>loadClientes(true));
-  $("btnNovoCliente").addEventListener("click", novoCliente);
-
   $("btnReloadParceiros").addEventListener("click", ()=>loadParceiros(true));
   $("btnNovoParceiro").addEventListener("click", novoParceiro);
 
