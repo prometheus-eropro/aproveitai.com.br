@@ -1846,6 +1846,25 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 });
 </script>
 <div class="toast" id="toast"></div>
+<script>
+function gerarContratoParceiro(parceiroId) {
+  const url = API_URL + "?action=gerarContratoParceiro&parceiro_id=" + parceiroId;
+
+  fetch(url)
+    .then(r => r.json())
+    .then(resp => {
+      if (resp.ok && resp.pdfUrl) {
+        window.open(resp.pdfUrl, "_blank");
+      } else {
+        alert("PDF não gerado");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao gerar contrato");
+    });
+}
+</script>
 
 </body>
 </html>
