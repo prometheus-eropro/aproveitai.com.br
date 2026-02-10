@@ -56,6 +56,21 @@ body {
 
 <div id="dadosParceiro" class="dados-parceiro"></div>
 
+<div style="margin:10px 0;text-align:center">
+  <label>
+    📅 Início:
+    <input type="date" id="dataInicio">
+  </label>
+
+  <label style="margin-left:10px">
+    📅 Fim:
+    <input type="date" id="dataFim">
+  </label>
+
+  <button onclick="carregarRelatorio()" style="margin-left:10px">
+    🔍 Filtrar
+  </button>
+</div>
 
 <button class="relatorio-botao" onclick="window.print()">
   🖨️ Imprimir / PDF
@@ -71,6 +86,8 @@ body {
 <tr>
   <th>Data/Hora</th>
   <th>Grupo</th>
+  <th>Placa</th>
+  <th>Modelo</th>
   <th>Status</th>
   <th>Código de Autorização</th>
 </tr>
@@ -101,10 +118,43 @@ document.getElementById("dadosParceiro").innerHTML = `
   <strong>CNPJ:</strong> ${parceiroCNPJ || "-"}
 `;
 
-fetch(API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome))
+function carregarRelatorio() {
+  const inicio = document.getElementById("dataInicio").value;
+  const fim = document.getElementById("dataFim").value;
 
-  .then(r => r.json())
-  .then(d => {
+  let url = API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome);
+
+  if (inicio) url += "&inicio=" + inicio;
+  if (fim) url += "&fim=" + fim;
+
+  fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) {
+        alert("Erro ao carregar relatório");
+        return;
+      }
+
+      const tbody = document.getElementById("dados");
+      tbody.innerHTML = "";
+
+      d.dados.forEach(r => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
+            <td>${r.grupo || "-"}</td>
+            <td>${r.placa || "-"}</td>
+            <td>${r.modelo || "-"}</td>
+            <td>${r.status || "-"}</td>
+            <td>${r.codigo || "-"}</td>
+          </tr>
+        `;
+      });
+    });
+}
+
+// 🔥 carrega automático ao abrir
+carregarRelatorio();
     if (!d.ok) {
       alert("Erro ao carregar relatório");
       return;
