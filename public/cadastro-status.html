@@ -120,17 +120,37 @@ else if (status === "inativo") {
   card.classList.add("inativo");
 
   titulo.innerHTML = `⚠️ Cadastro encontrado`;
+
   mensagem.innerHTML = `
 Olá, <strong>${nome}</strong> 👋<br><br>
-Identificamos que seu cpf ja esta cadastrado, porém ele ainda está <strong>INATIVO</strong>.<br><br>
-Entre em contato conosco para finalizar a ativação.
-  `;
+
+Identificamos que seu CPF já está cadastrado, porém ele ainda está
+<strong>INATIVO</strong>.<br><br>
+
+Para concluir sua ativação, entre em contato com nossa equipe.<br><br>
+
+<a
+href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20meu%20cadastro%20na%20Plataforma%20AproveitAI."
+style="
+display:block;
+background:#0a7a3c;
+color:white;
+padding:14px;
+border-radius:10px;
+text-decoration:none;
+font-weight:bold;
+margin-top:12px;
+"
+>
+📲 Solicitar ativação pelo WhatsApp
+</a>
+`;
 
   botao.innerHTML = "Voltar ao site";
   botao.href = "https://www.aproveitai.com.br";
   botao.classList.add("btn-red");
-
 }
+
 else {
 
   titulo.innerHTML = "ℹ️ Status não identificado";

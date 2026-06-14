@@ -338,6 +338,29 @@ async function pararLeitor() {
   }
 }
 
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+
+    window[cb] = function(data) {
+      resolve(data);
+      delete window[cb];
+      script.remove();
+    };
+
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+
+    script.onerror = function() {
+      reject(new Error("JSONP falhou"));
+      delete window[cb];
+      script.remove();
+    };
+
+    document.body.appendChild(script);
+  });
+}
+
 async function processarQR(texto) {
   if (lendo) return;
 
@@ -364,8 +387,7 @@ async function processarQR(texto) {
     "&modo=parceiro" +
     "&token=" + sessionStorage.getItem("parceiroToken");
 
-  const r = await fetch(url);
-  const data = await r.json();
+ const data = await jsonp(url);
 
   document.getElementById("resultado").innerHTML = `
   <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
@@ -381,7 +403,15 @@ async function processarQR(texto) {
     ${
       data.ativo === "SIM"
         ? `<div class="codigo">✔ Código: ${data.codigoERO}</div>`
-        : `<p style="font-weight:bold">🚫 Sem liberação</p>`
+        : `
+  <p style="font-weight:bold">🚫 Sem liberação</p>
+  <p>Plano inativo ou vencido.</p>
+  <a href="https://wa.me/5528999692303?text=Olá,%20quero%20renovar%20meu%20Cartão%20AproveitAI."
+     target="_blank"
+     style="display:block;background:#dc3545;color:white;padding:12px;border-radius:8px;text-align:center;text-decoration:none;font-weight:bold;margin-top:10px">
+     💳 Renovar pelo WhatsApp
+  </a>
+`
     }
 
     <button onclick="resetar()">🔄 Voltar</button>
