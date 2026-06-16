@@ -349,7 +349,9 @@ body{
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-const id = new URLSearchParams(location.search).get("id");
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
+const nascimento = params.get("nascimento") || sessionStorage.getItem("clienteNascimento") || "";
 
 
 function jsonp(url){
@@ -371,7 +373,13 @@ function jsonp(url){
   if(!id){ alert("ID do cartão não informado."); return; }
 
   try{
-    const d = await jsonp(API + "?idPublico=" + encodeURIComponent(id));
+    const d = await jsonp(
+  API +
+  "?acao=consultarClientePorIdSeguro&idPublico=" +
+  encodeURIComponent(id) +
+  "&nascimento=" +
+  encodeURIComponent(nascimento)
+);
 
     if(d.erro){
       alert("Cartão não localizado: " + d.erro);

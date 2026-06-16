@@ -73,6 +73,17 @@ function clientePodeVer(item, grupoCliente) {
   return false;
 }
 
+function formatarDataBR(valor) {
+  if (!valor) return "";
+
+  if (String(valor).includes("/")) return valor;
+
+  const d = new Date(valor);
+  if (isNaN(d)) return "";
+
+  return d.toLocaleDateString("pt-BR");
+}
+
 async function carregarTudo() {
   if (!idCliente) {
     document.getElementById("lista").innerHTML = "Acesso inválido.";
@@ -139,7 +150,7 @@ lista.innerHTML += `
 
     </div>
 
-    ${item.dataFim ? `<div class="fim">Fim: ${item.dataFim}</div>` : ""}
+    ${item.dataFim ? `<div class="fim">Fim: ${formatarDataBR(item.dataFim)}</div>` : ""}
   </div>
 `;
   });
