@@ -58,7 +58,10 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
 // pegar ID do cliente pela URL
 const params = new URLSearchParams(window.location.search);
 const idCliente = params.get("id");
-document.getElementById("btnVerCartao").href = `cartao.html?id=${encodeURIComponent(idCliente)}`;
+const nascimento = params.get("nascimento") || sessionStorage.getItem("clienteNascimento");
+
+document.getElementById("btnVerCartao").href =
+  `cartao.html?id=${encodeURIComponent(idCliente)}&nascimento=${encodeURIComponent(nascimento || "")}`;
 
 // ===========================
 // REGRA DE VISUALIZAÇÃO
@@ -76,11 +79,13 @@ async function carregarTudo() {
     return;
   }
 
-  const resCliente = await fetch(`${API_URL}?aba=clientes&idPublico=${idCliente}`);
-  const cliente = await resCliente.json();
+  const resCliente = await fetch(
+  `${API_URL}?acao=consultarClientePorIdSeguro&idPublico=${encodeURIComponent(idCliente)}&nascimento=${encodeURIComponent(nascimento)}`
+);
+const cliente = await resCliente.json();
 
   // 🔐 BLOQUEIO TOTAL SE NÃO ATIVO
-  if (!cliente || String(cliente.ativo).toLowerCase() !== "sim") {
+  if (!cliente || !cliente.ok || String(cliente.ativo).toLowerCase() !== "sim") {
     document.getElementById("lista").innerHTML =
       "<p style='text-align:center;color:red'>Cliente inativo ou inexistente.</p>";
     return;

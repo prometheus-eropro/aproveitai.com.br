@@ -56,7 +56,7 @@
     </div>
 
     <div id="resultado"></div>
-<button id="btnParceiros" style="display:none" class="btn-aproveitai">
+<button id="btnParceiros" style="display:none" class="btn-aproveitai" onclick="abrirParceiros()">
 📍 Ver parceiros ativos
 </button>
 
@@ -140,6 +140,9 @@ async function consultar(){
 
     const ativo = isAtivo(achado.ativo);
     ultimoIdPublico = achado.idPublico;
+    sessionStorage.setItem("clienteCpf", cpf);
+    sessionStorage.setItem("clienteNascimento", nascimento);
+    sessionStorage.setItem("clienteIdPublico", achado.idPublico || "");
 
     if (!ativo) {
       document.getElementById("bemVindoNome").innerHTML = "";
@@ -210,20 +213,35 @@ async function consultar(){
 }
 
 function abrirBeneficios() {
-  if (!ultimoIdPublico) {
-    alert("ID do cliente não encontrado.");
+  const nasc = sessionStorage.getItem("clienteNascimento");
+
+  if (!ultimoIdPublico || !nasc) {
+    alert("Dados do cliente não encontrados.");
     return;
   }
-  window.location.href = "meus-beneficios.html?id=" + encodeURIComponent(ultimoIdPublico);
+
+  window.location.href =
+    "meus-beneficios.html?id=" +
+    encodeURIComponent(ultimoIdPublico) +
+    "&nascimento=" +
+    encodeURIComponent(nasc);
 }
 
 function abrirCartao() {
-  if (!ultimoIdPublico) {
-    alert("ID do cartão não informado.");
+  const nasc = sessionStorage.getItem("clienteNascimento");
+
+  if (!ultimoIdPublico || !nasc) {
+    alert("Dados do cartão não encontrados.");
     return;
   }
-  window.location.href = "cartao.html?id=" + encodeURIComponent(ultimoIdPublico);
+
+  window.location.href =
+    "cartao.html?id=" +
+    encodeURIComponent(ultimoIdPublico) +
+    "&nascimento=" +
+    encodeURIComponent(nasc);
 }
+
 function formatarDataBR(valor) {
   if (!valor) return "-";
   const d = new Date(valor);
