@@ -21,7 +21,7 @@
       <!-- Tarja com nome da página -->
       <p class="boas-vindas">
         👤 <strong>Área do Cliente</strong><br>
-        Consulte seu CPF ou ID e acesse benefícios e promoçôes exclusivas.
+        Consulte com CPF e data de nascimento para acessar sua área com segurança.
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai">
@@ -44,7 +44,9 @@
     </h2>
 <p id="bemVindoNome" style="text-align:center;font-weight:600;color:#0a7f2e"></p>
 
-    <input id="cpf" placeholder="Digite seu CPF ou ID Público (APV-XXXX)">
+    <input id="cpf" placeholder="Digite seu CPF" maxlength="11" inputmode="numeric">
+
+<input id="nascimento" type="date" style="margin-top:10px">
 
     <button onclick="consultar()">Consultar</button>
 
@@ -113,101 +115,42 @@ function pegarCampo(obj, campos){
 }
 
 async function consultar(){
-  const valor = document.getElementById("cpf").value.trim();
+  const cpf = document.getElementById("cpf").value.replace(/\D/g,"");
+  const nascimento = document.getElementById("nascimento").value;
   const box = document.getElementById("resultado");
-
 
   box.textContent = "Consultando...";
 
-  if(!valor){
-    box.textContent = "Informe seu CPF ou ID Público.";
+  if(!cpf || cpf.length !== 11 || !nascimento){
+    box.textContent = "Informe CPF e data de nascimento.";
     return;
   }
 
-  const soDigitos = valor.replace(/\D/g,"");
-  const isCpf = soDigitos.length === 11;
-
-  const url = isCpf
-    ? `${sheetURL}?cpf=${encodeURIComponent(soDigitos)}`
-    : `${sheetURL}?idPublico=${encodeURIComponent(valor)}`;
+  const url =
+  `${sheetURL}?acao=consultarClienteSeguro&cpf=${encodeURIComponent(cpf)}&nascimento=${encodeURIComponent(nascimento)}`;
 
   try{
     const res = await fetch(url);
     const achado = await res.json();
 
-    if(!achado || !achado.cpf){
-  box.textContent = "❌ Cliente não encontrado.";
-  return;
-}
-
-// SALVA O ID CORRETAMENTE
-ultimoIdPublico = achado.idPublico;
+    if(!achado || !achado.ok){
+      box.textContent = "❌ Dados não conferem ou cliente não encontrado.";
+      return;
+    }
 
     const ativo = isAtivo(achado.ativo);
-    const nascimento = pegarCampo(achado, ["nascimento","dataNascimento","data_nascimento"]);
-    const dataAceite = pegarCampo(achado, ["dataAceite","dataCadastro","cadastro","data_aceite"]);
+    ultimoIdPublico = achado.idPublico;
 
-document.getElementById("bemVindoNome").innerHTML = ativo
-  ? `
-    <span style="color:#000">
-      Olá, <strong style="color:#0a7f2e">${achado.nome}</strong> 👋<br>
-      Que bom ter você por aqui! 😊<br>
-      Seu cadastro está <strong style="color:#0a7f2e">ATIVO</strong>.<br>
-      Aproveite agora todos os benefícios e promoções disponíveis.
-    </span>
-  `
-  : `
-    <span style="color:#000">
-      Olá, <strong style="color:#c62828">${achado.nome}</strong> 👋<br>
-      Seu cadastro está <strong style="color:#c62828">INATIVO</strong> no momento.<br>
-      Regularize seu acesso para voltar a aproveitar os benefícios da Plataforma AproveitAI.
-    </span>
-  `;
-const btnBeneficios = document.getElementById("btnBeneficios");
-const btnCartao = document.getElementById("btnCartao");
-const btnParceiros = document.getElementById("btnParceiros");
+    if (!ativo) {
+      document.getElementById("bemVindoNome").innerHTML = "";
+      document.getElementById("btnBeneficios").style.display = "none";
+      document.getElementById("btnCartao").style.display = "none";
+      document.getElementById("btnParceiros").style.display = "none";
 
-if (ativo) {
-  btnBeneficios.style.display = "block";
-  btnCartao.style.display = "block";
-  btnParceiros.style.display = "block";
-
-  btnParceiros.onclick = () => {
-    window.location.href = "index.html";
-  };
-
-} else {
-  btnBeneficios.style.display = "none";
-  btnCartao.style.display = "none";
-  btnParceiros.style.display = "none";
-}
-
-    box.innerHTML = `
-
-      <div><b>Nome:</b> ${achado.nome}</div>
-      <div><b>CPF:</b> ${achado.cpf}</div>
-      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
-      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
-      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
-      <div><b>Celular:</b> ${achado.celular || "Não informado"}</div>
-      <div><b>Data de Nascimento:</b> ${nascimento ? formatarDataBR(nascimento) : "Não informado"}</div>
-      <div><b>Data de Cadastro/Aceite:</b> ${dataAceite ? formatarDataBR(dataAceite) : "-"}</div>
-      <div style="
-  margin-top:8px;
-  padding:6px 10px;
-  border-radius:8px;
-  font-weight:700;
-  color:#fff;
-  background:${ativo ? "#0a7f2e" : "#c62828"};
-">
-  Status: ${ativo ? "ATIVO" : "INATIVO"}
-</div>
-
-
-      ${!ativo ? `
+      box.innerHTML = `
         <div style="
           margin-top:12px;
-          padding:12px;
+          padding:16px;
           border-radius:10px;
           background:#ffeaea;
           border:2px solid #c62828;
@@ -215,24 +158,57 @@ if (ativo) {
           font-weight:600;
           text-align:center;
         ">
-          ⚠️ Seu cadastro está <b>INATIVO</b>.<br>
-          Seu cadastro está <b>INATIVO</b> ou com plano vencido.<br>
-Para voltar a aproveitar os benefícios, renove seu acesso.<br><br>
+          ⚠️ Cadastro localizado, porém está INATIVO ou com plano vencido.<br><br>
+          Para ativar ou renovar, fale com nosso suporte.<br><br>
 
-<a href="https://wa.me/5528999692303?text=Olá,%20quero%20renovar%20meu%20Cartão%20AproveitAI."
-   target="_blank"
-   class="btn-aproveitai"
-   style="display:block;margin-top:10px">
-   💳 Renovar meu cartão
-</a>
+          <a href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20ou%20renovar%20meu%20Cartão%20AproveitAI."
+             target="_blank"
+             class="btn-aproveitai"
+             style="display:block;margin-top:10px">
+             💳 Ativar ou renovar meu cartão
+          </a>
         </div>
-      ` : ""}
+      `;
+      return;
+    }
+
+    document.getElementById("bemVindoNome").innerHTML = `
+      <span style="color:#000">
+        Olá, <strong style="color:#0a7f2e">${achado.nome}</strong> 👋<br>
+        Seu cadastro está <strong style="color:#0a7f2e">ATIVO</strong>.
+      </span>
     `;
+
+    document.getElementById("btnBeneficios").style.display = "block";
+    document.getElementById("btnCartao").style.display = "block";
+    document.getElementById("btnParceiros").style.display = "block";
+
+   box.innerHTML = `
+  <div><b>Nome:</b> ${achado.nome}</div>
+  <div><b>CPF:</b> ${achado.cpf || "-"}</div>
+  <div><b>Celular:</b> ${achado.celular || "-"}</div>
+  <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+  <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+  <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+
+  <div style="
+    margin-top:8px;
+    padding:6px 10px;
+    border-radius:8px;
+    font-weight:700;
+    color:#fff;
+    background:#0a7f2e;
+  ">
+    Status: ATIVO
+  </div>
+`;
+
   } catch(e){
     console.error(e);
     box.textContent = "⚠️ Erro ao consultar.";
   }
 }
+
 function abrirBeneficios() {
   if (!ultimoIdPublico) {
     alert("ID do cliente não encontrado.");
