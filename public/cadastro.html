@@ -227,14 +227,20 @@ a fraudes.
   <input type="hidden" name="origem" value="cadastro_site">
 
   <label class="aceite-termos">
-    <input type="checkbox" name="aceite" value="SIM" required>
-    <span>
-      Li e aceito os 
-      <a href="termos.html" target="_blank">Termos de Adesão</a> e 
-      <a href="privacidade.html" target="_blank">Política de Privacidade</a>
-    </span>
-  </label>
+  <input type="checkbox" name="aceite" value="SIM" required>
 
+  <span>
+    Li, compreendi e concordo com os
+    <a href="termos.html" target="_blank">Termos de Uso</a>,
+    a <a href="privacidade.html" target="_blank">Política de Privacidade</a>
+    e o
+    <a href="consentimento.html" target="_blank">Termo de Consentimento LGPD</a>,
+    autorizando o tratamento dos meus dados pessoais para cadastro,
+    validação de benefícios, prevenção a fraudes, comunicações,
+    promoções, pesquisas de satisfação e demais funcionalidades da
+    Plataforma AproveitAI, conforme a LGPD.
+  </span>
+</label>
   <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
 <input type="hidden" name="userAgent" id="userAgent">
 
@@ -288,16 +294,20 @@ form.addEventListener("submit", function(e){
   const callback = "retornoCadastro_" + Date.now();
 
   window[callback] = function(r) {
-    if (r.ok && r.status === "CADASTRO_RECEBIDO") {
-      box.innerHTML = `
-        <h3>✅ Cadastro liberado por 15 dias</h3>
-        <p>Seu cadastro foi recebido com sucesso.</p>
-        <p><b>Cartão:</b> ${r.idPublico}</p>
-        <p><b>Teste grátis até:</b> ${r.testeAte}</p>
-        <p>Após esse prazo, será necessário ativar o plano para continuar usando os benefícios.</p>
-        <a href="painelcliente.html" class="btn-aproveitai">Acessar Área do Cliente</a>
-      `;
-      form.reset();
+if (r.ok && r.status === "CADASTRO_RECEBIDO") {
+  localStorage.setItem("ultimoCadastroNome", r.nome || "");
+  localStorage.setItem("ultimoCadastroCPF", dados.get("cpf") || "");
+
+  window.location.href =
+    "cadastro-sucesso.html?nome=" +
+    encodeURIComponent(r.nome || "") +
+    "&id=" +
+    encodeURIComponent(r.idPublico || "") +
+    "&testeAte=" +
+    encodeURIComponent(r.testeAte || "");
+
+  return;
+}
     } else if (r.status === "JA_ATIVO") {
       box.innerHTML = `✅ ${r.nome}, seu CPF já está ativo.`;
     } else if (r.status === "JA_INATIVO") {
