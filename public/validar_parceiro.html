@@ -62,6 +62,8 @@ body {
 
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
+  <label>Data de nascimento do Cliente</label>
+  <input id="nascimento" type="date">
 
   
 <div id="blocoVeiculo" style="display:none">
@@ -165,10 +167,17 @@ function somenteNumeros(v) {
 ============================= */
 function validar() {
   const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
-  if (cpf.length !== 11) {
-    mostrarMsg("⚠️ CPF inválido");
-    return;
-  }
+const nascimento = document.getElementById("nascimento").value;
+
+if (cpf.length !== 11) {
+  mostrarMsg("⚠️ CPF inválido");
+  return;
+}
+
+if (!nascimento) {
+  mostrarMsg("⚠️ Informe a data de nascimento");
+  return;
+}
 
   if (!parceiroId) {
     mostrarMsg("❌ QR Code inválido");
@@ -187,7 +196,8 @@ script.src =
   "?callback=retornoValidacao" +
   "&acao=validarParceiro" +
   "&cpf=" + encodeURIComponent(cpf) +
-  "&p=" + encodeURIComponent(parceiroId);
+"&nascimento=" + encodeURIComponent(nascimento) +
+"&p=" + encodeURIComponent(parceiroId);
 document.body.appendChild(script);
 }
 // =============================
