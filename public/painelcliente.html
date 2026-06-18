@@ -194,17 +194,24 @@ async function consultar(){
   <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
   <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
 
-  <div style="
-    margin-top:8px;
-    padding:6px 10px;
-    border-radius:8px;
-    font-weight:700;
-    color:#fff;
-    background:#0a7f2e;
-  ">
-    Status: ATIVO
-  </div>
+ <div style="
+margin-top:8px;
+padding:6px 10px;
+border-radius:8px;
+font-weight:700;
+color:#fff;
+background:#0a7f2e;
+">
+Status: ATIVO
+</div>
+
+<div id="resumoCliente"></div>
+
+<div id="historicoCliente"></div>
 `;
+
+carregarHistorico(cpf);
+
 
   } catch(e){
     console.error(e);
@@ -213,10 +220,10 @@ async function consultar(){
 }
 
 function abrirBeneficios() {
-  const nasc = sessionStorage.getItem("clienteNascimento");
+  const nascimento = document.getElementById("nascimento").value;
 
-  if (!ultimoIdPublico || !nasc) {
-    alert("Dados do cliente não encontrados.");
+  if (!ultimoIdPublico || !nascimento) {
+    alert("Consulte seus dados primeiro.");
     return;
   }
 
@@ -224,7 +231,7 @@ function abrirBeneficios() {
     "meus-beneficios.html?id=" +
     encodeURIComponent(ultimoIdPublico) +
     "&nascimento=" +
-    encodeURIComponent(nasc);
+    encodeURIComponent(nascimento);
 }
 
 function abrirCartao() {
@@ -250,6 +257,81 @@ function formatarDataBR(valor) {
 }
 function abrirParceiros(){
   window.location.href = "index.html";
+}
+
+async function carregarHistorico(cpf){
+
+try{
+
+const r = await fetch(
+`${sheetURL}?acao=historicoCliente&cpf=${cpf}`
+);
+
+const dados = await r.json();
+
+if(!dados.ok) return;
+
+document.getElementById("resumoCliente").innerHTML = `
+<div style="
+background:#eef6ff;
+padding:12px;
+border-radius:10px;
+margin-top:15px;
+">
+
+<h3>📊 Meu Resumo</h3>
+
+<b>Total Geral:</b> ${dados.total}<br>
+
+<b>Este Mês:</b> ${dados.mes}<br>
+
+<b>Este Ano:</b> ${dados.ano}<br>
+
+<b>Última Utilização:</b> ${dados.ultima}
+
+</div>
+`;
+
+let html = `
+<h3 style="margin-top:15px">
+📋 Histórico de Utilização
+</h3>
+
+<table style="
+width:100%;
+font-size:12px;
+border-collapse:collapse;
+">
+
+<tr>
+<th>Data</th>
+<th>Parceiro</th>
+<th>Código</th>
+</tr>
+`;
+
+dados.historico.forEach(item=>{
+
+html += `
+<tr>
+<td>${item.data}</td>
+<td>${item.parceiro}</td>
+<td>${item.codigo}</td>
+</tr>
+`;
+
+});
+
+html += "</table>";
+
+document.getElementById("historicoCliente").innerHTML = html;
+
+}catch(e){
+
+console.error(e);
+
+}
+
 }
 
 </script>
