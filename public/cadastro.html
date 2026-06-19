@@ -295,40 +295,63 @@ form.addEventListener("submit", function(e){
 
   const callback = "retornoCadastro_" + Date.now();
 
-window[callback] = function(r) {
+  window[callback] = function(r) {
 
-  if (r.ok && r.status === "CADASTRO_RECEBIDO") {
+if (r.ok && r.status === "CADASTRO_RECEBIDO") {
 
-    localStorage.setItem("ultimoCadastroNome", r.nome || "");
-    localStorage.setItem("ultimoCadastroCPF", dados.get("cpf") || "");
+  box.style.display = "block";
 
+  box.innerHTML = `
+alert("CADASTRO CONCLUÍDO");
+    <h3 style="color:#0a7a3b">
+      ✅ Cadastro realizado com sucesso!
+    </h3>
+
+    <p><strong>Cartão:</strong> ${r.idPublico}</p>
+
+    <p>
+      🎁 Seu teste gratuito foi liberado até
+      <strong>${r.testeAte}</strong>
+    </p>
+
+    <p>
+      📲 Você recebeu duas mensagens no WhatsApp com as instruções de uso.
+    </p>
+
+    <p>
+      🌐 Área do Cliente:<br>
+      https://www.aproveitai.com.br/areadocliente.html
+    </p>
+  `;
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+  setTimeout(() => {
     form.reset();
+  }, 5000);
+
+  return;
+}
+
+    } else if (r.status === "JA_ATIVO") {
+      box.innerHTML = `✅ ${r.nome}, seu CPF já está ativo.`;
+    } else if (r.status === "JA_INATIVO") {
+      box.innerHTML = `
+        ⚠️ ${r.nome}, seu cadastro está inativo.<br><br>
+        <a href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20meu%20cadastro%20AproveitAI."
+        class="btn-aproveitai">📲 Solicitar ativação</a>
+      `;
+    } else {
+      box.innerHTML = "⚠️ Não foi possível concluir o cadastro.";
+    }
 
     document.getElementById(callback)?.remove();
     delete window[callback];
+  };
 
-    return;
-
-  } else if (r.status === "JA_ATIVO") {
-
-    box.innerHTML = "✅ " + r.nome + ", seu CPF já está ativo.";
-
-  } else if (r.status === "JA_INATIVO") {
-
-    box.innerHTML =
-      '⚠️ ' + r.nome + ', seu cadastro está inativo.<br><br>' +
-      '<a href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20meu%20cadastro%20AproveitAI." class="btn-aproveitai">📲 Solicitar ativação</a>';
-
-  } else {
-
-    box.innerHTML = "⚠️ Não foi possível concluir o cadastro.";
-
-  }
-
-  document.getElementById(callback)?.remove();
-  delete window[callback];
-
-};
   const params = new URLSearchParams(dados);
   params.set("acao", "cadastrarCliente");
   params.set("callback", callback);
