@@ -194,10 +194,12 @@ body {
   <input type="text" name="grupo">
 
   <label>Data de nascimento:</label>
-  <input
-  type="date"
+<input
+  type="text"
   id="nascimento"
   name="nascimento"
+  placeholder="DD/MM/AAAA"
+  maxlength="10"
   required
 >
 <h3>🚗 Dados do Veículo (opcional no cadastro)</h3>
@@ -307,7 +309,7 @@ if (r.ok && r.status === "CADASTRO_RECEBIDO") {
     encodeURIComponent(r.testeAte || "");
 
   return;
-}
+
     } else if (r.status === "JA_ATIVO") {
       box.innerHTML = `✅ ${r.nome}, seu CPF já está ativo.`;
     } else if (r.status === "JA_INATIVO") {
