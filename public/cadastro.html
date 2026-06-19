@@ -299,41 +299,37 @@ form.addEventListener("submit", function(e){
 
 if (r.ok && r.status === "CADASTRO_RECEBIDO") {
 
-  box.style.display = "block";
+box.style.display = "block";
 
-  box.innerHTML = `
-alert("CADASTRO CONCLUÍDO");
-    <h3 style="color:#0a7a3b">
-      ✅ Cadastro realizado com sucesso!
-    </h3>
+box.innerHTML = ` <h3 style="color:#0a7a3b">
+✅ Cadastro realizado com sucesso! </h3>
 
-    <p><strong>Cartão:</strong> ${r.idPublico}</p>
+```
+<p><strong>Cartão:</strong> ${r.idPublico}</p>
 
-    <p>
-      🎁 Seu teste gratuito foi liberado até
-      <strong>${r.testeAte}</strong>
-    </p>
+<p>
+  🎁 Seu teste gratuito foi liberado até
+  <strong>${r.testeAte}</strong>
+</p>
 
-    <p>
-      📲 Você recebeu duas mensagens no WhatsApp com as instruções de uso.
-    </p>
+<p>
+  📲 Você recebeu as instruções pelo WhatsApp.
+</p>
+```
 
-    <p>
-      🌐 Área do Cliente:<br>
-      https://www.aproveitai.com.br/areadocliente.html
-    </p>
-  `;
+`;
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+form.reset();
 
-  setTimeout(() => {
-    form.reset();
-  }, 5000);
+window.scrollTo({
+top: 0,
+behavior: "smooth"
+});
 
-  return;
+document.getElementById(callback)?.remove();
+delete window[callback];
+
+return;
 }
 
     } else if (r.status === "JA_ATIVO") {
