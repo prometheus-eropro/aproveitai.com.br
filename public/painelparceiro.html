@@ -71,6 +71,8 @@
   Bem-vindo, <span id="nomeParceiro"></span>
 </h2>
 
+    <div id="resumoParceiro"></div>
+
 
     <label>Valide pelo CPF ou ID do Cliente confira os dados e se esta ATIVO, e BOAS VENDAS</label>
     <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
@@ -166,6 +168,7 @@ sessionStorage.setItem("parceiroToken", token);
 sessionStorage.setItem("parceiroNome", data.parceiro);
 sessionStorage.setItem("parceiroCNPJ", data.cnpj);
 
+carregarResumoParceiro();
 
 
 
@@ -304,6 +307,48 @@ const idQR = params.get("idPublico");
 if (idQR) {
   document.getElementById("cpfCliente").value = idQR;
   validarCliente();
+}
+
+async function carregarResumoParceiro(){
+
+const parceiro =
+sessionStorage.getItem("parceiroNome");
+
+if(!parceiro) return;
+
+const r = await fetch(
+API_URL +
+"?acao=resumoParceiro&parceiro=" +
+encodeURIComponent(parceiro)
+);
+
+const d = await r.json();
+
+if(!d.ok) return;
+
+document.getElementById(
+"resumoParceiro"
+).innerHTML = `
+
+<div style="
+background:#eef6ff;
+padding:12px;
+border-radius:10px;
+margin-bottom:15px;
+text-align:center;
+">
+
+<h3>📈 Seu Desempenho</h3>
+
+Hoje: ${d.hoje}<br>
+Mês: ${d.mes}<br>
+Ano: ${d.ano}<br>
+Clientes Diferentes: ${d.clientes}
+
+</div>
+
+`;
+
 }
 
 </script>
