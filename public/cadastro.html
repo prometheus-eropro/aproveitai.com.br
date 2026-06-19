@@ -299,10 +299,7 @@ form.addEventListener("submit", function(e){
 
 if (r.ok && r.status === "CADASTRO_RECEBIDO") {
 
-  box.style.display = "block";
-
   box.innerHTML = `
-alert("CADASTRO CONCLUÍDO");
     <h3 style="color:#0a7a3b">
       ✅ Cadastro realizado com sucesso!
     </h3>
@@ -315,26 +312,25 @@ alert("CADASTRO CONCLUÍDO");
     </p>
 
     <p>
-      📲 Você recebeu duas mensagens no WhatsApp com as instruções de uso.
+      📲 As instruções foram enviadas para seu WhatsApp.
     </p>
 
     <p>
-      🌐 Área do Cliente:<br>
-      https://www.aproveitai.com.br/areadocliente.html
+      🏪 Acesse:
+      <br>
+      https://www.aproveitai.com.br
     </p>
   `;
+
+  form.reset();
 
   window.scrollTo({
     top: 0,
     behavior: "smooth"
   });
 
-  setTimeout(() => {
-    form.reset();
-  }, 5000);
-
   return;
-}
+
 
     } else if (r.status === "JA_ATIVO") {
       box.innerHTML = `✅ ${r.nome}, seu CPF já está ativo.`;
