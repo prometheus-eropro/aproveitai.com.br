@@ -617,6 +617,11 @@ table td, table th{
 
         <div class="hr"></div>
 
+        <button class="navbtn" data-view="gerencial">
+        Gerencial
+        <small>Indicadores do sistema</small>
+        </button>
+
         <button class="navbtn" data-view="logs">
           Logs
           <small>somente leitura</small>
@@ -814,6 +819,35 @@ table td, table th{
             </div>
           </section>
 
+<section data-section="gerencial" style="display:none">
+
+<div class="cards">
+
+<div class="card">
+<b>Clientes Ativos</b>
+<div class="big" id="gCliAtivos">0</div>
+</div>
+
+<div class="card">
+<b>Parceiros Ativos</b>
+<div class="big" id="gParAtivos">0</div>
+</div>
+
+<div class="card">
+<b>Validações Hoje</b>
+<div class="big" id="gHoje">0</div>
+</div>
+
+<div class="card">
+<b>Validações Totais</b>
+<div class="big" id="gMes">0</div>
+</div>
+
+</div>
+
+</section>
+
+
         </div>
       </main>
     </div>
@@ -987,7 +1021,12 @@ const views = {
   promocoes: { title:"Promoções", desc:"Criar, editar e ativar/desativar promoções." },
   logs: { title:"Logs", desc:"Somente leitura (validações)." },
   log_admin: { title:"Log Admin", desc:"Somente leitura (auditoria)." },
-  admins: { title:"Admins", desc:"Somente leitura (atenção às senhas)." }
+  admins: { title:"Admins", desc:"Somente leitura (atenção às senhas)." },
+
+  gerencial: {
+    title:"Gerencial",
+    desc:"Indicadores do sistema"
+  }
 };
 
 function showView(name){
@@ -1009,6 +1048,9 @@ function showView(name){
 
 async function loadView(name){
   if(!(await ensureLogin())) return;
+
+  if(name === "gerencial")
+  return loadGerencial();
 
   if(name === "dashboard") return loadDashboard(true);
   if(name === "clientes") return loadClientes(true);
@@ -1179,6 +1221,32 @@ async function testApi(){
   }
 }
 
+async function loadGerencial(){
+
+await loadClientes(true);
+await loadParceiros(true);
+await loadLogs(true);
+
+const clientes = state.cache.clientes || [];
+const parceiros = state.cache.parceiros || [];
+const logs = state.cache.logs || [];
+
+const cliAtivos =
+clientes.filter(x =>
+String(x.ativo).toLowerCase() === "sim"
+).length;
+
+const parAtivos =
+parceiros.filter(x =>
+String(x.ativo).toLowerCase() === "sim"
+).length;
+
+document.getElementById("gCliAtivos").innerText = cliAtivos;
+document.getElementById("gParAtivos").innerText = parAtivos;
+document.getElementById("gHoje").innerText = logs.length;
+document.getElementById("gMes").innerText = logs.length;
+
+}
 
 async function loadDashboard(force=false){
   if(state.loaded.dashboard && !force) return;
@@ -1864,6 +1932,7 @@ function gerarContratoParceiro(parceiroId) {
       alert("Erro ao gerar contrato");
     });
 }
+
 </script>
 
 </body>

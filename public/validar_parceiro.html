@@ -63,7 +63,12 @@ body {
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
   <label>Data de nascimento do Cliente</label>
-  <input id="nascimento" type="date">
+  <input
+  id="nascimento"
+  type="text"
+  placeholder="DD/MM/AAAA"
+  maxlength="10"
+>
 
   
 <div id="blocoVeiculo" style="display:none">
@@ -350,10 +355,28 @@ function pararCronometro() {
   }
 }
 </script>
+<script>
+const nasc = document.getElementById("nascimento");
+
+nasc.addEventListener("input", function() {
+
+  let v = this.value.replace(/\D/g,'');
+
+  if(v.length > 2)
+    v = v.substring(0,2) + '/' + v.substring(2);
+
+  if(v.length > 5)
+    v = v.substring(0,5) + '/' + v.substring(5);
+
+  this.value = v.substring(0,10);
+
+});
+</script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
+
 </body>
 </html>

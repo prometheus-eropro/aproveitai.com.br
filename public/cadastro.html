@@ -296,41 +296,19 @@ form.addEventListener("submit", function(e){
   const callback = "retornoCadastro_" + Date.now();
 
   window[callback] = function(r) {
-
 if (r.ok && r.status === "CADASTRO_RECEBIDO") {
+  localStorage.setItem("ultimoCadastroNome", r.nome || "");
+  localStorage.setItem("ultimoCadastroCPF", dados.get("cpf") || "");
 
-  box.innerHTML = `
-    <h3 style="color:#0a7a3b">
-      ✅ Cadastro realizado com sucesso!
-    </h3>
-
-    <p><strong>Cartão:</strong> ${r.idPublico}</p>
-
-    <p>
-      🎁 Seu teste gratuito foi liberado até
-      <strong>${r.testeAte}</strong>
-    </p>
-
-    <p>
-      📲 As instruções foram enviadas para seu WhatsApp.
-    </p>
-
-    <p>
-      🏪 Acesse:
-      <br>
-      https://www.aproveitai.com.br
-    </p>
-  `;
-
-  form.reset();
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.location.href =
+    "cadastro-sucesso.html?nome=" +
+    encodeURIComponent(r.nome || "") +
+    "&id=" +
+    encodeURIComponent(r.idPublico || "") +
+    "&testeAte=" +
+    encodeURIComponent(r.testeAte || "");
 
   return;
-
 
     } else if (r.status === "JA_ATIVO") {
       box.innerHTML = `✅ ${r.nome}, seu CPF já está ativo.`;
@@ -358,17 +336,6 @@ if (r.ok && r.status === "CADASTRO_RECEBIDO") {
   document.body.appendChild(script);
 });
 </script>
-<script>
-const nasc = document.getElementById("nascimento");
 
-nasc.addEventListener("input", function() {
-  let v = this.value.replace(/\D/g,'');
-
-  if(v.length > 2) v = v.substring(0,2) + '/' + v.substring(2);
-  if(v.length > 5) v = v.substring(0,5) + '/' + v.substring(5);
-
-  this.value = v.substring(0,10);
-});
-</script>
 </body>
 </html>
