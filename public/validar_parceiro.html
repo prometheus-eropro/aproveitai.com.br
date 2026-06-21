@@ -76,7 +76,6 @@ body {
   <select id="selectVeiculo" style="width:100%;padding:10px;margin-top:5px;"></select>
 </div>
 
-
 <button onclick="validar()">Validar</button>
 
 <div id="blocoCodigo" style="display:none; margin-top:20px;" class="msg">
@@ -126,7 +125,18 @@ body {
       color:#b91c1c;
       font-weight:bold;
     "></div>
-<button id="btnConfirmar" onclick="confirmarDesconto()">
+<div id="blocoBeneficio" style="display:none;margin-top:15px;">
+  <label><strong>Benefício / Promoção Aplicado</strong></label>
+
+  <select id="beneficioSelecionado"
+          style="width:100%;padding:10px;margin-top:5px;">
+  </select>
+</div>
+
+<button
+ id="btnConfirmar"
+ onclick="confirmarDesconto()"
+ style="display:none">
   ✅ Confirmar desconto concedido
 </button>
 
@@ -249,11 +259,16 @@ const codigo = resp.codigoERO || resp.codigo;
   }
 
   document.getElementById("blocoCodigo").style.display = "block";
+  document.getElementById("btnConfirmar").style.display = "block";
   document.getElementById("codigoERO").innerText = codigo;
   document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
   document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
   document.getElementById("grupoCliente").innerText = resp.grupo || "-";
   document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
+carregarBeneficios(
+  parceiroId,
+  resp.grupo
+);
   document.getElementById("timer").innerText = "⏳ Válido por 10 minutos";
 window.ultimoCelularCliente = resp.celular || "";
 
@@ -273,6 +288,13 @@ document.getElementById("btnConfirmar").disabled = true;
 document.getElementById("timer").innerText = "✅ Desconto confirmado";
 
 const codigo = document.getElementById("codigoERO").innerText;
+const beneficio = 
+document.getElementById("beneficioSelecionado").value;
+
+if (!beneficio) {
+  mostrarMsg("Selecione um benefício");
+  return;
+}
 
   if (!codigo) {
     mostrarMsg("Código inválido");
@@ -292,15 +314,17 @@ const codigo = document.getElementById("codigoERO").innerText;
   document.getElementById("placaVeiculo").innerText = placa;
   document.getElementById("modeloVeiculo").innerText = modelo;
 
-  const script = document.createElement("script");
-  script.src =
-  GAS_URL +
-  "?callback=retornoConfirmacao" +
-  "&acao=confirmarERO" +
-  "&codigoERO=" + encodeURIComponent(codigo) +
-  "&placa=" + encodeURIComponent(placa) +
-  "&modelo=" + encodeURIComponent(modelo) +
-  "&canal=SITE";
+const script = document.createElement("script");
+
+script.src =
+GAS_URL +
+"?callback=retornoConfirmacao" +
+"&acao=confirmarERO" +
+"&codigoERO=" + encodeURIComponent(codigo) +
+"&placa=" + encodeURIComponent(placa) +
+"&modelo=" + encodeURIComponent(modelo) +
+"&beneficio=" + encodeURIComponent(beneficio) +
+"&canal=SITE";
 
 document.body.appendChild(script);
 
@@ -371,6 +395,54 @@ nasc.addEventListener("input", function() {
   this.value = v.substring(0,10);
 
 });
+
+
+function carregarBeneficios(parceiroId, grupo){
+
+  const script = document.createElement("script");
+
+  script.src =
+    GAS_URL +
+    "?callback=retornoBeneficios" +
+    "&acao=listarBeneficiosCliente" +
+    "&parceiro_id=" + encodeURIComponent(parceiroId) +
+    "&grupo=" + encodeURIComponent(grupo);
+
+  document.body.appendChild(script);
+}
+
+function retornoBeneficios(resp){
+
+  if(!resp || !resp.ok) return;
+
+  const select =
+    document.getElementById("beneficioSelecionado");
+
+  select.innerHTML = "";
+
+const opPadrao = document.createElement("option");
+opPadrao.value = "";
+opPadrao.text = "Selecione o benefício...";
+select.appendChild(opPadrao);
+
+  resp.itens.forEach(item => {
+
+    const op = document.createElement("option");
+
+   op.value = item.titulo;
+
+    op.text =
+      item.titulo + " - " +
+      item.descricao;
+
+    select.appendChild(op);
+
+  });
+
+  document.getElementById("blocoBeneficio")
+    .style.display = "block";
+}
+
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>

@@ -95,10 +95,10 @@ body {
 <thead>
 <tr>
   <th>Data/Hora</th>
-  <th>Grupo</th>
-  <th>Status</th>
-  <th>Código de Autorização</th>
-</tr>
+<th>Grupo</th>
+<th>Tipo</th>
+<th>Benefício Utilizado</th>
+<th>Código</th></tr>
 </thead>
 <tbody id="dados"></tbody>
 </table>
@@ -158,8 +158,9 @@ function carregarRelatorio() {
           <tr>
             <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
             <td>${r.grupo || "-"}</td>
-            <td>${r.status || "-"}</td>
-            <td>${r.codigo || "-"}</td>
+            <td>${r.tipo || "-"}</td>
+<td>${r.beneficio || "-"}</td>
+<td>${r.codigo || "-"}</td>
           </tr>
         `;
       });
