@@ -78,7 +78,9 @@ body {
 
 <button onclick="validar()">Validar</button>
 
-<div id="blocoCodigo" style="display:none"> style="display:none; margin-top:20px;" class="msg">
+<div id="blocoCodigo"
+     style="display:none; margin-top:20px;"
+     class="msg">
   <div style="
     background:#d4edda;
     border:2px solid #198754;
@@ -187,6 +189,13 @@ function somenteNumeros(v) {
    VALIDAÇÃO
 ============================= */
 function validar() {
+
+document.getElementById("blocoBeneficio").style.display = "none";
+
+document.getElementById("beneficioSelecionado").innerHTML = "";
+
+document.getElementById("btnConfirmar").style.display = "none";
+
   const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
 const nascimento = document.getElementById("nascimento").value;
 
@@ -271,8 +280,7 @@ const codigo = resp.codigoERO || resp.codigo;
   document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
   document.getElementById("grupoCliente").innerText = resp.grupo || "-";
   document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
-document.getElementById("btnConfirmar")
-.style.display = "block";
+
 carregarBeneficios(
   parceiroId,
   resp.grupo
