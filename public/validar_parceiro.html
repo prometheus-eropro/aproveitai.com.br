@@ -94,6 +94,13 @@ body {
   border-radius:8px;
   text-align:center;
 ">
+🔐 CÓDIGO DE AUTORIZAÇÃO
+
+<div id="codigoERO"
+     style="font-size:38px;
+            font-weight:900;
+            margin-top:10px;">
+</div>
  </div>
 
 <div style="margin-top:12px;font-size:14px;color:#333;text-align:left">
@@ -140,6 +147,7 @@ body {
 
     <div style="font-size:13px;margin-top:8px;color:#444">
       Apresente este código ao parceiro antes do tempo acabar.
+      
     </div>
   </div>
 </div>
@@ -289,6 +297,9 @@ function confirmarDesconto() {
 const beneficio =
 document.getElementById("beneficioSelecionado").value;
 
+const codigoERO =
+document.getElementById("codigoERO").innerText;
+
 if (!beneficio) {
 mostrarMsg("Selecione um benefício");
 return;
@@ -324,6 +335,8 @@ script.src =
 GAS_URL +
 "?callback=retornoConfirmacao" +
 "&acao=confirmarERO" +
+"&codigoERO=" +
+encodeURIComponent(codigoERO) +
 "&parceiro_id=" +
 encodeURIComponent(parceiroId) +
 "&beneficio=" +
@@ -347,8 +360,6 @@ if (!beneficio) {
 mostrarMsg("Selecione um benefício");
 return;
 }
-
-document.getElementById("btnConfirmar").disabled = true;
 
 
   if (!resp || resp.ok !== true) {
@@ -416,16 +427,6 @@ nasc.addEventListener("input", function() {
 
 function carregarBeneficios(parceiroId, grupo){
 
-console.log("BENEFICIO SELECIONADO:");
-console.log(beneficio);
-
-console.log("PLACA:");
-console.log(placa);
-
-console.log("MODELO:");
-console.log(modelo);
-
-
   const script = document.createElement("script");
 
   script.src =
@@ -468,7 +469,11 @@ select.appendChild(opPadrao);
   });
 
   document.getElementById("blocoBeneficio")
-    .style.display = "block";
+.style.display = "block";
+
+document.getElementById("btnConfirmar")
+.style.display = "block";
+
 }
 
 </script>
