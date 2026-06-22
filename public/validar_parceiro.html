@@ -71,12 +71,11 @@ body {
 >
 
   
-<div id="blocoVeiculo" style="display:none">
-  <label>Selecione o veículo</label>
-  <select id="selectVeiculo" style="width:100%;padding:10px;margin-top:5px;"></select>
-</div>
-
-<button onclick="validar()">Validar</button>
+<button
+ id="btnValidar"
+ onclick="validar()">
+ Validar
+</button>
 
 <div id="blocoCodigo"
      style="display:none; margin-top:20px;"
@@ -139,6 +138,18 @@ body {
           style="width:100%;padding:10px;margin-top:5px;">
   </select>
 </div>
+
+<div id="blocoVeiculo" style="display:none">
+  <label>Selecione o veículo</label>
+  <select id="selectVeiculo" style="width:100%;padding:10px;margin-top:5px;"></select>
+</div>
+
+<button
+ id="btnGerarERO"
+ onclick="gerarERO()"
+ style="display:none">
+ 🔐 Gerar Código
+</button>
 
 <button
  id="btnConfirmar"
@@ -241,6 +252,7 @@ function retornoValidacao(resp) {
     mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
     return;
   }
+document.getElementById("btnValidar").style.display = "none";
 
   // ===== VEÍCULO (UM OU DOIS) =====
  // Preencher combo de veículos se houver dois
@@ -268,14 +280,9 @@ if (!resp.placa2) {
 }
   // ===== CÓDIGO ERO =====
 const codigo = resp.codigoERO || resp.codigo;
-  if (!codigo) {
-    mostrarMsg("❌ Código ERO não retornado");
-    return;
-  }
+  window.codigoERO = codigo;
 
-  document.getElementById("blocoCodigo").style.display = "block";
   document.getElementById("btnConfirmar").style.display = "none";
-  document.getElementById("codigoERO").innerText = codigo;
   document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
   document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
   document.getElementById("grupoCliente").innerText = resp.grupo || "-";
@@ -285,6 +292,12 @@ carregarBeneficios(
   parceiroId,
   resp.grupo
 );
+
+window.dadosValidacao = resp;
+
+document.getElementById("btnGerarERO")
+.style.display = "block";
+
   document.getElementById("timer").innerText = "⏳ Válido por 10 minutos";
 window.ultimoCelularCliente = resp.celular || "";
 
@@ -296,9 +309,6 @@ if(resp.placa){
    .style.display = "none";
 }
 
-  if (resp.validoAte) {
-    iniciarCronometro(resp.validoAte);
-  }
 }
 function confirmarDesconto() {
 
@@ -360,7 +370,14 @@ document.body.appendChild(script);
 
 function retornoConfirmacao(resp) {
   console.log("RETORNO CONFIRMAÇÃO:", resp);
+document.getElementById("btnConfirmar")
+.style.display = "none";
 
+document.getElementById("beneficioSelecionado")
+.disabled = true;
+
+document.getElementById("selectVeiculo")
+.disabled = true;
 const beneficio =
 document.getElementById("beneficioSelecionado").value;
 
@@ -384,35 +401,66 @@ return;
     "✅ Desconto confirmado com sucesso!";
 
   mostrarMsg(
-    "🎉 Obrigado por utilizar a Plataforma AproveitAI!"
-  );
+ "🎉 Obrigado por utilizar a Plataforma AproveitAI!"
+);
+
+setTimeout(() => {
+ location.reload();
+},30000);
+
 }
 function iniciarCronometro(validoAteISO) {
+
   const fim = new Date(validoAteISO).getTime();
 
   cronometroERO = setInterval(() => {
+
     const agora = Date.now();
+
     const diff = fim - agora;
 
     if (diff <= 0) {
+
       clearInterval(cronometroERO);
-      document.getElementById("timer").innerText = "⏰ Código expirado";
+
+      document.getElementById("timer").innerText =
+        "⏰ Código expirado";
+
+      document.getElementById("btnConfirmar")
+        .style.display = "none";
+
+      setTimeout(() => {
+
+        location.reload();
+
+      }, 10000);
+
       return;
+
     }
 
     const min = Math.floor(diff / 60000);
-    const seg = Math.floor((diff % 60000) / 1000);
+
+    const seg = Math.floor(
+      (diff % 60000) / 1000
+    );
 
     document.getElementById("timer").innerText =
       `⏳ Tempo restante: ${min}m ${seg}s`;
-  }, 1000);
-}
 
+  }, 1000);
+
+}
 function pararCronometro() {
+
   if (cronometroERO) {
+
     clearInterval(cronometroERO);
+
     cronometroERO = null;
+
   }
+
 }
 </script>
 <script>
@@ -479,11 +527,32 @@ select.appendChild(opPadrao);
   document.getElementById("blocoBeneficio")
 .style.display = "block";
 
-document.getElementById("btnConfirmar")
-.style.display = "block";
-
 }
 
+function gerarERO() {
+
+   const resp = window.dadosValidacao;
+
+   document.getElementById("blocoCodigo")
+   .style.display = "block";
+
+   document.getElementById("codigoERO")
+  .innerText = window.codigoERO;
+
+   iniciarCronometro(resp.validoAte);
+
+   document.getElementById("btnGerarERO")
+   .style.display = "none";
+
+  document.getElementById("beneficioSelecionado")
+.disabled = true;
+
+document.getElementById("selectVeiculo")
+.disabled = true;
+
+   document.getElementById("btnConfirmar")
+   .style.display = "block";
+}
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
