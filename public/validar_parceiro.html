@@ -78,7 +78,7 @@ body {
 
 <button onclick="validar()">Validar</button>
 
-<div id="blocoCodigo" style="display:none; margin-top:20px;" class="msg">
+<div id="blocoCodigo" style="display:none"> style="display:none; margin-top:20px;" class="msg">
   <div style="
     background:#d4edda;
     border:2px solid #198754;
@@ -94,9 +94,7 @@ body {
   border-radius:8px;
   text-align:center;
 ">
-  🎟 CÓDIGO DE AUTORIZAÇÃO<br>
-  <span id="codigoERO" style="letter-spacing:2px"></span>
-</div>
+ </div>
 
 <div style="margin-top:12px;font-size:14px;color:#333;text-align:left">
   <div style="
@@ -265,6 +263,8 @@ const codigo = resp.codigoERO || resp.codigo;
   document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
   document.getElementById("grupoCliente").innerText = resp.grupo || "-";
   document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
+document.getElementById("btnConfirmar")
+.style.display = "block";
 carregarBeneficios(
   parceiroId,
   resp.grupo
@@ -285,60 +285,71 @@ if(resp.placa){
   }
 }
 function confirmarDesconto() {
-  // ⛔ PARA O CRONÔMETRO IMEDIATAMENTE
-if (cronometroERO) {
-  clearInterval(cronometroERO);
-  cronometroERO = null;
-}
-document.getElementById("btnConfirmar").disabled = true;
-document.getElementById("timer").innerText = "✅ Desconto confirmado";
 
-const codigo = document.getElementById("codigoERO").innerText;
-const beneficio = 
+const beneficio =
 document.getElementById("beneficioSelecionado").value;
 
 if (!beneficio) {
-  mostrarMsg("Selecione um benefício");
-  return;
+mostrarMsg("Selecione um benefício");
+return;
 }
 
-  if (!codigo) {
-    mostrarMsg("Código inválido");
-    return;
-  }
+let placa = "";
+let modelo = "";
 
-  let placa = "";
-  let modelo = "";
+const selectVeiculo =
+document.getElementById("selectVeiculo");
 
-  const selectVeiculo = document.getElementById("selectVeiculo");
-  if (selectVeiculo && selectVeiculo.value) {
-    const [p, m] = selectVeiculo.value.split("|");
-    placa = p;
-    modelo = m;
-  }
+if (selectVeiculo && selectVeiculo.value) {
 
-  document.getElementById("placaVeiculo").innerText = placa;
-  document.getElementById("modeloVeiculo").innerText = modelo;
+```
+const [p,m] =
+  selectVeiculo.value.split("|");
 
-const script = document.createElement("script");
+placa = p;
+modelo = m;
+```
+
+}
+
+document.getElementById("btnConfirmar")
+.disabled = true;
+
+mostrarMsg("⏳ Confirmando desconto...");
+
+const script =
+document.createElement("script");
 
 script.src =
 GAS_URL +
 "?callback=retornoConfirmacao" +
 "&acao=confirmarERO" +
-"&codigoERO=" + encodeURIComponent(codigo) +
-"&placa=" + encodeURIComponent(placa) +
-"&modelo=" + encodeURIComponent(modelo) +
-"&beneficio=" + encodeURIComponent(beneficio) +
+"&parceiro_id=" +
+encodeURIComponent(parceiroId) +
+"&beneficio=" +
+encodeURIComponent(beneficio) +
+"&placa=" +
+encodeURIComponent(placa) +
+"&modelo=" +
+encodeURIComponent(modelo) +
 "&canal=SITE";
 
 document.body.appendChild(script);
-
 }
+
 function retornoConfirmacao(resp) {
   console.log("RETORNO CONFIRMAÇÃO:", resp);
 
-  document.getElementById("btnConfirmar").disabled = true;
+const beneficio =
+document.getElementById("beneficioSelecionado").value;
+
+if (!beneficio) {
+mostrarMsg("Selecione um benefício");
+return;
+}
+
+document.getElementById("btnConfirmar").disabled = true;
+
 
   if (!resp || resp.ok !== true) {
     mostrarMsg(resp?.msg || "❌ Erro ao confirmar desconto");
@@ -404,6 +415,16 @@ nasc.addEventListener("input", function() {
 
 
 function carregarBeneficios(parceiroId, grupo){
+
+console.log("BENEFICIO SELECIONADO:");
+console.log(beneficio);
+
+console.log("PLACA:");
+console.log(placa);
+
+console.log("MODELO:");
+console.log(modelo);
+
 
   const script = document.createElement("script");
 
