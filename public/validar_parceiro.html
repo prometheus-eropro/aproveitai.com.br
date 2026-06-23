@@ -569,14 +569,20 @@ function beneficioSelecionado(){
 
    if(!beneficio) return;
 
-   document.getElementById(
-      "btnGerarERO"
-   ).style.display = "block";
-
    if(window.dadosValidacao.placa){
 
       document.getElementById(
          "blocoVeiculo"
+      ).style.display = "block";
+
+   } else {
+
+      document.getElementById(
+         "blocoGerarERO"
+      ).style.display = "block";
+
+      document.getElementById(
+         "btnGerarERO"
       ).style.display = "block";
    }
 }
@@ -584,10 +590,13 @@ function beneficioSelecionado(){
 function veiculoSelecionado(){
 
    document.getElementById(
+      "blocoGerarERO"
+   ).style.display = "block";
+
+   document.getElementById(
       "btnGerarERO"
    ).style.display = "block";
 }
-
 
 function gerarERO() {
 
