@@ -575,6 +575,15 @@ function beneficioSelecionado(){
          "blocoVeiculo"
       ).style.display = "block";
 
+      // se só existe 1 veículo
+      if(!window.dadosValidacao.placa2){
+
+         document.getElementById(
+            "btnGerarERO"
+         ).style.display = "block";
+
+      }
+
    }else{
 
       document.getElementById(
