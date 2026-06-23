@@ -121,13 +121,14 @@ style="width:100%;padding:10px;margin-top:5px;">
 </select>
 </div>
 
-<button
- id="btnGerarERO"
- onclick="gerarERO()"
- style="display:none">
- 🔐 Gerar Código
-</button>
+<div id="blocoGerarERO" style="display:none;">
 
+   <button id="btnGerarERO"
+           onclick="gerarERO()"
+           class="btn-verde">
+      Gerar Código ERO
+   </button>
+</div>
 <div id="blocoCodigo"
      style="display:none; margin-top:20px;"
      class="msg">
@@ -299,6 +300,9 @@ carregarBeneficios(
   parceiroId,
   resp.grupo
 );
+
+document.getElementById("blocoGerarERO")
+.style.display = "block";
 
 document.getElementById("blocoBeneficio")
 .style.display = "block";
