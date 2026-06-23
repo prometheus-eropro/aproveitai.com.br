@@ -92,10 +92,7 @@ body {
   <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
   <strong>Grupo:</strong> <span id="grupoCliente"></span><br>
   <strong>ID Público:</strong> <span id="idPublicoCliente"></span><br>
-  <div id="infoVeiculo" style="display:none">
-  <strong>Veículo:</strong> <span id="placaVeiculo"></span> – <span id="modeloVeiculo"></span>
-</div>
-
+  
 </div>
 
     <div id="timer" style="
@@ -206,11 +203,14 @@ function somenteNumeros(v) {
 ============================= */
 function validar() {
 
-document.getElementById("blocoBeneficio").style.display = "none";
+  document.getElementById("blocoBeneficio").style.display = "none";
+  document.getElementById("blocoVeiculo").style.display = "none";
+  document.getElementById("blocoGerarERO").style.display = "none";
 
-document.getElementById("beneficioSelecionado").innerHTML = "";
+  document.getElementById("beneficioSelecionado").innerHTML = "";
 
-document.getElementById("btnConfirmar").style.display = "none";
+  document.getElementById("btnConfirmar").style.display = "none";
+  document.getElementById("btnGerarERO").style.display = "none";
 
   const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
 const nascimento = document.getElementById("nascimento").value;
@@ -280,11 +280,7 @@ if ((resp.placa && resp.modelo) || (resp.placa2 && resp.modelo2)) {
     select.appendChild(op2);
   }
 if (!resp.placa2) {
-  document.getElementById("placaVeiculo").innerText = resp.placa;
-  document.getElementById("modeloVeiculo").innerText = resp.modelo;
-}
-
-  document.getElementById("blocoVeiculo").style.display = "block";
+   document.getElementById("blocoVeiculo").style.display = "none";
 }
   // ===== CÓDIGO ERO =====
 
@@ -301,24 +297,15 @@ carregarBeneficios(
   resp.grupo
 );
 
-document.getElementById("blocoGerarERO")
-.style.display = "block";
-
 document.getElementById("blocoBeneficio")
 .style.display = "block";
 
+document.getElementById("blocoGerarERO")
+.style.display = "none";
+
 document.getElementById("btnGerarERO")
-.style.display = "block";
-
+.style.display = "none";
 window.ultimoCelularCliente = resp.celular || "";
-
-if(resp.placa){
-   document.getElementById("infoVeiculo")
-   .style.display = "block";
-}else{
-   document.getElementById("infoVeiculo")
-   .style.display = "none";
-}
 
 }
 function confirmarDesconto() {
@@ -342,13 +329,11 @@ document.getElementById("selectVeiculo");
 
 if (selectVeiculo && selectVeiculo.value) {
 
-```
-const [p,m] =
-  selectVeiculo.value.split("|");
+  const [p,m] =
+    selectVeiculo.value.split("|");
 
-placa = p;
-modelo = m;
-```
+  placa = p;
+  modelo = m;
 
 }
 
@@ -380,85 +365,74 @@ document.body.appendChild(script);
 }
 
 function retornoConfirmacao(resp) {
+
+   console.log("CONFIRMACAO RECEBIDA");
+  console.log(resp);
+
   console.log("RETORNO CONFIRMAÇÃO:", resp);
-document.getElementById("btnConfirmar")
-.style.display = "none";
 
-document.getElementById("beneficioSelecionado")
-.disabled = true;
+  document.getElementById("btnConfirmar").style.display = "none";
 
-const sv =
- document.getElementById("selectVeiculo");
+  document.getElementById("beneficioSelecionado").disabled = true;
 
-if(sv){
-  sv.disabled = true;
-}
-const beneficio =
-document.getElementById("beneficioSelecionado").value;
+  const sv = document.getElementById("selectVeiculo");
 
-if (!beneficio) {
-mostrarMsg("Selecione um benefício");
-return;
-}
-
+  if (sv) {
+    sv.disabled = true;
+  }
 
   if (!resp || resp.ok !== true) {
     mostrarMsg(resp?.msg || "❌ Erro ao confirmar desconto");
-    pararCronometro();
+    
+pararCronometro();
+
+document.getElementById("timer").innerHTML =
+"✅ Benefício confirmado";
     return;
   }
 
-  // ✅ PARA O CRONÔMETRO DEFINITIVAMENTE
   pararCronometro();
 
-  // ✅ ATUALIZA TEXTO
-pararCronometro();
+  document.getElementById("blocoCodigo").innerHTML = `
+    <div style="
+      background:#dfffe0;
+      border:3px solid #0a7a3c;
+      padding:20px;
+      border-radius:10px;
+      text-align:center;
+    ">
+      <div style="
+        font-size:26px;
+        font-weight:bold;
+        color:#0a7a3c;
+        margin-bottom:10px;
+      ">
+        ✅ BENEFÍCIO CONFIRMADO
+      </div>
 
-document.getElementById("blocoCodigo").innerHTML = `
-<div style="
-background:#dfffe0;
-border:3px solid #0a7a3c;
-padding:20px;
-border-radius:10px;
-text-align:center;
-">
+      <div style="font-size:18px">
+        Seu desconto foi registrado com sucesso.
+      </div>
 
-<div style="
-font-size:26px;
-font-weight:bold;
-color:#0a7a3c;
-margin-bottom:10px;
-">
-✅ BENEFÍCIO CONFIRMADO
-</div>
+      <br>
 
-<div style="font-size:18px">
-Seu desconto foi registrado com sucesso.
-</div>
+      <div>
+        Código: <b>${resp.codigo}</b>
+      </div>
 
-<br>
+      <br>
 
-<div>
-Código:
-<b>${resp.codigo}</b>
-</div>
+      <div style="color:#666">
+        Esta tela será encerrada automaticamente em 30 segundos.
+      </div>
+    </div>
+  `;
 
-<br>
+  mostrarMsg("🎉 Obrigado por utilizar a Plataforma AproveitAI.");
 
-<div style="color:#666">
-Esta tela será encerrada automaticamente em 30 segundos.
-</div>
-
-</div>
-`;
-
-mostrarMsg(
-"🎉 Obrigado por utilizar a Plataforma AproveitAI."
-);
-
-setTimeout(() => {
- location.reload();
-},30000);
+  setTimeout(() => {
+    location.reload();
+  }, 30000);
 
 }
 
