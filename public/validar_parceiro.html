@@ -302,11 +302,14 @@ carregarBeneficios(
 document.getElementById("blocoBeneficio")
 .style.display = "block";
 
+
+
 document.getElementById("blocoGerarERO")
-.style.display = "none";
+.style.display = "block";
 
 document.getElementById("btnGerarERO")
-.style.display = "none";
+.style.display = "block";
+
 window.ultimoCelularCliente = resp.celular || "";
 
 }
@@ -573,6 +576,14 @@ function beneficioSelecionado(){
 
       document.getElementById(
          "blocoVeiculo"
+      ).style.display = "block";
+
+      document.getElementById(
+         "blocoGerarERO"
+      ).style.display = "block";
+
+      document.getElementById(
+         "btnGerarERO"
       ).style.display = "block";
 
    } else {
