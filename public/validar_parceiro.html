@@ -77,33 +77,6 @@ body {
  Validar
 </button>
 
-<div id="blocoCodigo"
-     style="display:none; margin-top:20px;"
-     class="msg">
-  <div style="
-    background:#d4edda;
-    border:2px solid #198754;
-    border-radius:10px;
-    padding:15px;
-  ">
-    <div style="
-  font-size:26px;
-  font-weight:800;
-  color:#0a7a3c;
-  background:#e6fff0;
-  padding:10px;
-  border-radius:8px;
-  text-align:center;
-">
-🔐 CÓDIGO DE AUTORIZAÇÃO
-
-<div id="codigoERO"
-     style="font-size:38px;
-            font-weight:900;
-            margin-top:10px;">
-</div>
- </div>
-
 <div style="margin-top:12px;font-size:14px;color:#333;text-align:left">
   <div style="
   margin-top:12px;
@@ -150,6 +123,33 @@ body {
  style="display:none">
  🔐 Gerar Código
 </button>
+
+<div id="blocoCodigo"
+     style="display:none; margin-top:20px;"
+     class="msg">
+  <div style="
+    background:#d4edda;
+    border:2px solid #198754;
+    border-radius:10px;
+    padding:15px;
+  ">
+    <div style="
+  font-size:26px;
+  font-weight:800;
+  color:#0a7a3c;
+  background:#e6fff0;
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+">
+🔐 CÓDIGO DE AUTORIZAÇÃO
+
+<div id="codigoERO"
+     style="font-size:38px;
+            font-weight:900;
+            margin-top:10px;">
+</div>
+
 
 <button
  id="btnConfirmar"
@@ -248,11 +248,14 @@ function retornoValidacao(resp) {
   console.log("RETORNO GAS:", resp);
   console.log("CELULAR:", resp.celular);
 
+document.getElementById("blocoCodigo")
+.style.display = "none";
+
   if (!resp || resp.ok !== true) {
     mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
     return;
   }
-document.getElementById("btnValidar").style.display = "none";
+document.getElementById("btnValidar").disabled = true;
 
   // ===== VEÍCULO (UM OU DOIS) =====
  // Preencher combo de veículos se houver dois
@@ -279,8 +282,6 @@ if (!resp.placa2) {
   document.getElementById("blocoVeiculo").style.display = "block";
 }
   // ===== CÓDIGO ERO =====
-const codigo = resp.codigoERO || resp.codigo;
-  window.codigoERO = codigo;
 
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
@@ -288,17 +289,16 @@ const codigo = resp.codigoERO || resp.codigo;
   document.getElementById("grupoCliente").innerText = resp.grupo || "-";
   document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
 
+window.dadosValidacao = resp;
+
 carregarBeneficios(
   parceiroId,
   resp.grupo
 );
 
-window.dadosValidacao = resp;
-
 document.getElementById("btnGerarERO")
 .style.display = "block";
 
-  document.getElementById("timer").innerText = "⏳ Válido por 10 minutos";
 window.ultimoCelularCliente = resp.celular || "";
 
 if(resp.placa){
@@ -376,8 +376,12 @@ document.getElementById("btnConfirmar")
 document.getElementById("beneficioSelecionado")
 .disabled = true;
 
-document.getElementById("selectVeiculo")
-.disabled = true;
+const sv =
+ document.getElementById("selectVeiculo");
+
+if(sv){
+  sv.disabled = true;
+}
 const beneficio =
 document.getElementById("beneficioSelecionado").value;
 
@@ -397,11 +401,48 @@ return;
   pararCronometro();
 
   // ✅ ATUALIZA TEXTO
-  document.getElementById("timer").innerText =
-    "✅ Desconto confirmado com sucesso!";
+pararCronometro();
 
-  mostrarMsg(
- "🎉 Obrigado por utilizar a Plataforma AproveitAI!"
+document.getElementById("blocoCodigo").innerHTML = `
+<div style="
+background:#dfffe0;
+border:3px solid #0a7a3c;
+padding:20px;
+border-radius:10px;
+text-align:center;
+">
+
+<div style="
+font-size:26px;
+font-weight:bold;
+color:#0a7a3c;
+margin-bottom:10px;
+">
+✅ BENEFÍCIO CONFIRMADO
+</div>
+
+<div style="font-size:18px">
+Seu desconto foi registrado com sucesso.
+</div>
+
+<br>
+
+<div>
+Código:
+<b>${resp.codigo}</b>
+</div>
+
+<br>
+
+<div style="color:#666">
+Esta tela será encerrada automaticamente em 30 segundos.
+</div>
+
+</div>
+`;
+
+mostrarMsg(
+"🎉 Obrigado por utilizar a Plataforma AproveitAI."
 );
 
 setTimeout(() => {
@@ -409,6 +450,7 @@ setTimeout(() => {
 },30000);
 
 }
+
 function iniciarCronometro(validoAteISO) {
 
   const fim = new Date(validoAteISO).getTime();
@@ -514,7 +556,9 @@ select.appendChild(opPadrao);
     const op = document.createElement("option");
 
    op.value =
-  item.titulo + "|" + item.descricao;
+  item.tipo + "|" +
+  item.titulo + " - " +
+  item.descricao;
 
     op.text =
       item.titulo + " - " +
@@ -531,28 +575,68 @@ select.appendChild(opPadrao);
 
 function gerarERO() {
 
-   const resp = window.dadosValidacao;
+const beneficio =
+document.getElementById(
+ "beneficioSelecionado"
+).value;
 
-   document.getElementById("blocoCodigo")
-   .style.display = "block";
-
-   document.getElementById("codigoERO")
-  .innerText = window.codigoERO;
-
-   iniciarCronometro(resp.validoAte);
-
-   document.getElementById("btnGerarERO")
-   .style.display = "none";
-
-  document.getElementById("beneficioSelecionado")
-.disabled = true;
-
-document.getElementById("selectVeiculo")
-.disabled = true;
-
-   document.getElementById("btnConfirmar")
-   .style.display = "block";
+if(!beneficio){
+   mostrarMsg(
+    "Selecione um benefício"
+   );
+   return;
 }
+
+ const cpf =
+ document.getElementById("cpf")
+ .value.replace(/\D/g,"");
+
+ const script =
+ document.createElement("script");
+
+ script.src =
+ GAS_URL +
+ "?callback=retornoGeracaoERO" +
+ "&acao=gerarERO" +
+ "&cpf=" + encodeURIComponent(cpf) +
+ "&parceiro_id=" +
+ encodeURIComponent(parceiroId);
+
+ document.body.appendChild(script);
+
+}
+
+function retornoGeracaoERO(resp){
+
+ if(!resp || !resp.ok){
+
+   mostrarMsg("Erro ao gerar código");
+   return;
+
+ }
+
+ window.codigoERO =
+ resp.codigo;
+
+ document.getElementById("codigoERO")
+ .innerText =
+ resp.codigo;
+
+ document.getElementById("blocoCodigo")
+ .style.display = "block";
+
+ document.getElementById("btnConfirmar")
+ .style.display = "block";
+
+ document.getElementById("btnGerarERO")
+ .style.display = "none";
+
+ iniciarCronometro(
+   resp.validoAte
+ );
+
+}
+
 </script>
 <footer class="footer">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
