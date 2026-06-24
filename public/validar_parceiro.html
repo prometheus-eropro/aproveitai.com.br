@@ -96,7 +96,8 @@ VERSAO TESTE 999
       id="logoParceiro"
       style="
          max-width:180px;
-         max-height:80px;
+         max-width:220px;
+         max-height:120px;
          display:none;
       ">
 </div>
@@ -324,6 +325,20 @@ if(resp.logoURL){
   document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
 
 window.dadosValidacao = resp;
+
+console.log(resp.logoURL);
+
+if(resp.logoURL){
+
+   const img =
+     document.getElementById("logoParceiro");
+
+   img.src = resp.logoURL;
+
+   img.style.display = "block";
+
+}
+
 
 carregarBeneficios(
   parceiroId,
