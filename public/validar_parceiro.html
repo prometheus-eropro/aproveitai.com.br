@@ -90,21 +90,37 @@ body {
   <div style="
   margin-top:12px;
   background:#f0fdf4;
-  padding:8px;
+  padding:12px;
   border-left:5px solid #0a7a3c;
   font-size:16px;
+  text-align:center;
 ">
-  🏪 <strong>Parceiro:</strong><br>
 
-<div style="text-align:center;margin-bottom:10px;">
-   <img
+  <div style="
+      font-weight:bold;
+      margin-bottom:10px;
+      font-size:18px;
+  ">
+      🏪 Parceiro
+  </div>
+
+  <img
       id="logoParceiro"
       style="
-         max-width:180px;
          max-width:220px;
          max-height:120px;
          display:none;
+         margin:auto;
       ">
+
+  <div id="nomeParceiro"
+       style="
+          margin-top:10px;
+          font-weight:700;
+          font-size:22px;
+       ">
+  </div>
+
 </div>
 
   <span id="nomeParceiro" style="font-weight:700;font-size:18px"></span>
@@ -316,8 +332,13 @@ const img = document.getElementById("logoParceiro");
 
 img.src = `/logos/${parceiroId}.png`;
 
+img.onload = function(){
+   this.style.display = "block";
+};
+
 img.onerror = function(){
    this.src = "logo-aproveitai.png";
+   this.style.display = "block";
 };
 
   document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
