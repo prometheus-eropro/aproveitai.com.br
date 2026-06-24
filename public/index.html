@@ -190,19 +190,7 @@ const site = String(p.site || "");
 const email = String(p.email || "");
 const maps = String(p.link_maps || "");
 
-
-let logo = String(p.logoURL || "").trim();
-
-if (logo.includes("drive.google.com")) {
-  const match = logo.match(/[-\w]{25,}/);
-  if (match) {
-    logo = "https://drive.google.com/uc?export=view&id=" + match[0];
-  }
-}
-
-if (!logo.startsWith("http")) {
-  logo = "logo-aproveitai.png";
-}
+let logo = `/logos/${p.parceiro_id}.png`;
 
     parceirosDiv.innerHTML += `
       <div class="card">

@@ -312,18 +312,13 @@ if (!resp.placa2) {
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
 
-if(resp.logoURL){
+const img = document.getElementById("logoParceiro");
 
-   const logo =
-     document.getElementById(
-       "logoParceiro"
-     );
+img.src = `/logos/${parceiroId}.png`;
 
-   logo.src = resp.logoURL;
-
-   logo.style.display =
-     "block";
-}
+img.onerror = function(){
+   this.src = "logo-aproveitai.png";
+};
 
   document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
   document.getElementById("grupoCliente").innerText = resp.grupo || "-";
@@ -332,18 +327,6 @@ if(resp.logoURL){
 window.dadosValidacao = resp;
 
 console.log(resp.logoURL);
-
-if(resp.logoURL){
-
-   const img =
-     document.getElementById("logoParceiro");
-
-   img.src = resp.logoURL;
-
-   img.style.display = "block";
-
-}
-
 
 carregarBeneficios(
   parceiroId,
