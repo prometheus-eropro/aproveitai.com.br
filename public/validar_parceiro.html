@@ -301,26 +301,46 @@ document.getElementById("blocoCodigo")
   }
 document.getElementById("btnValidar").disabled = true;
 
-  // ===== VEÍCULO (UM OU DOIS) =====
- // Preencher combo de veículos se houver dois
-if ((resp.placa && resp.modelo) || (resp.placa2 && resp.modelo2)) {
-  const select = document.getElementById("selectVeiculo");
-  select.innerHTML = "";
+  // ===== VEÍCULO =====
+if (resp.exige_placa) {
 
-  const op1 = document.createElement("option");
-  op1.value = `${resp.placa}|${resp.modelo}`;
-  op1.text = `${resp.placa} – ${resp.modelo}`;
-  select.appendChild(op1);
+    // Cliente não possui veículo cadastrado
+    if (!resp.placa) {
 
-  if (resp.placa2 && resp.modelo2) {
-    const op2 = document.createElement("option");
-    op2.value = `${resp.placa2}|${resp.modelo2}`;
-    op2.text = `${resp.placa2} – ${resp.modelo2}`;
-    select.appendChild(op2);
-  }
-if (!resp.placa2) {
-   document.getElementById("blocoVeiculo").style.display = "none";
-}
+        mostrarMsg(
+          "⚠️ <b>Este parceiro exige a identificação do veículo.</b><br><br>" +
+          "Nenhum veículo está cadastrado para este cliente.<br><br>" +
+          "Solicite o cadastro do veículo antes de conceder o benefício."
+        );
+
+        document.getElementById("blocoVeiculo").style.display = "none";
+        document.getElementById("blocoGerarERO").style.display = "none";
+
+        return;
+    }
+
+    const select = document.getElementById("selectVeiculo");
+    select.innerHTML = "";
+
+    const op1 = document.createElement("option");
+    op1.value = `${resp.placa}|${resp.modelo}`;
+    op1.text = `${resp.placa} - ${resp.modelo}`;
+    select.appendChild(op1);
+
+    if (resp.placa2) {
+
+        const op2 = document.createElement("option");
+        op2.value = `${resp.placa2}|${resp.modelo2}`;
+        op2.text = `${resp.placa2} - ${resp.modelo2}`;
+        select.appendChild(op2);
+
+    }
+
+    document.getElementById("blocoVeiculo").style.display = "block";
+
+} else {
+
+    document.getElementById("blocoVeiculo").style.display = "none";
 
 }
   // ===== CÓDIGO ERO =====
@@ -346,6 +366,7 @@ img.onerror = function(){
   document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
 
 window.dadosValidacao = resp;
+window.exigePlaca = resp.exige_placa === true;
 
 console.log(resp.logoURL);
 
@@ -627,7 +648,7 @@ function beneficioSelecionado(){
 
    if(!beneficio) return;
 
-   if(window.dadosValidacao.placa){
+   if(window.exigePlaca){
 
       document.getElementById(
          "blocoVeiculo"
