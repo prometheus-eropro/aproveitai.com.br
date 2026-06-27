@@ -38,7 +38,8 @@ body{
 }
 
 .ativo{
-  border-top:10px solid #0a7a3c;
+border-top:12px solid #ffc107;
+background:#fff8dc;
 }
 
 .inativo{
@@ -102,7 +103,7 @@ if (status === "ativo") {
 
   card.classList.add("ativo");
 
-  titulo.innerHTML = `✅ Cadastro ativo`;
+  titulo.innerHTML = `⚠️ CPF JÁ CADASTRADO`;
   mensagem.innerHTML = `
 Olá, <strong>${nome}</strong> 👋<br><br>
 Seu cpf ja esta cadastrado e já está <strong>ATIVO</strong> na Plataforma AproveitAI.<br><br>

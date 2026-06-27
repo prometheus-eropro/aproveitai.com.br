@@ -333,16 +333,56 @@ if (r.ok && r.status === "CADASTRO_RECEBIDO") {
   return;
 
     } else if (r.status === "JA_ATIVO") {
-      box.innerHTML = `✅ ${r.nome}, seu CPF já está ativo.`;
-    } else if (r.status === "JA_INATIVO") {
-      box.innerHTML = `
-        ⚠️ ${r.nome}, seu cadastro está inativo.<br><br>
-        <a href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20meu%20cadastro%20AproveitAI."
-        class="btn-aproveitai">📲 Solicitar ativação</a>
-      `;
-    } else {
-      box.innerHTML = "⚠️ Não foi possível concluir o cadastro.";
-    }
+
+    window.location.href =
+      "cadastro-status.html?status=ativo&nome=" +
+      encodeURIComponent(r.nome);
+
+    return;
+
+}
+
+} else if (r.status === "JA_INATIVO") {
+
+    window.location.href =
+      "cadastro-status.html?status=inativo&nome=" +
+      encodeURIComponent(r.nome);
+
+    return;
+
+}
+
+    } 
+else {
+
+    box.style.display = "block";
+    box.style.background = "#fdecea";
+    box.style.border = "2px solid #dc3545";
+    box.style.color = "#721c24";
+    box.style.padding = "20px";
+    box.style.borderRadius = "10px";
+
+    box.innerHTML = `
+        <h3>❌ Cadastro não realizado</h3>
+
+        <p><strong>Motivo:</strong> ${r.mensagem || "Ocorreu um erro inesperado."}</p>
+
+        <p>Verifique os dados informados e tente novamente.</p>
+
+        <ul style="text-align:left;">
+            <li>✔ Confira se o CPF está correto.</li>
+            <li>✔ Confira o número do WhatsApp.</li>
+            <li>✔ Confira a data de nascimento.</li>
+            <li>✔ Caso o problema continue, entre em contato com o suporte.</li>
+        </ul>
+
+        <a href="https://wa.me/5528999692303"
+           class="btn-aproveitai">
+           💬 Falar com o Suporte
+        </a>
+    `;
+
+}
 
     document.getElementById(callback)?.remove();
     delete window[callback];
