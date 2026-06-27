@@ -218,7 +218,14 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD
 let intervaloCronometro = null;
 
 const params = new URLSearchParams(window.location.search);
-const parceiroId = params.get("p") || params.get("parceiro_id") || params.get("id") || params.get("parceiro");
+const parceiroId =
+  params.get("p") ||
+  params.get("parceiro_id") ||
+  params.get("parceiro");
+
+const clienteId =
+  params.get("id") ||
+  params.get("cliente");
 
 
 const elMsg = document.getElementById("msg");
@@ -239,6 +246,16 @@ function somenteNumeros(v) {
    VALIDAÇÃO
 ============================= */
 function validar() {
+
+if (clienteId) {
+
+   // fluxo QR Cliente
+
+} else {
+
+   // fluxo atual (CPF + nascimento)
+
+}
 
   document.getElementById("blocoBeneficio").style.display = "none";
   document.getElementById("blocoVeiculo").style.display = "none";
@@ -700,8 +717,9 @@ if(!beneficio){
 }
 
  const cpf =
- document.getElementById("cpf")
- .value.replace(/\D/g,"");
+window.cpfCliente ||
+document.getElementById("cpf")
+.value.replace(/\D/g,"");
 
  const script =
  document.createElement("script");
