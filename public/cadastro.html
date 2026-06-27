@@ -5,6 +5,7 @@
   <title>Cadastro | Plataforma AproveitAI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+
   <style>
     .card-info {
       background: #f1fbff;
@@ -318,21 +319,25 @@ form.addEventListener("submit", function(e){
   const callback = "retornoCadastro_" + Date.now();
 
   window[callback] = function(r) {
-if (r.ok && r.status === "CADASTRO_RECEBIDO") {
-  localStorage.setItem("ultimoCadastroNome", r.nome || "");
-  localStorage.setItem("ultimoCadastroCPF", dados.get("cpf") || "");
 
-  window.location.href =
-    "cadastro-sucesso.html?nome=" +
-    encodeURIComponent(r.nome || "") +
-    "&id=" +
-    encodeURIComponent(r.idPublico || "") +
-    "&testeAte=" +
-    encodeURIComponent(r.testeAte || "");
+  console.log("RETORNO DO GAS:", r);
 
-  return;
+  if (r.ok && r.status === "CADASTRO_RECEBIDO") {
 
-    } else if (r.status === "JA_ATIVO") {
+    localStorage.setItem("ultimoCadastroNome", r.nome || "");
+    localStorage.setItem("ultimoCadastroCPF", dados.get("cpf") || "");
+
+    window.location.href =
+      "cadastro-sucesso.html?nome=" +
+      encodeURIComponent(r.nome || "") +
+      "&id=" +
+      encodeURIComponent(r.idPublico || "") +
+      "&testeAte=" +
+      encodeURIComponent(r.testeAte || "");
+
+    return;
+
+  } else if (r.status === "JA_ATIVO") {
 
     window.location.href =
       "cadastro-status.html?status=ativo&nome=" +
@@ -340,9 +345,7 @@ if (r.ok && r.status === "CADASTRO_RECEBIDO") {
 
     return;
 
-}
-
-} else if (r.status === "JA_INATIVO") {
+  } else if (r.status === "JA_INATIVO") {
 
     window.location.href =
       "cadastro-status.html?status=inativo&nome=" +
@@ -350,10 +353,7 @@ if (r.ok && r.status === "CADASTRO_RECEBIDO") {
 
     return;
 
-}
-
-    } 
-else {
+  } else {
 
     box.style.display = "block";
     box.style.background = "#fdecea";
@@ -363,31 +363,31 @@ else {
     box.style.borderRadius = "10px";
 
     box.innerHTML = `
-        <h3>❌ Cadastro não realizado</h3>
+      <h3>❌ Cadastro não realizado</h3>
 
-        <p><strong>Motivo:</strong> ${r.mensagem || "Ocorreu um erro inesperado."}</p>
+      <p><strong>Motivo:</strong> ${r.mensagem || "Ocorreu um erro inesperado."}</p>
 
-        <p>Verifique os dados informados e tente novamente.</p>
+      <p>Verifique os dados informados e tente novamente.</p>
 
-        <ul style="text-align:left;">
-            <li>✔ Confira se o CPF está correto.</li>
-            <li>✔ Confira o número do WhatsApp.</li>
-            <li>✔ Confira a data de nascimento.</li>
-            <li>✔ Caso o problema continue, entre em contato com o suporte.</li>
-        </ul>
+      <ul style="text-align:left;">
+        <li>✔ Confira se o CPF está correto.</li>
+        <li>✔ Confira o número do WhatsApp.</li>
+        <li>✔ Confira a data de nascimento.</li>
+        <li>✔ Caso o problema continue, entre em contato com o suporte.</li>
+      </ul>
 
-        <a href="https://wa.me/5528999692303"
-           class="btn-aproveitai">
-           💬 Falar com o Suporte
-        </a>
+      <a href="https://wa.me/5528999692303"
+         class="btn-aproveitai">
+         💬 Falar com o Suporte
+      </a>
     `;
 
-}
+  }
 
-    document.getElementById(callback)?.remove();
-    delete window[callback];
-  };
+  document.getElementById(callback)?.remove();
+  delete window[callback];
 
+};
   const params = new URLSearchParams(dados);
   params.set("acao", "cadastrarCliente");
   params.set("callback", callback);
