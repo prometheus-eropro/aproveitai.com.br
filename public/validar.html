@@ -123,7 +123,6 @@ body {
 
 </div>
 
-  <span id="nomeParceiro" style="font-weight:700;font-size:18px"></span>
 </div>
 <br>
   <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
@@ -227,7 +226,6 @@ const clienteId =
   params.get("id") ||
   params.get("cliente");
 
-
 const elMsg = document.getElementById("msg");
 const elBtn = document.getElementById("btnValidar");
 
@@ -247,10 +245,7 @@ function somenteNumeros(v) {
 ============================= */
 function validar() {
 
-  // ==========================
-  // FLUXO QR DO CLIENTE
-  // ==========================
-  if (clienteId) {
+if (clienteId) {
 
     mostrarMsg("⏳ Validando cliente...");
 
@@ -270,56 +265,7 @@ function validar() {
     document.body.appendChild(script);
 
     return;
-  }
 
-  // ==========================
-  // FLUXO ATUAL (QR PARCEIRO)
-  // ==========================
-
-  document.getElementById("blocoBeneficio").style.display = "none";
-  document.getElementById("blocoVeiculo").style.display = "none";
-  document.getElementById("blocoGerarERO").style.display = "none";
-
-  document.getElementById("beneficioSelecionado").innerHTML = "";
-
-  document.getElementById("btnConfirmar").style.display = "none";
-  document.getElementById("btnGerarERO").style.display = "none";
-
-  const cpf = document.getElementById("cpf").value.replace(/\D/g,"");
-  const nascimento = document.getElementById("nascimento").value;
-
-  if (cpf.length != 11){
-      mostrarMsg("⚠ CPF inválido");
-      return;
-  }
-
-  if (!nascimento){
-      mostrarMsg("⚠ Informe a data de nascimento");
-      return;
-  }
-
-  if (!parceiroId){
-      mostrarMsg("QR inválido");
-      return;
-  }
-
-  mostrarMsg("⏳ Validando benefício...");
-
-  const old = document.getElementById("jsonpReq");
-  if(old) old.remove();
-
-  const script = document.createElement("script");
-  script.id = "jsonpReq";
-
-  script.src =
-    GAS_URL +
-    "?callback=retornoValidacao" +
-    "&acao=validarParceiro" +
-    "&cpf=" + encodeURIComponent(cpf) +
-    "&nascimento=" + encodeURIComponent(nascimento) +
-    "&p=" + encodeURIComponent(parceiroId);
-
-  document.body.appendChild(script);
 }
 
   document.getElementById("blocoBeneficio").style.display = "none";
@@ -381,7 +327,12 @@ document.getElementById("blocoCodigo")
     mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
     return;
   }
-document.getElementById("btnValidar").disabled = true;
+
+if(!clienteId){
+
+document.getElementById("btnValidar").disabled=true;
+
+}
 
   // ===== VEÍCULO =====
 if (resp.exige_placa) {
@@ -432,7 +383,9 @@ if (resp.exige_placa) {
 
 const img = document.getElementById("logoParceiro");
 
-img.src = `/logos/${parceiroId}.png`;
+img.src =
+resp.logoURL ||
+`/logos/${window.parceiroId || parceiroId}.png`;
 
 img.onload = function(){
    this.style.display = "block";
@@ -449,13 +402,15 @@ img.onerror = function(){
 
 window.dadosValidacao = resp;
 window.cpfCliente = resp.cpf || "";
-
+window.parceiroId =
+resp.parceiro_id ||
+parceiroId;
 window.exigePlaca = resp.exige_placa === true;
 
 console.log(resp.logoURL);
 
 carregarBeneficios(
-  parceiroId,
+  window.parceiroId || parceiroId,
   resp.grupo
 );
 
@@ -510,22 +465,22 @@ mostrarMsg("⏳ Confirmando desconto...");
 const script =
 document.createElement("script");
 
+const origem =
+  clienteId
+    ? "qr_cliente"
+    : "validacao_parceiro";
+
 script.src =
-GAS_URL +
-"?callback=retornoConfirmacao" +
-"&acao=confirmarERO" +
-"&codigoERO=" +
-encodeURIComponent(codigoERO) +
-"&parceiro_id=" +
-encodeURIComponent(parceiroId) +
-"&beneficio=" +
-encodeURIComponent(beneficio) +
-"&placa=" +
-encodeURIComponent(placa) +
-"&modelo=" +
-encodeURIComponent(modelo) +
-"&canal=SITE" +
-"&origem=validacao_parceiro";
+  GAS_URL +
+  "?callback=retornoConfirmacao" +
+  "&acao=confirmarERO" +
+  "&codigoERO=" + encodeURIComponent(codigoERO) +
+  "&parceiro_id=" + encodeURIComponent(window.parceiroId) +
+  "&beneficio=" + encodeURIComponent(beneficio) +
+  "&placa=" + encodeURIComponent(placa) +
+  "&modelo=" + encodeURIComponent(modelo) +
+  "&canal=SITE" +
+  "&origem=" + encodeURIComponent(origem);
 
 document.body.appendChild(script);
 }
@@ -784,6 +739,16 @@ if(!beneficio){
    return;
 }
 
+if(clienteId){
+
+console.log("QR CLIENTE");
+
+}else{
+
+console.log("QR PARCEIRO");
+
+}
+
  const cpf =
 window.cpfCliente ||
 document.getElementById("cpf")
@@ -797,8 +762,8 @@ document.getElementById("cpf")
  "?callback=retornoGeracaoERO" +
  "&acao=gerarERO" +
  "&cpf=" + encodeURIComponent(cpf) +
- "&parceiro_id=" +
- encodeURIComponent(parceiroId);
+"&parceiro_id=" +
+encodeURIComponent(window.parceiroId || parceiroId);
 
  document.body.appendChild(script);
 
@@ -841,6 +806,26 @@ function retornoGeracaoERO(resp){
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
+
+<script>
+
+window.onload = function(){
+
+   if(clienteId){
+
+      document.querySelectorAll("label")[0].style.display="none";
+      document.querySelectorAll("label")[1].style.display="none";
+
+      document.getElementById("cpf").style.display="none";
+      document.getElementById("nascimento").style.display="none";
+
+      document.getElementById("btnValidar").click();
+
+   }
+
+}
+
+</script>
 
 </body>
 </html>
