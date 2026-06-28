@@ -35,9 +35,18 @@ body {
 }
 
 </style>
+<link rel="manifest" href="manifest-validar.json">
+<meta name="theme-color" content="#198754">
 </head>
 
 <body>
+
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw-validar.js");
+}
+</script>
+
 <header class="site-header">
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus" alt="Prometheus">
@@ -61,21 +70,48 @@ body {
 
 <div id="blocoCamera" style="text-align:center;margin-bottom:20px">
 
-<button id="btnCamera"
-        onclick="iniciarCamera()"
-        style="background:#0a7a3c">
+<button
+id="btnCamera"
+onclick="iniciarCamera()"
+style="
+width:100%;
+padding:22px;
+margin-bottom:15px;
+background:#0a7a3c;
+color:white;
+font-size:24px;
+font-weight:bold;
+border:none;
+border-radius:12px;
+cursor:pointer;
+">
 
-📷 Iniciar câmera
+📷 INICIAR LEITOR DO QR CODE
 
 </button>
 
+<div id="msgCamera"
+style="
+display:none;
+margin-bottom:15px;
+font-size:18px;
+font-weight:bold;
+text-align:center;
+color:#0a7a3c;
+">
+
+📱 Aponte a câmera para o QR Code do cartão do cliente
+
+</div>
+
 <div id="reader"
-     style="
-        width:300px;
-        margin:15px auto;
-        display:none;
+style="
+width:300px;
+margin:15px auto;
+display:none;
 ">
 </div>
+
 
 </div>
 
@@ -239,13 +275,26 @@ let intervaloCronometro = null;
 
 const params = new URLSearchParams(window.location.search);
 
+/* ==========================
+   VERIFICA SE PARCEIRO ESTÁ LOGADO
+========================== */
+
+const parceiroToken = sessionStorage.getItem("parceiroToken");
+const parceiroCNPJ  = sessionStorage.getItem("parceiroCNPJ");
+
+if (!parceiroToken || !parceiroCNPJ){
+
+   location.href="painelparceiro.html";
+
+}
+
 const parceiroId =
     sessionStorage.getItem("parceiroId") ||
     params.get("p") ||
     params.get("parceiro_id") ||
     params.get("parceiro");
 
-const clienteId =
+let clienteId =
     params.get("idPublico") ||
     params.get("id") ||
     params.get("cliente");
@@ -255,23 +304,41 @@ let lendo = false;
 
 async function iniciarCamera(){
 
+   const btn =
+      document.getElementById("btnCamera");
+
+   btn.innerHTML="📷 Abrindo câmera...";
+   btn.disabled=true;
+
    document.getElementById("reader").style.display="block";
 
-   if(!leitor)
-      leitor = new Html5Qrcode("reader");
+   document.getElementById("msgCamera").style.display="block";
 
-   await leitor.start(
+if(!leitor){
+   leitor = new Html5Qrcode("reader");
+}
 
-      { facingMode:"environment" },
+   try{
 
-      {
-         fps:10,
-         qrbox:220
-      },
+    await leitor.start(
+        { facingMode:"environment" },
+        {
+            fps:10,
+            qrbox:220
+        },
+        qrLido
+    );
 
-      qrLido
+    btn.style.display="none";
 
-   );
+}catch(e){
+
+    btn.innerHTML="📷 INICIAR LEITOR DO QR CODE";
+    btn.disabled=false;
+
+    mostrarMsg("Não foi possível abrir a câmera.");
+
+    console.error(e);
 
 }
 
@@ -282,6 +349,7 @@ async function qrLido(texto){
    lendo = true;
 
    await leitor.stop();
+   document.getElementById("msgCamera").style.display="none";
 
    let id = texto;
 
@@ -305,12 +373,8 @@ async function qrLido(texto){
 
    }
 
-   location.href =
-"validar.html?idPublico=" +
-encodeURIComponent(id) +
-"&p=" +
-encodeURIComponent(parceiroId);
-
+   clienteId = id;
+validar();
 }
 
 const elMsg = document.getElementById("msg");
@@ -893,7 +957,7 @@ function retornoGeracaoERO(resp){
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
-
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
 
 window.onload=function(){
@@ -922,6 +986,11 @@ window.onload=function(){
 
 }
 
+function resetar(){
+
+   lendo=false;
+
+}
 </script>
 
 </body>
