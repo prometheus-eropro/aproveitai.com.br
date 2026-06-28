@@ -58,6 +58,27 @@ body {
 </div>
 
 <div class="container">
+
+<div id="blocoCamera" style="text-align:center;margin-bottom:20px">
+
+<button id="btnCamera"
+        onclick="iniciarCamera()"
+        style="background:#0a7a3c">
+
+📷 Iniciar câmera
+
+</button>
+
+<div id="reader"
+     style="
+        width:300px;
+        margin:15px auto;
+        display:none;
+">
+</div>
+
+</div>
+
   <h2>Validação de Benefício</h2>
 
 <div id="versaoSistema"
@@ -217,14 +238,80 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD
 let intervaloCronometro = null;
 
 const params = new URLSearchParams(window.location.search);
+
 const parceiroId =
-  params.get("p") ||
-  params.get("parceiro_id") ||
-  params.get("parceiro");
+    sessionStorage.getItem("parceiroId") ||
+    params.get("p") ||
+    params.get("parceiro_id") ||
+    params.get("parceiro");
 
 const clienteId =
-  params.get("id") ||
-  params.get("cliente");
+    params.get("idPublico") ||
+    params.get("id") ||
+    params.get("cliente");
+
+let leitor = null;
+let lendo = false;
+
+async function iniciarCamera(){
+
+   document.getElementById("reader").style.display="block";
+
+   if(!leitor)
+      leitor = new Html5Qrcode("reader");
+
+   await leitor.start(
+
+      { facingMode:"environment" },
+
+      {
+         fps:10,
+         qrbox:220
+      },
+
+      qrLido
+
+   );
+
+}
+
+async function qrLido(texto){
+
+   if(lendo) return;
+
+   lendo = true;
+
+   await leitor.stop();
+
+   let id = texto;
+
+   if(texto.includes("http")){
+
+      try{
+
+         id =
+         new URL(texto)
+         .searchParams
+         .get("idPublico");
+
+      }catch(e){}
+
+   }
+
+   if(!id){
+
+      mostrarMsg("QR inválido");
+      return;
+
+   }
+
+   location.href =
+"validar.html?idPublico=" +
+encodeURIComponent(id) +
+"&p=" +
+encodeURIComponent(parceiroId);
+
+}
 
 const elMsg = document.getElementById("msg");
 const elBtn = document.getElementById("btnValidar");
@@ -809,17 +896,27 @@ function retornoGeracaoERO(resp){
 
 <script>
 
-window.onload = function(){
+window.onload=function(){
 
    if(clienteId){
 
-      document.querySelectorAll("label")[0].style.display="none";
-      document.querySelectorAll("label")[1].style.display="none";
+      document.getElementById("blocoCamera")
+      .style.display="none";
 
-      document.getElementById("cpf").style.display="none";
-      document.getElementById("nascimento").style.display="none";
+      document.querySelectorAll("label")[0]
+      .style.display="none";
 
-      document.getElementById("btnValidar").click();
+      document.querySelectorAll("label")[1]
+      .style.display="none";
+
+      document.getElementById("cpf")
+      .style.display="none";
+
+      document.getElementById("nascimento")
+      .style.display="none";
+
+      document.getElementById("btnValidar")
+      .click();
 
    }
 
