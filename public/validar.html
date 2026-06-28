@@ -4,7 +4,16 @@
 <meta charset="UTF-8">
 <title>Validação de Benefício | Parceiro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
+<style>const parceiroId =
+    sessionStorage.getItem("parceiroId") ||
+    params.get("p") ||
+    params.get("parceiro_id") ||
+    params.get("parceiro");
+
+console.log("parceiroId =", parceiroId);
+console.log("URL =", location.href);
+console.log("session parceiroId =", sessionStorage.getItem("parceiroId"));
+
   body { font-family: Arial, sans-serif; background:#eaf6ff; padding:20px; }
   .container { max-width:420px; margin:auto; background:#fff; padding:20px; border-radius:10px; }
   h2 { color:#0a7a3c; text-align:center; }
