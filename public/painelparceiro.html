@@ -154,6 +154,8 @@ function jsonp(url) {
    const url = `${API_URL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
 const data = await jsonp(url);
 
+console.log(data);
+
 if (!data || data.erro) {
   box.innerHTML = "❌ Acesso negado.";
   return;

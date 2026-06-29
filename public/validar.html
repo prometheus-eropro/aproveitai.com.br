@@ -6,6 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>const parceiroId =
     sessionStorage.getItem("parceiroId") ||
+
+console.log("SESSION parceiroId:", sessionStorage.getItem("parceiroId"));
+console.log("VAR parceiroId:", parceiroId);
+console.log("URL:", location.href);
+
     params.get("p") ||
     params.get("parceiro_id") ||
     params.get("parceiro");
@@ -133,7 +138,7 @@ display:none;
        font-weight:bold;
        margin-bottom:10px;
      ">
-  VERSÃO 20250624-002
+  VERSÃO 20250624-003
 </div>
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
@@ -302,6 +307,12 @@ const parceiroId =
     params.get("p") ||
     params.get("parceiro_id") ||
     params.get("parceiro");
+
+console.log("================================");
+console.log("parceiroId:", parceiroId);
+console.log("session:", sessionStorage.getItem("parceiroId"));
+console.log("URL:", location.href);
+console.log("================================");
 
 let clienteId =
     params.get("idPublico") ||
