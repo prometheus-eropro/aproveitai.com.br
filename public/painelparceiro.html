@@ -140,10 +140,24 @@ onclick="mostrarTela('manual')">
 
 <div id="tela-validacao">
 
-<!-- todo o código atual da validação -->
+<label>
+Valide pelo CPF ou ID do Cliente.
+</label>
+
+<input id="cpfCliente"
+placeholder="Digite o CPF ou APV">
+
+<div id="resultadoCliente"></div>
+
+<div id="boxResultado"></div>
+
+<button
+class="btn-aproveitai"
+onclick="validarCliente()">
+Validar Cliente
+</button>
 
 </div>
-
 <div
 id="tela-beneficios"
 style="display:none;">
@@ -231,42 +245,7 @@ Em breve.
 
 
 
-    <label>Valide pelo CPF ou ID do Cliente confira os dados e se esta ATIVO, e BOAS VENDAS</label>
-    <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
-
     
-    <div id="resultadoCliente" style="margin-top: 15px;"></div>
-
-    <!-- Resultado detalhado -->
-    <div id="boxResultado" style="
-      display:none;
-      margin-top:25px;
-      padding:18px;
-      border-radius:12px;
-      border:2px solid #198754;
-      background:#f6fff8;
-      font-size:15px;
-      line-height:1.6;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    "></div>
-<button class="btn-aproveitai" onclick="validarCliente()">Validar Cliente</button>
-    <!-- Relatório -->
-    <div style="margin-top: 20px;">
-<button onclick="window.location.href='validar.html'">
-📷 Validar QR Code
-</button>
-
-<button onclick="window.location.href='relatorio.html?relatorio=1'">
-  📊 Ver relatório
-</button>
-
-    
-    </div>
-
-    <!-- Sair -->
-    <div style="margin-top:15px;text-align:center;">
-      <button onclick="location.reload()" class="vermelho">⬅️ Sair / Voltar</button>
-    </div>
   </div>
 </div>
 
@@ -337,6 +316,7 @@ console.log(
 );
 
 carregarResumoParceiro();
+mostrarTela("validacao");
 
 
 
@@ -521,16 +501,17 @@ Clientes Diferentes: ${d.clientes}
 
 function mostrarTela(nome){
 
-document
-.querySelectorAll("[id^='tela-']")
-.forEach(t=>t.style.display="none");
+  document
+    .querySelectorAll("[id^='tela-']")
+    .forEach(t => t.style.display = "none");
 
-document.getElementById(
-"tela-"+nome
-).style.display="block";
+  const tela = document.getElementById("tela-" + nome);
+
+  if(tela){
+    tela.style.display = "block";
+  }
 
 }
-
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
