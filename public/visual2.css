@@ -14,7 +14,17 @@
 
 body{
 
-background:#f7fbf5;
+background:linear-gradient(
+
+180deg,
+
+#ffffff,
+
+#f5fbf5,
+
+#edf8ee
+
+);
 
 font-family:"Segoe UI",Arial,sans-serif;
 
@@ -27,6 +37,12 @@ background:#ffffff;
 padding:20px;
 
 box-shadow:0 4px 15px rgba(0,0,0,.08);
+
+}
+
+.brandline{
+
+gap:45px;
 
 }
 
@@ -80,15 +96,15 @@ text-align:center;
 
 background:var(--verde);
 
-border-radius:12px;
+border-radius:10px;
 
-padding:14px 22px;
+padding:10px 16px;
 
-min-width:190px;
+min-width:155px;
 
 text-align:center;
 
-font-size:15px;
+font-size:14px;
 
 font-weight:700;
 
@@ -132,7 +148,7 @@ font-size:17px;
 
 .container-parceiros{
 
-gap:30px;
+gap:22px;
 
 }
 
@@ -186,7 +202,13 @@ font-size:16px;
 
 .container-parceiros .card{
 
-padding:28px;
+padding:18px;
+
+border-radius:20px;
+
+box-shadow:0 10px 24px rgba(0,0,0,.10);
+
+transition:.30s;
 
 background:#ffffff;
 
@@ -229,4 +251,42 @@ padding:10px;
 font-size:12px;
 
 }
+
+.container-parceiros .card img{
+
+max-height:115px !important;
+
+margin-bottom:12px;
+
+}
+
+.filtros{
+
+max-width:980px !important;
+
+}
+
+.footer{
+
+padding:6px 10px !important;
+
+}
+
+.footer-container{
+
+padding:10px !important;
+
+gap:10px !important;
+
+}
+
+.footer-copy{
+
+padding:6px !important;
+
+font-size:12px;
+
+}
+
+
 
