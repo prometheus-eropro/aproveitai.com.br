@@ -20,61 +20,157 @@ href="style.css">
 
 <script src="js/include.js" defer></script>
 
+<link rel="stylesheet" href="visual2.css?v=2.0.0">
+
 </head>
 
 <body>
 
 <header class="site-header">
-  <div class="brandline">
-    <img src="logo-prometheus.png" class="logo logo-prometheus">
-    <div class="brand-center">
-      <h1 class="site-title">Plataforma AproveitAI</h1>
-      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
-      <p class="boas-vindas">
-        Bem-vindo à <strong>PROMETHEUS EROPRO Soluções Inteligentes</strong><br>
-        Assine e comece a economizar de verdade.
-      </p>
-    </div>
-    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
-  </div>
+
+<div class="brandline">
+
+<img src="logo-prometheus.png" class="logo logo-prometheus">
+
+<div class="brand-center">
+
+<h1 class="site-title">
+Plataforma AproveitAI
+</h1>
+
+<p class="slogan-principal">
+
+Economize mais. Aproveite melhor.
+
+</p>
+
+<p class="slogan">
+
+Tecnologia com ConsciêncIA gera Resultado.
+
+</p>
+
+<p class="subtitulo">
+
+Conectando clientes e parceiros através da tecnologia.
+
+</p>
+
+</div>
+
+<img src="logo-aproveitai.png" class="logo logo-aproveitai">
+
+</div>
+
 </header>
-<div style="
-  background:#fff3cd;
-  color:#856404;
-  padding:8px;
-  text-align:center;
-  font-size:13px;
-">
-  ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
+
+<div class="top-alerta">
+
+⚠️ Os benefícios e promoções são concedidos exclusivamente pelos parceiros participantes e estão sujeitos à validação no sistema.
+
 </div>
 
 <!-- BOTÕES PRINCIPAIS -->
 <div class="botoes-centrais">
-   <a href="institucional.html" class="btn-aproveitai">🏢 Quem Somos</a>
-  <a href="beneficios.html" class="btn-aproveitai">🎁 Benefícios</a>
-    <a href="promocoes.html" class="btn-aproveitai">🔥 Promoções</a>
-  <a href="painelcliente.html" class="btn-aproveitai">👤 Área do Cliente</a>
-  <a href="painelparceiro.html" class="btn-aproveitai">🏪 Área do Parceiro</a>
-<a
-  href="https://api.whatsapp.com/send?phone=5528999692303&text=Olá!%20Quero%20ser%20parceiro%20do%20Cartão%20AproveitAI.%0A%0ANome%20do%20negócio:%0ACidade:%0ARamo:%0ATelefone:%0AInstagram:%0A%0AObrigado!"
-  target="_blank"
-  class="btn-aproveitai"
->
-  🏪 Quero ser parceiro
+
+<a href="comoutilizar.html" class="btn-aproveitai">
+📖 Como Utilizar
 </a>
+
 <a href="cadastro.html" class="btn-aproveitai">
-  🏪 Quero ser cliente
+👤 Quero ser Cliente
+</a>
+
+<a
+href="https://api.whatsapp.com/send?phone=5528999692303&text=Olá!
+
+Tenho interesse em conhecer a Plataforma AproveitAI e desejo receber informações para me tornar um parceiro.
+
+Nome do estabelecimento:
+Cidade:
+Ramo:
+Telefone:
+
+Obrigado!"
+target="_blank"
+class="btn-aproveitai">
+
+🏪 Quero ser Parceiro
+
+</a>
+
+<a href="#parceiros" class="btn-aproveitai">
+
+🔎 Encontrar Parceiros
+
+</a>
+
+<a href="beneficios.html" class="btn-aproveitai">
+
+🎁 Benefícios
+
+</a>
+
+<a href="promocoes.html" class="btn-aproveitai">
+
+🔥 Promoções
+
+</a>
+
+<a href="painelcliente.html" class="btn-aproveitai">
+
+👤 Área do Cliente
+
+</a>
+
+<a href="painelparceiro.html" class="btn-aproveitai">
+
+🏪 Área do Parceiro
+
 </a>
 
 </div>
 
+<section class="titulo-pesquisa">
+
+<h2>
+
+🔎 Encontre um Parceiro
+
+</h2>
+
+<p>
+
+Localize empresas participantes da Plataforma AproveitAI e conheça seus benefícios exclusivos.
+
+</p>
+
+</section>
 
 <div class="filtros">
   <input type="text" id="buscaNome" placeholder="Buscar por nome">
   <select id="buscaCidade"><option value="">Todas as cidades</option></select>
   <select id="buscaRamo"><option value="">Todos os ramos</option></select>
-  <button onclick="filtrar()">Filtrar</button>
+  <button onclick="filtrar()">
+
+🔎 Pesquisar
+
+</button>
 </div>
+
+<section class="titulo-cards">
+
+<h2>
+🏪 Parceiros Participantes
+</h2>
+
+<p>
+
+Empresas participantes da Plataforma AproveitAI.
+
+</p>
+
+</section>
 
 <div class="cards-wrapper">
   <div id="parceiros" class="container-parceiros">
@@ -141,7 +237,7 @@ function renderizar(lista) {
   parceirosDiv.innerHTML = "";
 
   if (!lista.length) {
-    parceirosDiv.innerHTML = "<p>Nenhum parceiro encontrado.</p>";
+    parceirosDiv.innerHTML = "<p>Nenhum parceiro encontrado com os filtros informados.</p>";
     return;
   }
 
@@ -165,8 +261,8 @@ let logo = `/logos/${p.parceiro_id}.png`;
       <div class="card">
         <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
         <h3>${nome}</h3>
-        <p><b>Cidade:</b> ${cidade}</p>
-        <p><b>Ramo:</b> ${ramo}</p>
+        <p>📍 <b>Cidade:</b> ${cidade}</p>
+        <p>🏷 <b>Categoria:</b> ${ramo}</p>
         ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
 
         <div class="card-contatos-texto">
@@ -205,6 +301,13 @@ function filtrar() {
 
 
 function carregarParceiros() {
+
+parceirosDiv.innerHTML = `
+<div class="loading">
+⏳ Carregando parceiros...
+</div>
+`;
+
   fetch(API_URL + "?aba=parceiros")
     .then(r => r.json())
     .then(res => {

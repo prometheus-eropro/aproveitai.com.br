@@ -47,10 +47,29 @@ if (footer) {
 
 }
 
+/* ==========================
+   ATUALIZA CSS AUTOMÁTICO
+==========================*/
+
 const css = document.getElementById("cssMain");
 
-if (css && typeof CONFIG !== "undefined") {
+if(css && typeof CONFIG !== "undefined"){
 
-    css.href = "style.css?v=" + CONFIG.versao;
+    css.href =
+        "style.css?v=" + CONFIG.versao;
 
+}
+
+const versao=document.getElementById("versaoSistema");
+
+if(versao && typeof CONFIG!=="undefined"){
+
+    versao.innerHTML=CONFIG.versao;
+
+}
+
+const ano = document.getElementById("anoSistema");
+
+if (ano) {
+    ano.textContent = new Date().getFullYear();
 }

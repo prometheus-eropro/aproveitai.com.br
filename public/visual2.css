@@ -1,0 +1,177 @@
+/* =====================================================
+   VISUAL 2.0 – APROVEITAI
+===================================================== */
+
+:root{
+
+--verde:#0B7A2A;
+--verde-claro:#E8FFE5;
+--amarelo:#FFD400;
+--branco:#FFFFFF;
+--cinza:#444;
+
+}
+
+body{
+
+background:#eef8ff;
+
+font-family:"Segoe UI",Arial,sans-serif;
+
+}
+
+.site-header{
+
+background:#ffffff;
+
+padding:20px;
+
+box-shadow:0 4px 15px rgba(0,0,0,.08);
+
+}
+
+.site-title{
+
+font-size:38px;
+
+font-weight:800;
+
+color:var(--verde);
+
+}
+
+.slogan-principal{
+
+font-size:30px;
+
+font-weight:700;
+
+color:#d89d00;
+
+margin-top:10px;
+
+}
+
+.subtitulo{
+
+font-size:17px;
+
+color:#555;
+
+}
+
+.top-alerta{
+
+background:#fff7d6;
+
+border-bottom:3px solid var(--amarelo);
+
+padding:14px;
+
+font-size:15px;
+
+font-weight:600;
+
+text-align:center;
+
+}
+
+.btn-aproveitai{
+
+background:var(--verde);
+
+border-radius:12px;
+
+padding:14px 20px;
+
+font-size:15px;
+
+font-weight:700;
+
+transition:.25s;
+
+}
+
+.btn-aproveitai:hover{
+
+transform:translateY(-2px);
+
+box-shadow:0 6px 14px rgba(0,0,0,.15);
+
+}
+
+.titulo-pesquisa{
+
+margin:45px 0 20px;
+
+text-align:center;
+
+}
+
+.titulo-pesquisa h2{
+
+font-size:32px;
+
+color:var(--verde);
+
+}
+
+.titulo-pesquisa p{
+
+color:#666;
+
+font-size:17px;
+
+}
+
+.container-parceiros{
+
+gap:30px;
+
+}
+
+.container-parceiros .card{
+
+border-radius:18px;
+
+box-shadow:0 8px 22px rgba(0,0,0,.08);
+
+transition:.25s;
+
+}
+
+.container-parceiros .card:hover{
+
+transform:translateY(-5px);
+
+}
+
+.footer{
+
+margin-top:50px;
+
+}
+
+.titulo-cards{
+
+text-align:center;
+
+margin:40px 0 20px;
+
+}
+
+.titulo-cards h2{
+
+color:#0B7A2A;
+
+font-size:30px;
+
+}
+
+.titulo-cards p{
+
+color:#666;
+
+font-size:16px;
+
+}

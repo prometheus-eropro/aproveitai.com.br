@@ -4,7 +4,7 @@
 
 const CONFIG = {
 
-    versao: "2026.06.29-002",
+    versao: "2026.06.29-001",
 
     empresa: "PROMETHEUS EROPRO",
 
@@ -16,7 +16,7 @@ const CONFIG = {
 
     instagram: "@cartao.aproveitai",
 
-    api: "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec"
+    api: "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec" ,
     
    apiCliente:"",
 
