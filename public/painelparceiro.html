@@ -76,6 +76,160 @@
 
     <div id="resumoParceiro"></div>
 
+<hr style="margin:20px 0">
+
+<div class="menu-parceiro">
+
+<button
+class="btn-menu"
+onclick="mostrarTela('validacao')">
+
+🟩 Validar Cliente
+
+</button>
+
+<button
+class="btn-menu"
+onclick="window.location='validar.html'">
+
+📷 Validar QR Code
+
+</button>
+
+<button
+class="btn-menu"
+onclick="mostrarTela('beneficios')">
+
+🎁 Meus Benefícios
+
+</button>
+
+<button
+class="btn-menu"
+onclick="mostrarTela('promocoes')">
+
+🔥 Minhas Promoções
+
+</button>
+
+<button
+class="btn-menu"
+onclick="window.location='relatorio.html?relatorio=1'">
+
+📈 Relatórios
+
+</button>
+
+<button
+class="btn-menu"
+onclick="mostrarTela('empresa')">
+
+🏪 Minha Empresa
+
+</button>
+
+<button
+class="btn-menu"
+onclick="mostrarTela('manual')">
+
+📖 Manual
+
+</button>
+
+</div>
+
+<div id="tela-validacao">
+
+<!-- todo o código atual da validação -->
+
+</div>
+
+<div
+id="tela-beneficios"
+style="display:none;">
+
+<h3>
+
+🎁 Meus Benefícios
+
+</h3>
+
+<p>
+
+Aqui serão exibidos os benefícios cadastrados.
+
+</p>
+
+<button class="btn-aproveitai">
+
+➕ Solicitar Novo Benefício
+
+</button>
+
+</div>
+
+<div
+id="tela-promocoes"
+style="display:none;">
+
+<h3>
+
+🔥 Minhas Promoções
+
+</h3>
+
+<p>
+
+Aqui serão exibidas suas promoções.
+
+</p>
+
+<button class="btn-aproveitai">
+
+➕ Solicitar Nova Promoção
+
+</button>
+
+</div>
+
+<div
+id="tela-empresa"
+style="display:none;">
+
+<h3>
+
+🏪 Minha Empresa
+
+</h3>
+
+<p>
+
+Aqui aparecerão os dados cadastrais.
+
+</p>
+
+</div>
+
+<div
+id="tela-manual"
+style="display:none;">
+
+<h3>
+
+📖 Manual do Parceiro
+
+</h3>
+
+<p>
+
+Em breve.
+
+</p>
+
+</div>
+
+
+
 
     <label>Valide pelo CPF ou ID do Cliente confira os dados e se esta ATIVO, e BOAS VENDAS</label>
     <input id="cpfCliente" placeholder="Digite o CPF (11 dígitos) ou APV-XXXXX">
@@ -362,6 +516,18 @@ Clientes Diferentes: ${d.clientes}
 </div>
 
 `;
+
+}
+
+function mostrarTela(nome){
+
+document
+.querySelectorAll("[id^='tela-']")
+.forEach(t=>t.style.display="none");
+
+document.getElementById(
+"tela-"+nome
+).style.display="block";
 
 }
 

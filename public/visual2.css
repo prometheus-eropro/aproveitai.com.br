@@ -288,5 +288,47 @@ font-size:12px;
 
 }
 
+.menu-parceiro{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+
+gap:12px;
+
+margin:20px 0;
+
+}
+
+.btn-menu{
+
+background:#0B7A2A;
+
+color:white;
+
+border:none;
+
+border-radius:12px;
+
+padding:16px;
+
+font-size:15px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.btn-menu:hover{
+
+background:#118a35;
+
+transform:translateY(-2px);
+
+}
 
 
