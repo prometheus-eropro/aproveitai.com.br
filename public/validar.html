@@ -51,6 +51,9 @@ body {
 </style>
 <link rel="manifest" href="manifest-validar.json">
 <meta name="theme-color" content="#198754">
+<script src="js/config.js"></script>
+
+<script src="js/include.js" defer></script>
 </head>
 
 <body>
@@ -74,6 +77,7 @@ if ("serviceWorker" in navigator) {
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai" alt="Aproveitai">
   </div>
+
 </header>
 
 <div style="background:#fff3cd;color:#856404;padding:8px;text-align:center;font-size:13px;">
@@ -131,32 +135,7 @@ display:none;
 
   <h2>Validação de Benefício</h2>
 
-<div id="versaoSistema"
-     style="
-       color:red;
-       font-size:18px;
-       font-weight:bold;
-       margin-bottom:10px;
-     ">
-  VERSÃO 20250624-004
-</div>
-  <label>CPF do Cliente</label>
-  <input id="cpf" placeholder="Somente números" inputmode="numeric">
-  <label>Data de nascimento do Cliente</label>
-  <input
-  id="nascimento"
-  type="text"
-  placeholder="DD/MM/AAAA"
-  maxlength="10"
->
-
-  
-<button
- id="btnValidar"
- onclick="validar()">
- Validar
-</button>
-
+ 
 <div style="margin-top:12px;font-size:14px;color:#333;text-align:left">
   <div style="
   margin-top:12px;
@@ -417,17 +396,27 @@ function somenteNumeros(v) {
 /* =============================
    VALIDAÇÃO
 ============================= */
-function validar() {
+function validar(){
 
-if (clienteId) {
+    if(!clienteId){
+
+        mostrarMsg("Leia o QR Code do cliente.");
+
+        return;
+
+    }
 
     mostrarMsg("⏳ Validando cliente...");
 
-    const old = document.getElementById("jsonpReq");
-    if (old) old.remove();
+    const old =
+    document.getElementById("jsonpReq");
 
-    const script = document.createElement("script");
-    script.id = "jsonpReq";
+    if(old) old.remove();
+
+    const script =
+    document.createElement("script");
+
+    script.id="jsonpReq";
 
     script.src =
       GAS_URL +
@@ -438,53 +427,8 @@ if (clienteId) {
 
     document.body.appendChild(script);
 
-    return;
-
 }
 
-  document.getElementById("blocoBeneficio").style.display = "none";
-  document.getElementById("blocoVeiculo").style.display = "none";
-  document.getElementById("blocoGerarERO").style.display = "none";
-
-  document.getElementById("beneficioSelecionado").innerHTML = "";
-
-  document.getElementById("btnConfirmar").style.display = "none";
-  document.getElementById("btnGerarERO").style.display = "none";
-
-  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
-const nascimento = document.getElementById("nascimento").value;
-
-if (cpf.length !== 11) {
-  mostrarMsg("⚠️ CPF inválido");
-  return;
-}
-
-if (!nascimento) {
-  mostrarMsg("⚠️ Informe a data de nascimento");
-  return;
-}
-
-  if (!parceiroId) {
-    mostrarMsg("❌ QR Code inválido");
-    return;
-  }
-
-  mostrarMsg("⏳ Validando benefício...");
-
-const old = document.getElementById("jsonpReq");
-if(old) old.remove();
-
-const script = document.createElement("script");
-script.id = "jsonpReq";
-script.src =
-  GAS_URL +
-  "?callback=retornoValidacao" +
-  "&acao=validarParceiro" +
-  "&cpf=" + encodeURIComponent(cpf) +
-"&nascimento=" + encodeURIComponent(nascimento) +
-"&p=" + encodeURIComponent(parceiroId);
-document.body.appendChild(script);
-}
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
@@ -979,6 +923,15 @@ function retornoGeracaoERO(resp){
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
   válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
+<div
+style="
+font-size:11px;
+color:#777;
+text-align:center;
+margin-top:8px;">
+Versão
+<span id="versaoSistema"></span>
+</div>
 </footer>
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>

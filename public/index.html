@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Plataforma AproveitAI</title>
-<link rel="stylesheet" href="style.css?v=1.0.28">
+<link
+id="cssMain"
+rel="stylesheet"
+href="style.css">
 
 
 <link rel="apple-touch-icon" href="logo-aproveitai.png">
@@ -13,7 +16,9 @@
   
 
 <meta name="theme-color" content="#0a7a2a">
+<script src="js/config.js"></script>
 
+<script src="js/include.js" defer></script>
 
 </head>
 
@@ -78,47 +83,11 @@
 </div>
 
 <div class="separador-footer"></div>
-<div style="
-  background:#fff3cd;
-  color:#856404;
-  padding:10px;
-  text-align:center;
-  font-size:13px;
-">
-  ⚠️ Aviso legal: A Plataforma AproveitAI não garante descontos.
-  Benefícios e promoções são definidos exclusivamente pelos parceiros
-  e válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização do estabelecimento.
-</div>
 
 <!-- ✅ RODAPÉ PADRÃO -->
-<footer class="footer">
-  <div class="footer-container">
-    <div>
-      <h3>Plataforma AproveitAI</h3>
-      PROMETHEUS EROPRO Soluções Inteligentes LTDA<br>
-      CNPJ: 58.584.332/0001-40<br>
-      📧 cartao.aproveitai@gmail.com<br>
-      📞 (28) 99969-2303<br>
-      📸 @cartao.aproveitai
-<a href="/admin.html" style="opacity:0; position:fixed; bottom:5px; right:5px; width:20px; height:20px;">.</a>
-   
 
- </div>
-    <div>
-      <h3>Links Rápidos</h3>
-      <a href="institucional.html">Quem Somos</a><br>
-      <a href="faq.html">Dúvidas Frequentes</a><br>
-      <a href="privacidade.html">Política de Privacidade</a><br>
-      <a href="cookies.html">Política de Cookies</a><br>
-      <a href="consentimento.html">Termo de Consentimento</a><br>
-      <a href="termos.html">Termos de Uso</a><br>
-      <a href="excluir.html">Excluir meus dados</a>
+<div id="footer"></div>
 
-    </div>
-  </div>
-    © 2025 AproveitAI. Todos os direitos reservados.
-  </div>
-</footer>
 
 <script>
 /* =====================================================
@@ -269,13 +238,6 @@ function distanciaKm(lat1, lon1, lat2, lon2){
 
 
 document.addEventListener("DOMContentLoaded", carregarParceiros);
-
-</script>
-
-<script>
-
-const VERSAO = "1.0.28";
-console.log("Versão:", VERSAO);
 
 </script>
 
