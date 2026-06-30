@@ -14,7 +14,7 @@
 
 body{
 
-background:#eef8ff;
+background:#f7fbf5;
 
 font-family:"Segoe UI",Arial,sans-serif;
 
@@ -94,9 +94,11 @@ transition:.25s;
 
 .btn-aproveitai:hover{
 
+background:#118a35;
+
 transform:translateY(-2px);
 
-box-shadow:0 6px 14px rgba(0,0,0,.15);
+box-shadow:0 8px 18px rgba(0,0,0,.18);
 
 }
 
@@ -142,7 +144,9 @@ transition:.25s;
 
 .container-parceiros .card:hover{
 
-transform:translateY(-5px);
+transform:translateY(-6px);
+
+box-shadow:0 18px 35px rgba(0,0,0,.15);
 
 }
 
@@ -175,3 +179,14 @@ color:#666;
 font-size:16px;
 
 }
+
+.container-parceiros .card{
+
+padding:28px;
+
+background:#ffffff;
+
+border:1px solid #e8f1e8;
+
+}
+

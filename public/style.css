@@ -2062,13 +2062,11 @@ text-decoration:underline;
 
 .footer-copy{
 
+padding:15px;
+
+font-size:13px;
+
 text-align:center;
-
-padding:20px;
-
-font-size:14px;
-
-background:#dff8d9;
 
 }
 
