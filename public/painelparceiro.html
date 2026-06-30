@@ -254,24 +254,6 @@ Em breve.
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-function jsonp(url) {
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
-    window[cb] = (data) => {
-      resolve(data);
-      delete window[cb];
-      script.remove();
-    };
-    const script = document.createElement("script");
-    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-    script.onerror = () => {
-      reject(new Error("JSONP falhou"));
-      delete window[cb];
-      script.remove();
-    };
-    document.body.appendChild(script);
-  });
-}
 
  async function entrarParceiro() {
 
@@ -288,7 +270,8 @@ function jsonp(url) {
 
   try {
    const url = `${API_URL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
-const data = await jsonp(url);
+const resp = await fetch(url);
+const data = await resp.json();
 
 console.log(data);
 
@@ -352,7 +335,8 @@ async function validarCliente() {
     : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
 
   try {
-    const data = await jsonp(url);
+    const resp = await fetch(url);
+const data = await resp.json();
 
     if (!data || !data.nome) {
       box.innerHTML = "❌ Cliente não encontrado.";
@@ -385,22 +369,6 @@ async function validarCliente() {
 ${
   data.exige_placa === "SIM"
     ? `
-      ${
-        data.placa1
-          ? `<p><b>Veículo 1:</b> ${data.placa1} – ${data.modelo1 || "-"}</p>`
-          : ""
-      }
-      ${
-        data.placa2
-          ? `<p><b>Veículo 2:</b> ${data.placa2} – ${data.modelo2 || "-"}</p>`
-          : ""
-      }
-    `
-    : ""
-}
-${
-  data.exige_placa === "SIM"
-    ? `
       ${data.placa1 ? `<p><b>Veículo 1:</b> ${data.placa1} – ${data.modelo1 || "-"}</p>` : ""}
       ${data.placa2 ? `<p><b>Veículo 2:</b> ${data.placa2} – ${data.modelo2 || "-"}</p>` : ""}
     `
@@ -421,40 +389,6 @@ function formatarData(valor) {
   const d = new Date(valor);
   if (isNaN(d)) return valor;
   return d.toLocaleDateString("pt-BR");
-}
-function verRelatorio() {
-  const parceiroObj = JSON.parse(localStorage.getItem("parceiro"));
-  if (!parceiroObj) {
-    alert("Sessão expirada. Faça login novamente.");
-    return;
-  }
-
-  const url = `${API_URL}?relatorio=1&parceiro=${encodeURIComponent(parceiroObj.nome)}`;
-  window.location.href = "relatorio.html";
-
-}
-async function carregarRelatorio() {
-  const parceiro = document.getElementById("nomeParceiro").textContent || "total";
-
-  const url = `${API_URL}&relatorio=1&parceiro=${encodeURIComponent(parceiro)}`;
-
-  const resp = await fetch(url);
-  const data = await resp.json();
-
-  if (!data.ok) {
-    alert("Erro ao carregar relatório");
-    return;
-  }
-
-  montarTabelaRelatorio(data.registros);
-}
-// 🔁 Se veio de QR Code, valida automaticamente
-const params = new URLSearchParams(window.location.search);
-const idQR = params.get("idPublico");
-
-if (idQR) {
-  document.getElementById("cpfCliente").value = idQR;
-  validarCliente();
 }
 
 async function carregarResumoParceiro(){
