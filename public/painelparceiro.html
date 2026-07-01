@@ -332,7 +332,8 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
   }
 
   try {
-   const url = `${API_URL}?parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
+   const url =
+`${API_URL}?acao=loginParceiro&parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
 const resp = await fetch(url);
 const data = await resp.json();
 
@@ -815,36 +816,34 @@ document.getElementById("manualParceiro").innerHTML=`
 <h3>📖 Manual do Parceiro</h3>
 
 <p>
-O manual será disponibilizado em breve.
+Utilize sempre a validação antes de conceder qualquer benefício.
 </p>
 
-</div>
+<hr>
 
-`;
+<h3>🚗 Veículos</h3>
 
-}
-<h3>🚗 Validação de Veículos</h3>
-
+<p>
 Quando o benefício exigir veículo,
 confira a placa cadastrada.
+</p>
 
-</div>
-
-<div class="status-box">
+<hr>
 
 <h3>🎁 Benefícios</h3>
 
-Somente benefícios aprovados pela plataforma poderão ser utilizados.
+<p>
+Conceda apenas benefícios ativos da Plataforma.
+</p>
 
-</div>
-
-<div class="status-box">
+<hr>
 
 <h3>📞 Suporte</h3>
 
-WhatsApp
-
+<p>
+WhatsApp:<br>
 (28) 99969-2303
+</p>
 
 </div>
 
