@@ -331,4 +331,14 @@ transform:translateY(-2px);
 
 }
 
+.btn-menu.ativo{
+
+background:#0a7a2a;
+
+color:white;
+
+border-left:6px solid #FFD400;
+
+}
+
 

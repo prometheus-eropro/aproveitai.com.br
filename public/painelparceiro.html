@@ -56,6 +56,22 @@
 
     <button class="btn-aproveitai" onclick="entrarParceiro()">Entrar</button>
 
+    <div style="text-align:center;margin-top:12px">
+
+<a
+href="https://wa.me/5528999692303?text=Olá,%20esqueci%20meu%20token."
+style="
+color:#0a7a2a;
+font-weight:bold;
+text-decoration:none;
+">
+
+Esqueci meu token
+
+</a>
+
+</div>
+
     <div id="resultado" style="margin-top: 10px;"></div>
 
     <div id="erroLogin" style="color:#d10000;font-weight:800;margin-top:10px;text-align:center"></div>
@@ -73,6 +89,46 @@
 <h2 style="text-align:center;color:#0a4c1a">
   Bem-vindo, <span id="nomeParceiro"></span>
 </h2>
+
+<div
+id="cabecalhoParceiro"
+style="text-align:center">
+
+<img
+
+id="logoParceiro"
+
+src="logo-aproveitai.png"
+
+style="
+
+max-height:90px;
+
+margin-bottom:10px;
+
+">
+
+<p>
+
+<b id="ramoParceiro"></b>
+
+</p>
+
+<p>
+
+📍
+
+<span id="cidadeParceiro"></span>
+
+</p>
+
+<p>
+
+🟢 Parceiro Ativo
+
+</p>
+
+</div>
 
     <div id="resumoParceiro"></div>
 
@@ -98,6 +154,14 @@ onclick="window.location='validar.html'">
 
 <button
 class="btn-menu"
+onclick="window.location='relatorio.html?relatorio=1'">
+
+📈 Relatórios
+
+</button>
+
+<button
+class="btn-menu"
 onclick="mostrarTela('beneficios')">
 
 🎁 Meus Benefícios
@@ -114,25 +178,27 @@ onclick="mostrarTela('promocoes')">
 
 <button
 class="btn-menu"
-onclick="window.location='relatorio.html?relatorio=1'">
-
-📈 Relatórios
-
-</button>
-
-<button
-class="btn-menu"
 onclick="mostrarTela('empresa')">
 
 🏪 Minha Empresa
 
 </button>
 
+<hr>
+
 <button
 class="btn-menu"
 onclick="mostrarTela('manual')">
 
 📖 Manual
+
+</button>
+
+<button
+class="btn-menu"
+onclick="sairParceiro()">
+
+🚪 Sair
 
 </button>
 
@@ -158,93 +224,90 @@ Validar Cliente
 </button>
 
 </div>
-<div
-id="tela-beneficios"
-style="display:none;">
+<div id="tela-beneficios" style="display:none;">
 
-<h3>
+<h3>🎁 Meus Benefícios</h3>
 
-🎁 Meus Benefícios
+<div id="listaBeneficios"></div>
 
-</h3>
+<br>
 
-<p>
-
-Aqui serão exibidos os benefícios cadastrados.
-
-</p>
-
-<button class="btn-aproveitai">
+<button
+class="btn-aproveitai"
+id="btnNovoBeneficio">
 
 ➕ Solicitar Novo Benefício
 
 </button>
 
-</div>
+<p
+style="
+font-size:12px;
+text-align:center;
+margin-top:10px;
+color:#666;
+">
 
-<div
-id="tela-promocoes"
-style="display:none;">
-
-<h3>
-
-🔥 Minhas Promoções
-
-</h3>
-
-<p>
-
-Aqui serão exibidas suas promoções.
+Todas as solicitações serão analisadas antes da publicação.
 
 </p>
 
-<button class="btn-aproveitai">
+</div>
+
+<div id="tela-promocoes" style="display:none;">
+
+<h3>🔥 Minhas Promoções</h3>
+
+<div id="listaPromocoes"></div>
+
+<br>
+
+<button
+class="btn-aproveitai"
+id="btnNovaPromocao">
 
 ➕ Solicitar Nova Promoção
 
 </button>
 
-</div>
+<p
+style="
+font-size:12px;
+text-align:center;
+margin-top:10px;
+color:#666;
+">
 
-<div
-id="tela-empresa"
-style="display:none;">
-
-<h3>
-
-🏪 Minha Empresa
-
-</h3>
-
-<p>
-
-Aqui aparecerão os dados cadastrais.
+Promoções somente serão publicadas após aprovação.
 
 </p>
 
 </div>
 
-<div
-id="tela-manual"
-style="display:none;">
+<div id="tela-empresa" style="display:none;">
 
-<h3>
+<h3>🏪 Minha Empresa</h3>
 
-📖 Manual do Parceiro
+<div id="dadosEmpresa"></div>
 
-</h3>
 
-<p>
+<button
+class="btn-aproveitai"
+id="btnAlteracao">
 
-Em breve.
+✏ Solicitar Alteração Cadastral
 
-</p>
+</button>
 
 </div>
 
+<div id="tela-manual" style="display:none;">
 
+<h3>📖 Manual do Parceiro</h3>
 
+<div id="manualParceiro"></div>
 
+</div>
     
   </div>
 </div>
@@ -288,10 +351,40 @@ if (!data || data.erro) {
 sessionStorage.setItem("parceiroToken", token);
 sessionStorage.setItem("parceiroNome", data.parceiro);
 sessionStorage.setItem("parceiroCNPJ", data.cnpj);
-sessionStorage.setItem(
-   "parceiroId",
-   data.parceiro_id
-);
+sessionStorage.setItem("parceiroId", data.parceiro_id);
+
+sessionStorage.setItem("parceiroCidade", data.cidade || "");
+sessionStorage.setItem("parceiroRamo", data.ramo || "");
+sessionStorage.setItem("parceiroEmail", data.email || "");
+sessionStorage.setItem("parceiroWhatsapp", data.whatsapp || "");
+sessionStorage.setItem("parceiroInstagram", data.instagram || "");
+sessionStorage.setItem("parceiroSite", data.site || "");
+sessionStorage.setItem("parceiroLogo", data.logoURL || "");
+sessionStorage.setItem("parceiroEndereco", data.endereco || "");
+
+sessionStorage.setItem("parceiroNumero", data.numero || "");
+
+sessionStorage.setItem("parceiroBairro", data.bairro || "");
+
+sessionStorage.setItem("parceiroCep", data.cep || "");
+
+sessionStorage.setItem("parceiroTelefone", data.telefone || "");
+
+sessionStorage.setItem("parceiroFacebook", data.facebook || "");
+
+sessionStorage.setItem("parceiroMaps", data.maps || "");
+
+sessionStorage.setItem("parceiroData", data.dataCadastro || "");
+
+sessionStorage.setItem("parceiroAtivo", data.ativo || "");
+document.getElementById("logoParceiro").src =
+data.logoURL || "logo-aproveitai.png";
+
+document.getElementById("ramoParceiro").innerHTML =
+data.ramo || "";
+
+document.getElementById("cidadeParceiro").innerHTML =
+data.cidade || "";
 
 console.log(
    "Gravado:",
@@ -408,24 +501,266 @@ const d = await r.json();
 
 if(!d.ok) return;
 
-document.getElementById(
-"resumoParceiro"
-).innerHTML = `
+document.getElementById("resumoParceiro").innerHTML=`
 
-<div style="
-background:#eef6ff;
-padding:12px;
-border-radius:10px;
-margin-bottom:15px;
-text-align:center;
+<div class="status-box">
+
+<h3>📈 Resumo do Parceiro</h3>
+
+<table style="width:100%;font-size:15px">
+
+<tr>
+<td>Hoje</td>
+<td><b>${d.hoje}</b></td>
+</tr>
+
+<tr>
+<td>Este mês</td>
+<td><b>${d.mes}</b></td>
+</tr>
+
+<tr>
+<td>Este ano</td>
+<td><b>${d.ano}</b></td>
+</tr>
+
+<tr>
+<td>Clientes diferentes</td>
+<td><b>${d.clientes}</b></td>
+</tr>
+
+<tr>
+<td>Última atualização</td>
+<td><b>${new Date().toLocaleString("pt-BR")}</b></td>
+</tr>
+
+<tr>
+<td>Versão</td>
+<td><b id="versaoPainel"></b></td>
+</tr>
+
+</table>
+
+</div>
+
+`;
+
+document.getElementById("versaoPainel").innerHTML =
+document.getElementById("versaoSistema").innerHTML;
+
+}
+
+function mostrarTela(nome){
+
+document
+.querySelectorAll("[id^='tela-']")
+.forEach(t=>t.style.display="none");
+
+document
+.querySelectorAll(".btn-menu")
+.forEach(b=>b.classList.remove("ativo"));
+
+const tela =
+document.getElementById("tela-"+nome);
+
+if(tela){
+
+tela.style.display="block";
+
+}
+
+if(window.event){
+    window.event.target.classList.add("ativo");
+}
+
+switch(nome){
+
+case "empresa":
+
+carregarEmpresa();
+
+break;
+
+case "beneficios":
+
+carregarBeneficios();
+
+break;
+
+case "promocoes":
+
+carregarPromocoes();
+
+break;
+
+case "manual":
+
+carregarManual();
+
+break;
+
+}
+
+}
+
+function carregarEmpresa(){
+
+document.getElementById("dadosEmpresa").innerHTML=`
+
+<div class="status-box" style="text-align:center">
+
+<img
+src="${sessionStorage.getItem("parceiroLogo") || "logo-aproveitai.png"}"
+onerror="this.src='logo-aproveitai.png'"
+style="
+max-width:170px;
+max-height:100px;
+margin-bottom:20px;
 ">
 
-<h3>📈 Seu Desempenho</h3>
+<h2>${sessionStorage.getItem("parceiroNome")}</h2>
 
-Hoje: ${d.hoje}<br>
-Mês: ${d.mes}<br>
-Ano: ${d.ano}<br>
-Clientes Diferentes: ${d.clientes}
+<p>
+
+Parceiro Oficial da Plataforma AproveitAI
+
+</p>
+
+<hr>
+
+<p>
+
+<b>Status:</b>
+
+<span style="color:green">
+
+ATIVO
+
+</span>
+
+</p>
+
+<p>
+
+<b>Parceiro desde:</b>
+
+<span id="dataParceiro">
+
+Carregando...
+
+</span>
+
+</p>
+
+<hr>
+
+<table style="width:100%;font-size:15px">
+
+<tr>
+<td><b>CNPJ</b></td>
+<td>${sessionStorage.getItem("parceiroCNPJ")}</td>
+</tr>
+
+<tr>
+<td><b>Ramo</b></td>
+<td>${sessionStorage.getItem("parceiroRamo")}</td>
+</tr>
+
+<tr>
+<td><b>Cidade</b></td>
+<td>${sessionStorage.getItem("parceiroCidade")}</td>
+</tr>
+
+<tr>
+<td><b>Endereço</b></td>
+<td>${sessionStorage.getItem("parceiroEndereco")}</td>
+</tr>
+
+<tr>
+<td><b>Número</b></td>
+<td>${sessionStorage.getItem("parceiroNumero")}</td>
+</tr>
+
+<tr>
+<td><b>Bairro</b></td>
+<td>${sessionStorage.getItem("parceiroBairro")}</td>
+</tr>
+
+<tr>
+<td><b>CEP</b></td>
+<td>${sessionStorage.getItem("parceiroCep")}</td>
+</tr>
+
+<tr>
+<td><b>WhatsApp</b></td>
+<td>${sessionStorage.getItem("parceiroWhatsapp")}</td>
+</tr>
+
+<tr>
+<td><b>Telefone</b></td>
+<td>${sessionStorage.getItem("parceiroTelefone")}</td>
+</tr>
+
+<tr>
+<td><b>E-mail</b></td>
+<td>${sessionStorage.getItem("parceiroEmail")}</td>
+</tr>
+
+<tr>
+<td><b>Instagram</b></td>
+<td>${sessionStorage.getItem("parceiroInstagram")}</td>
+</tr>
+
+<tr>
+<td><b>Facebook</b></td>
+<td>${sessionStorage.getItem("parceiroFacebook")}</td>
+</tr>
+
+<tr>
+<td><b>Site</b></td>
+<td>${sessionStorage.getItem("parceiroSite")}</td>
+</tr>
+
+<tr>
+<td><b>Google Maps</b></td>
+<td>
+<a href="${sessionStorage.getItem("parceiroMaps")}" target="_blank">
+Abrir localização
+</a>
+</td>
+</tr>
+
+<tr>
+<td><b>Status</b></td>
+<td>${sessionStorage.getItem("parceiroAtivo")}</td>
+</tr>
+
+<tr>
+<td><b>Parceiro desde</b></td>
+<td>${sessionStorage.getItem("parceiroData")}</td>
+</tr>
+
+</table>
+
+<br>
+
+<button
+class="btn-aproveitai"
+id="btnAlteracao">
+
+✏ Solicitar Alteração Cadastral
+
+</button>
+
+<p style="
+font-size:12px;
+margin-top:15px;
+color:#666;
+">
+
+As alterações cadastrais serão analisadas antes da atualização da plataforma.
+
+</p>
 
 </div>
 
@@ -433,19 +768,99 @@ Clientes Diferentes: ${d.clientes}
 
 }
 
-function mostrarTela(nome){
+async function carregarBeneficios(){
 
-  document
-    .querySelectorAll("[id^='tela-']")
-    .forEach(t => t.style.display = "none");
+document.getElementById("listaBeneficios").innerHTML=`
 
-  const tela = document.getElementById("tela-" + nome);
+<div class="status-box">
 
-  if(tela){
-    tela.style.display = "block";
-  }
+Carregando benefícios da plataforma...
+
+<br><br>
+
+Assim que a integração for concluída,
+todos os benefícios cadastrados na plataforma
+serão exibidos automaticamente.
+
+</div>
+
+`;
 
 }
+
+async function carregarPromocoes(){
+
+document.getElementById("listaPromocoes").innerHTML=`
+
+<div class="status-box">
+
+Nenhuma promoção carregada.
+
+<br><br>
+
+Promoções vigentes aparecerão automaticamente.
+
+</div>
+
+`;
+
+}
+
+function carregarManual(){
+
+document.getElementById("manualParceiro").innerHTML=`
+
+<div class="status-box">
+
+<h3>📖 Manual do Parceiro</h3>
+
+<p>
+O manual será disponibilizado em breve.
+</p>
+
+</div>
+
+`;
+
+}
+<h3>🚗 Validação de Veículos</h3>
+
+Quando o benefício exigir veículo,
+confira a placa cadastrada.
+
+</div>
+
+<div class="status-box">
+
+<h3>🎁 Benefícios</h3>
+
+Somente benefícios aprovados pela plataforma poderão ser utilizados.
+
+</div>
+
+<div class="status-box">
+
+<h3>📞 Suporte</h3>
+
+WhatsApp
+
+(28) 99969-2303
+
+</div>
+
+`;
+
+}
+
+function sairParceiro(){
+
+sessionStorage.clear();
+
+location.reload();
+
+}
+
+
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="

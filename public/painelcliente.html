@@ -49,12 +49,12 @@
     <input id="cpf" placeholder="Digite seu CPF" maxlength="11" inputmode="numeric">
 
 <input
-  id="nascimento"
-  type="text"
-  placeholder="dd/mm/aaaa"
-  inputmode="numeric"
-  maxlength="10"
-  style="margin-top:10px">
+id="nascimento"
+type="tel"
+placeholder="dd/mm/aaaa"
+maxlength="10"
+oninput="mascaraData(this)">
+style="margin-top:10px">
 
     <button onclick="consultar()">Consultar</button>
 
@@ -339,6 +339,21 @@ document.getElementById("historicoCliente").innerHTML = html;
 console.error(e);
 
 }
+
+}
+
+
+function mascaraData(campo){
+
+let v = campo.value.replace(/\D/g,'');
+
+if(v.length>2)
+v = v.substring(0,2)+"/"+v.substring(2);
+
+if(v.length>5)
+v = v.substring(0,5)+"/"+v.substring(5);
+
+campo.value=v;
 
 }
 
