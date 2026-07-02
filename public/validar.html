@@ -337,9 +337,13 @@ if(!leitor){
 
 async function qrLido(texto){
 
+origemConsulta="camera";
+
    if(lendo) return;
 
    lendo = true;
+
+origemConsulta = "qr_cliente";
 
    await leitor.stop();
    document.getElementById("msgCamera").style.display="none";
@@ -572,10 +576,7 @@ mostrarMsg("⏳ Confirmando desconto...");
 const script =
 document.createElement("script");
 
-const origem =
-  clienteId
-    ? "qr_cliente"
-    : "validacao_parceiro";
+const origem = origemConsulta;
 
 script.src =
   GAS_URL +
@@ -717,20 +718,6 @@ function pararCronometro() {
   }
 
 }
-</script>
-<script>
-  let v = this.value.replace(/\D/g,'');
-
-  if(v.length > 2)
-    v = v.substring(0,2) + '/' + v.substring(2);
-
-  if(v.length > 5)
-    v = v.substring(0,5) + '/' + v.substring(5);
-
-  this.value = v.substring(0,10);
-
-});
-
 
 function carregarBeneficios(parceiroId, grupo){
 

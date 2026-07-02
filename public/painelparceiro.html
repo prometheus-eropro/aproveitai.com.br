@@ -146,7 +146,11 @@ onclick="mostrarTela('validacao')">
 
 <button
 class="btn-menu"
-onclick="window.location='validar.html'">
+onclick="
+window.location=
+'validar.html?parceiro_id='+
+encodeURIComponent(sessionStorage.getItem('parceiroId'));
+">
 
 📷 Validar QR Code
 
@@ -188,14 +192,6 @@ onclick="mostrarTela('empresa')">
 
 <button
 class="btn-menu"
-onclick="mostrarTela('manual')">
-
-📖 Manual
-
-</button>
-
-<button
-class="btn-menu"
 onclick="sairParceiro()">
 
 🚪 Sair
@@ -232,14 +228,6 @@ Validar Cliente
 
 <br>
 
-<button
-class="btn-aproveitai"
-id="btnNovoBeneficio">
-
-➕ Solicitar Novo Benefício
-
-</button>
-
 <p
 style="
 font-size:12px;
@@ -261,14 +249,6 @@ Todas as solicitações serão analisadas antes da publicação.
 <div id="listaPromocoes"></div>
 
 <br>
-
-<button
-class="btn-aproveitai"
-id="btnNovaPromocao">
-
-➕ Solicitar Nova Promoção
-
-</button>
 
 <p
 style="
@@ -301,14 +281,6 @@ id="btnAlteracao">
 
 </div>
 
-<div id="tela-manual" style="display:none;">
-
-<h3>📖 Manual do Parceiro</h3>
-
-<div id="manualParceiro"></div>
-
-</div>
-    
   </div>
 </div>
 
@@ -458,12 +430,6 @@ carregarPromocoes();
 
 break;
 
-case "manual":
-
-carregarManual();
-
-break;
-
 }
 
 }
@@ -605,14 +571,6 @@ ${d.dataCadastro || "-"}
 
 <tr><td><b>Cidade</b></td><td>${d.cidade||""}</td></tr>
 
-<tr><td><b>Endereço</b></td><td>${d.endereco||""}</td></tr>
-
-<tr><td><b>Número</b></td><td>${d.numero||""}</td></tr>
-
-<tr><td><b>Bairro</b></td><td>${d.bairro||""}</td></tr>
-
-<tr><td><b>CEP</b></td><td>${d.cep||""}</td></tr>
-
 <tr><td><b>WhatsApp</b></td><td>${d.whatsapp||""}</td></tr>
 
 <tr><td><b>Contato</b></td><td>${d.contato||""}</td></tr>
@@ -721,11 +679,11 @@ html+=`
 
 <p><b>Grupo:</b> ${b.grupo||"-"}</p>
 
-<p><b>Início:</b> ${b.dataInicio||"-"}</p>
+<p><b>Início:</b> ${b.dataInicio ? new Date(b.dataInicio).toLocaleDateString("pt-BR") : "-"}</p>
 
-<p><b>Fim:</b> ${b.dataFim||"-"}</p>
+<p><b>Fim:</b> ${b.dataFim ? new Date(b.dataFim).toLocaleDateString("pt-BR") : "-"}</p>
 
-<p><b>Status:</b> ${b.ativo||"ATIVO"}</p>
+<p><b>Status:</b> ${b.ativo=="SIM"?"ATIVO":"INATIVO"}</p>
 
 </div>
 
@@ -743,7 +701,7 @@ id="btnNovoBeneficio"
 
 class="btn-aproveitai">
 
-➕ Solicitar Novo Benefício
+➕ Cadastrar Benefício
 
 </button>
 
@@ -817,11 +775,11 @@ html+=`
 
 <p><b>Grupo:</b> ${p.grupo||"-"}</p>
 
-<p><b>Início:</b> ${p.dataInicio||"-"}</p>
+${p.dataInicio ? new Date(p.dataInicio).toLocaleDateString("pt-BR") : "-"}
 
-<p><b>Fim:</b> ${p.dataFim||"-"}</p>
+${p.dataFim ? new Date(p.dataFim).toLocaleDateString("pt-BR") : "-"}
 
-<p><b>Status:</b> ${p.ativo||"ATIVA"}</p>
+<p><b>Status:</b> ${p.ativo=="SIM"?"ATIVA":"INATIVA"}</p>
 </div>
 
 `;
@@ -838,7 +796,7 @@ id="btnNovaPromocao"
 
 class="btn-aproveitai">
 
-➕ Solicitar Nova Promoção
+➕ Cadastrar Promoção
 
 </button>
 
@@ -872,92 +830,7 @@ alert("Solicitação enviada.");
 
 }
 
-async function carregarManual(){
 
-try{
-
-const r = await fetch(
-API_URL + "?acao=manualParceiro"
-);
-
-const d = await r.json();
-
-if(!d.ok){
-
-document.getElementById("manualParceiro").innerHTML=`
-
-<div class="status-box">
-
-<h3>📖 Manual do Parceiro</h3>
-
-<p>Manual indisponível no momento.</p>
-
-</div>
-
-`;
-
-return;
-
-}
-
-if(d.url){
-
-document.getElementById("manualParceiro").innerHTML = `
-
-<div class="status-box">
-
-<b>📖 Manual atualizado automaticamente.</b>
-
-</div>
-
-<iframe
-src="${d.url}"
-style="
-width:100%;
-height:700px;
-border:none;
-border-radius:10px;
-">
-</iframe>
-
-`;
-
-
-}else if(d.html){
-
-document.getElementById("manualParceiro").innerHTML=d.html;
-
-}else{
-
-document.getElementById("manualParceiro").innerHTML=`
-
-<div class="status-box">
-
-Manual não localizado.
-
-</div>
-
-`;
-
-}
-
-}catch(e){
-
-console.error(e);
-
-document.getElementById("manualParceiro").innerHTML=`
-
-<div class="status-box">
-
-Erro ao carregar manual.
-
-</div>
-
-`;
-
-}
-
-}
 
 function sairParceiro(){
 
@@ -970,6 +843,25 @@ return;
 sessionStorage.clear();
 
 location.reload();
+
+}
+
+function validarCliente(){
+
+const cpf =
+document.getElementById("cpfCliente").value.trim();
+
+if(!cpf){
+
+alert("Digite o CPF ou ID Público.");
+
+return;
+
+}
+
+location.href=
+"validar.html?id="+
+encodeURIComponent(cpf);
 
 }
 
