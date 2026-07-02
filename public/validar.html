@@ -4,20 +4,7 @@
 <meta charset="UTF-8">
 <title>Validação de Benefício | Parceiro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>const parceiroId =
-    sessionStorage.getItem("parceiroId") ||
-
-console.log("SESSION parceiroId:", sessionStorage.getItem("parceiroId"));
-console.log("VAR parceiroId:", parceiroId);
-console.log("URL:", location.href);
-
-    params.get("p") ||
-    params.get("parceiro_id") ||
-    params.get("parceiro");
-
-console.log("parceiroId =", parceiroId);
-console.log("URL =", location.href);
-console.log("session parceiroId =", sessionStorage.getItem("parceiroId"));
+<style>
 
   body { font-family: Arial, sans-serif; background:#eaf6ff; padding:20px; }
   .container { max-width:420px; margin:auto; background:#fff; padding:20px; border-radius:10px; }
@@ -59,6 +46,24 @@ body {
 <body>
 
 <script>
+const params =
+new URLSearchParams(location.search);
+
+const parceiroId =
+
+sessionStorage.getItem("parceiroId")
+
+||
+
+params.get("p")
+
+||
+
+params.get("parceiro_id")
+
+||
+
+params.get("parceiro");
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw-validar.js");
 }
@@ -266,8 +271,6 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD
 
 let intervaloCronometro = null;
 
-const params = new URLSearchParams(window.location.search);
-
 /* ==========================
    VERIFICA SE PARCEIRO ESTÁ LOGADO
 ========================== */
@@ -280,18 +283,6 @@ if (!parceiroToken || !parceiroCNPJ){
    location.href="painelparceiro.html";
 
 }
-
-const parceiroId =
-    sessionStorage.getItem("parceiroId") ||
-    params.get("p") ||
-    params.get("parceiro_id") ||
-    params.get("parceiro");
-
-console.log("================================");
-console.log("parceiroId:", parceiroId);
-console.log("session:", sessionStorage.getItem("parceiroId"));
-console.log("URL:", location.href);
-console.log("================================");
 
 let clienteId =
     params.get("idPublico") ||
@@ -380,7 +371,6 @@ validar();
 }
 
 const elMsg = document.getElementById("msg");
-const elBtn = document.getElementById("btnValidar");
 
 /* =============================
    UTILIDADES
@@ -448,10 +438,9 @@ document.getElementById("blocoCodigo")
 
 if(!clienteId){
 
-document.getElementById("btnValidar").disabled=true;
+return;
 
 }
-
   // ===== VEÍCULO =====
 if (resp.exige_placa) {
 
@@ -730,10 +719,6 @@ function pararCronometro() {
 }
 </script>
 <script>
-const nasc = document.getElementById("nascimento");
-
-nasc.addEventListener("input", function() {
-
   let v = this.value.replace(/\D/g,'');
 
   if(v.length > 2)
@@ -867,10 +852,7 @@ console.log("QR PARCEIRO");
 
 }
 
- const cpf =
-window.cpfCliente ||
-document.getElementById("cpf")
-.value.replace(/\D/g,"");
+ const cpf = window.cpfCliente;
 
  const script =
  document.createElement("script");
@@ -936,27 +918,13 @@ Versão
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
 
-window.onload=function(){
+window.onload = function(){
 
    if(clienteId){
 
-      document.getElementById("blocoCamera")
-      .style.display="none";
+      document.getElementById("blocoCamera").style.display="none";
 
-      document.querySelectorAll("label")[0]
-      .style.display="none";
-
-      document.querySelectorAll("label")[1]
-      .style.display="none";
-
-      document.getElementById("cpf")
-      .style.display="none";
-
-      document.getElementById("nascimento")
-      .style.display="none";
-
-      document.getElementById("btnValidar")
-      .click();
+      validar();
 
    }
 

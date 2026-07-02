@@ -315,264 +315,128 @@ id="btnAlteracao">
 <!-- ✅ SCRIPT -->
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
+function salvarSessao(d){
 
- async function entrarParceiro() {
+sessionStorage.setItem("parceiroId",d.parceiro_id||"");
+sessionStorage.setItem("parceiroNome",d.nome||"");
+sessionStorage.setItem("parceiroCNPJ",d.cnpj||"");
+sessionStorage.setItem("parceiroCidade",d.cidade||"");
+sessionStorage.setItem("parceiroRamo",d.ramo||"");
+sessionStorage.setItem("parceiroWhatsapp",d.whatsapp||"");
+sessionStorage.setItem("parceiroInstagram",d.instagram||"");
+sessionStorage.setItem("parceiroEmail",d.email||"");
+sessionStorage.setItem("parceiroSite",d.site||"");
+sessionStorage.setItem("parceiroLogo",d.logo||d.logoURL||"");
+sessionStorage.setItem("parceiroMaps",d.maps||"");
+sessionStorage.setItem("parceiroEndereco",d.endereco||"");
+sessionStorage.setItem("parceiroNumero",d.numero||"");
+sessionStorage.setItem("parceiroBairro",d.bairro||"");
+sessionStorage.setItem("parceiroCep",d.cep||"");
+sessionStorage.setItem("parceiroTelefone",d.telefone||"");
+sessionStorage.setItem("parceiroFacebook",d.facebook||"");
+sessionStorage.setItem("parceiroData",d.dataCadastro||"");
+sessionStorage.setItem("parceiroAtivo",d.ativo||"SIM");
 
-  const cnpj = document.getElementById("cnpj").value.trim();
-  const token = document.getElementById("token").value.trim();
-  const box = document.getElementById("resultado");
-
-  box.innerHTML = "Validando...";
-
-  if (!cnpj || !token) {
-    box.innerHTML = "❌ Informe CNPJ e token.";
-    return;
-  }
-
-  try {
-   const url =
-`${API_URL}?acao=loginParceiro&parceiroCNPJ=${encodeURIComponent(cnpj)}&token=${encodeURIComponent(token)}`;
-const resp = await fetch(url);
-const data = await resp.json();
-
-console.log(data);
-
-if (!data || data.erro) {
-  box.innerHTML = "❌ Acesso negado.";
-  return;
 }
 
-    box.innerHTML = `<div class="status-box"><h3>${data.parceiro}</h3><p><b>Status:</b> ATIVO</p></div>`;
-    document.getElementById("painelBox").style.display = "block";
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("nomeParceiro").textContent = data.parceiro;
-    sessionStorage.setItem("parceiroLogado", "SIM");
-sessionStorage.setItem("parceiroToken", token);
-sessionStorage.setItem("parceiroNome", data.parceiro);
-sessionStorage.setItem("parceiroCNPJ", data.cnpj);
-sessionStorage.setItem("parceiroId", data.parceiro_id);
+async function entrarParceiro(){
 
-sessionStorage.setItem("parceiroCidade", data.cidade || "");
-sessionStorage.setItem("parceiroRamo", data.ramo || "");
-sessionStorage.setItem("parceiroEmail", data.email || "");
-sessionStorage.setItem("parceiroWhatsapp", data.whatsapp || "");
-sessionStorage.setItem("parceiroInstagram", data.instagram || "");
-sessionStorage.setItem("parceiroSite", data.site || "");
-sessionStorage.setItem("parceiroLogo", data.logoURL || "");
-sessionStorage.setItem("parceiroEndereco", data.endereco || "");
+const cnpj=document.getElementById("cnpj").value.trim();
+const token=document.getElementById("token").value.trim();
 
-sessionStorage.setItem("parceiroNumero", data.numero || "");
+const box=document.getElementById("resultado");
 
-sessionStorage.setItem("parceiroBairro", data.bairro || "");
+if(!cnpj||!token){
 
-sessionStorage.setItem("parceiroCep", data.cep || "");
+box.innerHTML="❌ Informe CNPJ e Token.";
 
-sessionStorage.setItem("parceiroTelefone", data.telefone || "");
+return;
 
-sessionStorage.setItem("parceiroFacebook", data.facebook || "");
+}
 
-sessionStorage.setItem("parceiroMaps", data.maps || "");
+box.innerHTML="Validando...";
 
-sessionStorage.setItem("parceiroData", data.dataCadastro || "");
+try{
 
-sessionStorage.setItem("parceiroAtivo", data.ativo || "");
-document.getElementById("logoParceiro").src =
-data.logoURL || "logo-aproveitai.png";
+const r=await fetch(
 
-document.getElementById("ramoParceiro").innerHTML =
-data.ramo || "";
+API_URL+
 
-document.getElementById("cidadeParceiro").innerHTML =
-data.cidade || "";
+"?acao=loginParceiro"+
 
-console.log(
-   "Gravado:",
-   sessionStorage.getItem("parceiroId")
+"&parceiroCNPJ="+encodeURIComponent(cnpj)+
+
+"&token="+encodeURIComponent(token)
+
 );
 
-carregarResumoParceiro();
+const d=await r.json();
+
+console.log(d);
+
+if(!d.ok){
+
+box.innerHTML="❌ Login inválido.";
+
+return;
+
+}
+
+salvarSessao(d);
+
+sessionStorage.setItem("parceiroToken",token);
+
+document.getElementById("loginBox").style.display="none";
+
+document.getElementById("painelBox").style.display="block";
+
+document.getElementById("nomeParceiro").innerHTML=d.nome;
+
+document.getElementById("logoParceiro").src=
+
+d.logo||
+
+"logo-aproveitai.png";
+
+document.getElementById("cidadeParceiro").innerHTML=
+
+d.cidade||"";
+
+document.getElementById("ramoParceiro").innerHTML=
+
+d.ramo||"";
+
+await carregarResumoParceiro();
+
+carregarEmpresa();
+
 mostrarTela("validacao");
 
+}catch(e){
 
+console.error(e);
 
-  } catch (e) {
-    console.error(e);
-    box.innerHTML = "❌ Erro ao validar parceiro.";
-  }
+box.innerHTML="❌ Erro ao conectar.";
+
 }
-
-
-async function validarCliente() {
-  const parceiroNome = sessionStorage.getItem("parceiroNome");
-  const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
-  const box = document.getElementById("resultadoCliente");
-
-  if (!parceiroNome || !parceiroCNPJ) {
-    box.innerHTML = "❌ Sessão expirada. Faça login novamente.";
-    return;
-  }
-
-  const valor = document.getElementById("cpfCliente").value.trim();
-  const parceiro = document.getElementById("nomeParceiro").textContent.trim();
-
-  box.innerHTML = "Consultando...";
-
-  if (!valor) {
-    box.innerHTML = "❌ Informe o CPF ou ID Público.";
-    return;
-  }
-
-  const url = valor.startsWith("APV-")
-    ? `${API_URL}?idPublico=${encodeURIComponent(valor)}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`
-    : `${API_URL}?cpf=${encodeURIComponent(valor.replace(/\D/g, ""))}&modo=parceiro&token=${encodeURIComponent(sessionStorage.getItem("parceiroToken"))}`;
-
-  try {
-    const resp = await fetch(url);
-const data = await resp.json();
-
-    if (!data || !data.nome) {
-      box.innerHTML = "❌ Cliente não encontrado.";
-      return;
-    }
-
-    const dataCadastro = data.dataCadastro
-      ? formatarData(data.dataCadastro)
-      : "-";
-
-    const cpfMascarado = data.cpf
-      ? data.cpf.replace(/^(\d{3})\d{5}(\d{3})$/, "$1*****$2")
-      : "-";
-
-    box.innerHTML = `
-  <div class="status-box ${data.ativo === "SIM" ? "ativo" : "inativo"}">
-    <p><b>Nome:</b> ${data.nome}</p>
-    <p><b>CPF:</b> ${cpfMascarado}</p>
-    <p><b>ID Público:</b> ${data.idPublico || "-"}</p>
-    <p><b>Cidade:</b> ${data.cidade || "-"}</p>
-    <p><b>Grupo:</b> ${data.grupo || "GERAL"}</p>
-    <p><b>Cliente desde:</b> ${dataCadastro}</p>
-    <p><b>Status:</b> ${data.ativo === "SIM" ? "ATIVO" : "INATIVO"}</p>
-
-    ${
-      data.ativo === "SIM"
-        ? `<p class="codigo">✔ Código de Autorização: <b>${data.codigoERO}</b></p>`
-        : `<p style="color:#c00"><b>Cliente inativo — sem liberação</b></p>`
-    }
-${
-  data.exige_placa === "SIM"
-    ? `
-      ${data.placa1 ? `<p><b>Veículo 1:</b> ${data.placa1} – ${data.modelo1 || "-"}</p>` : ""}
-      ${data.placa2 ? `<p><b>Veículo 2:</b> ${data.placa2} – ${data.modelo2 || "-"}</p>` : ""}
-    `
-    : ""
-}
-
-  </div>
-`;
-
-  } catch (e) {
-    console.error(e);
-    box.innerHTML = "❌ Erro ao validar cliente.";
-  }
-}
-
-function formatarData(valor) {
-  if (!valor) return "-";
-  const d = new Date(valor);
-  if (isNaN(d)) return valor;
-  return d.toLocaleDateString("pt-BR");
-}
-
-async function carregarResumoParceiro(){
-
-const parceiro =
-sessionStorage.getItem("parceiroNome");
-
-if(!parceiro) return;
-
-const r = await fetch(
-API_URL +
-"?acao=resumoParceiro&parceiro=" +
-encodeURIComponent(parceiro)
-);
-
-const d = await r.json();
-
-if(!d.ok) return;
-
-document.getElementById("resumoParceiro").innerHTML=`
-
-<div class="status-box">
-
-<h3>📈 Resumo do Parceiro</h3>
-
-<table style="width:100%;font-size:15px">
-
-<tr>
-<td>Hoje</td>
-<td><b>${d.hoje}</b></td>
-</tr>
-
-<tr>
-<td>Este mês</td>
-<td><b>${d.mes}</b></td>
-</tr>
-
-<tr>
-<td>Este ano</td>
-<td><b>${d.ano}</b></td>
-</tr>
-
-<tr>
-<td>Clientes diferentes</td>
-<td><b>${d.clientes}</b></td>
-</tr>
-
-<tr>
-<td>Última atualização</td>
-<td><b>${new Date().toLocaleString("pt-BR")}</b></td>
-</tr>
-
-<tr>
-<td>Versão</td>
-<td><b id="versaoPainel"></b></td>
-</tr>
-
-</table>
-
-</div>
-
-`;
-
-document.getElementById("versaoPainel").innerHTML =
-document.getElementById("versaoSistema").innerHTML;
 
 }
 
 function mostrarTela(nome){
 
 document
+
 .querySelectorAll("[id^='tela-']")
+
 .forEach(t=>t.style.display="none");
 
-document
-.querySelectorAll(".btn-menu")
-.forEach(b=>b.classList.remove("ativo"));
+const tela=document.getElementById("tela-"+nome);
 
-const tela =
-document.getElementById("tela-"+nome);
-
-if(tela){
+if(tela)
 
 tela.style.display="block";
-
-}
-
-if(window.event){
-    window.event.target.classList.add("ativo");
-}
 
 switch(nome){
 
@@ -604,141 +468,175 @@ break;
 
 }
 
-function carregarEmpresa(){
+async function carregarResumoParceiro(){
+
+const parceiro=
+
+sessionStorage.getItem("parceiroId");
+if(!parceiro)
+
+return;
+
+const r=
+
+await fetch(
+
+API_URL+
+
+"?acao=resumoParceiro&parceiro_id="+
+
+encodeURIComponent(parceiro)
+
+);
+
+const d=
+
+await r.json();
+
+if(!d.ok)
+
+return;
+
+document.getElementById("resumoParceiro").innerHTML=`
+
+<div class="status-box">
+
+<h3>📈 Resumo</h3>
+
+<table style="width:100%">
+
+<tr>
+
+<td>Hoje</td>
+
+<td><b>${d.hoje}</b></td>
+
+</tr>
+
+<tr>
+
+<td>Mês</td>
+
+<td><b>${d.mes}</b></td>
+
+</tr>
+
+<tr>
+
+<td>Ano</td>
+
+<td><b>${d.ano}</b></td>
+
+</tr>
+
+<tr>
+
+<td>Clientes</td>
+
+<td><b>${d.clientes}</b></td>
+
+</tr>
+
+<tr>
+
+<td>Atualizado</td>
+
+<td>${new Date().toLocaleString("pt-BR")}</td>
+
+</tr>
+
+</table>
+
+</div>
+
+`;
+
+}
+
+async function carregarEmpresa(){
+
+const id=sessionStorage.getItem("parceiroId");
+
+const r=await fetch(
+API_URL+
+"?acao=dadosEmpresa&parceiro_id="+
+encodeURIComponent(id)
+);
+
+const d=await r.json();
+
+if(!d.ok){
+
+document.getElementById("dadosEmpresa").innerHTML=
+"<div class='status-box'>Erro ao carregar dados.</div>";
+
+return;
+
+}
 
 document.getElementById("dadosEmpresa").innerHTML=`
 
 <div class="status-box" style="text-align:center">
 
 <img
-src="${sessionStorage.getItem("parceiroLogo") || "logo-aproveitai.png"}"
+src="${d.logo||'logo-aproveitai.png'}"
 onerror="this.src='logo-aproveitai.png'"
-style="
-max-width:170px;
-max-height:100px;
-margin-bottom:20px;
-">
+style="max-width:170px;max-height:100px;margin-bottom:15px;">
 
-<h2>${sessionStorage.getItem("parceiroNome")}</h2>
-
-<p>
-
-Parceiro Oficial da Plataforma AproveitAI
-
-</p>
-
-<hr>
-
-<p>
-
-<b>Status:</b>
-
-<span style="color:green">
-
-ATIVO
-
-</span>
-
-</p>
+<h2>${d.nome}</h2>
 
 <p>
 
 <b>Parceiro desde:</b>
 
-<span id="dataParceiro">
-
-Carregando...
-
-</span>
+${d.dataCadastro || "-"}
 
 </p>
+
+<p>Parceiro Oficial da Plataforma AproveitAI</p>
 
 <hr>
 
 <table style="width:100%;font-size:15px">
 
-<tr>
-<td><b>CNPJ</b></td>
-<td>${sessionStorage.getItem("parceiroCNPJ")}</td>
-</tr>
+<tr><td><b>CNPJ</b></td><td>${d.cnpj||""}</td></tr>
+
+<tr><td><b>Ramo</b></td><td>${d.ramo||""}</td></tr>
+
+<tr><td><b>Cidade</b></td><td>${d.cidade||""}</td></tr>
+
+<tr><td><b>Endereço</b></td><td>${d.endereco||""}</td></tr>
+
+<tr><td><b>Número</b></td><td>${d.numero||""}</td></tr>
+
+<tr><td><b>Bairro</b></td><td>${d.bairro||""}</td></tr>
+
+<tr><td><b>CEP</b></td><td>${d.cep||""}</td></tr>
+
+<tr><td><b>WhatsApp</b></td><td>${d.whatsapp||""}</td></tr>
+
+<tr><td><b>Contato</b></td><td>${d.contato||""}</td></tr>
+
+<tr><td><b>E-mail</b></td><td>${d.email||""}</td></tr>
+
+<tr><td><b>Instagram</b></td><td>${d.instagram||""}</td></tr>
+
+<tr><td><b>Site</b></td><td>${d.site||""}</td></tr>
 
 <tr>
-<td><b>Ramo</b></td>
-<td>${sessionStorage.getItem("parceiroRamo")}</td>
-</tr>
 
-<tr>
-<td><b>Cidade</b></td>
-<td>${sessionStorage.getItem("parceiroCidade")}</td>
-</tr>
-
-<tr>
-<td><b>Endereço</b></td>
-<td>${sessionStorage.getItem("parceiroEndereco")}</td>
-</tr>
-
-<tr>
-<td><b>Número</b></td>
-<td>${sessionStorage.getItem("parceiroNumero")}</td>
-</tr>
-
-<tr>
-<td><b>Bairro</b></td>
-<td>${sessionStorage.getItem("parceiroBairro")}</td>
-</tr>
-
-<tr>
-<td><b>CEP</b></td>
-<td>${sessionStorage.getItem("parceiroCep")}</td>
-</tr>
-
-<tr>
-<td><b>WhatsApp</b></td>
-<td>${sessionStorage.getItem("parceiroWhatsapp")}</td>
-</tr>
-
-<tr>
-<td><b>Telefone</b></td>
-<td>${sessionStorage.getItem("parceiroTelefone")}</td>
-</tr>
-
-<tr>
-<td><b>E-mail</b></td>
-<td>${sessionStorage.getItem("parceiroEmail")}</td>
-</tr>
-
-<tr>
-<td><b>Instagram</b></td>
-<td>${sessionStorage.getItem("parceiroInstagram")}</td>
-</tr>
-
-<tr>
-<td><b>Facebook</b></td>
-<td>${sessionStorage.getItem("parceiroFacebook")}</td>
-</tr>
-
-<tr>
-<td><b>Site</b></td>
-<td>${sessionStorage.getItem("parceiroSite")}</td>
-</tr>
-
-<tr>
 <td><b>Google Maps</b></td>
+
 <td>
-<a href="${sessionStorage.getItem("parceiroMaps")}" target="_blank">
+
+<a href="${d.maps||'#'}" target="_blank">
+
 Abrir localização
+
 </a>
+
 </td>
-</tr>
 
-<tr>
-<td><b>Status</b></td>
-<td>${sessionStorage.getItem("parceiroAtivo")}</td>
-</tr>
-
-<tr>
-<td><b>Parceiro desde</b></td>
-<td>${sessionStorage.getItem("parceiroData")}</td>
 </tr>
 
 </table>
@@ -753,61 +651,238 @@ id="btnAlteracao">
 
 </button>
 
-<p style="
-font-size:12px;
-margin-top:15px;
-color:#666;
-">
-
-As alterações cadastrais serão analisadas antes da atualização da plataforma.
-
-</p>
-
 </div>
 
 `;
+
+document.getElementById("btnAlteracao").onclick=async()=>{
+
+const texto=prompt("Descreva a alteração:");
+
+if(!texto)return;
+
+await fetch(
+
+API_URL+
+
+"?acao=solicitarAlteracao"+
+
+"&parceiro_id="+id+
+
+"&tipo=CADASTRO"+
+
+"&descricao="+encodeURIComponent(texto)
+
+);
+
+alert("Solicitação enviada.");
+
+};
 
 }
 
 async function carregarBeneficios(){
 
-document.getElementById("listaBeneficios").innerHTML=`
+const id=sessionStorage.getItem("parceiroId");
+
+const r=await fetch(
+
+API_URL+
+
+"?acao=listarBeneficiosParceiro&parceiro_id="+id
+
+);
+
+const d=await r.json();
+
+if(!d.ok){
+
+document.getElementById("listaBeneficios").innerHTML=
+
+"<div class='status-box'>Nenhum benefício encontrado.</div>";
+
+return;
+
+}
+
+let html="";
+
+d.dados.forEach(b=>{
+
+html+=`
 
 <div class="status-box">
 
-Carregando benefícios da plataforma...
+<h3>🎁 ${b.titulo}</h3>
 
-<br><br>
+<p>${b.descricao}</p>
 
-Assim que a integração for concluída,
-todos os benefícios cadastrados na plataforma
-serão exibidos automaticamente.
+<hr>
+
+<p><b>Grupo:</b> ${b.grupo||"-"}</p>
+
+<p><b>Início:</b> ${b.dataInicio||"-"}</p>
+
+<p><b>Fim:</b> ${b.dataFim||"-"}</p>
+
+<p><b>Status:</b> ${b.ativo||"ATIVO"}</p>
 
 </div>
 
 `;
+
+});
+
+html+=`
+
+<br>
+
+<button
+
+id="btnNovoBeneficio"
+
+class="btn-aproveitai">
+
+➕ Solicitar Novo Benefício
+
+</button>
+
+`;
+
+document.getElementById("listaBeneficios").innerHTML=html;
+
+document.getElementById("btnNovoBeneficio").onclick=async()=>{
+
+const texto=prompt("Descreva o benefício desejado:");
+
+if(!texto)return;
+
+await fetch(
+
+API_URL+
+
+"?acao=solicitarAlteracao"+
+
+"&parceiro_id="+id+
+
+"&tipo=BENEFICIO"+
+
+"&descricao="+encodeURIComponent(texto)
+
+);
+
+alert("Solicitação enviada.");
+
+};
 
 }
 
 async function carregarPromocoes(){
 
-document.getElementById("listaPromocoes").innerHTML=`
+const id=sessionStorage.getItem("parceiroId");
+
+const r=await fetch(
+
+API_URL+
+
+"?acao=listarPromocoesParceiro&parceiro_id="+id
+
+);
+
+const d=await r.json();
+
+if(!d.ok){
+
+document.getElementById("listaPromocoes").innerHTML=
+
+"<div class='status-box'>Nenhuma promoção encontrada.</div>";
+
+return;
+
+}
+
+let html="";
+
+d.dados.forEach(p=>{
+
+html+=`
 
 <div class="status-box">
 
-Nenhuma promoção carregada.
+<h3>🔥 ${p.titulo}</h3>
 
-<br><br>
+<p>${p.descricao}</p>
 
-Promoções vigentes aparecerão automaticamente.
+<hr>
 
+<p><b>Grupo:</b> ${p.grupo||"-"}</p>
+
+<p><b>Início:</b> ${p.dataInicio||"-"}</p>
+
+<p><b>Fim:</b> ${p.dataFim||"-"}</p>
+
+<p><b>Status:</b> ${p.ativo||"ATIVA"}</p>
 </div>
 
 `;
 
+});
+
+html+=`
+
+<br>
+
+<button
+
+id="btnNovaPromocao"
+
+class="btn-aproveitai">
+
+➕ Solicitar Nova Promoção
+
+</button>
+
+`;
+
+document.getElementById("listaPromocoes").innerHTML=html;
+
+document.getElementById("btnNovaPromocao").onclick=async()=>{
+
+const texto=prompt("Descreva a promoção desejada:");
+
+if(!texto)return;
+
+await fetch(
+
+API_URL+
+
+"?acao=solicitarAlteracao"+
+
+"&parceiro_id="+id+
+
+"&tipo=PROMOCAO"+
+
+"&descricao="+encodeURIComponent(texto)
+
+);
+
+alert("Solicitação enviada.");
+
+};
+
 }
 
-function carregarManual(){
+async function carregarManual(){
+
+try{
+
+const r = await fetch(
+API_URL + "?acao=manualParceiro"
+);
+
+const d = await r.json();
+
+if(!d.ok){
 
 document.getElementById("manualParceiro").innerHTML=`
 
@@ -815,35 +890,50 @@ document.getElementById("manualParceiro").innerHTML=`
 
 <h3>📖 Manual do Parceiro</h3>
 
-<p>
-Utilize sempre a validação antes de conceder qualquer benefício.
-</p>
+<p>Manual indisponível no momento.</p>
 
-<hr>
+</div>
 
-<h3>🚗 Veículos</h3>
+`;
 
-<p>
-Quando o benefício exigir veículo,
-confira a placa cadastrada.
-</p>
+return;
 
-<hr>
+}
 
-<h3>🎁 Benefícios</h3>
+if(d.url){
 
-<p>
-Conceda apenas benefícios ativos da Plataforma.
-</p>
+document.getElementById("manualParceiro").innerHTML = `
 
-<hr>
+<div class="status-box">
 
-<h3>📞 Suporte</h3>
+<b>📖 Manual atualizado automaticamente.</b>
 
-<p>
-WhatsApp:<br>
-(28) 99969-2303
-</p>
+</div>
+
+<iframe
+src="${d.url}"
+style="
+width:100%;
+height:700px;
+border:none;
+border-radius:10px;
+">
+</iframe>
+
+`;
+
+
+}else if(d.html){
+
+document.getElementById("manualParceiro").innerHTML=d.html;
+
+}else{
+
+document.getElementById("manualParceiro").innerHTML=`
+
+<div class="status-box">
+
+Manual não localizado.
 
 </div>
 
@@ -851,7 +941,31 @@ WhatsApp:<br>
 
 }
 
+}catch(e){
+
+console.error(e);
+
+document.getElementById("manualParceiro").innerHTML=`
+
+<div class="status-box">
+
+Erro ao carregar manual.
+
+</div>
+
+`;
+
+}
+
+}
+
 function sairParceiro(){
+
+if(!confirm("Deseja realmente sair do painel?")){
+
+return;
+
+}
 
 sessionStorage.clear();
 
@@ -859,6 +973,34 @@ location.reload();
 
 }
 
+window.addEventListener("load",()=>{
+
+if(sessionStorage.getItem("parceiroId")){
+
+document.getElementById("loginBox").style.display="none";
+
+document.getElementById("painelBox").style.display="block";
+
+document.getElementById("nomeParceiro").innerHTML=
+sessionStorage.getItem("parceiroNome");
+
+document.getElementById("logoParceiro").src=
+sessionStorage.getItem("parceiroLogo") ||
+"logo-aproveitai.png";
+
+document.getElementById("cidadeParceiro").innerHTML=
+sessionStorage.getItem("parceiroCidade") || "";
+
+document.getElementById("ramoParceiro").innerHTML=
+sessionStorage.getItem("parceiroRamo") || "";
+
+carregarResumoParceiro();
+
+mostrarTela("validacao");
+
+}
+
+});
 
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
