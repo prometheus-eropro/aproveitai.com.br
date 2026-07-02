@@ -68,8 +68,8 @@ id="nascimento"
 type="tel"
 placeholder="dd/mm/aaaa"
 maxlength="10"
+style="margin-top:10px"
 oninput="mascaraData(this)">
-style="margin-top:10px">
 
     <button onclick="consultar()">Consultar</button>
 
@@ -230,11 +230,25 @@ Status: ATIVO
 
 <div id="resumoCliente"></div>
 
+<div id="veiculosCliente"></div>
+
 <div id="historicoCliente"></div>
+
+<div style="margin-top:18px">
+
+<button
+class="btn-aproveitai"
+onclick="solicitarAlteracao()">
+
+📱 Solicitar alteração cadastral
+
+</button>
+
+</div>
 `;
 
 carregarHistorico(cpf);
-
+carregarVeiculos(achado);
 
   } catch(e){
     console.error(e);
@@ -354,6 +368,73 @@ document.getElementById("historicoCliente").innerHTML = html;
 console.error(e);
 
 }
+
+}
+
+function carregarVeiculos(cliente){
+
+document.getElementById("veiculosCliente").innerHTML=`
+
+<div style="
+margin-top:15px;
+padding:15px;
+background:#eef9ee;
+border-radius:10px;
+">
+
+<h3>🚗 Meus Veículos</h3>
+
+<table style="width:100%">
+
+<tr>
+
+<td><b>Placa 1</b></td>
+
+<td>${cliente.placa_1||"-"}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Modelo 1</b></td>
+
+<td>${cliente.modelo_1||"-"}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Placa 2</b></td>
+
+<td>${cliente.placa_2||"-"}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Modelo 2</b></td>
+
+<td>${cliente.modelo_2||"-"}</td>
+
+</tr>
+
+</table>
+
+</div>
+
+`;
+
+}
+
+function solicitarAlteracao(){
+
+window.open(
+
+"https://wa.me/5528999692303?text=Olá,%20gostaria%20de%20alterar%20meus%20dados%20cadastrais.",
+
+"_blank"
+
+);
 
 }
 
