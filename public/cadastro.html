@@ -411,5 +411,22 @@ form.addEventListener("submit", function(e){
 });
 </script>
 
+
+const nascimento = document.getElementById("nascimento");
+
+nascimento.addEventListener("input", function () {
+
+    let v = this.value.replace(/\D/g,"");
+
+    if(v.length > 2)
+        v = v.substring(0,2)+"/"+v.substring(2);
+
+    if(v.length > 5)
+        v = v.substring(0,5)+"/"+v.substring(5);
+
+    this.value = v.substring(0,10);
+
+});
+
 </body>
 </html>

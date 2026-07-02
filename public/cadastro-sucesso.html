@@ -24,34 +24,7 @@
 </header>
 
 <div class="card-info" style="
-  max-width:600px;
-  margin:40px auto;
-  padding:25px;
-  background:#e6ffed;
-  border:2px solid #28a745;
-  border-radius:12px;
-  box-shadow:0 0 10px rgba(0,0,0,0.08);
-">
-
-<h3 style="color:#198754;">
-✅ Cadastro recebido com sucesso
-</h3>
-
-<p>
-Você recebeu 15 dias gratuitos para conhecer a Plataforma AproveitAI.
-
-A data exata de vencimento foi enviada para seu WhatsApp cadastrado.
-</p>
-
-<ul>
-  <li>🔎 Caso seu CPF <strong>já possua cadastro ativo</strong>, ele será identificado automaticamente.</li>
-  <li>📲 Você <strong>não precisa se cadastrar novamente</strong>.</li>
-  <li>⏳ Em breve entraremos em contato.</li>
-</ul>
-
-<p style="margin-top:10px;color:#856404;">
-⚠️ Se você já é cliente, este envio serve apenas como confirmação de dados.
-</p>
+  <div class="card-info
   <button
     onclick="abrirWhatsApp()"
     style="
@@ -65,7 +38,8 @@ A data exata de vencimento foi enviada para seu WhatsApp cadastrado.
       cursor:pointer;
     "
   >
-    📲 Click aqui para avisar administrador no WhatsApp
+    📲 Tirar dúvidas no WhatsApp
+
   </button>
 
 </div>
@@ -94,15 +68,20 @@ Caso este CPF já possua cadastro ativo, esta mensagem serve apenas como confirm
     "_blank"
   );
 }
+
 </script>
 
-<button class="btn-voltar-flutuante" onclick="voltarPagina()">
-  ⬅️ Voltar
-</button>
-<script>
-function voltarPagina() {
-  window.location.href = "index.html";
-}
-</script>
+<div style="margin-top:20px;text-align:center;">
+
+<a
+href="index.html"
+class="btn-aproveitai">
+
+⬅ Voltar ao Site
+
+</a>
+
+</div>
+
 </body>
 </html>

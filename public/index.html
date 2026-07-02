@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<meta name="theme-color" content="#0a7a2a">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-title" content="AproveitAI">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="apple-touch-icon" href="icon.192.png">
+
+<link rel="icon" href="favicon.ico">
   <meta charset="UTF-8">
   <title>Plataforma AproveitAI</title>
 <link
@@ -328,6 +343,21 @@ function distanciaKm(lat1, lon1, lat2, lon2){
 
 
 document.addEventListener("DOMContentLoaded", carregarParceiros);
+
+</script>
+
+
+<script>
+
+if ('serviceWorker' in navigator){
+
+window.addEventListener('load',()=>{
+
+navigator.serviceWorker.register('/sw.js');
+
+});
+
+}
 
 </script>
 
