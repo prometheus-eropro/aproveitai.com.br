@@ -195,9 +195,23 @@ display:none;
 
 </div>
 <br>
-  <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
-  <strong>Grupo:</strong> <span id="grupoCliente"></span><br>
-  <strong>ID Público:</strong> <span id="idPublicoCliente"></span><br>
+  <strong>Cliente:</strong>
+<span id="nomeCliente"></span><br>
+
+<strong>CPF:</strong>
+<span id="cpfClienteMascara"></span><br>
+
+<strong>Grupo:</strong>
+<span id="grupoCliente"></span><br>
+
+<strong>Cidade:</strong>
+<span id="cidadeCliente"></span><br>
+
+<strong>Validade:</strong>
+<span id="validadeCliente"></span><br>
+
+<strong>ID Público:</strong>
+<span id="idPublicoCliente"></span><br>
   
 </div>
 
@@ -522,9 +536,36 @@ img.onerror = function(){
    this.style.display = "block";
 };
 
-  document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
-  document.getElementById("grupoCliente").innerText = resp.grupo || "-";
-  document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
+  document.getElementById("nomeCliente").innerText =
+resp.nomeCliente || "-";
+
+document.getElementById("grupoCliente").innerText =
+resp.grupo || "-";
+
+document.getElementById("cidadeCliente").innerText =
+resp.cidade || "-";
+
+document.getElementById("validadeCliente").innerText =
+resp.validade || "-";
+
+document.getElementById("idPublicoCliente").innerText =
+resp.idPublico || "-";
+
+let cpf = String(resp.cpf || "");
+
+cpf = cpf.replace(/\D/g,"");
+
+if(cpf.length===11){
+
+cpf =
+cpf.substring(0,3)+
+".***.***-"+
+cpf.substring(9);
+
+}
+
+document.getElementById("cpfClienteMascara").innerText =
+cpf || "-";
 
 window.dadosValidacao = resp;
 window.cpfCliente = resp.cpf || "";
@@ -669,14 +710,35 @@ document.getElementById("timer").innerHTML =
       <div style="color:#666">
         Esta tela será encerrada automaticamente em 30 segundos.
       </div>
+
+<br><br>
+
+<button
+onclick="history.back()"
+style="
+padding:12px 30px;
+background:#0a7a3c;
+color:white;
+border:none;
+border-radius:8px;
+font-size:18px;
+cursor:pointer;
+">
+
+⬅ Voltar
+
+</button>
+
     </div>
   `;
 
   mostrarMsg("🎉 Obrigado por utilizar a Plataforma AproveitAI.");
 
   setTimeout(() => {
-    location.reload();
-  }, 30000);
+
+history.back();
+
+},30000);
 
 }
 

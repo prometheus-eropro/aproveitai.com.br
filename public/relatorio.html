@@ -56,6 +56,22 @@ body {
 
 <div id="dadosParceiro" class="dados-parceiro"></div>
 
+<div class="status-box" style="margin:15px 0">
+
+<b>Parceiro:</b>
+<span id="cabParceiro"></span><br>
+
+<b>Período:</b>
+<span id="cabPeriodo"></span><br>
+
+<b>Total de Atendimentos:</b>
+<span id="cabTotal">0</span><br>
+
+<b>Emitido em:</b>
+<span id="cabData"></span>
+
+</div>
+
 <div style="
   margin:10px auto;
   text-align:center;
@@ -148,15 +164,27 @@ function carregarRelatorio() {
 
       if (!d.dados || d.dados.length === 0) {
         tbody.innerHTML = `
-          <tr><td colspan="6">Nenhum registro encontrado</td></tr>
+          <tr><td colspan="5">Nenhum registro encontrado</td></tr>
         `;
         return;
       }
 
+
+document.getElementById("cabParceiro").innerHTML = parceiroNome;
+
+document.getElementById("cabPeriodo").innerHTML =
+  (inicio || "Início") + " até " + (fim || "Hoje");
+
+document.getElementById("cabTotal").innerHTML =
+  d.dados.length;
+
+document.getElementById("cabData").innerHTML =
+  new Date().toLocaleString("pt-BR");
+
       d.dados.forEach(r => {
         tbody.innerHTML += `
           <tr>
-            <td>${new Date(r.data).toLocaleString("pt-BR")}</td>
+            <td>${r.dataFormatada || new Date(r.data).toLocaleString("pt-BR")}</td>
             <td>${r.grupo || "-"}</td>
             <td>${r.tipo || "-"}</td>
 <td>${r.beneficio || "-"}</td>
@@ -165,6 +193,7 @@ function carregarRelatorio() {
         `;
       });
     })
+
     .catch(err => {
       console.error(err);
       alert("Falha ao buscar relatório");

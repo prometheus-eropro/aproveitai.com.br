@@ -93,7 +93,11 @@ fetch(API + "?aba=beneficios")
        class="btn-link">📍 Como chegar</a>` : ""}
 </div>
 
-      ${b.dataFim ? `<p><strong>Fim:</strong> ${b.dataFim}</p>` : ""}
+      <p><strong>Início:</strong> ${b.dataInicio || "-"}</p>
+
+      <p><strong>Fim:</strong> ${b.dataFim || "-"}</p>
+
+     
     `;
 
     lista.appendChild(card);

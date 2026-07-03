@@ -381,11 +381,13 @@ document.getElementById("painelBox").style.display="block";
 
 document.getElementById("nomeParceiro").innerHTML=d.nome;
 
-document.getElementById("logoParceiro").src=
+const img = document.getElementById("logoParceiro");
 
-d.logo||
+img.src = "/logos/" + d.parceiro_id + ".png";
 
-"logo-aproveitai.png";
+img.onerror = function () {
+    this.src = "logo-aproveitai.png";
+};
 
 document.getElementById("cidadeParceiro").innerHTML=
 
@@ -560,7 +562,7 @@ document.getElementById("dadosEmpresa").innerHTML=`
 <div class="status-box" style="text-align:center">
 
 <img
-src="${d.logo||'logo-aproveitai.png'}"
+src="/logos/${d.parceiro_id}.png"
 onerror="this.src='logo-aproveitai.png'"
 style="max-width:170px;max-height:100px;margin-bottom:15px;">
 
@@ -628,27 +630,30 @@ id="btnAlteracao">
 
 `;
 
-document.getElementById("btnAlteracao").onclick=async()=>{
+document.getElementById("btnAlteracao").onclick = () => {
 
-const texto=prompt("Descreva a alteração:");
+    const texto = prompt("Descreva a alteração cadastral:");
 
-if(!texto)return;
+    if (!texto) return;
 
-await fetch(
+    const parceiro = sessionStorage.getItem("parceiroNome") || "";
+    const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
 
-API_URL+
+    const mensagem =
+`*SOLICITAÇÃO DE ALTERAÇÃO CADASTRAL*
 
-"?acao=solicitarAlteracao"+
+Parceiro: ${parceiro}
+CNPJ: ${cnpj}
 
-"&parceiro_id="+id+
+Alteração solicitada:
 
-"&tipo=CADASTRO"+
+${texto}`;
 
-"&descricao="+encodeURIComponent(texto)
-
-);
-
-alert("Solicitação enviada.");
+    window.open(
+        "https://wa.me/5528999692303?text=" +
+        encodeURIComponent(mensagem),
+        "_blank"
+    );
 
 };
 
@@ -724,27 +729,31 @@ class="btn-aproveitai">
 
 document.getElementById("listaBeneficios").innerHTML=html;
 
-document.getElementById("btnNovoBeneficio").onclick=async()=>{
+document.getElementById("btnNovoBeneficio").onclick = () => {
 
-const texto=prompt("Descreva o benefício desejado:");
+    const texto = prompt("Descreva o benefício desejado:");
 
-if(!texto)return;
+    if (!texto) return;
 
-await fetch(
+    const parceiro = sessionStorage.getItem("parceiroNome") || "";
+    const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
 
-API_URL+
+    const mensagem =
+`*SOLICITAÇÃO DE NOVO BENEFÍCIO*
 
-"?acao=solicitarAlteracao"+
+Parceiro: ${parceiro}
+CNPJ: ${cnpj}
 
-"&parceiro_id="+id+
+Benefício solicitado:
 
-"&tipo=BENEFICIO"+
 
-"&descricao="+encodeURIComponent(texto)
+${texto}`;
 
-);
-
-alert("Solicitação enviada.");
+    window.open(
+        "https://wa.me/5528999692303?text=" +
+        encodeURIComponent(mensagem),
+        "_blank"
+    );
 
 };
 
@@ -790,10 +799,17 @@ html+=`
 
 <p><b>Grupo:</b> ${p.grupo||"-"}</p>
 
-${p.dataInicio ? new Date(p.dataInicio).toLocaleDateString("pt-BR") : "-"}
+<p><b>Início:</b>
+${p.dataInicio
+? new Date(p.dataInicio).toLocaleDateString("pt-BR")
+: "-"}
+</p>
 
-${p.dataFim ? new Date(p.dataFim).toLocaleDateString("pt-BR") : "-"}
-
+<p><b>Fim:</b>
+${p.dataFim
+? new Date(p.dataFim).toLocaleDateString("pt-BR")
+: "-"}
+</p>
 <p><b>Status:</b> ${p.ativo=="SIM"?"ATIVA":"INATIVA"}</p>
 </div>
 
@@ -819,33 +835,34 @@ class="btn-aproveitai">
 
 document.getElementById("listaPromocoes").innerHTML=html;
 
-document.getElementById("btnNovaPromocao").onclick=async()=>{
+document.getElementById("btnNovaPromocao").onclick = () => {
 
-const texto=prompt("Descreva a promoção desejada:");
+    const texto = prompt("Descreva a promoção desejada:");
 
-if(!texto)return;
+    if (!texto) return;
 
-await fetch(
+    const parceiro = sessionStorage.getItem("parceiroNome") || "";
+    const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
 
-API_URL+
+    const mensagem =
+`*SOLICITAÇÃO DE NOVA PROMOÇÃO*
 
-"?acao=solicitarAlteracao"+
+Parceiro: ${parceiro}
+CNPJ: ${cnpj}
 
-"&parceiro_id="+id+
+Promoção solicitada:
 
-"&tipo=PROMOCAO"+
+${texto}`;
 
-"&descricao="+encodeURIComponent(texto)
-
-);
-
-alert("Solicitação enviada.");
+    window.open(
+        "https://wa.me/5528999692303?text=" +
+        encodeURIComponent(mensagem),
+        "_blank"
+    );
 
 };
 
 }
-
-
 
 function sairParceiro(){
 
@@ -874,40 +891,19 @@ return;
 
 }
 
+if(cpf.length < 4){
+
+    alert("Informe o CPF ou ID Público.");
+
+    return;
+
+}
+
 location.href=
 "validar.html?id="+
 encodeURIComponent(cpf);
 
 }
-
-window.addEventListener("load",()=>{
-
-if(sessionStorage.getItem("parceiroId")){
-
-document.getElementById("loginBox").style.display="none";
-
-document.getElementById("painelBox").style.display="block";
-
-document.getElementById("nomeParceiro").innerHTML=
-sessionStorage.getItem("parceiroNome");
-
-document.getElementById("logoParceiro").src=
-sessionStorage.getItem("parceiroLogo") ||
-"logo-aproveitai.png";
-
-document.getElementById("cidadeParceiro").innerHTML=
-sessionStorage.getItem("parceiroCidade") || "";
-
-document.getElementById("ramoParceiro").innerHTML=
-sessionStorage.getItem("parceiroRamo") || "";
-
-carregarResumoParceiro();
-
-mostrarTela("validacao");
-
-}
-
-});
 
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
@@ -922,7 +918,7 @@ mostrarTela("validacao");
 
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista em moea corrente, salvo autorização expressa do estabelecimento.
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 <div
 style="
 font-size:11px;

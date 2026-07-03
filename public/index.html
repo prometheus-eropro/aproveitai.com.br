@@ -261,7 +261,11 @@ let logo = `/logos/${p.parceiro_id}.png`;
 
     parceirosDiv.innerHTML += `
       <div class="card">
-        <img src="${logo}" onerror="this.src='logo-aproveitai.png'" style="max-height:100px;margin-bottom:10px">
+        <img
+src="/logos/${p.parceiro_id}.png"
+style="max-height:100px;margin-bottom:10px"
+onerror="this.src='logo-aproveitai.png'">
+
         <h3>${nome}</h3>
         <p>📍 <b>Cidade:</b> ${cidade}</p>
         <p>🏷 <b>Categoria:</b> ${ramo}</p>
