@@ -550,6 +550,9 @@ const d=await r.json();
 
 if(!d.ok){
 
+console.log("PARCEIRO_ID =", d.parceiro_id);
+console.log(d);
+
 document.getElementById("dadosEmpresa").innerHTML=
 "<div class='status-box'>Erro ao carregar dados.</div>";
 
@@ -632,28 +635,33 @@ id="btnAlteracao">
 
 document.getElementById("btnAlteracao").onclick = () => {
 
-    const texto = prompt("Descreva a alteração cadastral:");
-
-    if (!texto) return;
-
     const parceiro = sessionStorage.getItem("parceiroNome") || "";
     const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
 
     const mensagem =
-`*SOLICITAÇÃO DE ALTERAÇÃO CADASTRAL*
+`Olá!
+
+Solicito ALTERAÇÃO CADASTRAL.
 
 Parceiro: ${parceiro}
 CNPJ: ${cnpj}
 
-Alteração solicitada:
+Dados que desejo alterar:
 
-${texto}`;
+• Nome:
+• Contato:
+• WhatsApp:
+• Instagram:
+• Site:
+• Endereço:
+• Cidade:
+• Outros:
 
-    window.open(
-        "https://wa.me/5528999692303?text=" +
-        encodeURIComponent(mensagem),
-        "_blank"
-    );
+Obrigado.`;
+
+    location.href =
+    "https://wa.me/5528999692303?text=" +
+    encodeURIComponent(mensagem);
 
 };
 
@@ -703,7 +711,7 @@ html+=`
 
 <p><b>Fim:</b> ${b.dataFim ? new Date(b.dataFim).toLocaleDateString("pt-BR") : "-"}</p>
 
-<p><b>Status:</b> ${b.ativo=="SIM"?"ATIVO":"INATIVO"}</p>
+<p><b>Status:</b> ${String(b.ativo).toUpperCase()=="SIM"?"ATIVA":"INATIVA"}</p>
 
 </div>
 
@@ -731,29 +739,31 @@ document.getElementById("listaBeneficios").innerHTML=html;
 
 document.getElementById("btnNovoBeneficio").onclick = () => {
 
-    const texto = prompt("Descreva o benefício desejado:");
-
-    if (!texto) return;
-
     const parceiro = sessionStorage.getItem("parceiroNome") || "";
     const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
 
     const mensagem =
-`*SOLICITAÇÃO DE NOVO BENEFÍCIO*
+`Olá!
+
+Solicito o cadastro de um NOVO BENEFÍCIO na Plataforma AproveitAI.
 
 Parceiro: ${parceiro}
 CNPJ: ${cnpj}
 
-Benefício solicitado:
+Descreva abaixo o benefício que deseja cadastrar:
 
+• Benefício:
+• Percentual:
+• Regras:
+• Grupo:
+• Data inicial:
+• Data final:
 
-${texto}`;
+Obrigado.`;
 
-    window.open(
-        "https://wa.me/5528999692303?text=" +
-        encodeURIComponent(mensagem),
-        "_blank"
-    );
+    location.href =
+    "https://wa.me/5528999692303?text=" +
+    encodeURIComponent(mensagem);
 
 };
 
@@ -810,7 +820,7 @@ ${p.dataFim
 ? new Date(p.dataFim).toLocaleDateString("pt-BR")
 : "-"}
 </p>
-<p><b>Status:</b> ${p.ativo=="SIM"?"ATIVA":"INATIVA"}</p>
+<p><b>Status:</b> ${String(p.ativo).toUpperCase()=="SIM"?"ATIVA":"INATIVA"}</p>
 </div>
 
 `;
@@ -837,28 +847,30 @@ document.getElementById("listaPromocoes").innerHTML=html;
 
 document.getElementById("btnNovaPromocao").onclick = () => {
 
-    const texto = prompt("Descreva a promoção desejada:");
-
-    if (!texto) return;
-
     const parceiro = sessionStorage.getItem("parceiroNome") || "";
     const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
 
     const mensagem =
-`*SOLICITAÇÃO DE NOVA PROMOÇÃO*
+`Olá!
+
+Solicito o cadastro de uma NOVA PROMOÇÃO na Plataforma AproveitAI.
 
 Parceiro: ${parceiro}
 CNPJ: ${cnpj}
 
-Promoção solicitada:
+Descreva abaixo a promoção:
 
-${texto}`;
+• Promoção:
+• Regras:
+• Grupo:
+• Data inicial:
+• Data final:
 
-    window.open(
-        "https://wa.me/5528999692303?text=" +
-        encodeURIComponent(mensagem),
-        "_blank"
-    );
+Obrigado.`;
+
+    location.href =
+    "https://wa.me/5528999692303?text=" +
+    encodeURIComponent(mensagem);
 
 };
 
@@ -899,10 +911,11 @@ if(cpf.length < 4){
 
 }
 
-location.href=
-"validar.html?id="+
-encodeURIComponent(cpf);
-
+location.href =
+"validar.html?id=" +
+encodeURIComponent(cpf) +
+"&parceiro_id=" +
+encodeURIComponent(sessionStorage.getItem("parceiroId"));
 }
 
 </script>
