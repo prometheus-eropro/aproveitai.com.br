@@ -459,7 +459,7 @@ function retornoValidacao(resp) {
 
   console.log("RETORNO GAS:", resp);
   console.log("CELULAR:", resp.celular);
-  console.log("LOGO:", resp.logoURL);
+  console.log("PARCEIRO:", parceiroId);
 
 document.getElementById("blocoCodigo")
 .style.display = "none";
@@ -524,16 +524,17 @@ if (resp.exige_placa) {
 const img = document.getElementById("logoParceiro");
 
 img.src =
-resp.logoURL ||
-`/logos/${window.parceiroId || parceiroId}.png`;
+"/logos/" +
+(window.parceiroId || parceiroId) +
+".png";
 
-img.onload = function(){
-   this.style.display = "block";
+img.onload = function () {
+    this.style.display = "block";
 };
 
-img.onerror = function(){
-   this.src = "logo-aproveitai.png";
-   this.style.display = "block";
+img.onerror = function () {
+    this.src = "logo-aproveitai.png";
+    this.style.display = "block";
 };
 
   document.getElementById("nomeCliente").innerText =
@@ -707,9 +708,13 @@ document.getElementById("timer").innerHTML =
 
       <br>
 
-      <div style="color:#666">
-        Esta tela será encerrada automaticamente em 30 segundos.
-      </div>
+      <div
+id="contador30"
+style="color:#666">
+
+Esta tela será encerrada automaticamente em 30 segundos.
+
+</div>
 
 <br><br>
 
@@ -734,11 +739,26 @@ cursor:pointer;
 
   mostrarMsg("🎉 Obrigado por utilizar a Plataforma AproveitAI.");
 
-  setTimeout(() => {
+  let tempo = 30;
 
-history.back();
+const contador = setInterval(() => {
 
-},30000);
+    tempo--;
+
+    document.getElementById("contador30").innerHTML =
+    "Esta tela será encerrada automaticamente em " +
+    tempo +
+    " segundos.";
+
+    if (tempo <= 0) {
+
+        clearInterval(contador);
+
+        history.back();
+
+    }
+
+},1000);
 
 }
 
