@@ -93,9 +93,17 @@ fetch(API + "?aba=beneficios")
        class="btn-link">📍 Como chegar</a>` : ""}
 </div>
 
-      <p><strong>Início:</strong> ${b.dataInicio || "-"}</p>
+      <p><strong>Início:</strong> ${
+b.dataInicio
+? new Date(b.dataInicio).toLocaleDateString("pt-BR")
+: "-"
+}</p>
 
-      <p><strong>Fim:</strong> ${b.dataFim || "-"}</p>
+<p><strong>Fim:</strong> ${
+b.dataFim
+? new Date(b.dataFim).toLocaleDateString("pt-BR")
+: "-"
+}</p>
 
      
     `;
