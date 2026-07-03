@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+f<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta name="theme-color" content="#0a7a2a">
@@ -428,9 +428,33 @@ border-radius:10px;
 
 function solicitarAlteracao(){
 
+const nome =
+document.getElementById("bemVindoNome")
+.innerText
+.replace("Olá,","")
+.replace("Seu cadastro está ATIVO.","")
+.trim();
+
+const cpf =
+document.getElementById("cpf").value;
+
+const texto =
+
+`Olá!
+
+Gostaria de solicitar alteração cadastral.
+
+Nome: ${nome}
+
+CPF: ${cpf}
+
+Informações que desejo alterar:
+`;
+
 window.open(
 
-"https://wa.me/5528999692303?text=Olá,%20gostaria%20de%20alterar%20meus%20dados%20cadastrais.",
+"https://wa.me/5528999692303?text="+
+encodeURIComponent(texto),
 
 "_blank"
 

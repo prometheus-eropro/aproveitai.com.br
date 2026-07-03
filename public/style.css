@@ -37,10 +37,15 @@ h1, h2, h3 {
 }
 
 .logo {
-  max-height: 180px;
-  height: auto;
-  width: auto;
-  object-fit: contain;
+
+max-height:250px;
+
+height:auto;
+
+width:auto;
+
+object-fit:contain;
+
 }
 
 .brand-center {
@@ -372,7 +377,7 @@ button:hover {
 
 display:block;
 
-width:240px;
+width:340px;
 
 margin:25px auto;
 
@@ -1824,20 +1829,26 @@ main {
   background: #ffe0e0;
   color: #b00000;
 }
-.btn-voltar-flutuante {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 9999;
-  background: #198754;
-  color: #fff;
-  border: none;
-  border-radius: 50px;
-  padding: 14px 18px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+.btn-voltar-flutuante{
+
+position:fixed;
+
+bottom:18px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+width:220px;
+
+height:48px;
+
+border-radius:12px;
+
+font-size:18px;
+
+font-weight:bold;
+
 }
 
 .btn-voltar-flutuante:hover {
@@ -2087,13 +2098,11 @@ text-align:center;
 
 font-size:28px;
 
-font-weight:bold;
+font-weight:800;
 
-color:#FFD400;
+color:#0B7A2A;
 
-margin-top:8px;
-
-margin-bottom:5px;
+text-shadow:1px 1px 2px rgba(0,0,0,.15);
 
 }
 
@@ -2101,9 +2110,7 @@ margin-bottom:5px;
 
 font-size:16px;
 
-color:#ffffff;
-
-margin-top:8px;
+color:#666;
 
 }
 
