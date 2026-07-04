@@ -159,6 +159,11 @@ try{
 
     console.log("RETORNO DO GAS:", achado);
 
+console.log("OK =", achado.ok);
+console.log("NOME =", achado.nome);
+console.log("ATIVO =", achado.ativo);
+
+
 if(!achado || !achado.ok){
     box.textContent = achado?.mensagem || "Erro";
     return;
