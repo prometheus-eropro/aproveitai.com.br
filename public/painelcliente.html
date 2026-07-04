@@ -150,7 +150,7 @@ async function consultar(){
   }
 
   const url =
-`${sheetURL}?acao=buscarClienteId&callback=retornoConsulta&id=${encodeURIComponent(cpf)}&nascimento=${encodeURIComponent(nascimento)}`;
+`${sheetURL}?acao=buscarClienteId&callback=retornoConsulta&cpf=${encodeURIComponent(cpf)}&nascimento=${encodeURIComponent(nascimento)}`;
 
   try{
     window.retornoConsulta=function(achado){
