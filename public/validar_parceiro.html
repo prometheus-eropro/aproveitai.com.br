@@ -414,6 +414,10 @@ resp.nomeCliente || "";
 document.getElementById("cpfCliente").innerText =
 resp.cpf || "";
 
+window.cpfCliente = resp.cpf;
+window.idPublicoCliente = resp.idPublico;
+window.grupoCliente = resp.grupo;
+
 document.getElementById("celularCliente").innerText =
 resp.celular || "";
 
@@ -675,41 +679,6 @@ GAS_URL +
   document.body.appendChild(script);
 }
 
-function retornoBeneficios(resp){
-
-  if(!resp || !resp.ok) return;
-
-  const select =
-    document.getElementById("beneficioSelecionado");
-
-  select.innerHTML = "";
-
-const opPadrao = document.createElement("option");
-opPadrao.value = "";
-opPadrao.text = "Selecione o benefício...";
-select.appendChild(opPadrao);
-
-  resp.itens.forEach(item => {
-
-    const op = document.createElement("option");
-
-   op.value =
-  item.tipo + "|" +
-  item.titulo + " - " +
-  item.descricao;
-
-    op.text =
-      item.titulo + " - " +
-      item.descricao;
-
-    select.appendChild(op);
-
-  });
-
-  document.getElementById("blocoBeneficio")
-.style.display = "block";
-
-}
 
 function beneficioSelecionado(){
 
@@ -759,49 +728,76 @@ function veiculoSelecionado(){
 
 function gerarERO() {
 
-const beneficio =
-document.getElementById(
- "beneficioSelecionado"
-).value;
+  const beneficio =
+    document.getElementById("beneficioSelecionado").value;
 
-if(!beneficio){
-   mostrarMsg(
-    "Selecione um benefício"
-   );
-   return;
+  if (!beneficio) {
+    mostrarMsg("Selecione um benefício");
+    return;
+  }
+
+  const cpf =
+    window.cpfCliente ||
+    document.getElementById("cpf").value.replace(/\D/g,"");
+
+  console.log("CPF:", cpf);
+  console.log("Parceiro:", parceiroId);
+  console.log("Benefício:", beneficio);
+
+  const url =
+    GAS_URL +
+    "?callback=retornoGeracaoERO" +
+    "&acao=gerarERO" +
+    "&cpf=" + encodeURIComponent(cpf) +
+    "&parceiro_id=" + encodeURIComponent(parceiroId);
+
+  console.log("URL GERAR ERO:");
+  console.log(url);
+
+  const script = document.createElement("script");
+
+  script.src = url;
+
+  script.onerror = function(){
+      console.log("ERRO AO CHAMAR O GAS");
+  };
+
+  document.body.appendChild(script);
+
 }
 
- const cpf =
-window.cpfCliente ||
-document.getElementById("cpf")
-.value.replace(/\D/g,"");
+function retornoBeneficios(resp){
 
-console.log("CPF:", cpf);
-console.log("Parceiro:", parceiroId);
-console.log("Benefício:", beneficio);
+  if(!resp || !resp.ok) return;
 
-const script =
-document.createElement("script");
+  const select =
+    document.getElementById("beneficioSelecionado");
 
- const url =
-GAS_URL +
-"?callback=retornoGeracaoERO" +
-"&acao=gerarERO" +
-"&cpf=" + encodeURIComponent(cpf) +
-"&parceiro_id=" + encodeURIComponent(parceiroId);
+  select.innerHTML = "";
 
-console.log("URL GERAR ERO:");
-console.log(url);
+  const opPadrao = document.createElement("option");
+  opPadrao.value = "";
+  opPadrao.text = "Selecione o benefício...";
+  select.appendChild(opPadrao);
 
-const script = document.createElement("script");
-script.src = url;
-script.onerror = function(){
-   console.log("ERRO AO CHAMAR O GAS");
-};
+  resp.itens.forEach(item => {
 
-document.body.appendChild(script);
+    const op = document.createElement("option");
 
- document.body.appendChild(script);
+    op.value =
+      item.tipo + "|" +
+      item.titulo + " - " +
+      item.descricao;
+
+    op.text =
+      item.titulo + " - " +
+      item.descricao;
+
+    select.appendChild(op);
+
+  });
+
+  document.getElementById("blocoBeneficio").style.display = "block";
 
 }
 
