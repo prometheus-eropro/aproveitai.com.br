@@ -905,6 +905,9 @@ function veiculoSelecionado(){
       "btnGerarERO"
    ).style.display = "block";
 }
+console.log("CPF:", window.cpfCliente);
+console.log("Parceiro:", window.parceiroId);
+console.log("Cliente:", clienteId);
 
 function gerarERO() {
 
@@ -930,20 +933,30 @@ console.log("QR PARCEIRO");
 
 }
 
- const cpf = window.cpfCliente;
+const cpf = window.cpfCliente || "";
 
- const script =
- document.createElement("script");
+const nascimento =
+sessionStorage.getItem("clienteNascimento") || "";
 
- script.src =
- GAS_URL +
- "?callback=retornoGeracaoERO" +
- "&acao=gerarERO" +
- "&cpf=" + encodeURIComponent(cpf) +
-"&parceiro_id=" +
-encodeURIComponent(window.parceiroId || parceiroId);
+const idPublico =
+window.dadosValidacao?.idPublico ||
+clienteId ||
+"";
 
- document.body.appendChild(script);
+const script = document.createElement("script");
+
+script.src =
+GAS_URL +
+"?callback=retornoGeracaoERO" +
+"&acao=gerarERO" +
+"&cpf=" + encodeURIComponent(cpf) +
+"&idPublico=" + encodeURIComponent(idPublico) +
+"&nascimento=" + encodeURIComponent(nascimento) +
+"&parceiro_id=" + encodeURIComponent(window.parceiroId || parceiroId);
+
+console.log(script.src);
+
+document.body.appendChild(script);
 
 }
 

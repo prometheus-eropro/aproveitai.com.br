@@ -166,7 +166,7 @@ if(!achado || !achado.ok){
 
     console.log("PASSOU 1");
 
-const ativo = isAtivo(achado.ativo);
+const ativo = isAtivo(achado.statusCliente);
 
 console.log("PASSOU 2");
     ultimoIdPublico = achado.idPublico;
@@ -213,7 +213,7 @@ console.log("PASSOU 4");
 
     document.getElementById("bemVindoNome").innerHTML = `
       <span style="color:#000">
-        Olá, <strong style="color:#0a7f2e">${achado.nome}</strong> 👋<br>
+        Olá, <strong style="color:#0a7f2e">${achado.nomeCliente}</strong> 👋<br>
         Seu cadastro está <strong style="color:#0a7f2e">ATIVO</strong>.
       </span>
     `;
@@ -226,7 +226,7 @@ console.log("ANTES DO HTML");
 
 
    box.innerHTML = `
-  <div><b>Nome:</b> ${achado.nome}</div>
+  <div><b>Nome:</b> ${achado.nomeCliente}</div>
   <div><b>CPF:</b> ${achado.cpf || "-"}</div>
   <div><b>Celular:</b> ${achado.celular || "-"}</div>
   <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
