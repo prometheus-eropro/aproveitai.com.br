@@ -150,7 +150,22 @@ lista.innerHTML += `
 
     </div>
 
-    ${item.dataFim ? `<div class="fim">Fim: ${formatarDataBR(item.dataFim)}</div>` : ""}
+    ${item.dataInicio ? `
+<div style="
+margin-top:8px;
+color:#0a7f2e;
+font-weight:600;
+">
+📅 Início: ${formatarDataBR(item.dataInicio)}
+</div>` : ""}
+
+${item.dataFim ? `
+<div style="
+color:#c62828;
+font-weight:600;
+">
+📅 Término: ${formatarDataBR(item.dataFim)}
+</div>` : ""}
   </div>
 `;
   });
