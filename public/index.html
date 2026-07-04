@@ -261,8 +261,11 @@ let logo = `/logos/${p.parceiro_id}.png`;
 
     parceirosDiv.innerHTML += `
       <div class="card">
-        <img
-src="/logos/${p.parceiro_id}.png"
+<img
+src="${logo}"
+style="max-height:100px"
+onerror="this.src='logo-aproveitai.png'">
+
 style="max-height:100px;margin-bottom:10px"
 onerror="this.src='logo-aproveitai.png'">
 

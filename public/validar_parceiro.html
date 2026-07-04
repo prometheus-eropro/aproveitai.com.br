@@ -145,8 +145,20 @@ body {
 </div>
 <br>
   <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
-  <strong>Grupo:</strong> <span id="grupoCliente"></span><br>
-  <strong>ID Público:</strong> <span id="idPublicoCliente"></span><br>
+
+<strong>CPF:</strong> <span id="cpfCliente"></span><br>
+
+<strong>Celular:</strong> <span id="celularCliente"></span><br>
+
+<strong>ID Público:</strong> <span id="idPublicoCliente"></span><br>
+
+<strong>Grupo:</strong> <span id="grupoCliente"></span><br>
+
+<strong>Cidade:</strong> <span id="cidadeCliente"></span><br>
+
+<strong>Status:</strong> <span id="statusCliente"></span><br>
+
+<strong>Validade:</strong> <span id="validadeCliente"></span><br>
   
 </div>
 
@@ -396,9 +408,29 @@ img.onerror = function(){
    this.style.display = "block";
 };
 
-  document.getElementById("nomeCliente").innerText = resp.nomeCliente || "-";
-  document.getElementById("grupoCliente").innerText = resp.grupo || "-";
-  document.getElementById("idPublicoCliente").innerText = resp.idPublico || "-";
+document.getElementById("nomeCliente").innerText =
+resp.nomeCliente || "";
+
+document.getElementById("cpfCliente").innerText =
+resp.cpf || "";
+
+document.getElementById("celularCliente").innerText =
+resp.celular || "";
+
+document.getElementById("idPublicoCliente").innerText =
+resp.idPublico || "";
+
+document.getElementById("grupoCliente").innerText =
+resp.grupo || "";
+
+document.getElementById("cidadeCliente").innerText =
+resp.cidade || "";
+
+document.getElementById("statusCliente").innerText =
+resp.statusCliente || "";
+
+document.getElementById("validadeCliente").innerText =
+resp.validade || "";
 
 window.dadosValidacao = resp;
 window.exigePlaca = resp.exige_placa === true;
