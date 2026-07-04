@@ -752,11 +752,11 @@ const contador = setInterval(() => {
 
     if (tempo <= 0) {
 
-        clearInterval(contador);
+    clearInterval(contador);
 
-        history.back();
+    window.location.replace("painelparceiro.html");
 
-    }
+}
 
 },1000);
 
@@ -781,12 +781,6 @@ function iniciarCronometro(validoAteISO) {
 
       document.getElementById("btnConfirmar")
         .style.display = "none";
-
-      setTimeout(() => {
-
-        location.reload();
-
-      }, 10000);
 
       return;
 
