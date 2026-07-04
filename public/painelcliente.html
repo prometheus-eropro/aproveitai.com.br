@@ -150,11 +150,10 @@ async function consultar(){
   }
 
   const url =
-  `${sheetURL}?acao=consultarClienteSeguro&cpf=${encodeURIComponent(cpf)}&nascimento=${encodeURIComponent(nascimento)}`;
+`${sheetURL}?acao=buscarClienteId&callback=retornoConsulta&id=${encodeURIComponent(cpf)}&nascimento=${encodeURIComponent(nascimento)}`;
 
   try{
-    const res = await fetch(url);
-    const achado = await res.json();
+    window.retornoConsulta=function(achado){
 
     if(!achado || !achado.ok){
       box.textContent = "❌ Dados não conferem ou cliente não encontrado.";
