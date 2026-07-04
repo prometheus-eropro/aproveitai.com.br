@@ -1,4 +1,4 @@
-f<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta name="theme-color" content="#0a7a2a">
@@ -250,10 +250,20 @@ onclick="solicitarAlteracao()">
 carregarHistorico(cpf);
 carregarVeiculos(achado);
 
-  } catch(e){
+};   // <-- fecha retornoConsulta
+
+const script = document.createElement("script");
+
+script.src = url;
+
+document.body.appendChild(script);
+
+} catch(e){
+
     console.error(e);
-    box.textContent = "⚠️ Erro ao consultar.";
-  }
+
+    box.textContent="⚠️ Erro ao consultar.";
+
 }
 
 function abrirBeneficios() {
