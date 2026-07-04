@@ -155,10 +155,12 @@ async function consultar(){
   try{
     window.retornoConsulta=function(achado){
 
-    if(!achado || !achado.ok){
-      box.textContent = "❌ Dados não conferem ou cliente não encontrado.";
-      return;
-    }
+    console.log("RETORNO DO GAS:", achado);
+
+if(!achado || !achado.ok){
+    box.textContent = achado?.mensagem || "Erro";
+    return;
+}
 
     const ativo = isAtivo(achado.ativo);
     ultimoIdPublico = achado.idPublico;
