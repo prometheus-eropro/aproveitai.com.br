@@ -112,6 +112,9 @@ const cliente = await resCliente.json();
   const ben = (await resBen.json()).dados || [];
   const pro = (await resPro.json()).dados || [];
 
+  console.log("BENEFICIOS", ben);
+console.log("PROMOCOES", pro);
+
   const lista = document.getElementById("lista");
   lista.innerHTML = "";
 
