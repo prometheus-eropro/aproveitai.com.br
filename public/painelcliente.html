@@ -153,7 +153,9 @@ async function consultar(){
 `${sheetURL}?acao=buscarClienteId&callback=retornoConsulta&cpf=${encodeURIComponent(cpf)}&nascimento=${encodeURIComponent(nascimento)}`;
 
   try{
-    window.retornoConsulta=function(achado){
+    window.retornoConsulta = function(achado){
+
+try{
 
     console.log("RETORNO DO GAS:", achado);
 
@@ -272,6 +274,26 @@ try{
   carregarVeiculos(achado);
 }catch(e){
   console.error("ERRO VEÍCULOS:", e);
+}
+
+}catch(err){
+
+console.error("ERRO DENTRO DO RETORNO:", err);
+
+box.innerHTML = `
+<div style="
+padding:15px;
+background:#ffeaea;
+border:2px solid red;
+border-radius:8px;
+color:#900;
+font-weight:bold;
+">
+Erro JavaScript:<br>
+${err.message}
+</div>
+`;
+
 }
 
 };   // <-- fecha retornoConsulta
