@@ -4,7 +4,7 @@
 
 const CONFIG = {
 
-    versao: "2026.07.04-014",
+    versao: "2026.07.04-015",
 
     empresa: "PROMETHEUS EROPRO",
 
