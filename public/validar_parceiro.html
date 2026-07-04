@@ -776,16 +776,30 @@ window.cpfCliente ||
 document.getElementById("cpf")
 .value.replace(/\D/g,"");
 
- const script =
- document.createElement("script");
+console.log("CPF:", cpf);
+console.log("Parceiro:", parceiroId);
+console.log("Benefício:", beneficio);
 
- script.src =
- GAS_URL +
- "?callback=retornoGeracaoERO" +
- "&acao=gerarERO" +
- "&cpf=" + encodeURIComponent(cpf) +
- "&parceiro_id=" +
- encodeURIComponent(parceiroId);
+const script =
+document.createElement("script");
+
+ const url =
+GAS_URL +
+"?callback=retornoGeracaoERO" +
+"&acao=gerarERO" +
+"&cpf=" + encodeURIComponent(cpf) +
+"&parceiro_id=" + encodeURIComponent(parceiroId);
+
+console.log("URL GERAR ERO:");
+console.log(url);
+
+const script = document.createElement("script");
+script.src = url;
+script.onerror = function(){
+   console.log("ERRO AO CHAMAR O GAS");
+};
+
+document.body.appendChild(script);
 
  document.body.appendChild(script);
 
@@ -793,12 +807,15 @@ document.getElementById("cpf")
 
 function retornoGeracaoERO(resp){
 
- if(!resp || !resp.ok){
+   console.log("RETORNO GERAR ERO:");
+   console.log(resp);
 
-   mostrarMsg("Erro ao gerar código");
-   return;
+   if(!resp || !resp.ok){
 
- }
+      mostrarMsg("Erro ao gerar código");
+      return;
+
+   }
 
  window.codigoERO =
  resp.codigo;
