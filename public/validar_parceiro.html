@@ -438,8 +438,10 @@ window.exigePlaca = resp.exige_placa === true;
 console.log(resp.logoURL);
 
 carregarBeneficios(
-  parceiroId,
-  resp.grupo
+    parceiroId,
+    resp.grupo,
+    resp.cpf,
+    resp.idPublico
 );
 
 document.getElementById("blocoBeneficio")
@@ -657,16 +659,18 @@ nasc.addEventListener("input", function() {
 });
 
 
-function carregarBeneficios(parceiroId, grupo){
+function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
   const script = document.createElement("script");
 
-  script.src =
-    GAS_URL +
-    "?callback=retornoBeneficios" +
-    "&acao=listarBeneficiosCliente" +
-    "&parceiro_id=" + encodeURIComponent(parceiroId) +
-    "&grupo=" + encodeURIComponent(grupo);
+script.src =
+GAS_URL +
+"?callback=retornoBeneficios" +
+"&acao=listarBeneficiosCliente" +
+"&parceiro_id=" + encodeURIComponent(parceiroId) +
+"&grupo=" + encodeURIComponent(grupo) +
+"&cpf=" + encodeURIComponent(cpf) +
+"&idPublico=" + encodeURIComponent(idPublico);
 
   document.body.appendChild(script);
 }
