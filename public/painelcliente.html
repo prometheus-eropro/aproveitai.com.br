@@ -162,7 +162,11 @@ if(!achado || !achado.ok){
     return;
 }
 
-    const ativo = isAtivo(achado.ativo);
+    console.log("PASSOU 1");
+
+const ativo = isAtivo(achado.ativo);
+
+console.log("PASSOU 2");
     ultimoIdPublico = achado.idPublico;
     sessionStorage.setItem("clienteCpf", cpf);
     sessionStorage.setItem("clienteNascimento", nascimento);
@@ -173,6 +177,8 @@ if(!achado || !achado.ok){
       document.getElementById("btnBeneficios").style.display = "none";
       document.getElementById("btnCartao").style.display = "none";
       document.getElementById("btnParceiros").style.display = "none";
+
+console.log("PASSOU 3");
 
       box.innerHTML = `
         <div style="
@@ -197,6 +203,9 @@ if(!achado || !achado.ok){
         </div>
       `;
 
+
+console.log("PASSOU 4
+
       return;
     }
 
@@ -210,6 +219,9 @@ if(!achado || !achado.ok){
     document.getElementById("btnBeneficios").style.display = "block";
     document.getElementById("btnCartao").style.display = "block";
     document.getElementById("btnParceiros").style.display = "block";
+
+console.log("ANTES DO HTML");
+
 
    box.innerHTML = `
   <div><b>Nome:</b> ${achado.nome}</div>
@@ -248,9 +260,19 @@ onclick="solicitarAlteracao()">
 
 </div>
 `;
+console.log("ANTES DO HTML");
 
-carregarHistorico(cpf);
-carregarVeiculos(achado);
+try{
+  carregarHistorico(cpf);
+}catch(e){
+  console.error("ERRO HISTÓRICO:", e);
+}
+
+try{
+  carregarVeiculos(achado);
+}catch(e){
+  console.error("ERRO VEÍCULOS:", e);
+}
 
 };   // <-- fecha retornoConsulta
 
