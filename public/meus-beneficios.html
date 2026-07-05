@@ -102,119 +102,119 @@ function formatarDataBR(valor){
 }
 
 async function carregarTudo() {
+
+  const lista = document.getElementById("lista");
+
   if (!idCliente) {
-    document.getElementById("lista").innerHTML = "Acesso inválido.";
+    lista.innerHTML = "Acesso inválido.";
     return;
   }
 
-  const resCliente = await fetch(
-  `${API_URL}?acao=consultarClientePorIdSeguro&idPublico=${encodeURIComponent(idCliente)}&nascimento=${encodeURIComponent(nascimento)}`
-);
+  try {
 
-console.log("URL:", resposta.url);
+    // ============================
+    // CONSULTA CLIENTE
+    // ============================
+    const resCliente = await fetch(
+      `${API_URL}?acao=consultarClientePorIdSeguro` +
+      `&idPublico=${encodeURIComponent(idCliente)}` +
+      `&nascimento=${encodeURIComponent(nascimento)}`
+    );
 
-const cliente = await resCliente.json();
+    const cliente = await resCliente.json();
 
-console.log("CLIENTE:", cliente);
+    console.log("CLIENTE:", cliente);
 
-  // 🔐 BLOQUEIO TOTAL SE NÃO ATIVO
-  if (!cliente || !cliente.ok || String(cliente.ativo).toLowerCase() !== "sim") {
-    document.getElementById("lista").innerHTML =
-      "<p style='text-align:center;color:red'>Cliente inativo ou inexistente.</p>";
-    return;
+    if (String(cliente.ativo).toLowerCase() !== "sim") {
+      lista.innerHTML =
+        "<p style='text-align:center;color:red'>Cliente inativo ou inexistente.</p>";
+      return;
+    }
+
+    // ============================
+    // CONSULTA BENEFÍCIOS
+    // ============================
+    const resposta = await fetch(
+      `${API_URL}?acao=listarBeneficiosCliente` +
+      `&grupo=${encodeURIComponent(cliente.grupo)}` +
+      `&cpf=${encodeURIComponent(cliente.cpf)}` +
+      `&idPublico=${encodeURIComponent(cliente.idPublico)}`
+    );
+
+    const retorno = await resposta.json();
+
+    console.log("RETORNO:", retorno);
+
+    lista.innerHTML = "";
+
+    const itens = retorno.itens || [];
+
+    itens.forEach(item => {
+
+      const exclusivo = item.grupo || item.idPublico;
+
+      lista.innerHTML += `
+        <div class="card ${exclusivo ? "exclusivo" : ""}">
+
+          ${exclusivo ? "<div class='tarja'>EXCLUSIVO</div>" : ""}
+
+          <h3>${item.titulo || ""}</h3>
+
+          <p>${item.descricao || ""}</p>
+
+          ${item.parceiro ? `<div><b>PARCEIRO:</b> ${item.parceiro}</div>` : ""}
+
+          <div class="contatos">
+
+            ${item.zap ?
+              `<a href="https://wa.me/55${item.zap.replace(/\D/g,"")}"
+              target="_blank"
+              class="link zap">📱 WhatsApp</a>` : ""}
+
+            ${item.instagram ?
+              `<a href="https://instagram.com/${item.instagram.replace("@","")}"
+              target="_blank"
+              class="link insta">📸 Instagram</a>` : ""}
+
+            ${item.site ?
+              `<a href="${item.site}"
+              target="_blank"
+              class="link site">🌐 Site</a>` : ""}
+
+          </div>
+
+          ${item.dataInicio ?
+          `<div style="margin-top:8px;color:#0a7f2e;font-weight:600">
+          📅 Início: ${formatarDataBR(item.dataInicio)}
+          </div>` : ""}
+
+          ${item.dataFim ?
+          `<div style="color:#c62828;font-weight:600">
+          📅 Término: ${formatarDataBR(item.dataFim)}
+          </div>` : ""}
+
+        </div>
+      `;
+
+    });
+
+    if (itens.length === 0) {
+      lista.innerHTML =
+        "<p style='text-align:center'>Nenhum benefício disponível.</p>";
+    }
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    lista.innerHTML =
+      "<p style='text-align:center;color:red'>Erro ao carregar benefícios.</p>";
+
   }
 
-  const grupoCliente = cliente.grupo;
-
- const resposta = await fetch(
-
-`${API_URL}?acao=listarBeneficiosCliente` +
-
-`&grupo=${encodeURIComponent(cliente.grupo)}` +
-
-`&cpf=${encodeURIComponent(cliente.cpf)}` +
-
-`&idPublico=${encodeURIComponent(cliente.idPublico)}`
-
-);
-
-const texto = await resposta.text();
-
-console.log("RESPOSTA BRUTA:");
-console.log(texto);
-
-const retorno = JSON.parse(texto);
-
-console.log(retorno);
-console.log(retorno.itens);
-console.log(retorno.ok);
-
-console.log("RETORNO BENEFÍCIOS:", retorno);
-
-const itens = retorno.itens || [];
-
-const lista = document.getElementById("lista");
-
-itens.forEach(item=>{
-
-    
-    const exclusivo = item.grupo || item.idPublico;
-
-lista.innerHTML += `
-  <div class="card ${exclusivo ? "exclusivo" : ""}">
-    ${exclusivo ? "<div class='tarja'>EXCLUSIVO</div>" : ""}
-
-    <h3>${item.titulo || ""}</h3>
-
-    <p>${item.descricao || ""}</p>
-
-    ${item.parceiro ? `<div><b>PARCEIRO:</b> ${item.parceiro}</div>` : ""}
-
-    <div class="contatos">
-
-      ${item.zap
-        ? `<a href="https://wa.me/55${item.zap.replace(/\D/g,"")}"
-             target="_blank" class="link zap">📱 WhatsApp</a>`
-        : ""}
-
-      ${item.instagram
-        ? `<a href="https://instagram.com/${item.instagram.replace("@","")}"
-             target="_blank" class="link insta">📸 Instagram</a>`
-        : ""}
-
-      ${item.site
-        ? `<a href="${item.site}"
-             target="_blank" class="link site">🌐 Site</a>`
-        : ""}
-
-    </div>
-
-    ${item.dataInicio ? `
-<div style="
-margin-top:8px;
-color:#0a7f2e;
-font-weight:600;
-">
-📅 Início: ${formatarDataBR(item.dataInicio)}
-</div>` : ""}
-
-${item.dataFim ? `
-<div style="
-color:#c62828;
-font-weight:600;
-">
-📅 Término: ${formatarDataBR(item.dataFim)}
-</div>` : ""}
-  </div>
-`;
-  });
-
-  if (!lista.innerHTML) {
-    lista.innerHTML = "<p style='text-align:center'>Nenhum benefício disponível.</p>";
-  }
 }
 
-document.addEventListener("DOMContentLoaded", carregarTudo);
+  document.addEventListener("DOMContentLoaded", carregarTudo);
 </script>
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
