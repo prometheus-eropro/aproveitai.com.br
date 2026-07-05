@@ -104,24 +104,27 @@ const cliente = await resCliente.json();
 
   const grupoCliente = cliente.grupo;
 
-  const [resBen, resPro] = await Promise.all([
-    fetch(API_URL + "?aba=beneficios"),
-    fetch(API_URL + "?aba=promocoes")
-  ]);
+  const resposta = await fetch(
 
-  const ben = (await resBen.json()).dados || [];
-  const pro = (await resPro.json()).dados || [];
+`${API_URL}?acao=listarBeneficiosCliente` +
 
-  console.log("BENEFICIOS", ben);
-console.log("PROMOCOES", pro);
+`&parceiro_id=${encodeURIComponent(cliente.parceiro_id)}` +
 
-  const lista = document.getElementById("lista");
-  lista.innerHTML = "";
+`&grupo=${encodeURIComponent(cliente.grupo)}` +
 
-  [...ben, ...pro].forEach(item => {
-    if (String(item.ativo).toLowerCase() !== "sim") return;
-    if (!clientePodeVer(item, grupoCliente)) return;
+`&cpf=${encodeURIComponent(cliente.cpf)}` +
 
+`&idPublico=${encodeURIComponent(cliente.idPublico)}`
+
+);
+
+const retorno = await resposta.json();
+
+const itens = retorno.itens || [];
+
+itens.forEach(item=>{
+
+    
     const exclusivo = item.grupo || item.idPublico;
 
 lista.innerHTML += `
