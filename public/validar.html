@@ -314,9 +314,11 @@ if (!parceiroToken || !parceiroCNPJ){
 }
 
 let clienteId =
-    params.get("idPublico") ||
-    params.get("id") ||
-    params.get("cliente");
+params.get("idPublico") ||
+params.get("id") ||
+params.get("cpf") ||
+params.get("cliente") ||
+"";
 
 let leitor = null;
 let lendo = false;
@@ -436,8 +438,12 @@ function validar(){
 
     if(old) old.remove();
 
+console.log(clienteId);
+console.log(parceiroId);
+
     const script =
     document.createElement("script");
+
 
     script.id="jsonpReq";
 
@@ -445,7 +451,7 @@ function validar(){
       GAS_URL +
       "?callback=retornoValidacao" +
       "&acao=buscarClienteId" +
-      "&id=" + encodeURIComponent(clienteId) +
+      "&idPublico=" + encodeURIComponent(clienteId) +
       "&p=" + encodeURIComponent(parceiroId);
 
     document.body.appendChild(script);
@@ -523,10 +529,15 @@ if (resp.exige_placa) {
 
 const img = document.getElementById("logoParceiro");
 
-img.src =
-"/logos/" +
-(window.parceiroId || parceiroId) +
-".png";
+if(resp.logoURL){
+
+    img.src = resp.logoURL;
+
+}else{
+
+    img.src = "logo-aproveitai.png";
+
+}
 
 img.onload = function () {
     this.style.display = "block";
@@ -569,10 +580,10 @@ document.getElementById("cpfClienteMascara").innerText =
 cpf || "-";
 
 window.dadosValidacao = resp;
+window.nascimentoCliente =
+resp.nascimento || "";
 window.cpfCliente = resp.cpf || "";
-window.parceiroId =
-resp.parceiro_id ||
-parceiroId;
+window.parceiroId = parceiroId;
 window.exigePlaca = resp.exige_placa === true;
 
 console.log(resp.logoURL);
@@ -838,6 +849,8 @@ opPadrao.value = "";
 opPadrao.text = "Selecione o benefício...";
 select.appendChild(opPadrao);
 
+console.log(resp.itens);
+
   resp.itens.forEach(item => {
 
     const op = document.createElement("option");
@@ -905,9 +918,7 @@ function veiculoSelecionado(){
       "btnGerarERO"
    ).style.display = "block";
 }
-console.log("CPF:", window.cpfCliente);
-console.log("Parceiro:", window.parceiroId);
-console.log("Cliente:", clienteId);
+
 
 function gerarERO() {
 
@@ -936,7 +947,7 @@ console.log("QR PARCEIRO");
 const cpf = window.cpfCliente || "";
 
 const nascimento =
-sessionStorage.getItem("clienteNascimento") || "";
+window.nascimentoCliente || "";
 
 const idPublico =
 window.dadosValidacao?.idPublico ||
