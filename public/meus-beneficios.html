@@ -73,15 +73,32 @@ function clientePodeVer(item, grupoCliente) {
   return false;
 }
 
-function formatarDataBR(valor) {
-  if (!valor) return "";
+function formatarDataBR(valor){
 
-  if (String(valor).includes("/")) return valor;
+  if(!valor) return "-";
+
+  if(typeof valor === "string"){
+
+    if(valor.includes("/"))
+      return valor;
+
+    if(valor.includes("T"))
+      valor = valor.substring(0,10);
+
+  }
 
   const d = new Date(valor);
-  if (isNaN(d)) return "";
 
-  return d.toLocaleDateString("pt-BR");
+  if(isNaN(d))
+    return "-";
+
+  return d.toLocaleDateString(
+    "pt-BR",
+    {
+      timeZone:"America/Sao_Paulo"
+    }
+  );
+
 }
 
 async function carregarTudo() {
@@ -94,6 +111,8 @@ async function carregarTudo() {
   `${API_URL}?acao=consultarClientePorIdSeguro&idPublico=${encodeURIComponent(idCliente)}&nascimento=${encodeURIComponent(nascimento)}`
 );
 const cliente = await resCliente.json();
+
+console.log("CLIENTE:", cliente);
 
   // 🔐 BLOQUEIO TOTAL SE NÃO ATIVO
   if (!cliente || !cliente.ok || String(cliente.ativo).toLowerCase() !== "sim") {
@@ -119,6 +138,8 @@ const cliente = await resCliente.json();
 );
 
 const retorno = await resposta.json();
+
+console.log("RETORNO BENEFÍCIOS:", retorno);
 
 const itens = retorno.itens || [];
 
