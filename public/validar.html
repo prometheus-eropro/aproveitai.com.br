@@ -465,6 +465,50 @@ console.log("Parceiro enviado:", parceiroId);
 // =============================
 function retornoValidacao(resp) {
 
+console.log("PASSOU 1");
+
+document.getElementById("nomeParceiro").innerText =
+resp.nomeParceiro || "-";
+
+console.log("PASSOU 2");
+
+const img =
+document.getElementById("logoParceiro");
+
+console.log("PASSOU 3");
+
+if(resp.logoURL){
+
+    img.src = resp.logoURL;
+
+}else{
+
+    img.src = "logo-aproveitai.png";
+
+}
+
+console.log("PASSOU 4");
+
+const el =
+document.getElementById("nomeCliente");
+
+console.log("PASSOU 5");
+
+el.innerText =
+resp.nomeCliente || "-";
+
+console.log("PASSOU 6");
+
+document.getElementById("grupoCliente").innerText =
+resp.grupo || "-";
+
+console.log("PASSOU 7");
+
+document.getElementById("cidadeCliente").innerText =
+resp.cidade || "-";
+
+console.log("PASSOU 8");
+
   console.log("RETORNO GAS:", resp);
   console.log("CELULAR:", resp.celular);
   console.log("PARCEIRO:", parceiroId);
