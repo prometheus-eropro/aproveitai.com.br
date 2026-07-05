@@ -110,6 +110,9 @@ async function carregarTudo() {
   const resCliente = await fetch(
   `${API_URL}?acao=consultarClientePorIdSeguro&idPublico=${encodeURIComponent(idCliente)}&nascimento=${encodeURIComponent(nascimento)}`
 );
+
+console.log("URL:", resposta.url);
+
 const cliente = await resCliente.json();
 
 console.log("CLIENTE:", cliente);
@@ -135,7 +138,12 @@ console.log("CLIENTE:", cliente);
 
 );
 
-const retorno = await resposta.json();
+const texto = await resposta.text();
+
+console.log("RESPOSTA BRUTA:");
+console.log(texto);
+
+const retorno = JSON.parse(texto);
 
 console.log(retorno);
 console.log(retorno.itens);
@@ -144,6 +152,8 @@ console.log(retorno.ok);
 console.log("RETORNO BENEFÍCIOS:", retorno);
 
 const itens = retorno.itens || [];
+
+const lista = document.getElementById("lista");
 
 itens.forEach(item=>{
 
