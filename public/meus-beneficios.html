@@ -134,20 +134,31 @@ async function carregarTudo() {
     // ============================
     // CONSULTA BENEFÍCIOS
     // ============================
-    const resposta = await fetch(
-      `${API_URL}?acao=listarBeneficiosCliente` +
-      `&grupo=${encodeURIComponent(cliente.grupo)}` +
-      `&cpf=${encodeURIComponent(cliente.cpf)}` +
-      `&idPublico=${encodeURIComponent(cliente.idPublico)}`
-    );
+    const url =
+  `${API_URL}?acao=listarBeneficiosCliente` +
+  `&grupo=${encodeURIComponent(cliente.grupo)}` +
+  `&cpf=${encodeURIComponent(cliente.cpf)}` +
+  `&idPublico=${encodeURIComponent(cliente.idPublico)}`;
 
-    const retorno = await resposta.json();
+console.log("URL BENEFÍCIOS:", url);
 
-    console.log("RETORNO:", retorno);
+const resposta = await fetch(url);
+
+const texto = await resposta.text();
+
+console.log("RESPOSTA BRUTA:");
+console.log(texto);
+
+const retorno = JSON.parse(texto);
+
+console.log("RETORNO:", retorno);
 
     lista.innerHTML = "";
 
     const itens = retorno.itens || [];
+
+    console.log("QUANTIDADE:", itens.length);
+console.log(itens);
 
     itens.forEach(item => {
 
