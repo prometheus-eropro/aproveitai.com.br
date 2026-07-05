@@ -123,11 +123,9 @@ console.log("CLIENTE:", cliente);
 
   const grupoCliente = cliente.grupo;
 
-  const resposta = await fetch(
+ const resposta = await fetch(
 
 `${API_URL}?acao=listarBeneficiosCliente` +
-
-`&parceiro_id=${encodeURIComponent(cliente.parceiro_id)}` +
 
 `&grupo=${encodeURIComponent(cliente.grupo)}` +
 
@@ -138,6 +136,10 @@ console.log("CLIENTE:", cliente);
 );
 
 const retorno = await resposta.json();
+
+console.log(retorno);
+console.log(retorno.itens);
+console.log(retorno.ok);
 
 console.log("RETORNO BENEFÍCIOS:", retorno);
 
