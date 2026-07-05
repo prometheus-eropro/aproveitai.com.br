@@ -451,12 +451,11 @@ console.log("ID enviado:", clienteId);
 console.log("Parceiro enviado:", parceiroId);
 
     script.src =
-      GAS_URL +
-      "?callback=retornoValidacao" +
-      "&acao=buscarClienteId" +
-      "&idPublico=" + encodeURIComponent(clienteId) +
-      "&p=" + encodeURIComponent(parceiroId);
-
+  GAS_URL +
+  "?callback=retornoValidacao" +
+  "&acao=buscarClienteId" +
+  "&id=" + encodeURIComponent(clienteId) +
+  "&p=" + encodeURIComponent(parceiroId);
     document.body.appendChild(script);
 
 }
@@ -497,12 +496,17 @@ if (resp.exige_placa) {
     }
 
     const select = document.getElementById("selectVeiculo");
-    select.innerHTML = "";
+select.innerHTML = "";
 
-    const op1 = document.createElement("option");
-    op1.value = `${resp.placa}|${resp.modelo}`;
-    op1.text = `${resp.placa} - ${resp.modelo}`;
-    select.appendChild(op1);
+const op1 = document.createElement("option");
+
+op1.value =
+`${resp.placa1}|${resp.modelo1}`;
+
+op1.text =
+`${resp.placa1} - ${resp.modelo1}`;
+
+select.appendChild(op1);
 
     if (resp.placa2) {
 
