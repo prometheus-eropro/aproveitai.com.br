@@ -478,11 +478,6 @@ document.getElementById("blocoCodigo")
     return;
   }
 
-if(!clienteId){
-
-return;
-
-}
   // ===== VEÍCULO =====
 if (resp.exige_placa) {
 
@@ -551,8 +546,11 @@ img.onerror = function () {
     this.style.display = "block";
 };
 
-  document.getElementById("nomeCliente").innerText =
-resp.nomeCliente || "-";
+const el = document.getElementById("nomeCliente");
+
+console.log(el);
+
+el.innerText = resp.nomeCliente || "-";
 
 document.getElementById("grupoCliente").innerText =
 resp.grupo || "-";
@@ -581,6 +579,9 @@ cpf.substring(9);
 
 document.getElementById("cpfClienteMascara").innerText =
 cpf || "-";
+
+console.log("Montando tela...");
+console.log(resp);
 
 window.dadosValidacao = resp;
 window.nascimentoCliente =
