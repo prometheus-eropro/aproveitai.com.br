@@ -312,8 +312,11 @@ if (!idPublico) {
 
   mostrarMsg("⏳ Validando benefício...");
 
-const old = document.getElementById("jsonpReq");
+const old = document.getElementById("jsonpBeneficios");
 if(old) old.remove();
+
+const script = document.createElement("script");
+script.id = "jsonpBeneficios";
 
 const script = document.createElement("script");
 script.id = "jsonpReq";
@@ -325,6 +328,8 @@ GAS_URL +
 encodeURIComponent(idPublico) +
 "&p=" +
 encodeURIComponent(parceiroId);
+
+console.log(script.src);
 
 document.body.appendChild(script);
 }
@@ -703,6 +708,15 @@ function pararCronometro() {
     console.log(script.src);
 
     document.body.appendChild(script);
+
+script.onload = function () {
+    console.log("JSONP benefícios carregado");
+};
+
+script.onerror = function () {
+    console.log("ERRO carregando JSONP");
+};
+
 }
 
 
@@ -791,6 +805,12 @@ function gerarERO() {
 }
 
 function retornoBeneficios(resp){
+
+    alert("CHEGOU BENEFICIO");
+
+    console.log(resp);
+
+}
 
   if(!resp || !resp.ok) return;
 
