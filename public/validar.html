@@ -867,11 +867,15 @@ function abrirCamera(){
 
 function processarQRCode(texto){
 
+    console.log("QR LIDO:", texto);
+
     try{
 
         const url = new URL(texto);
 
         clienteId = url.searchParams.get("id");
+
+        console.log("ID:", clienteId);
 
         if(!clienteId){
 
@@ -883,6 +887,8 @@ function processarQRCode(texto){
         validar();
 
     }catch(e){
+
+        console.log(e);
 
         mostrarMsg("QR inválido");
 
