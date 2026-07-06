@@ -382,8 +382,7 @@ resp.validade;
   // ===== VEÍCULO =====
 if (resp.exige_placa) {
 
-    // Cliente não possui veículo cadastrado
-    if (!resp.placa) {
+    if (!resp.placa1) {
 
         mostrarMsg(
           "⚠️ <b>Este parceiro exige a identificação do veículo.</b><br><br>" +
@@ -401,8 +400,9 @@ if (resp.exige_placa) {
     select.innerHTML = "";
 
     const op1 = document.createElement("option");
-    op1.value = `${resp.placa}|${resp.modelo}`;
-    op1.text = `${resp.placa} - ${resp.modelo}`;
+   
+ op1.value = `${resp.placa1}|${resp.modelo1}`;
+op1.text = `${resp.placa1} - ${resp.modelo1}`;
     select.appendChild(op1);
 
     if (resp.placa2) {
@@ -477,6 +477,7 @@ alert("ANTES DO CARREGAR BENEFICIOS");
 console.log(resp.logoURL);
 
 console.log("ANTES");
+console.log("VAI CARREGAR BENEFICIOS");
 
 carregarBeneficios(
     parceiroId,
@@ -484,6 +485,8 @@ carregarBeneficios(
     resp.cpf,
     resp.idPublico
 );
+
+console.log("PASSOU carregarBeneficios");
 
 console.log("DEPOIS");
 
@@ -690,6 +693,8 @@ function pararCronometro() {
 
   function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
+console.log("ENTROU carregarBeneficios");
+
     console.log("ENTROU carregarBeneficios");
     console.log(parceiroId);
     console.log(grupo);
@@ -718,6 +723,16 @@ script.onload = function () {
 script.onerror = function () {
     console.log("ERRO carregando JSONP");
 };
+
+script.onload=function(){
+
+   console.log("JSONP BENEFICIOS OK");
+
+}
+script.onerror=function(){
+
+   console.log("ERRO JSONP BENEFICIOS");
+
 
 }
 
@@ -808,25 +823,55 @@ function gerarERO() {
 
 function retornoBeneficios(resp){
 
-    alert("CHEGOU");
+    console.log(resp);
 
-    const select = document.getElementById("beneficioSelecionado");
-
-    alert(select);
+    const select =
+        document.getElementById("beneficioSelecionado");
 
     select.innerHTML = "";
 
-    const op = document.createElement("option");
+    if(!resp.ok){
 
-    op.text = "TESTE";
+        mostrarMsg("Nenhum benefício encontrado.");
+        return;
 
-    op.value = "TESTE";
+    }
 
-    select.appendChild(op);
+    if(!resp.itens || resp.itens.length===0){
 
-    document.getElementById("blocoBeneficio").style.display = "block";
+        mostrarMsg("Nenhum benefício disponível.");
+        return;
 
-    alert("FIM");
+    }
+
+    const op0 =
+        document.createElement("option");
+
+    op0.value="";
+
+    op0.text="Selecione o benefício";
+
+    select.appendChild(op0);
+
+    resp.itens.forEach(function(item){
+
+        const op =
+            document.createElement("option");
+
+        op.value =
+            item.tipo + "|" + item.titulo;
+
+        op.text =
+            "[" + item.tipo + "] " +
+            item.titulo;
+
+        select.appendChild(op);
+
+    });
+
+    document.getElementById("blocoBeneficio")
+        .style.display="block";
+
 }
 
 function retornoGeracaoERO(resp){
