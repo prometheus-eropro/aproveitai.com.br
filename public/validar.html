@@ -344,7 +344,10 @@ document.getElementById("blocoCodigo")
     mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
     return;
   }
-document.getElementById("btnValidar").disabled = true;
+const btn = document.getElementById("btnLerQR");
+if (btn) {
+    btn.disabled = true;
+}
 
 console.log("=== DADOS RECEBIDOS ===");
 console.log(resp);
