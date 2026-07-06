@@ -808,41 +808,25 @@ function gerarERO() {
 
 function retornoBeneficios(resp){
 
-    alert("CHEGOU BENEFICIO");
+    alert("CHEGOU");
 
-    console.log(resp);
+    const select = document.getElementById("beneficioSelecionado");
 
-    if(!resp || !resp.ok) return;
-
-    const select =
-        document.getElementById("beneficioSelecionado");
+    alert(select);
 
     select.innerHTML = "";
 
-    const opPadrao = document.createElement("option");
-    opPadrao.value = "";
-    opPadrao.text = "Selecione o benefício...";
-    select.appendChild(opPadrao);
+    const op = document.createElement("option");
 
-    resp.itens.forEach(item => {
+    op.text = "TESTE";
 
-        const op = document.createElement("option");
+    op.value = "TESTE";
 
-        op.value =
-            item.tipo + "|" +
-            item.titulo + " - " +
-            item.descricao;
-
-        op.text =
-            item.titulo + " - " +
-            item.descricao;
-
-        select.appendChild(op);
-
-    });
+    select.appendChild(op);
 
     document.getElementById("blocoBeneficio").style.display = "block";
 
+    alert("FIM");
 }
 
 function retornoGeracaoERO(resp){
