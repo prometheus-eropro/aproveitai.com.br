@@ -92,15 +92,7 @@ body {
   
 </div>
   
-
-  
-<button
- id="btnValidar"
- onclick="validar()">
- Validar
-</button>
-
-F<button id="btnLerQR" onclick="abrirCamera()">
+<button id="btnLerQR" onclick="abrirCamera()">
 📷 Ler QR Code
 </button>
 
@@ -243,14 +235,6 @@ style="width:100%;padding:10px;margin-top:5px;">
 
 <script>
 
-document.getElementById("nomeParceiro")
-.textContent = nomeParceiro;
-
-document.getElementById("logoParceiro")
-.src = logoParceiro;
-
-}
-
 /* =============================
    CONFIGURAÇÃO
 ============================= */
@@ -272,7 +256,8 @@ let clienteId =
 
 
 const elMsg = document.getElementById("msg");
-const elBtn = document.getElementById("btnValidar");
+const elBtn =
+document.getElementById("btnLerQR");
 
 /* =============================
    UTILIDADES
@@ -339,6 +324,8 @@ GAS_URL +
 encodeURIComponent(idPublico) +
 "&p=" +
 encodeURIComponent(parceiroId);
+
+document.body.appendChild(script);
 }
 // =============================
 // CONTROLE DO CRONÔMETRO
@@ -684,20 +671,7 @@ function pararCronometro() {
 </script>
 <script>
 
-  let v = this.value.replace(/\D/g,'');
-
-  if(v.length > 2)
-    v = v.substring(0,2) + '/' + v.substring(2);
-
-  if(v.length > 5)
-    v = v.substring(0,5) + '/' + v.substring(5);
-
-  this.value = v.substring(0,10);
-
-});
-
-
-function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
+  function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
   const script = document.createElement("script");
 
