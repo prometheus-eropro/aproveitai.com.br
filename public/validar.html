@@ -312,14 +312,12 @@ if (!idPublico) {
 
   mostrarMsg("⏳ Validando benefício...");
 
-const old = document.getElementById("jsonpBeneficios");
+const old = document.getElementById("jsonpReq");
 if(old) old.remove();
 
 const script = document.createElement("script");
-script.id = "jsonpBeneficios";
-
-const script = document.createElement("script");
 script.id = "jsonpReq";
+
 script.src =
 GAS_URL +
 "?callback=retornoValidacao" +
@@ -810,38 +808,36 @@ function retornoBeneficios(resp){
 
     console.log(resp);
 
-}
+    if(!resp || !resp.ok) return;
 
-  if(!resp || !resp.ok) return;
+    const select =
+        document.getElementById("beneficioSelecionado");
 
-  const select =
-    document.getElementById("beneficioSelecionado");
+    select.innerHTML = "";
 
-  select.innerHTML = "";
+    const opPadrao = document.createElement("option");
+    opPadrao.value = "";
+    opPadrao.text = "Selecione o benefício...";
+    select.appendChild(opPadrao);
 
-  const opPadrao = document.createElement("option");
-  opPadrao.value = "";
-  opPadrao.text = "Selecione o benefício...";
-  select.appendChild(opPadrao);
+    resp.itens.forEach(item => {
 
-  resp.itens.forEach(item => {
+        const op = document.createElement("option");
 
-    const op = document.createElement("option");
+        op.value =
+            item.tipo + "|" +
+            item.titulo + " - " +
+            item.descricao;
 
-    op.value =
-      item.tipo + "|" +
-      item.titulo + " - " +
-      item.descricao;
+        op.text =
+            item.titulo + " - " +
+            item.descricao;
 
-    op.text =
-      item.titulo + " - " +
-      item.descricao;
+        select.appendChild(op);
 
-    select.appendChild(op);
+    });
 
-  });
-
-  document.getElementById("blocoBeneficio").style.display = "block";
+    document.getElementById("blocoBeneficio").style.display = "block";
 
 }
 
