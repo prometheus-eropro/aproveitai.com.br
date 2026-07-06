@@ -327,20 +327,15 @@ encodeURIComponent(idPublico) +
 "&p=" +
 encodeURIComponent(parceiroId);
 
-console.log(script.src);
-
 document.body.appendChild(script);
 }
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
+
 function retornoValidacao(resp) {
 
-  console.log("RETORNO GAS:", resp);
-  console.log("CELULAR:", resp.celular);
-  console.log("LOGO:", resp.logoURL);
-
-document.getElementById("blocoCodigo")
+  document.getElementById("blocoCodigo")
 .style.display = "none";
 
   if (!resp || resp.ok !== true) {
@@ -351,9 +346,6 @@ const btn = document.getElementById("btnLerQR");
 if (btn) {
     btn.disabled = true;
 }
-
-console.log("=== DADOS RECEBIDOS ===");
-console.log(resp);
 
 document.getElementById("nomeCliente").textContent =
 resp.nomeCliente;
@@ -470,15 +462,6 @@ resp.validade || "";
 window.dadosValidacao = resp;
 window.exigePlaca = resp.exige_placa === true;
 
-console.log("CHEGUEI AQUI");
-
-alert("ANTES DO CARREGAR BENEFICIOS");
-
-console.log(resp.logoURL);
-
-console.log("ANTES");
-console.log("VAI CARREGAR BENEFICIOS");
-
 carregarBeneficios(
     parceiroId,
     resp.grupo,
@@ -486,9 +469,6 @@ carregarBeneficios(
     resp.idPublico
 );
 
-console.log("PASSOU carregarBeneficios");
-
-console.log("DEPOIS");
 
 document.getElementById("blocoBeneficio")
 .style.display = "block";
@@ -503,9 +483,8 @@ document.getElementById("btnGerarERO")
 
 window.ultimoCelularCliente = resp.celular || "";
 
-console.log("CHAMANDO BENEFICIOS");
-
 }
+
 function confirmarDesconto() {
 
 const beneficio =
@@ -565,11 +544,7 @@ document.body.appendChild(script);
 
 function retornoConfirmacao(resp) {
 
-   console.log("CONFIRMACAO RECEBIDA");
-  console.log(resp);
-
-  console.log("RETORNO CONFIRMAÇÃO:", resp);
-
+   
   document.getElementById("btnConfirmar").style.display = "none";
 
   document.getElementById("beneficioSelecionado").disabled = true;
@@ -693,14 +668,6 @@ function pararCronometro() {
 
   function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
-console.log("ENTROU carregarBeneficios");
-
-    console.log("ENTROU carregarBeneficios");
-    console.log(parceiroId);
-    console.log(grupo);
-    console.log(cpf);
-    console.log(idPublico);
-
     const script = document.createElement("script");
 
     script.src =
@@ -712,16 +679,10 @@ console.log("ENTROU carregarBeneficios");
         "&cpf=" + encodeURIComponent(cpf) +
         "&idPublico=" + encodeURIComponent(idPublico);
 
-    console.log(script.src);
-
     document.body.appendChild(script);
 
-script.onload = function () {
-    console.log("JSONP BENEFICIOS OK");
-};
-
 script.onerror = function () {
-    console.log("ERRO JSONP BENEFICIOS");
+    console.error("Erro ao carregar benefícios.");
 };
 
 }
@@ -784,10 +745,7 @@ function gerarERO() {
 
   const cpf = window.cpfCliente;
 
-  console.log("CPF:", cpf);
-  console.log("Parceiro:", parceiroId);
-  console.log("Benefício:", beneficio);
-
+  
   const url =
     GAS_URL +
     "?callback=retornoGeracaoERO" +
@@ -812,10 +770,8 @@ function gerarERO() {
 
 function retornoBeneficios(resp){
 
-    console.log(resp);
-
     const select =
-        document.getElementById("beneficioSelecionado");
+    document.getElementById("beneficioSelecionado");
 
     select.innerHTML = "";
 
@@ -865,9 +821,7 @@ function retornoBeneficios(resp){
 
 function retornoGeracaoERO(resp){
 
-   console.log("RETORNO GERAR ERO:");
-   console.log(resp);
-
+   
    if(!resp || !resp.ok){
 
       mostrarMsg("Erro ao gerar código");
@@ -909,7 +863,11 @@ function abrirCamera(){
 
         function(texto){
 
-            html5QrCode.stop();
+            html5QrCode.stop()
+.then(() => {
+    document.getElementById("reader").style.display = "none";
+    processarQRCode(texto);
+});
 
             document.getElementById("reader").style.display="none";
 
@@ -923,9 +881,7 @@ function abrirCamera(){
 
 function processarQRCode(texto){
 
-    console.log("QR LIDO:", texto);
-
-    try{
+        try{
 
         const url = new URL(texto);
 
@@ -934,9 +890,7 @@ function processarQRCode(texto){
     url.searchParams.get("id") ||
     url.searchParams.get("cliente");
 
-        console.log("ID:", clienteId);
-
-        if(!clienteId){
+            if(!clienteId){
 
             mostrarMsg("QR inválido");
             return;
@@ -947,9 +901,7 @@ function processarQRCode(texto){
 
     }catch(e){
 
-        console.log(e);
-
-        mostrarMsg("QR inválido");
+       mostrarMsg("QR inválido");
 
     }
 
