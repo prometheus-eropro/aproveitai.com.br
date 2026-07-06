@@ -251,8 +251,9 @@ const parceiroId =
   params.get("parceiro");
 
 let clienteId =
-  params.get("id") ||
-  params.get("cliente");
+    params.get("idPublico") ||
+    params.get("id") ||
+    params.get("cliente");
 
 
 const elMsg = document.getElementById("msg");
@@ -873,7 +874,10 @@ function processarQRCode(texto){
 
         const url = new URL(texto);
 
-        clienteId = url.searchParams.get("id");
+        clienteId =
+    url.searchParams.get("idPublico") ||
+    url.searchParams.get("id") ||
+    url.searchParams.get("cliente");
 
         console.log("ID:", clienteId);
 
