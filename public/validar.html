@@ -57,22 +57,6 @@ body {
 
 <script src="js/include.js" defer></script>
 
-document.addEventListener("DOMContentLoaded", () => {
-
-    const parceiro = localStorage.getItem("parceiroLogado");
-
-    if (!parceiro) {
-
-        location.href = "login.html";
-        return;
-
-    }
-
-    // parceiro já está logado
-    abrirCamera();
-
-});
-
 </head>
 
 <body>
@@ -116,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
  Validar
 </button>
 
-<button id="btnLerQR" onclick="abrirCamera()">
+F<button id="btnLerQR" onclick="abrirCamera()">
 📷 Ler QR Code
 </button>
 
@@ -259,60 +243,11 @@ style="width:100%;padding:10px;margin-top:5px;">
 
 <script>
 
-const parceiroLogado = localStorage.getItem("parceiroLogado");
-
-if (!parceiroLogado) {
-
-    alert("Faça login para utilizar o validador.");
-
-    location.href = "login.html";
-
-}
-
-const parceiroId =
-sessionStorage.getItem("parceiro_id");
-
-const nomeParceiro =
-sessionStorage.getItem("nomeParceiro");
-
-const logoParceiro =
-sessionStorage.getItem("logoParceiro");
-
-if(!parceiroId){
-
-    document.body.innerHTML=`
-
-    <div style="text-align:center;margin-top:60px">
-
-       <h2>⚠ Área restrita</h2>
-
-       <p>
-       Faça login primeiro na Área do Parceiro.
-       </p>
-
-       <button
-       onclick="location.href='areadoparceiro.html'">
-
-       Fazer Login
-
-       </button>
-
-    </div>
-    `;
-
-    throw "";
-
-}
-
 document.getElementById("nomeParceiro")
 .textContent = nomeParceiro;
 
 document.getElementById("logoParceiro")
 .src = logoParceiro;
-
-window.onload=function(){
-
-   iniciarCamera();
 
 }
 
@@ -331,7 +266,7 @@ const parceiroId =
   params.get("parceiro_id") ||
   params.get("parceiro");
 
-const clienteId =
+let clienteId =
   params.get("id") ||
   params.get("cliente");
 
@@ -748,9 +683,6 @@ function pararCronometro() {
 }
 </script>
 <script>
-const nasc = document.getElementById("nascimento");
-
-nasc.addEventListener("input", function() {
 
   let v = this.value.replace(/\D/g,'');
 
@@ -838,9 +770,7 @@ function gerarERO() {
     return;
   }
 
-  const cpf =
-    window.cpfCliente ||
-    document.getElementById("cpf").value.replace(/\D/g,"");
+  const cpf = window.cpfCliente;
 
   console.log("CPF:", cpf);
   console.log("Parceiro:", parceiroId);
@@ -941,21 +871,19 @@ function abrirCamera(){
 
     document.getElementById("reader").style.display="block";
 
-    const qr = new Html5Qrcode("reader");
+    const html5QrCode = new Html5Qrcode("reader");
 
-    qr.start(
+    html5QrCode.start(
         { facingMode:"environment" },
         { fps:10, qrbox:250 },
 
         function(texto){
 
-            qr.stop().then(()=>{
+            html5QrCode.stop();
 
-                document.getElementById("reader").style.display="none";
+            document.getElementById("reader").style.display="none";
 
-                processarQRCode(texto);
-
-            });
+            processarQRCode(texto);
 
         }
 
@@ -965,21 +893,26 @@ function abrirCamera(){
 
 function processarQRCode(texto){
 
-    const url = new URL(texto);
+    try{
 
-    clienteId = url.searchParams.get("id");
+        const url = new URL(texto);
 
-    if(!clienteId){
+        clienteId = url.searchParams.get("id");
+
+        if(!clienteId){
+
+            mostrarMsg("QR inválido");
+            return;
+
+        }
+
+        validar();
+
+    }catch(e){
 
         mostrarMsg("QR inválido");
 
-        abrirCamera();
-
-        return;
-
     }
-
-    validar();
 
 }
 
