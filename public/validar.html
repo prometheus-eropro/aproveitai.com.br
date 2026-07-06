@@ -468,7 +468,7 @@ function retornoValidacao(resp){
 
 alert("ENTROU NA FUNÇÃO");
 
-console.log(resp);
+console.log(JSON.stringify(resp,null,2));
 
 document.getElementById("nomeCliente").innerText = "TESTE";
 document.getElementById("grupoCliente").innerText = "TESTE";
@@ -538,7 +538,8 @@ select.appendChild(op1);
   // ===== CÓDIGO ERO =====
 
   document.getElementById("btnConfirmar").style.display = "none";
-  document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
+  document.getElementById("nomeParceiro").textContent =
+resp.nomeParceiro || "-";
 
 const img = document.getElementById("logoParceiro");
 
@@ -567,20 +568,29 @@ document.getElementById("nomeCliente"));
 console.log("Resposta completa:");
 console.log(resp);
 
-document.getElementById("nomeCliente").innerText =
-resp.nomeCliente;
+console.log("nomeCliente =", resp.nomeCliente);
+console.log("nome        =", resp.nome);
+console.log("grupo       =", resp.grupo);
+console.log("cidade      =", resp.cidade);
+console.log("validade    =", resp.validade);
+console.log("idPublico   =", resp.idPublico);
+console.log("nomeParceiro=", resp.nomeParceiro);
+console.log("logoURL     =", resp.logoURL);
 
-document.getElementById("grupoCliente").innerText =
+document.getElementById("nomeCliente").textContent =
+resp.nomeCliente || resp.nome || "-";
+
+document.getElementById("grupoCliente").textContent =
 resp.grupo || "-";
 
-document.getElementById("cidadeCliente").innerText =
+document.getElementById("cidadeCliente").textContent =
 resp.cidade || "-";
 
-document.getElementById("validadeCliente").innerText =
+document.getElementById("validadeCliente").textContent =
 resp.validade || "-";
 
-document.getElementById("idPublicoCliente").innerText =
-resp.idPublico || "-";
+document.getElementById("idPublicoCliente").textContent =
+resp.idPublico || resp.id || "-";
 
 let cpf = String(resp.cpf || "");
 
