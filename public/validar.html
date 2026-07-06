@@ -137,7 +137,7 @@ body {
 
 </div>
 
-  <span id="nomeParceiro" style="font-weight:700;font-size:18px"></span>
+  
 </div>
 <br>
   <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
@@ -469,12 +469,16 @@ window.exigePlaca = resp.exige_placa === true;
 
 console.log(resp.logoURL);
 
+console.log("ANTES");
+
 carregarBeneficios(
     parceiroId,
     resp.grupo,
     resp.cpf,
     resp.idPublico
 );
+
+console.log("DEPOIS");
 
 document.getElementById("blocoBeneficio")
 .style.display = "block";
