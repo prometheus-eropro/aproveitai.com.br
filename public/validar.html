@@ -50,9 +50,29 @@ body {
 }
 
 </style>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 <script src="js/config.js"></script>
 
 <script src="js/include.js" defer></script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const parceiro = localStorage.getItem("parceiroLogado");
+
+    if (!parceiro) {
+
+        location.href = "login.html";
+        return;
+
+    }
+
+    // parceiro já está logado
+    abrirCamera();
+
+});
+
 </head>
 
 <body>
@@ -85,17 +105,9 @@ body {
        font-weight:bold;
        margin-bottom:10px;
      ">
-  VERSÃO 20250624-006
+  
 </div>
-  <label>CPF do Cliente</label>
-  <input id="cpf" placeholder="Somente números" inputmode="numeric">
-  <label>Data de nascimento do Cliente</label>
-  <input
-  id="nascimento"
-  type="text"
-  placeholder="DD/MM/AAAA"
-  maxlength="10"
->
+  
 
   
 <button
@@ -103,6 +115,14 @@ body {
  onclick="validar()">
  Validar
 </button>
+
+<button id="btnLerQR" onclick="abrirCamera()">
+📷 Ler QR Code
+</button>
+
+<div id="reader"
+     style="display:none;width:100%;margin-top:15px;">
+</div>
 
 <div style="margin-top:12px;font-size:14px;color:#333;text-align:left">
   <div style="
@@ -238,6 +258,64 @@ style="width:100%;padding:10px;margin-top:5px;">
 </div>
 
 <script>
+
+const parceiroLogado = localStorage.getItem("parceiroLogado");
+
+if (!parceiroLogado) {
+
+    alert("Faça login para utilizar o validador.");
+
+    location.href = "login.html";
+
+}
+
+const parceiroId =
+sessionStorage.getItem("parceiro_id");
+
+const nomeParceiro =
+sessionStorage.getItem("nomeParceiro");
+
+const logoParceiro =
+sessionStorage.getItem("logoParceiro");
+
+if(!parceiroId){
+
+    document.body.innerHTML=`
+
+    <div style="text-align:center;margin-top:60px">
+
+       <h2>⚠ Área restrita</h2>
+
+       <p>
+       Faça login primeiro na Área do Parceiro.
+       </p>
+
+       <button
+       onclick="location.href='areadoparceiro.html'">
+
+       Fazer Login
+
+       </button>
+
+    </div>
+    `;
+
+    throw "";
+
+}
+
+document.getElementById("nomeParceiro")
+.textContent = nomeParceiro;
+
+document.getElementById("logoParceiro")
+.src = logoParceiro;
+
+window.onload=function(){
+
+   iniciarCamera();
+
+}
+
 /* =============================
    CONFIGURAÇÃO
 ============================= */
@@ -304,16 +382,6 @@ if (!idPublico) {
 
    return;
 
-}
-
-if (cpf.length !== 11) {
-  mostrarMsg("⚠️ CPF inválido");
-  return;
-}
-
-if (!nascimento) {
-  mostrarMsg("⚠️ Informe a data de nascimento");
-  return;
 }
 
   if (!parceiroId) {
@@ -866,6 +934,52 @@ function retornoGeracaoERO(resp){
  iniciarCronometro(
    resp.validoAte
  );
+
+}
+
+function abrirCamera(){
+
+    document.getElementById("reader").style.display="block";
+
+    const qr = new Html5Qrcode("reader");
+
+    qr.start(
+        { facingMode:"environment" },
+        { fps:10, qrbox:250 },
+
+        function(texto){
+
+            qr.stop().then(()=>{
+
+                document.getElementById("reader").style.display="none";
+
+                processarQRCode(texto);
+
+            });
+
+        }
+
+    );
+
+}
+
+function processarQRCode(texto){
+
+    const url = new URL(texto);
+
+    clienteId = url.searchParams.get("id");
+
+    if(!clienteId){
+
+        mostrarMsg("QR inválido");
+
+        abrirCamera();
+
+        return;
+
+    }
+
+    validar();
 
 }
 
