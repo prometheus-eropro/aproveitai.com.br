@@ -464,6 +464,8 @@ console.log("Parceiro enviado:", parceiroId);
 // CONTROLE DO CRONÔMETRO
 // =============================
 
+function retornoValidacao(resp){
+
   console.log("RETORNO GAS:", resp);
   console.log("CELULAR:", resp.celular);
   console.log("PARCEIRO:", parceiroId);
@@ -614,6 +616,7 @@ document.getElementById("btnGerarERO")
 window.ultimoCelularCliente = resp.celular || "";
 
 }
+
 function confirmarDesconto() {
 
 const beneficio =
