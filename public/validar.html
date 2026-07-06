@@ -489,6 +489,8 @@ document.getElementById("btnGerarERO")
 
 window.ultimoCelularCliente = resp.celular || "";
 
+console.log("CHAMANDO BENEFICIOS");
+
 }
 function confirmarDesconto() {
 
@@ -677,18 +679,26 @@ function pararCronometro() {
 
   function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
-  const script = document.createElement("script");
+    console.log("ENTROU carregarBeneficios");
+    console.log(parceiroId);
+    console.log(grupo);
+    console.log(cpf);
+    console.log(idPublico);
 
-script.src =
-GAS_URL +
-"?callback=retornoBeneficios" +
-"&acao=listarBeneficiosCliente" +
-"&parceiro_id=" + encodeURIComponent(parceiroId) +
-"&grupo=" + encodeURIComponent(grupo) +
-"&cpf=" + encodeURIComponent(cpf) +
-"&idPublico=" + encodeURIComponent(idPublico);
+    const script = document.createElement("script");
 
-  document.body.appendChild(script);
+    script.src =
+        GAS_URL +
+        "?callback=retornoBeneficios" +
+        "&acao=listarBeneficiosCliente" +
+        "&parceiro_id=" + encodeURIComponent(parceiroId) +
+        "&grupo=" + encodeURIComponent(grupo) +
+        "&cpf=" + encodeURIComponent(cpf) +
+        "&idPublico=" + encodeURIComponent(idPublico);
+
+    console.log(script.src);
+
+    document.body.appendChild(script);
 }
 
 
