@@ -159,25 +159,18 @@ async function consultar(){
 
 try{
 
-    console.log("RETORNO DO GAS:", achado);
-
-console.log("OK =", achado.ok);
-console.log("NOME =", achado.nome);
-console.log("ATIVO =", achado.ativo);
-
-
+    
 if(!achado || !achado.ok){
     box.textContent = achado?.mensagem || "Erro";
     return;
 }
 
-    console.log("PASSOU 1");
-
+    
 const ativo = isAtivo(
     achado.ativo || achado.statusCliente
 );
 
-console.log("PASSOU 2");
+
     ultimoIdPublico = achado.idPublico;
     sessionStorage.setItem("clienteCpf", cpf);
     sessionStorage.setItem("clienteNascimento", nascimento);
@@ -188,8 +181,6 @@ console.log("PASSOU 2");
       document.getElementById("btnBeneficios").style.display = "none";
       document.getElementById("btnCartao").style.display = "none";
       document.getElementById("btnParceiros").style.display = "none";
-
-console.log("PASSOU 3");
 
       box.innerHTML = `
         <div style="
@@ -215,8 +206,6 @@ console.log("PASSOU 3");
       `;
 
 
-console.log("PASSOU 4");
-
       return;
     }
 
@@ -230,8 +219,6 @@ console.log("PASSOU 4");
     document.getElementById("btnBeneficios").style.display = "block";
     document.getElementById("btnCartao").style.display = "block";
     document.getElementById("btnParceiros").style.display = "block";
-
-console.log("ANTES DO HTML");
 
 
    box.innerHTML = `
@@ -271,7 +258,6 @@ onclick="solicitarAlteracao()">
 
 </div>
 `;
-console.log("ANTES DO HTML");
 
 try{
   carregarHistorico(cpf);
@@ -281,17 +267,15 @@ try{
 
 try{
 
-console.log("CLIENTE COMPLETO:", achado);
 
 carregarVeiculos(achado);
 
 }catch(e){
-  console.error("ERRO VEÍCULOS:", e);
+  
 }
 
 }catch(err){
 
-console.error("ERRO DENTRO DO RETORNO:", err);
 
 box.innerHTML = `
 <div style="
@@ -311,7 +295,6 @@ ${err.message}
 
 };   // <-- fecha retornoConsulta
 
-console.log(url);
 
 const script = document.createElement("script");
 

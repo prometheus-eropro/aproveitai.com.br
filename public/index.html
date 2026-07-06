@@ -257,17 +257,17 @@ const site = String(p.site || "");
 const email = String(p.email || "");
 const maps = String(p.link_maps || "");
 
-let logo = `/logos/${p.parceiro_id}.png`;
+let logo =
+    p.parceiro_id
+        ? `/logos/${p.parceiro_id}.png`
+        : "logo-aproveitai.png";
 
     parceirosDiv.innerHTML += `
       <div class="card">
 <img
-src="${logo}"
-style="max-height:100px"
-onerror="this.src='logo-aproveitai.png'">
-
-style="max-height:100px;margin-bottom:10px"
-onerror="this.src='logo-aproveitai.png'">
+    src="${logo}"
+    style="max-height:100px;margin-bottom:10px"
+    onerror="this.src='logo-aproveitai.png'">
 
         <h3>${nome}</h3>
         <p>📍 <b>Cidade:</b> ${cidade}</p>
@@ -320,7 +320,7 @@ parceirosDiv.innerHTML = `
   fetch(API_URL + "?aba=parceiros")
     .then(r => r.json())
     .then(res => {
-      console.log("Resposta da API:", res);
+      
 
       parceiros = res.dados || res;
 
