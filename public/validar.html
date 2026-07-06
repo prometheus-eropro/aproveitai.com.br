@@ -466,6 +466,16 @@ console.log("Parceiro enviado:", parceiroId);
 
 function retornoValidacao(resp){
 
+alert("ENTROU NA FUNÇÃO");
+
+console.log(resp);
+
+document.getElementById("nomeCliente").innerText = "TESTE";
+document.getElementById("grupoCliente").innerText = "TESTE";
+document.getElementById("cidadeCliente").innerText = "TESTE";
+document.getElementById("validadeCliente").innerText = "TESTE";
+document.getElementById("idPublicoCliente").innerText = "TESTE";
+
   console.log("RETORNO GAS:", resp);
   console.log("CELULAR:", resp.celular);
   console.log("PARCEIRO:", parceiroId);
@@ -551,11 +561,14 @@ img.onerror = function () {
     this.style.display = "block";
 };
 
-const el = document.getElementById("nomeCliente");
+console.log("Elemento nomeCliente:",
+document.getElementById("nomeCliente"));
 
-console.log(el);
+console.log("Resposta completa:");
+console.log(resp);
 
-el.innerText = resp.nomeCliente || "-";
+document.getElementById("nomeCliente").innerText =
+resp.nomeCliente;
 
 document.getElementById("grupoCliente").innerText =
 resp.grupo || "-";
