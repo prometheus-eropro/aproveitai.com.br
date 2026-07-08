@@ -1259,42 +1259,53 @@ function chipAtivo(v){
 }
 
 function renderTable(tableId, rows, columns, options={}){
+
   const tbl = $(tableId);
+
   const cols = columns.filter(Boolean);
 
-  const thead = `<thead><tr>${
-    cols.map(c=>{
+  const thead = `
+    <thead>
+      <tr>
+        ${cols.map(c=>`<th>${escapeHtml(c.label||c.key)}</th>`).join("")}
+        ${options.actions ? "<th>Ações</th>" : ""}
+      </tr>
+    </thead>
+  `;
 
-  const val = (typeof c.render === "function")
-      ? c.render(r)
-      : (r[c.key] ?? "");
+  const tbody = `
+    <tbody>
 
-  const html =
-      typeof c.render === "function"
-      ? val
-      : escapeHtml(String(val));
+      ${rows.map((r,idx)=>{
 
-  return `<td>${html}</td>`;
+        return `
+          <tr>
 
-}).join("")
-  }${options.actions ? "<th>Ações</th>" : ""}</tr></thead>`;
+            ${cols.map(c=>{
 
-  const tbody = `<tbody>${
-    rows.map((r, idx)=>{
-      return `<tr>${
-        cols.map(c=>{
-          const val = (typeof c.render === "function") ? c.render(r) : (r[c.key] ?? "");
-          return `<td>${escapeHtml(val)}</td>`;
-        }).join("")
-      }${
-        options.actions
-        ? `<td>${options.actions(r, idx)}</td>`
-        : ""
-      }</tr>`;
-    }).join("")
-  }</tbody>`;
+              const val =
+                (typeof c.render==="function")
+                  ? c.render(r)
+                  : (r[c.key] ?? "");
+
+              return `<td>${val}</td>`;
+
+            }).join("")}
+
+            ${options.actions
+                ? `<td>${options.actions(r,idx)}</td>`
+                : ""}
+
+          </tr>
+        `;
+
+      }).join("")}
+
+    </tbody>
+  `;
 
   tbl.innerHTML = thead + tbody;
+
 }
 
 function downloadCSV(filename, rows){
@@ -1516,8 +1527,6 @@ renderTable("tblClientes", rows, [
     actions:(c)=>{
 
 return `
-
-<div class="acoes">
 
 <div class="acoes">
 
