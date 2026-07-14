@@ -33,536 +33,832 @@
   <title>Admin — AproveitAI</title>
 
   <style>
-    :root{
-      --bg:#f4f7fb;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --line:#e2e8f0;
-      --good:#16a34a;
-      --bad:#dc2626;
-      --warn:#f59e0b;
-      --brand:#0ea5e9;
-      --brand2:#22c55e;
-      --shadow: 0 10px 25px rgba(2,6,23,.08);
-      --radius:16px;
-    }
+    
+:root{
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text);
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(14,165,233,.18), transparent 60%),
-                  radial-gradient(1000px 600px at 80% -10%, rgba(34,197,94,.14), transparent 60%),
-                  var(--bg);
-    }
+    --bg:#f4f7fb;
 
-    .wrap{
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 18px;
+    --card:#ffffff;
+
+    --text:#0f172a;
+
+    --muted:#64748b;
+
+    --line:#e2e8f0;
+
+    --primary:#0a7a2a;
+
+    --primary2:#16a34a;
+
+    --info:#0ea5e9;
+
+    --warning:#f59e0b;
+
+    --danger:#dc2626;
+
+    --shadow:0 10px 25px rgba(2,6,23,.08);
+
+    --radius:14px;
+
+    --menu-width:260px;
+
+    --menu-close:70px;
+
 }
 
-    .topbar{
-      background: linear-gradient(90deg, rgba(14,165,233,.18), rgba(34,197,94,.14));
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      padding:14px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      box-shadow: var(--shadow);
-    }
+*{
 
-    .brand{
-      display:flex; align-items:center; gap:12px;
-    }
-    .badge{
-      width:44px;height:44px;border-radius:14px;
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      display:grid;place-items:center;
-      color:white;font-weight:800;
-      box-shadow: 0 10px 18px rgba(14,165,233,.22);
-    }
-    .brand h1{margin:0;font-size:16px;line-height:1.1}
-    .brand small{color:var(--muted);display:block;margin-top:2px}
+    margin:0;
 
-    .right{
-      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-      justify-content:flex-end;
-    }
+    padding:0;
 
-    .pill{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.8);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
+    box-sizing:border-box;
 
-    .btn{
-      border:1px solid var(--line);
-      background: var(--card);
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-weight:700;
-      box-shadow: 0 6px 14px rgba(2,6,23,.06);
-    }
-    .btn:hover{transform: translateY(-1px)}
-    .btn:active{transform: translateY(0px)}
-    .btn.primary{
-      border:none;
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      color:white;
-    }
-    .btn.danger{
-      border:1px solid rgba(220,38,38,.35);
-      background: rgba(220,38,38,.08);
-      color: var(--bad);
-    }
-
-    .grid{
-  margin-top:16px;
-  display:grid;
-  grid-template-columns: 300px minmax(0, 1fr);
-  gap:14px;
 }
 
+html{
 
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-    }
+    scroll-behavior:smooth;
 
-    .side, .main{
-      background: rgba(255,255,255,.75);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-
-    .side{
-      padding:10px;
-    }
-
-    .navbtn{
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid transparent;
-      background: transparent;
-      cursor:pointer;
-      text-align:left;
-      font-weight:800;
-      color: #0b1220;
-    }
-    .navbtn small{display:block;font-weight:600;color:var(--muted);margin-top:2px}
-    .navbtn.active{
-      border-color: rgba(14,165,233,.35);
-      background: linear-gradient(90deg, rgba(14,165,233,.12), rgba(34,197,94,.10));
-    }
-
-    .mainHeader{
-      padding:14px 14px 0 14px;
-    }
-    .titleRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .titleRow h2{margin:0;font-size:18px}
-    .titleRow p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
-
-    .content{
-      padding:14px;
-    }
-
-    .cards{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap:12px;
-    }
-    @media (max-width: 1000px){
-      .cards{grid-template-columns: repeat(2, minmax(0, 1fr));}
-    }
-    @media (max-width: 520px){
-      .cards{grid-template-columns: 1fr;}
-    }
-
-    .card{
-      background: rgba(255,255,255,.9);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      padding:12px;
-      box-shadow: 0 8px 18px rgba(2,6,23,.05);
-    }
-    .card b{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    .card .big{font-size:22px;font-weight:900}
-
-    .row{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      margin-bottom:12px;
-    }
-    .input, select, textarea{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.95);
-      padding:10px 10px;
-      border-radius: 12px;
-      outline:none;
-      min-width: 180px;
-      font-weight:700;
-      color: var(--text);
-    }
-    textarea{min-height:90px;min-width:280px;font-weight:600}
-
-    .hint{font-size:12px;color:var(--muted)}
-    .hr{height:1px;background:var(--line);margin:12px 0}
-
-    .status{
-      display:inline-flex;align-items:center;gap:8px;
-      font-weight:900;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.8);
-      font-size:12px;
-    }
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--muted)}
-    .status.ok{border-color: rgba(22,163,74,.25); background: rgba(22,163,74,.08); color: var(--good)}
-    .status.ok .dot{background: var(--good)}
-    .status.bad{border-color: rgba(220,38,38,.25); background: rgba(220,38,38,.08); color: var(--bad)}
-    .status.bad .dot{background: var(--bad)}
-
-    .tableWrap{
-  width: 100%;
-  overflow-x: auto;
 }
 
-table{
+body{
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    font-family:
+
+    "Segoe UI",
+
+    Arial,
+
+    sans-serif;
+
+    overflow-x:hidden;
+
+}
+
+/*==============================
+
+CONTAINER
+
+==============================*/
+
+.wrap{
 
     width:100%;
 
-    border-collapse:collapse;
+    max-width:100%;
 
-    table-layout:auto;
+    margin:auto;
+
+    padding:16px;
+
+}
+
+/*==============================
+
+TOPO
+
+==============================*/
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:15px;
+
+    background:#fff;
+
+    border-radius:var(--radius);
+
+    padding:12px 18px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:16px;
+
+}
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.badge{
+
+    width:46px;
+
+    height:46px;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+
+        135deg,
+
+        var(--info),
+
+        var(--primary2)
+
+    );
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:bold;
+
+    font-size:20px;
+
+}
+
+.brand h1{
+
+    font-size:20px;
+
+}
+
+.brand small{
+
+    display:block;
+
+    color:var(--muted);
+
+    margin-top:3px;
+
+}
+
+.right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+}
+
+/*==============================
+
+BOTÕES
+
+==============================*/
+
+.btn{
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:10px 16px;
+
+    cursor:pointer;
 
     font-size:14px;
 
+    font-weight:600;
+
+    transition:.25s;
+
 }
 
-th,
-td{
+.btn:hover{
 
-    padding:8px;
+    transform:translateY(-2px);
 
-    vertical-align:middle;
+}
+
+.btn.primary{
+
+    background:var(--primary);
+
+    color:#fff;
+
+}
+
+.btn.danger{
+
+    background:var(--danger);
+
+    color:#fff;
+
+}
+
+.btn.secondary{
+
+    background:#e2e8f0;
+
+}
+
+/*==============================
+
+MENU
+
+==============================*/
+
+.grid{
+
+display:grid;
+
+grid-template-columns:280px 1fr;
+
+gap:16px;
+
+}
+
+.grid.menu-open{
+
+    grid-template-columns:
+
+    var(--menu-width)
+
+    1fr;
+
+}
+
+.side{
+
+    width:280px;
+
+    min-width:280px;
+
+    background:#fff;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+
+    transition:.30s;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.main{
+
+    background:#fff;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+
+}
+
+.navbtn{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-start;
+
+    gap:10px;
+
+    padding:14px;
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
 
     white-space:nowrap;
 
-}
+    overflow:hidden;
 
-td:nth-child(3){
-
-    white-space:normal;
-
-    min-width:220px;
+    transition:.25s;
 
 }
 
-th, td{
-  word-break: break-word;
-  white-space: normal;
+.texto{
+
+    display:inline-block;
+
+    transition:.25s;
+
 }
 
-    th, td{
-      border-bottom:1px solid var(--line);
-      padding:10px 10px;
-      text-align:left;
-      vertical-align:top;
-      font-size:13px;
-    }
-    th{
-      position:sticky; top:0;
-      background: rgba(248,250,252,.95);
-      z-index:1;
-      font-size:12px;
-      color: var(--muted);
-      text-transform:uppercase;
-      letter-spacing:.04em;
-    }
-    td .mini{
-      font-size:12px;color:var(--muted);font-weight:700;
-    }
+.navbtn:hover{
 
-    .chip{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid var(--line);
-      font-weight:900;font-size:12px;
-      background: rgba(255,255,255,.85);
-    }
-    .chip.green{border-color: rgba(22,163,74,.25); background: rgba(22,163,74,.08); color: var(--good)}
-    .chip.red{border-color: rgba(220,38,38,.25); background: rgba(220,38,38,.08); color: var(--bad)}
+    background:#eef8f1;
 
-    .toast{
-      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
-      background: rgba(15,23,42,.92);
-      color:#fff;
-      padding:10px 12px;
-      border-radius: 12px;
-      font-weight:800;
-      box-shadow: 0 18px 35px rgba(2,6,23,.35);
-      opacity:0;
-      pointer-events:none;
-      transition:.18s ease;
-      max-width: calc(100% - 24px);
-    }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px);}
-         /* Login modal */
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(2,6,23,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:100;
-    }
-    .overlay.show{display:flex}
-    .modal{
-      width:min(520px, 100%);
-      background: rgba(255,255,255,.96);
-      border:1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 30px 60px rgba(2,6,23,.25);
-      overflow:hidden;
-    }
-    .modal header{
-      padding:14px 14px;
-      background: linear-gradient(90deg, rgba(14,165,233,.18), rgba(34,197,94,.14));
-      border-bottom:1px solid var(--line);
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .modal header b{font-size:14px}
-    .modal .body{padding:14px}
-    .modal .body p{margin:0 0 10px 0;color:var(--muted);font-weight:700}
-/* =========================
-   CABEÇALHO
-========================= */
-.site-header {
-  background: white;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.brandline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
+.navbtn.active{
+
+    background:#dff6e6;
+
+    color:var(--primary);
+
 }
 
-.logo {
-  max-height: 180px;
-  height: auto;
-  width: auto;
-  object-fit: contain;
+.mainHeader{
+
+    padding:18px;
+
+    border-bottom:1px solid var(--line);
+
 }
 
-.brand-center {
-  flex: 1;
-  text-align: center;
+.titleRow{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
 }
 
-.site-title {
-  font-size: 36px;
-  color: #0a7a2a;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-  font-weight: bold;
+.titleRow h2{
+
+    font-size:24px;
+
 }
 
-.slogan {
-  font-size: 16px;
-  font-style: italic;
-  margin-bottom: 5px;
-  color: #555;
+.titleRow p{
+
+    color:var(--muted);
+
+    margin-top:4px;
+
 }
 
-.boas-vindas {
-  background: #dfffe0;
-  padding: 12px 15px;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-size: 18px; /* AUMENTADO */
-  line-height: 1.5;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-html, body {
-  width: 100%;
-  overflow-x: hidden;
+.content{
+
+    padding:18px;
+
 }
 
-.main-content {
-  max-width: 100%;
-  padding: 16px;
+/*==================================================
+=                 DASHBOARD                         =
+==================================================*/
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:18px;
+
+    margin-bottom:20px;
+
 }
 
-table {
-  width: 100%;
-  table-layout: fixed;
-}
+.card{
 
-th, td {
-  word-wrap: break-word;
-  white-space: normal;
-}
-
-@media (max-width: 1200px) {
-  }
-}
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-.main-content,
-.container,
-.dashboard,
-.table-wrapper {
-  max-width: 100%;
-  width: 100%;
-}
-
-table {
-  width: 100%;
-  table-layout: fixed;
-}
-
-th, td {
-  word-wrap: break-word;
-}
-table td, table th {
-  padding: 6px 8px;
-  font-size: 13px;
-  vertical-align: middle;
-}
-
-
-button {
-  min-width: 90px;
-  padding: 8px 12px;
-  margin: 4px 0;
-}
-/* =====================================================
-   ADMIN APROVEITAI - TABELAS E BOTÕES (V2)
-===================================================== */
-
-.table-container,
-.table-wrapper,
-.tableWrap{
-    width:100%;
-    overflow:auto;
-    margin-top:12px;
-    border-radius:12px;
-    border:1px solid #dbe5ec;
     background:#fff;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.06);
+
+    border:1px solid #e5e7eb;
+
+    transition:.25s;
+
 }
 
-/* ---------- TABELA ---------- */
+.card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.10);
+
+}
+
+.card b{
+
+    display:block;
+
+    color:#64748b;
+
+    font-size:13px;
+
+    margin-bottom:10px;
+
+}
+
+.card .big{
+
+    font-size:30px;
+
+    font-weight:700;
+
+    color:#0a7a2a;
+
+}
+
+/*==================================================
+=                 LINHAS                            =
+==================================================*/
+
+.row{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:15px;
+
+    margin-bottom:18px;
+
+    align-items:flex-start;
+
+}
+
+/*==================================================
+=                 FORMULÁRIOS                       =
+==================================================*/
+
+.input,
+input,
+select,
+textarea{
+
+    width:100%;
+
+    padding:10px 14px;
+
+    border:1px solid #d1d5db;
+
+    border-radius:10px;
+
+    background:#fff;
+
+    font-size:14px;
+
+    transition:.20s;
+
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+
+    outline:none;
+
+    border-color:#16a34a;
+
+    box-shadow:0 0 0 3px rgba(22,163,74,.15);
+
+}
+
+textarea{
+
+    resize:vertical;
+
+    min-height:110px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:6px;
+
+    font-weight:600;
+
+    color:#374151;
+
+}
+
+/*==================================================
+=                 STATUS                            =
+==================================================*/
+
+.status{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:6px 12px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+}
+
+.status.ok{
+
+    background:#dcfce7;
+
+    color:#166534;
+
+}
+
+.status.bad{
+
+    background:#fee2e2;
+
+    color:#991b1b;
+
+}
+
+.dot{
+
+    width:10px;
+
+    height:10px;
+
+    border-radius:50%;
+
+    background:currentColor;
+
+}
+
+/*==================================================
+=                 CHIPS                             =
+==================================================*/
+
+.chip{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    padding:5px 10px;
+
+    border-radius:30px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    border:1px solid #e5e7eb;
+
+}
+
+.chip.green{
+
+    background:#dcfce7;
+
+    color:#166534;
+
+}
+
+.chip.red{
+
+    background:#fee2e2;
+
+    color:#991b1b;
+
+}
+
+.chip.orange{
+
+    background:#fef3c7;
+
+    color:#92400e;
+
+}
+
+.chip.blue{
+
+    background:#dbeafe;
+
+    color:#1d4ed8;
+
+}
+
+/*==================================================
+=                 DIVISORES                         =
+==================================================*/
+
+.hr{
+
+    width:100%;
+
+    height:1px;
+
+    background:#e5e7eb;
+
+    margin:18px 0;
+
+}
+
+.hint{
+
+    font-size:12px;
+
+    color:#6b7280;
+
+}
+
+/*==================================================
+=                 TABELAS                           =
+==================================================*/
+
+.tableWrap,
+.table-wrapper,
+.table-container{
+
+    width:100%;
+
+    overflow:auto;
+
+    border:1px solid #dbe5ec;
+
+    border-radius:14px;
+
+    background:#fff;
+
+    margin-top:15px;
+
+}
+
+/* Scroll */
+
+.tableWrap::-webkit-scrollbar,
+.table-wrapper::-webkit-scrollbar,
+.table-container::-webkit-scrollbar{
+
+    height:10px;
+    width:10px;
+
+}
+
+.tableWrap::-webkit-scrollbar-thumb,
+.table-wrapper::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb{
+
+    background:#b8c5d1;
+
+    border-radius:20px;
+
+}
+
+.tableWrap::-webkit-scrollbar-track,
+.table-wrapper::-webkit-scrollbar-track,
+.table-container::-webkit-scrollbar-track{
+
+    background:#eef2f7;
+
+}
+
+/* tabela */
 
 table{
+
     width:100%;
-    min-width:1450px;
+
     border-collapse:collapse;
+
     table-layout:auto;
-    background:#fff;
+
+    min-width:1200px;
+
 }
 
+/* cabeçalho */
+
 thead th{
-    background:#0a7a2a;
-    color:#fff;
-    font-size:13px;
-    font-weight:700;
-    padding:10px;
-    text-align:left;
+
     position:sticky;
+
     top:0;
+
     z-index:2;
+
+    background:#0a7a2a;
+
+    color:#fff;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    padding:12px;
+
+    text-align:left;
+
+}
+
+/* linhas */
+
+tbody tr{
+
+    transition:.20s;
+
 }
 
 tbody tr:nth-child(even){
-    background:#f7fafc;
+
+    background:#fafafa;
+
 }
 
 tbody tr:hover{
-    background:#e8f8ee;
+
+    background:#edfdf2;
+
 }
+
+/* células */
 
 tbody td{
-    padding:9px;
+
+    padding:10px;
+
     font-size:13px;
+
+    border-bottom:1px solid #edf2f7;
+
     vertical-align:middle;
-    border-bottom:1px solid #e6edf2;
+
 }
 
-td:nth-child(3){
-    min-width:240px;
-    font-weight:600;
+/* colunas */
+
+td:first-child{
+
+    white-space:nowrap;
+
 }
 
 td:nth-child(2){
+
     white-space:nowrap;
+
 }
 
-td:nth-child(7){
+td:nth-child(3){
+
+    min-width:220px;
+
+    font-weight:600;
+
+}
+
+td:last-child{
+
     white-space:nowrap;
+
 }
 
-/* ---------- STATUS ---------- */
-
-.status-ok{
-    display:inline-block;
-    background:#dcfce7;
-    color:#166534;
-    padding:4px 10px;
-    border-radius:20px;
-    font-weight:bold;
-}
-
-.status-off{
-    display:inline-block;
-    background:#fee2e2;
-    color:#991b1b;
-    padding:4px 10px;
-    border-radius:20px;
-    font-weight:bold;
-}
-
-/* ---------- BOTÕES ---------- */
+/*==================================================
+=                 BOTÕES                            =
+==================================================*/
 
 .acoes{
+
     display:flex;
+
     flex-wrap:wrap;
-    gap:5px;
+
+    gap:6px;
+
 }
+
+/* botão padrão */
 
 .acoes button{
 
@@ -570,34 +866,45 @@ td:nth-child(7){
 
     border-radius:8px;
 
-    padding:6px 10px;
+    padding:7px 12px;
 
     cursor:pointer;
 
     font-size:12px;
 
-    font-weight:bold;
+    font-weight:700;
+
+    transition:.20s;
 
     color:#fff;
 
-    transition:.20s;
 }
 
 .acoes button:hover{
 
-    transform:scale(1.05);
+    transform:translateY(-2px);
+
+    opacity:.90;
 
 }
 
-/* Editar */
+/* editar */
 
 .btnEditar{
 
-    background:#0ea5e9;
+    background:#0284c7;
 
 }
 
-/* Ativar */
+/* novo */
+
+.btnNovo{
+
+    background:#16a34a;
+
+}
+
+/* ativar */
 
 .btnAtivar{
 
@@ -605,7 +912,7 @@ td:nth-child(7){
 
 }
 
-/* Inativar */
+/* inativar */
 
 .btnInativar{
 
@@ -613,7 +920,15 @@ td:nth-child(7){
 
 }
 
-/* PDF */
+/* excluir */
+
+.btnExcluir{
+
+    background:#b91c1c;
+
+}
+
+/* pdf */
 
 .btnPdf{
 
@@ -621,7 +936,7 @@ td:nth-child(7){
 
 }
 
-/* Whats */
+/* whatsapp */
 
 .btnZap{
 
@@ -629,159 +944,744 @@ td:nth-child(7){
 
 }
 
-/* Histórico */
+/* contrato */
 
-.btnHistorico{
+.btnContrato{
+
+    background:#8b5cf6;
+
+}
+
+/* cartaz */
+
+.btnCartaz{
 
     background:#6366f1;
 
 }
 
-/* ---------- INPUTS ---------- */
+/* histórico */
+
+.btnHistorico{
+
+    background:#475569;
+
+}
+
+/* exportar */
+
+.btnExportar{
+
+    background:#0891b2;
+
+}
+
+/* salvar */
+
+.btnSalvar{
+
+    background:#15803d;
+
+}
+
+/* cancelar */
+
+.btnCancelar{
+
+    background:#64748b;
+
+}
+
+/* pesquisar */
+
+.btnPesquisar{
+
+    background:#0f766e;
+
+}
+
+/*==================================================
+=                 PAGINAÇÃO                         =
+==================================================*/
+
+.paginacao{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-top:18px;
+
+}
+
+.paginacao button{
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#0a7a2a;
+
+    color:#fff;
+
+    padding:8px 14px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+}
+
+.paginacao button:hover{
+
+    background:#16a34a;
+
+}
+
+/*==================================================
+=              RESULTADOS VAZIOS                    =
+==================================================*/
+
+.semDados{
+
+    padding:30px;
+
+    text-align:center;
+
+    color:#64748b;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+/*==================================================
+=           MENU RETRÁTIL
+==================================================*/
+
+.side{
+
+    width:280px;
+
+    min-width:280px;
+
+    background:#fff;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+
+    transition:.30s;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.side.recolhido{
+
+width:70px;
+
+min-width:70px;
+
+overflow:hidden;
+
+}
+
+.side.recolhido .texto{
+
+    display:none;
+
+}
+
+.side.recolhido .submenu{
+
+    display:none;
+
+}
+
+.submenu{
+
+    display:none;
+
+    margin-left:18px;
+
+    margin-top:6px;
+
+}
+
+.submenu.ativo{
+
+    display:block;
+
+}
+
+.submenu button{
+
+    width:100%;
+
+    border:none;
+
+    background:none;
+
+    padding:9px 10px;
+
+    text-align:left;
+
+    cursor:pointer;
+
+    border-radius:8px;
+
+    font-size:13px;
+
+    transition:.20s;
+
+}
+
+.submenu button:hover{
+
+    background:#edfdf2;
+
+}
+
+/*==================================================
+=                MODAL
+==================================================*/
+
+.overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:999;
+
+}
+
+.overlay.show{
+
+    display:flex;
+
+}
+
+.modal{
+
+    width:min(700px,95%);
+
+    background:#fff;
+
+    border-radius:14px;
+
+    box-shadow:0 25px 60px rgba(0,0,0,.25);
+
+    overflow:hidden;
+
+    animation:modal .25s ease;
+
+}
+
+@keyframes modal{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.modal header{
+
+    background:#0a7a2a;
+
+    color:#fff;
+
+    padding:14px 18px;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+}
+
+.modal .body{
+
+    padding:18px;
+
+}
+
+.modal footer{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    padding:16px;
+
+    border-top:1px solid #e5e7eb;
+
+}
+
+/*==================================================
+=                TOAST
+==================================================*/
+
+.toast{
+
+    position:fixed;
+
+    bottom:25px;
+
+    right:25px;
+
+    background:#111827;
+
+    color:#fff;
+
+    padding:14px 18px;
+
+    border-radius:10px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:.30s;
+
+    z-index:9999;
+
+}
+
+.toast.show{
+
+    opacity:1;
+
+    pointer-events:auto;
+
+}
+
+/*==================================================
+=                LOADER
+==================================================*/
+
+.loader{
+
+    width:55px;
+
+    height:55px;
+
+    border:5px solid #d1d5db;
+
+    border-top:5px solid #16a34a;
+
+    border-radius:50%;
+
+    animation:spin 1s linear infinite;
+
+    margin:auto;
+
+}
+
+@keyframes spin{
+
+    100%{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+/*==================================================
+=             ANIMAÇÕES
+==================================================*/
+
+.fade{
+
+    animation:fade .25s ease;
+
+}
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+/*==================================================
+=            RESPONSIVO TABLET
+==================================================*/
+
+@media(max-width:1100px){
+
+.cards{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+.topbar{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+}
+
+}
+
+/*==================================================
+=            RESPONSIVO CELULAR
+==================================================*/
+
+@media(max-width:768px){
+
+.grid{
+
+    display:block;
+
+}
+
+.side{
+
+    width:280px;
+
+    min-width:280px;
+
+    background:#fff;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+
+    transition:.30s;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.cards{
+
+    grid-template-columns:1fr;
+
+}
+
+.row{
+
+    flex-direction:column;
+
+}
 
 input,
-select{
+select,
+textarea{
 
-    border:1px solid #cbd5e1;
-
-    border-radius:10px;
-
-    padding:8px 10px;
+    width:100%;
 
 }
 
-input:focus,
-select:focus{
+table{
 
-    outline:none;
-
-    border-color:#0a7a2a;
+    min-width:900px;
 
 }
 
-/* ---------- SCROLL ---------- */
+.logo{
 
-.table-container::-webkit-scrollbar,
-.table-wrapper::-webkit-scrollbar{
-
-    height:10px;
+    height:60px;
 
 }
 
-.table-container::-webkit-scrollbar-thumb,
-.table-wrapper::-webkit-scrollbar-thumb{
+.site-title{
 
-    background:#b6c9d8;
+    font-size:24px;
 
-    border-radius:10px;
+}
+
+}
+
+.logo{
+
+height:48px;
+
+width:auto;
+
+display:block;
+
+}
+
+/*==================================================
+=             FIM DO CSS
+==================================================*/
+
 </style>
-
-}</head>
+<script src="js/config.js"></script>
+</head>
 
 <body>
 <!-- ✅ CABEÇALHO PADRONIZADO -->
-<header class="site-header">
-  <div class="brandline">
-    <img src="logo-prometheus.png" class="logo logo-prometheus">
-    <div class="brand-center">
-      <h1 class="site-title">Cartão AproveitAI</h1>
-      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+<header class="topbar">
 
-      <!-- Tarja -->
-      <p class="boas-vindas">
-        🏪 <strong>PAINEL ADMINISTRAÇÃO</strong><br>
-        Controle e administração total do site.
-      </p>
-    </div>
-    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
-  </div>
-</header>
+<div class="brand">
 
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="badge">A</div>
-        <div>
-          <h1>Admin — AproveitAI</h1>
-          <small id="subinfo">Última atualização: <span id="ultima"></span></small>
-        </div>
-      </div>
+<img
+src="LOGO A somente.png"
+class="logo">
 
-      <div class="right">
-        <div class="pill">
-          <span class="dot" style="width:10px;height:10px;border-radius:999px;background:var(--brand)"></span>
-          <span id="pillAdmin">Não autenticado</span>
-        </div>
-        <button class="btn" id="btnRecarregar">Recarregar</button>
-        <button class="btn danger" id="btnSair">Sair</button>
-      </div>
-    </div>
+<div>
 
-    <div class="grid">
-      <aside class="side">
-        <button class="navbtn active" data-view="dashboard">
-          Dashboard
-          <span class="hint">Resumo e saúde do sistema</span>
-        </button>
+<h1>PROMETHEUS HUB</h1>
 
-        <div class="hr"></div>
+<small>
+Cartão AproveitAI • Administração Geral
+</small>
 
-        <button class="navbtn" data-view="clientes">
-          Clientes
-          <small>listar + ativar/desativar + criar + termos</small>
-        </button>
-        <button class="navbtn" data-view="parceiros">
-          Parceiros
-          <small>listar + ativar/desativar + editar + criar + contrato</small>
-        </button>
-          <button class="navbtn" data-view="materiais">
-  Materiais
-  <small>Contratos, Cartazes e Institucional</small>
+</div>
+
+</div>
+
+
+</div>
+
+<div class="right">
+
+<div class="pill">
+
+Administrador
+
+<strong id="pillAdmin">
+Não autenticado
+</strong>
+
+</div>
+
+<button class="btn" id="btnRecarregar">
+
+🔄 Atualizar
+
 </button>
-        <button class="navbtn" data-view="beneficios">
-          Benefícios
-          <small>listar + ativar/desativar + criar</small>
-        </button>
-        <button class="navbtn" data-view="promocoes">
-          Promoções
-          <small>listar + ativar/desativar + criar</small>
-        </button>
 
-        <div class="hr"></div>
+<button class="btn danger" id="btnSair">
 
-        <button class="navbtn" data-view="gerencial">
-        Gerencial
-        <small>Indicadores do sistema</small>
-        </button>
+🚪 Sair
 
-        <button class="navbtn" data-view="logs">
-          Logs
-          <small>somente leitura</small>
-        </button>
-        <button class="navbtn" data-view="log_admin">
-          Log Admin
-          <small>somente leitura</small>
-        </button>
-        <button class="navbtn" data-view="admins">
-          Admins
-          <small>somente leitura</small>
-        </button>
-      </aside>
+</button>
 
-      <main class="main">
-        <div class="mainHeader">
-          <div class="titleRow">
-            <div>
-              <h2 id="viewTitle">Dashboard</h2>
-              <p id="viewDesc">Resumo geral do banco e validações.</p>
-            </div>
-            <div class="row" style="margin:0">
-              <span id="statusApi" class="status"><span class="dot"></span>API não verificada</span>
-              <button class="btn primary" id="btnTestarApi">Testar API</button>
-            </div>
-          </div>
-          <div class="hr"></div>
-        </div>
+</div>
+
+</header>  
+        
+    <div class="grid">
+      <aside class="side" id="menuLateral">
+
+<button
+class="btn primary"
+id="btnMenu">
+
+☰
+
+</button>
+
+<div class="hr"></div> 
+
+<!-- MENU LATERAL -->
+<button class="navbtn active" data-view="dashboard">
+    <span>🏠</span>
+    <span class="texto">Dashboard</span>
+</button>
+
+<div class="hr"></div>
+
+<!-- CADASTROS -->
+<button class="navbtn" id="menuCadastros">
+    <span>📂</span>
+    <span class="texto">Cadastros</span>
+</button>
+
+<div class="submenu ativo" id="submenuCadastros">
+
+   <button class="navbtn" data-view="clientes">
+    👤 <span class="texto">Clientes</span>
+</button>
+
+<button class="navbtn" data-view="parceiros">
+    🤝 <span class="texto">Parceiros</span>
+</button>
+
+<button class="navbtn" data-view="beneficios">
+    🎁 <span class="texto">Benefícios</span>
+</button>
+
+<button class="navbtn" data-view="promocoes">
+    📢 <span class="texto">Promoções</span>
+</button>
+
+<button class="navbtn" data-view="materiais">
+    📂 <span class="texto">Materiais</span>
+</button>
+
+</div>
+
+<div class="hr">
+</div>
+<button class="navbtn" id="menuAdministracao">
+    ⚙️
+    <span class="texto">Administração</span>
+</button>
+
+<div class="submenu ativo" id="submenuAdministracao">
+
+    <button class="navbtn" data-view="gerencial">
+        📊 <span class="texto">Gerencial</span>
+    </button>
+
+    <button class="navbtn" data-view="logs">
+        📖 <span class="texto">Logs</span>
+    </button>
+
+    <button class="navbtn" data-view="log_admin">
+        🛡️ <span class="texto">Log Admin</span>
+    </button>
+
+    <button class="navbtn" data-view="admins">
+        👨‍💼 <span class="texto">Administradores</span>
+<div class="toolbar">
+
+    </button>
+
+</div>
+<div class="hr"></div>
+
+<button class="navbtn" id="menuSistema">
+    💻
+    <span class="texto">Sistema</span>
+</button>
+
+<div class="submenu ativo" id="submenuSistema">
+
+    <button class="navbtn" data-view="config">
+        ⚙️ <span class="texto">Configurações</span>
+    </button>
+
+    <button class="navbtn" data-view="backup">
+        💾 <span class="texto">Backup</span>
+    </button>
+
+</div>
+
+<div class="hr"></div>
+
+<button class="navbtn" id="menuHub">
+    🚀
+    <span class="texto">PROMETHEUS HUB</span>
+</button>
+
+<div class="submenu ativo" id="submenuHub">
+
+    <button class="navbtn">
+        🌱 <span class="texto">Raízes</span>
+    </button>
+
+    <button class="navbtn">
+        📚 <span class="texto">Consultax</span>
+    </button>
+
+    <button class="navbtn">
+        🤖 <span class="texto">Prometheus AI</span>
+    </button>
+
+</div>
+</aside>
+
+<main class="main">
+
+<div class="mainHeader">
+
+<div class="titleRow">
+
+<div>
+
+<h2 id="viewTitle">
+Dashboard
+</h2>
+
+<p id="viewDesc">
+
+Central de administração da plataforma.
+
+</p>
+
+</div>
+
+<div class="row" style="margin:0">
+
+<input
+class="input"
+id="pesquisaGlobal"
+placeholder="🔍 Pesquisar em todo o sistema..."
+style="width:280px">
+
+<button
+class="btn primary"
+id="btnPesquisarGlobal">
+
+Pesquisar
+
+</button>
+
+</div>
+
+</div>
+
+<div class="hr"></div>
 
         <div class="content">
           <!-- DASHBOARD -->
@@ -816,49 +1716,62 @@ select:focus{
               <span class="hint">Carrega: relatório geral + últimos dados (logs, clientes, parceiros).</span>
             </div>
 
-            <div class="tableWrap" style="margin-top:10px">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Atalho</th>
-                    <th>O que faz</th>
-                    <th>Observação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><b>Clientes</b></td>
-                    <td>Ativar/Inativar e gerar termos do cliente (PDF)</td>
+           <div class="cards">
 
-                    <td>Controle principal do pagamento via campo <b>ativo</b></td>
-                  </tr>
-                  <tr>
-                    <td><b>Parceiros</b></td>
-                    <td>Ativar/Inativar, editar campos (patch), criar novo, gerar contrato (PDF)</td>
-                    <td>Lista usa action=listar_parceiros (gera log_admin automaticamente)</td>
-                  </tr>
-                  <tr>
-                    <td><b>Benefícios/Promoções</b></td>
-                    <td>Ativar/Inativar e criar registros</td>
-                    <td>Edição avançada não existe no seu GAS hoje (somente status + criar)</td>
-                  </tr>
-                  <tr>
-                    <td><b>Logs/Log Admin</b></td>
-                    <td>Somente leitura</td>
-                    <td>Transparência e auditoria</td>
-                  </tr>
-                </tbody>
-              </table>
+<div class="card">
+    <b>Sistema</b>
+    <div class="big" id="sisSistema">Verificando...</div>
+    <div class="hint" id="sisAtualizacao"></div>
+</div>
+
+<div class="card">
+    <b>Banco de Dados</b>
+    <div class="big" id="sisBanco">---</div>
+    <div class="hint">Base utilizada</div>
+</div>
+
+<div class="card">
+    <b>API</b>
+    <div class="big" id="sisApi">---</div>
+    <div class="hint" id="sisTempo">Tempo de resposta</div>
+</div>
+
+<div class="card">
+    <b>Versão</b>
+    <div class="big" id="sisVersao">---</div>
+    <div class="hint">PROMETHEUS HUB</div>
+</div>
+
             </div>
           </section>
 
           <!-- CLIENTES -->
-          <section data-section="clientes" style="display:none">
-            <div class="row">
-              <input class="input" id="filtroClientes" placeholder="Buscar (nome / cpf / cidade / idPublico)"/>
-              <button class="btn" id="btnReloadClientes">Recarregar</button>
-              <button class="btn" id="btnCsvClientes">Exportar CSV</button>
-              <div>
+          <section data-section="clientes">
+
+<div class="row">
+
+<input
+class="input"
+id="filtroClientes"
+placeholder="Buscar (nome / cpf / cidade / idPublico)"/>
+
+<button class="btn" id="btnReloadClientes">
+Recarregar
+</button>
+
+<button class="btn" id="btnCsvClientes">
+Exportar CSV
+</button>
+
+<button
+class="btn primary"
+id="btnNovoCliente">
+
+➕ Novo Cliente
+
+</button>
+
+</div>
             <div class="hint">Dica: o botão de status altera a coluna <b>ativo</b> para <b>SIM</b> ou <b>NAO</b>.</div>
             <div class="hr"></div>
             <div class="tableWrap">
@@ -915,6 +1828,7 @@ select:focus{
               <input class="input" id="filtroLogs" placeholder="Buscar (cpf / nome / parceiro / status / tipo)"/>
               <button class="btn" id="btnReloadLogs">Recarregar</button>
               <button class="btn" id="btnCsvLogs">Exportar CSV</button>
+
             </div>
             <div class="hint">Somente leitura. Mostra exatamente a aba <b>logs</b>.</div>
             <div class="hr"></div>
@@ -937,13 +1851,6 @@ select:focus{
             </div>
           </section>
 
-          <!-- ADMINS -->
-          <section data-section="admins" style="display:none">
-            <div class="row">
-              <input class="input" id="filtroAdmins" placeholder="Buscar (usuario / nome)"/>
-              <button class="btn" id="btnReloadAdmins">Recarregar</button>
-              <button class="btn" id="btnCsvAdmins">Exportar CSV</button>
-            </div>
             <div class="hint">Somente leitura. Mostra a aba <b>admins</b> (atenção: aqui aparecem senhas).</div>
             <div class="hr"></div>
             <div class="tableWrap">
@@ -1095,7 +2002,7 @@ target="_blank">
  **************************************************************/
 
 /*** 1) CONFIG — cole aqui a URL /exec do Apps Script ***/
-const API_URL = "https://script.google.com/macros/s/AKfycbwMMQ2FR2JBpo7xvWVazw4dAV6t_t90UxTASLcGfo1t7fA-beDqJDC-4z-Y7DL9vRunVg/exec";
+const API_URL = CONFIG.apiAdmin;
 
 /*** 2) ESTADO ***/
 const store = {
@@ -1107,17 +2014,27 @@ const state = {
   key: store.get("apv_admin_key") || null,
   admin: store.get("apv_admin_name") || null,
   cache: { clientes:[], parceiros:[], beneficios:[], promocoes:[], logs:[], log_admin:[], admins:[] },
-  loaded: { clientes:false, parceiros:false, beneficios:false, promocoes:false, logs:false, log_admin:false, admins:false, dashboard:false }
+  loaded:{
+clientes:false,
+parceiros:false,
+beneficios:false,
+promocoes:false,
+logs:false,
+log_admin:false,
+admins:false,
+dashboard:false
+},
+
+versao:CONFIG.versao,
+empresa:CONFIG.empresa,
+plataforma:CONFIG.plataforma,
+banco: CONFIG.banco,
+ultimaAtualizacao:null,
+tempoResposta:null
 };
-function formatarDataBR(iso){
-  if(!iso) return "";
-  const d = new Date(iso);
-  return d.toLocaleString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    dateStyle: "short",
-    timeStyle: "medium"
-  });
-}
+
+
+
 
 /*** 3) HELPERS UI ***/
 const $ = (id)=>document.getElementById(id);
@@ -1130,13 +2047,27 @@ function toast(msg){
 function setPill(text){
   $("pillAdmin").textContent = text;
 }
-function setApiStatus(ok, msg){
-  const el = $("statusApi");
-  el.classList.remove("ok","bad");
-  if(ok){ el.classList.add("ok"); el.querySelector(".dot").style.background="var(--good)"; }
-  else { el.classList.add("bad"); el.querySelector(".dot").style.background="var(--bad)"; }
-  el.childNodes[1].textContent = " " + msg;
+function setApiStatus(ok,msg){
+
+    const el = $("statusApi");
+
+    if(!el) return;
+
+    el.classList.remove("ok","bad");
+
+    const dot = el.querySelector(".dot");
+
+    if(dot){
+
+        dot.style.background =
+            ok ? "var(--good)" : "var(--bad)";
+
+    }
+
+    el.lastChild.textContent = " " + msg;
+
 }
+
 function showOverlay(id, show){
   const el = $(id);
   if(!el) return;
@@ -1422,17 +2353,93 @@ async function apiAlterarStatus(aba, campoId, valorId, novo){
 
 /*** 10) LOADERS (DADOS) ***/
 async function testApi(){
-  try{
-    const r = await callAPI({ action:"loginAdmin", key: state.key });
-    if(r && r.ok){
-      setApiStatus(true, "API OK");
-      return true;
-    }
-    throw r;
-  }catch(err){
-    setApiStatus(false, "Falha na API");
-    return false;
-  }
+
+const inicio=Date.now();
+
+try{
+
+const r=await callAPI({
+
+action:"loginAdmin",
+
+key:state.key
+
+});
+
+state.tempoResposta=
+
+Date.now()-inicio;
+
+state.ultimaAtualizacao=
+
+new Date().toLocaleString("pt-BR");
+
+if(r && r.ok){
+
+setApiStatus(
+
+true,
+
+"API OK"
+
+);
+
+const elTempo=document.getElementById("sisTempo");
+
+if(elTempo)
+
+elTempo.innerHTML=
+
+state.tempoResposta+" ms";
+
+const elSistema=document.getElementById("sisSistema");
+
+if(elSistema)
+
+elSistema.innerHTML="🟢 Online";
+
+const elBanco=document.getElementById("sisBanco");
+
+if(elBanco)
+
+elBanco.innerHTML=state.banco;
+
+const elApi=document.getElementById("sisApi");
+
+if(elApi)
+
+elApi.innerHTML="Conectada";
+
+const elVersao=document.getElementById("sisVersao");
+
+if(elVersao)
+
+elVersao.innerHTML=state.versao;
+
+const elAtual=document.getElementById("sisAtualizacao");
+
+if(elAtual)
+
+elAtual.innerHTML=
+
+state.ultimaAtualizacao;
+
+return true;
+
+}
+
+throw r;
+
+}
+
+catch(err){
+
+setApiStatus(false,"Offline");
+
+return false;
+
+}
+
 }
 
 async function loadGerencial(){
@@ -1489,7 +2496,7 @@ async function loadDashboard(force=false){
   $("mLogs").textContent = state.cache.logs.length;
   $("mStatus").textContent = state.admin ? "Logado" : "—";
 
-  setApiStatus(true, "API OK");
+   await testApi();
   state.loaded.dashboard = true;
 }
 
@@ -1510,47 +2517,66 @@ function renderClientes(){
   });
 
 renderTable("tblClientes", rows, [
-  {key:"idPublico", label:"ID Público"},
-  {key:"cpf", label:"CPF"},
+
+  {key:"idPublico", label:"APV"},
+
   {key:"nome", label:"Nome"},
-  {key:"celular", label:"Celular"},
-  {key:"grupo", label:"Grupo"},
+
+  {key:"cpf", label:"CPF"},
+
   {key:"cidade", label:"Cidade"},
-  {key:"nascimento", label:"Nascimento"},
-  {key:"ativo", label:"Status"},
-  {key:"placa_1", label:"Placa 1"},
-  {key:"modelo_1", label:"Modelo 1"},
-  {key:"placa_2", label:"Placa 2"},
-  {key:"modelo_2", label:"Modelo 2"},
-  {key:"zap_status_enviado", label:"WhatsApp Enviado"},
-],{
+
+  {key:"tipoPlano", label:"Plano"},
+
+  {
+      key:"ativo",
+      label:"Status",
+      render:(c)=>{
+
+          return String(c.ativo).toLowerCase()=="sim"
+
+          ? "<span class='status-ok'>🟢 Ativo</span>"
+
+          : "<span class='status-off'>🔴 Inativo</span>";
+
+      }
+  },
+
+],
+
+{
     actions:(c)=>{
 
-return `
+return`
 
 <div class="acoes">
 
+<button class="btnEditar"
+onclick="abrirEditarCliente('${c.cpf}')"
+title="Editar">
+✏️
+</button>
+
 <button class="btnAtivar"
-onclick="alterarStatusCliente('${c.cpf}','SIM')">
+onclick="alterarStatusCliente('${c.cpf}','SIM')"
+title="Ativar">
 🟢
 </button>
 
 <button class="btnInativar"
-onclick="alterarStatusCliente('${c.cpf}','NAO')">
+onclick="alterarStatusCliente('${c.cpf}','NAO')"
+title="Inativar">
 🔴
 </button>
 
-<button class="btnEditar"
-onclick="editarCliente('${c.cpf}')">
-✏️
-</button>
-
 <button class="btnPdf"
-onclick="gerarTermosCliente('${c.cpf}')">
+onclick="gerarTermosCliente('${c.cpf}')"
+title="Termos">
 📄
 </button>
 
-</div>
+
+
 </div>
 
 `;
@@ -1568,7 +2594,7 @@ async function toggleCliente(cpf, ativo){
   }catch(err){ toast("Erro ao alterar status"); }
 }
 
-function editarCliente(cpf){
+function abrirEditarCliente(cpf){
   const c = state.cache.clientes.find(x => apenasNumeros(x.cpf) === apenasNumeros(cpf)) || {};
   openEditModal({
     title: "Editar cliente",
@@ -1580,18 +2606,10 @@ function editarCliente(cpf){
       {key:"celular", label:"Celular"},
       {key:"cidade", label:"Cidade"},
       {key:"grupo", label:"Grupo"},
-      {
-  key:"nascimento",
-  label:"Nascimento",
-  render:(c)=>{
-    if(!c.nascimento) return "";
-
-    const d = new Date(c.nascimento);
-
-    if(isNaN(d)) return c.nascimento;
-
-    return d.toLocaleDateString("pt-BR");
-  }
+   {
+    key:"nascimento",
+    label:"Nascimento",
+    type:"date"
 },
 
 {
@@ -1621,12 +2639,10 @@ function editarCliente(cpf){
   });
 }
 
-async function termosCliente(cpf){
-  try{
-    const r = await callAPI({ action:"gerar_termos_cliente", key: state.key, cpf });
-    if(r.url) window.open(r.url, "_blank");
-    else toast("PDF não gerado");
-  }catch(err){ toast("Erro ao gerar termos"); }
+function editarCliente(cpf){
+
+    abrirEditarCliente(cpf);
+
 }
 
 
@@ -2020,16 +3036,37 @@ function renderAdmins(){
 /*** 11) WIRES (EVENTS) ***/
 function bind(){
 
+console.log("Entrou no bind");
+
   const d = new Date();
-  $("ultima").textContent =
+  const ultima = $("ultima");
+
+if(ultima){
+    ultima.textContent =
     `${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+}
+  const btnApi = $("btnRecarregar");
 
-  $("btnTestarApi").addEventListener("click", ()=>loadDashboard(true));
+if(btnApi){
 
-  $("btnCarregarTudo").addEventListener("click", async ()=>{
+    btnApi.addEventListener("click",()=>{
+
+        loadDashboard(true);
+
+    });
+
+}
+
+  const btnCarregarTudo = $("btnCarregarTudo");
+
+if(btnCarregarTudo){
+
+btnCarregarTudo.addEventListener("click", async ()=>{
+
     if(!(await ensureLogin())) return;
 
     toast("Carregando relatório...");
+
     await Promise.allSettled([
       loadDashboard(true),
       loadClientes(true),
@@ -2039,55 +3076,194 @@ function bind(){
       loadLogs(true),
       loadLogAdmin(true)
     ]);
+
     toast("Relatório carregado");
     showView("logs");
-  });
+
+});
+
+}
 
   document.querySelectorAll(".navbtn").forEach(b=>{
     b.addEventListener("click", ()=>showView(b.dataset.view));
   });
 
-  $("btnLogin").addEventListener("click", async ()=>{
-    const key = ($("inpKey").value||"").trim();
-    if(!key) return;
-    state.key = key;
-    $("loginMsg").textContent = "Verificando...";
-    if(await ensureLogin()){
-      toast("Bem-vindo, " + state.admin);
-      showView("dashboard");
-    }
-  });
+  const btnLogin = $("btnLogin");
 
-  $("inpKey").addEventListener("keydown", e=>{
-    if(e.key==="Enter") $("btnLogin").click();
-  });
+if(btnLogin){
+
+btnLogin.addEventListener("click", async ()=>{
+
+    const key = ($("inpKey").value||"").trim();
+
+    if(!key) return;
+
+    state.key = key;
+
+    $("loginMsg").textContent = "Verificando...";
+
+    if(await ensureLogin()){
+
+        toast("Bem-vindo, "+state.admin);
+
+        showView("dashboard");
+
+    }
+
+});
+
+}
+
+  const inpKey = $("inpKey");
+
+if(inpKey){
+
+inpKey.addEventListener("keydown",e=>{
+
+    if(e.key==="Enter"){
+
+        btnLogin?.click();
+
+    }
+
+});
+
+}
 
   $("btnEditClose")?.addEventListener("click", closeEditModal);
   $("btnEditCancel")?.addEventListener("click", closeEditModal);
   $("btnEditSave")?.addEventListener("click", saveEditModal);
 
-  $("filtroClientes").addEventListener("input", renderClientes);
-  $("filtroParceiros").addEventListener("input", renderParceiros);
-  $("filtroBeneficios").addEventListener("input", renderBeneficios);
-  $("filtroPromocoes").addEventListener("input", renderPromocoes);
-  $("filtroLogs").addEventListener("input", renderLogs);
-  $("filtroLogAdmin").addEventListener("input", renderLogAdmin);
-  $("filtroAdmins").addEventListener("input", renderAdmins);
+  $("filtroClientes")?.addEventListener("input", renderClientes);
+$("filtroParceiros")?.addEventListener("input", renderParceiros);
+$("filtroBeneficios")?.addEventListener("input", renderBeneficios);
+$("filtroPromocoes")?.addEventListener("input", renderPromocoes);
+$("filtroLogs")?.addEventListener("input", renderLogs);
+$("filtroLogAdmin")?.addEventListener("input", renderLogAdmin);
+$("filtroAdmins")?.addEventListener("input", renderAdmins);
 
-  $("btnReloadClientes").addEventListener("click", ()=>loadClientes(true));
-  $("btnReloadParceiros").addEventListener("click", ()=>loadParceiros(true));
-  $("btnNovoParceiro").addEventListener("click", novoParceiro);
+  /* ================= CLIENTES ================= */
 
-  $("btnReloadBeneficios").addEventListener("click", ()=>loadBeneficios(true));
-  $("btnNovoBeneficio").addEventListener("click", novoBeneficio);
+$("btnReloadClientes")?.addEventListener("click", () => loadClientes(true));
+$("btnNovoCliente")?.addEventListener("click", () => novoCliente());
 
-  $("btnReloadPromocoes").addEventListener("click", ()=>loadPromocoes(true));
-  $("btnNovoPromocao").addEventListener("click", novoPromocao);
+/* ================= PARCEIROS ================= */
 
-  $("btnReloadLogs").addEventListener("click", ()=>loadLogs(true));
-  $("btnReloadLogAdmin").addEventListener("click", ()=>loadLogAdmin(true));
-  $("btnReloadAdmins").addEventListener("click", ()=>loadAdmins(true));
+$("btnReloadParceiros")?.addEventListener("click", () => loadParceiros(true));
+$("btnNovoParceiro")?.addEventListener("click", () => novoParceiro());
+
+/* ================= BENEFÍCIOS ================= */
+
+$("btnReloadBeneficios")?.addEventListener("click", () => loadBeneficios(true));
+$("btnNovoBeneficio")?.addEventListener("click", () => novoBeneficio());
+
+/* ================= PROMOÇÕES ================= */
+
+$("btnReloadPromocoes")?.addEventListener("click", () => loadPromocoes(true));
+$("btnNovoPromocao")?.addEventListener("click", () => novoPromocao());
+
+/* ================= LOGS ================= */
+
+$("btnReloadLogs")?.addEventListener("click", () => loadLogs(true));
+$("btnReloadLogAdmin")?.addEventListener("click", () => loadLogAdmin(true));
+
+/* =====================================
+   BOTÃO ATUALIZAR
+===================================== */
+
+$("btnRecarregar").addEventListener("click", async ()=>{
+
+    if(!(await ensureLogin())) return;
+
+    await loadDashboard(true);
+
+});
+
+
+/* =====================================
+   BOTÃO SAIR
+===================================== */
+
+const btnSair = $("btnSair");
+
+if(btnSair){
+
+btnSair.addEventListener("click",()=>{
+
+    state.key=null;
+    state.admin=null;
+
+    store.del("apv_admin_key");
+    store.del("apv_admin_name");
+
+    const adm=document.getElementById("adminNome");
+
+    if(adm){
+        adm.innerHTML="Não autenticado";
+    }
+
+    const st=$("mStatus");
+
+    if(st){
+        st.textContent="Desconectado";
+    }
+
+    setApiStatus(false,"API não verificada");
+
+    openLoginModal();
+
+});
+
 }
+ const btnPesquisarGlobal = $("btnPesquisarGlobal");
+
+if(btnPesquisarGlobal){
+
+    btnPesquisarGlobal.addEventListener("click",()=>{
+
+        const pesquisa = $("pesquisaGlobal");
+
+        if(!pesquisa) return;
+
+        const texto = pesquisa.value.toLowerCase();
+
+        console.log(texto);
+
+    });
+
+}
+
+}
+
+[
+"btnCarregarTudo",
+"btnLogin",
+"inpKey",
+"btnReloadClientes",
+"btnNovoCliente",
+"btnReloadParceiros",
+"btnNovoParceiro",
+"btnReloadBeneficios",
+"btnNovoBeneficio",
+"btnReloadPromocoes",
+"btnNovoPromocao",
+"btnReloadLogs",
+"btnReloadLogAdmin",
+"btnRecarregar",
+"btnSair",
+"btnPesquisarGlobal"
+].forEach(id=>{
+
+    if(!document.getElementById(id)){
+
+        console.error("FALTA:",id);
+
+    }
+
+});
+
+
+
 function getCurrentViewName(){
   const active = document.querySelector(".navbtn.active");
   return active ? active.dataset.view : "dashboard";
@@ -2151,6 +3327,101 @@ window.alterarStatusCliente = async function(cpf, status){
    START LIMPO (SAFE MODE)
 ========================= */
 
+document
+.getElementById("btnMenu")
+.onclick=function(){
+
+document
+.getElementById("menuLateral")
+.classList
+.toggle("recolhido");
+
+};
+
+/* ==========================
+   ABRIR / FECHAR MENU LATERAL
+========================== */
+
+const btnMenu = document.getElementById("btnMenu");
+
+if(btnMenu){
+
+    btnMenu.onclick=function(){
+
+        document
+        .getElementById("menuLateral")
+        ?.classList
+        .toggle("recolhido");
+
+    };
+
+}
+
+/* ==========================
+   MENUS LATERAIS
+========================== */
+
+const menuCadastros = document.getElementById("menuCadastros");
+
+if(menuCadastros){
+
+    menuCadastros.onclick = function(){
+
+        document
+            .getElementById("submenuCadastros")
+            ?.classList
+            .toggle("ativo");
+
+    };
+
+}
+
+const menuAdministracao = document.getElementById("menuAdministracao");
+
+if(menuAdministracao){
+
+    menuAdministracao.onclick = function(){
+
+        document
+            .getElementById("submenuAdministracao")
+            ?.classList
+            .toggle("ativo");
+
+    };
+
+}
+
+const menuSistema = document.getElementById("menuSistema");
+
+if(menuSistema){
+
+    menuSistema.onclick = function(){
+
+        document
+            .getElementById("submenuSistema")
+            ?.classList
+            .toggle("ativo");
+
+    };
+
+}
+
+const menuHub = document.getElementById("menuHub");
+
+if(menuHub){
+
+    menuHub.onclick = function(){
+
+        document
+            .getElementById("submenuHub")
+            ?.classList
+            .toggle("ativo");
+
+    };
+
+}
+
+
 document.addEventListener("DOMContentLoaded", async ()=>{
   try{
     bind();
@@ -2169,6 +3440,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     alert("Erro crítico no admin.html. Veja o console.");
   }
 });
+
 </script>
 <div class="toast" id="toast"></div>
 <script>
@@ -2190,17 +3462,103 @@ function gerarContratoParceiro(parceiroId) {
     });
 }
 
+async function gerarTermosCliente(cpf){
+
+
+
+    try{
+
+        const r = await callAPI({
+
+            action:"gerar_termos_cliente",
+
+            cpf,
+
+            key:state.key
+
+        });
+
+console.log(r);
+
+
+        if(r.url){
+
+            window.open(r.url,"_blank");
+
+        }
+
+        toast("Termo gerado.");
+
+    }
+
+    catch(e){
+
+        toast("Erro ao gerar termo.");
+
+    }
+
+}
+
+function novoCliente(){
+
+    openEditModal({
+
+        title:"Novo Cliente",
+
+        initial:{},
+
+        fields:[
+
+            {key:"nome",label:"Nome"},
+
+            {key:"cpf",label:"CPF"},
+
+            {key:"celular",label:"Celular"},
+
+            {key:"cidade",label:"Cidade"},
+
+            {key:"grupo",label:"Grupo"}
+
+        ],
+
+        onSave:async(dados)=>{
+
+            await callAPI({
+
+                action:"criar_cliente",
+
+                ...dados,
+
+                key:state.key
+
+            });
+
+            toast("Cliente cadastrado.");
+
+            loadClientes(true);
+
+        }
+
+    });
+
+}
+
 </script>
 
 <script>
 
-if ('serviceWorker' in navigator){
+if (
+    location.protocol !== "file:" &&
+    "serviceWorker" in navigator
+){
 
-window.addEventListener('load',()=>{
+    window.addEventListener("load",()=>{
 
-navigator.serviceWorker.register('/sw.js');
+        navigator.serviceWorker
+            .register("/sw.js")
+            .catch(console.log);
 
-});
+    });
 
 }
 
