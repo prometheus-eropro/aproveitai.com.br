@@ -420,15 +420,16 @@ op1.text = `${resp.placa1} - ${resp.modelo1}`;
 
 const img = document.getElementById("logoParceiro");
 
-img.src = `/logos/${parceiroId}.png`;
+img.src = "/logos/" + parceiroId + ".png";
 
-img.onload = function(){
-   this.style.display = "block";
+img.onload = function () {
+    this.style.display = "block";
 };
 
-img.onerror = function(){
-   this.src = "logo-aproveitai.png";
-   this.style.display = "block";
+img.onerror = function () {
+    this.onerror = null;
+    this.src = "/logo-aproveitai.png";
+    this.style.display = "block";
 };
 
 document.getElementById("nomeCliente").innerText =

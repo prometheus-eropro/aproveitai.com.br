@@ -254,9 +254,9 @@ const parceiroId =
   params.get("parceiro");
 
 const clienteId =
-  params.get("id") ||
-  params.get("cliente");
-
+params.get("idPublico") ||
+params.get("id") ||
+params.get("cliente");
 
 const elMsg = document.getElementById("msg");
 const elBtn = document.getElementById("btnValidar");
@@ -397,15 +397,16 @@ if (resp.exige_placa) {
 
 const img = document.getElementById("logoParceiro");
 
-img.src = `/logos/${parceiroId}.png`;
+img.src = "/logos/" + parceiroId + ".png";
 
-img.onload = function(){
-   this.style.display = "block";
+img.onload = function () {
+    this.style.display = "block";
 };
 
-img.onerror = function(){
-   this.src = "logo-aproveitai.png";
-   this.style.display = "block";
+img.onerror = function () {
+    this.onerror = null;
+    this.src = "/logo-aproveitai.png";
+    this.style.display = "block";
 };
 
 document.getElementById("nomeCliente").innerText =
