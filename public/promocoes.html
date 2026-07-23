@@ -98,14 +98,22 @@ fetch(API + "?aba=promocoes")
        class="btn-link">📍 Como chegar</a>` : ""}
 </div>
 
-      <p>
+     <p>
 <strong>Início:</strong>
-${p.dataInicio || "-"}
+${
+p.dataInicio
+? new Date(p.dataInicio).toLocaleDateString("pt-BR")
+: "-"
+}
 </p>
 
 <p>
 <strong>Fim:</strong>
-${p.dataFim || "-"}
+${
+p.dataFim
+? new Date(p.dataFim).toLocaleDateString("pt-BR")
+: "-"
+}
 </p>
     `;
 

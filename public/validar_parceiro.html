@@ -253,6 +253,14 @@ const parceiroId =
   params.get("parceiro_id") ||
   params.get("parceiro");
 
+console.log("URL:", window.location.href);
+console.log("SEARCH:", window.location.search);
+console.log("PARCEIRO:", parceiroId);
+
+if (!parceiroId) {
+    alert("Parceiro não encontrado.\nURL: " + window.location.href);
+}
+
 const clienteId =
 params.get("idPublico") ||
 params.get("id") ||
