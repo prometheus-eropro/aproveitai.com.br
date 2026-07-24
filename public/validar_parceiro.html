@@ -141,7 +141,7 @@ body {
 
 </div>
 
-  <span id="nomeParceiro" style="font-weight:700;font-size:18px"></span>
+  
 </div>
 <br>
   <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
@@ -272,8 +272,16 @@ const elBtn = document.getElementById("btnValidar");
 /* =============================
    UTILIDADES
 ============================= */
-function mostrarMsg(msg) {
-  elMsg.innerHTML = msg || "";
+function mostrarMsg(msg){
+
+    const el = document.getElementById("msg");
+
+    if(!el) return;
+
+    el.style.display = "block";
+
+    el.innerHTML = msg;
+
 }
 
 function somenteNumeros(v) {
@@ -351,9 +359,18 @@ document.getElementById("blocoCodigo")
 .style.display = "none";
 
   if (!resp || resp.ok !== true) {
-    mostrarMsg(resp?.mensagem || "❌ Falha ao validar");
+
+    const msg =
+        resp?.mensagem ||
+        "❌ Cliente não encontrado.";
+
+    mostrarMsg(msg);
+
+    document.getElementById("btnValidar").disabled = false;
+
     return;
-  }
+}
+
 document.getElementById("btnValidar").disabled = true;
 
   // ===== VEÍCULO =====
@@ -862,7 +879,7 @@ Versão
 
 
 <script>
-
+/*
 if ('serviceWorker' in navigator){
 
 window.addEventListener('load',()=>{
@@ -872,8 +889,16 @@ navigator.serviceWorker.register('/sw.js');
 });
 
 }
+*/
 
 </script>
+window.onload = function(){
+
+    console.log("Página carregada.");
+
+    console.log(window.location.href);
+
+};
 
 </body>
 </html>
