@@ -104,6 +104,19 @@ body {
  Validar
 </button>
 
+<div id="msg"
+style="
+display:none;
+margin-top:15px;
+padding:12px;
+background:#fff4f4;
+border:2px solid #d60000;
+border-radius:8px;
+font-weight:bold;
+color:#b00000;
+text-align:center;">
+</div>
+
 <div style="margin-top:12px;font-size:14px;color:#333;text-align:left">
   <div style="
   margin-top:12px;
@@ -234,7 +247,7 @@ style="width:100%;padding:10px;margin-top:5px;">
   </div>
 </div>
 
-  <div id="msg" class="msg"></div>
+  
 </div>
 
 <script>
@@ -281,6 +294,11 @@ function mostrarMsg(msg){
     el.style.display = "block";
 
     el.innerHTML = msg;
+
+    el.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+    });
 
 }
 
@@ -335,6 +353,9 @@ if (!nascimento) {
 const old = document.getElementById("jsonpReq");
 if(old) old.remove();
 
+document.getElementById("msg").style.display="none";
+document.getElementById("msg").innerHTML="";
+
 const script = document.createElement("script");
 script.id = "jsonpReq";
 script.src =
@@ -352,6 +373,23 @@ document.body.appendChild(script);
 function retornoValidacao(resp) {
 
   console.log("RETORNO GAS:", resp);
+
+if(!resp){
+
+    mostrarMsg("Sem resposta do servidor.");
+
+    return;
+
+}
+
+if(resp.ok !== true){
+
+    mostrarMsg(resp.mensagem);
+
+    return;
+
+}
+
   console.log("CELULAR:", resp.celular);
   console.log("LOGO:", resp.logoURL);
 
@@ -873,7 +911,7 @@ color:#777;
 text-align:center;
 margin-top:8px;">
 Versão
-<span id="versaoSistema"></span>
+<span id="versaoRodape"></span>
 </div>
 </footer>
 
@@ -890,8 +928,6 @@ navigator.serviceWorker.register('/sw.js');
 
 }
 */
-
-</script>
 window.onload = function(){
 
     console.log("Página carregada.");
@@ -899,6 +935,9 @@ window.onload = function(){
     console.log(window.location.href);
 
 };
+
+
+</script>
 
 </body>
 </html>
