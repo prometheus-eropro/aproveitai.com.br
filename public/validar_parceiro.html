@@ -251,6 +251,15 @@ style="width:100%;padding:10px;margin-top:5px;">
 </div>
 
 <script>
+
+script.onerror = function(){
+    alert("ERRO AO CHAMAR GAS");
+};
+
+script.onload = function(){
+    alert("SCRIPT CARREGADO");
+};
+
 /* =============================
    CONFIGURAÇÃO
 ============================= */
@@ -371,6 +380,8 @@ document.body.appendChild(script);
 // CONTROLE DO CRONÔMETRO
 // =============================
 function retornoValidacao(resp) {
+
+alert("RETORNO RECEBIDO");
 
   console.log("RETORNO GAS:", resp);
 
