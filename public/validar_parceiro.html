@@ -250,6 +250,8 @@ style="width:100%;padding:10px;margin-top:5px;">
   
 </div>
 
+alert("ANTES DO JSONP");
+
 <script>
 
 script.onerror = function(){
@@ -375,7 +377,13 @@ script.src =
 "&nascimento=" + encodeURIComponent(nascimento) +
 "&p=" + encodeURIComponent(parceiroId);
 document.body.appendChild(script);
+alert("SCRIPT INSERIDO");
+
 }
+
+console.log(script.src);
+
+alert(script.src);
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
@@ -749,10 +757,13 @@ GAS_URL +
 "&parceiro_id=" + encodeURIComponent(parceiroId) +
 "&grupo=" + encodeURIComponent(grupo) +
 "&cpf=" + encodeURIComponent(cpf) +
-"&idPublico=" + encodeURIComponent(idPublico);
+"&idPublico=" + encodeURIComponent(idPublico) +
+"&_=" + Date.now();   // <-- ANTI-CACHE
 
-  document.body.appendChild(script);
-}
+script.onload = () => console.log("JSONP carregado");
+script.onerror = () => alert("ERRO JSONP");
+
+document.head.appendChild(script);
 
 
 function beneficioSelecionado(){
