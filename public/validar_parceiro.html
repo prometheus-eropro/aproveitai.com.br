@@ -376,7 +376,6 @@ document.body.appendChild(script);
 // =============================
 function retornoValidacao(resp) {
 
-alert("RETORNO RECEBIDO");
 
   console.log("RETORNO GAS:", resp);
 
@@ -733,31 +732,30 @@ nasc.addEventListener("input", function() {
 });
 
 
-function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
+function carregarBeneficios(parceiroId, grupo, cpf, idPublico){
 
-   const script = document.createElement("script");
+    const antigo =
+        document.getElementById("jsonpBeneficios");
 
-script.id = "jsonpReq";
+    if(antigo) antigo.remove();
 
-script.src =
-GAS_URL +
-"?callback=retornoValidacao" +
-"&acao=validarParceiro" +
-"&cpf=" + encodeURIComponent(cpf) +
-"&nascimento=" + encodeURIComponent(nascimento) +
-"&p=" + encodeURIComponent(parceiroId);
+    const script =
+        document.createElement("script");
 
-script.onload = function () {
-    console.log("JSONP carregado");
-};
+    script.id = "jsonpBeneficios";
 
-script.onerror = function () {
-    alert("ERRO AO CHAMAR O GAS");
-};
+    script.src =
+        GAS_URL +
+        "?callback=retornoBeneficios" +
+        "&acao=listarBeneficiosCliente" +
+        "&parceiro_id=" + encodeURIComponent(parceiroId) +
+        "&grupo=" + encodeURIComponent(grupo) +
+        "&cpf=" + encodeURIComponent(cpf) +
+        "&idPublico=" + encodeURIComponent(idPublico);
 
-document.body.appendChild(script);
+    document.body.appendChild(script);
 
-}   // <<< ESTA CHAVE ESTÁ FALTANDO
+}
 
 function beneficioSelecionado(){
 
@@ -847,36 +845,46 @@ function gerarERO() {
 
 function retornoBeneficios(resp){
 
-  if(!resp || !resp.ok) return;
+    console.log(resp);
 
-  const select =
-    document.getElementById("beneficioSelecionado");
+    if(!resp || !resp.ok){
 
-  select.innerHTML = "";
+        mostrarMsg("Nenhum benefício encontrado.");
 
-  const opPadrao = document.createElement("option");
-  opPadrao.value = "";
-  opPadrao.text = "Selecione o benefício...";
-  select.appendChild(opPadrao);
+        return;
 
-  resp.itens.forEach(item => {
+    }
 
-    const op = document.createElement("option");
+    const select =
+        document.getElementById("beneficioSelecionado");
 
-    op.value =
-      item.tipo + "|" +
-      item.titulo + " - " +
-      item.descricao;
+    select.innerHTML = "";
 
-    op.text =
-      item.titulo + " - " +
-      item.descricao;
+    const op =
+        document.createElement("option");
+
+    op.value="";
+
+    op.text="Selecione o benefício...";
 
     select.appendChild(op);
 
-  });
+    resp.itens.forEach(function(item){
 
-  document.getElementById("blocoBeneficio").style.display = "block";
+        const option =
+            document.createElement("option");
+
+        option.value =
+            item.tipo;
+
+        option.text =
+            item.titulo + " - " + item.descricao;
+
+        select.appendChild(option);
+
+    });
+
+    document.getElementById("blocoBeneficio").style.display="block";
 
 }
 
@@ -943,14 +951,11 @@ navigator.serviceWorker.register('/sw.js');
 
 }
 */
-window.onload = function(){
+document.addEventListener("DOMContentLoaded",function(){
 
-    console.log("Página carregada.");
+    console.log("Página pronta");
 
-    console.log(window.location.href);
-
-};
-
+});
 
 </script>
 
