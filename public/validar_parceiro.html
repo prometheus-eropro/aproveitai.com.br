@@ -253,16 +253,6 @@ style="width:100%;padding:10px;margin-top:5px;">
 
 <script>
 
-alert("ANTES DO JSONP");
-
-script.onerror = function(){
-    alert("ERRO AO CHAMAR GAS");
-};
-
-script.onload = function(){
-    alert("SCRIPT CARREGADO");
-};
-
 /* =============================
    CONFIGURAÇÃO
 ============================= */
@@ -378,9 +368,8 @@ script.src =
 "&nascimento=" + encodeURIComponent(nascimento) +
 "&p=" + encodeURIComponent(parceiroId);
 document.body.appendChild(script);
-alert("SCRIPT INSERIDO");
-
 }
+
 
 // =============================
 // CONTROLE DO CRONÔMETRO
@@ -748,20 +737,25 @@ function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
    const script = document.createElement("script");
 
-   script.src =
-      GAS_URL +
-      "?callback=retornoBeneficios" +
-      "&acao=listarBeneficiosCliente" +
-      "&parceiro_id=" + encodeURIComponent(parceiroId) +
-      "&grupo=" + encodeURIComponent(grupo) +
-      "&cpf=" + encodeURIComponent(cpf) +
-      "&idPublico=" + encodeURIComponent(idPublico) +
-      "&_=" + Date.now();
+script.id = "jsonpReq";
 
-   script.onload = () => console.log("JSONP carregado");
-   script.onerror = () => alert("ERRO JSONP");
+script.src =
+GAS_URL +
+"?callback=retornoValidacao" +
+"&acao=validarParceiro" +
+"&cpf=" + encodeURIComponent(cpf) +
+"&nascimento=" + encodeURIComponent(nascimento) +
+"&p=" + encodeURIComponent(parceiroId);
 
-   document.head.appendChild(script);
+script.onload = function () {
+    console.log("JSONP carregado");
+};
+
+script.onerror = function () {
+    alert("ERRO AO CHAMAR O GAS");
+};
+
+document.body.appendChild(script);
 
 }   // <<< ESTA CHAVE ESTÁ FALTANDO
 
