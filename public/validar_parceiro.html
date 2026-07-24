@@ -250,9 +250,10 @@ style="width:100%;padding:10px;margin-top:5px;">
   
 </div>
 
-alert("ANTES DO JSONP");
 
 <script>
+
+alert("ANTES DO JSONP");
 
 script.onerror = function(){
     alert("ERRO AO CHAMAR GAS");
@@ -381,9 +382,6 @@ alert("SCRIPT INSERIDO");
 
 }
 
-console.log(script.src);
-
-alert(script.src);
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
@@ -748,23 +746,24 @@ nasc.addEventListener("input", function() {
 
 function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
-  const script = document.createElement("script");
+   const script = document.createElement("script");
 
-script.src =
-GAS_URL +
-"?callback=retornoBeneficios" +
-"&acao=listarBeneficiosCliente" +
-"&parceiro_id=" + encodeURIComponent(parceiroId) +
-"&grupo=" + encodeURIComponent(grupo) +
-"&cpf=" + encodeURIComponent(cpf) +
-"&idPublico=" + encodeURIComponent(idPublico) +
-"&_=" + Date.now();   // <-- ANTI-CACHE
+   script.src =
+      GAS_URL +
+      "?callback=retornoBeneficios" +
+      "&acao=listarBeneficiosCliente" +
+      "&parceiro_id=" + encodeURIComponent(parceiroId) +
+      "&grupo=" + encodeURIComponent(grupo) +
+      "&cpf=" + encodeURIComponent(cpf) +
+      "&idPublico=" + encodeURIComponent(idPublico) +
+      "&_=" + Date.now();
 
-script.onload = () => console.log("JSONP carregado");
-script.onerror = () => alert("ERRO JSONP");
+   script.onload = () => console.log("JSONP carregado");
+   script.onerror = () => alert("ERRO JSONP");
 
-document.head.appendChild(script);
+   document.head.appendChild(script);
 
+}   // <<< ESTA CHAVE ESTÁ FALTANDO
 
 function beneficioSelecionado(){
 
