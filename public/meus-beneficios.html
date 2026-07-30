@@ -162,8 +162,20 @@ console.log(itens);
 
     itens.forEach(item => {
 
-      const exclusivo = item.grupo || item.idPublico;
+      const grupoItem =
+  String(item.grupo || "").trim().toUpperCase();
 
+const grupoItem =
+String(item.grupo || "")
+.trim()
+.toUpperCase();
+
+const exclusivo =
+(
+   (grupoItem !== "" && grupoItem !== "GERAL")
+   ||
+   (String(item.idPublico || "").trim() !== "")
+);
       lista.innerHTML += `
         <div class="card ${exclusivo ? "exclusivo" : ""}">
 

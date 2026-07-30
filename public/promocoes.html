@@ -62,7 +62,13 @@ fetch(API + "?aba=promocoes")
   d.dados.forEach(p => {
     if (String(p.ativo).toLowerCase() !== "sim") return;
 
-    const exclusivo = (p.grupo && p.grupo.trim()) || (p.idPublico && p.idPublico.trim());
+    const grupo = String(p.grupo || "").trim().toUpperCase();
+
+const exclusivo =
+(
+    (grupo && grupo !== "GERAL") ||
+    (p.idPublico && String(p.idPublico).trim())
+);
 
     const card = document.createElement("div");
     card.className = "card";

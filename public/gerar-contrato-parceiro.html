@@ -6,361 +6,787 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  padding: 20px;
-}
-.container {
-  max-width: 900px;
-  margin: auto;
-  background: #fff;
-  padding: 25px;
-  border-radius: 8px;
-}
-h1 {
-  text-align: center;
-}
-label {
-  font-weight: bold;
-}
-input, textarea {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0 15px 0;
-}
-button {
-  padding: 12px;
-  background: #0a7a2a;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-}
-button:hover {
-  opacity: 0.9;
-}
-#contrato {
-  white-space: pre-wrap;
-  margin-top: 30px;
-  border-top: 2px solid #ccc;
-  padding-top: 20px;
-}
-/* =========================
-   CABEÇALHO
-========================= */
-.site-header {
-  background: white;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f5f5;
+    padding:20px;
+    color:#222;
 }
 
-.brandline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
+.container{
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
 }
 
-.logo {
-  max-height: 180px;
-  height: auto;
-  width: auto;
-  object-fit: contain;
+h1{
+    text-align:center;
 }
 
-.brand-center {
-  flex: 1;
-  text-align: center;
+label{
+    display:block;
+    margin-top:10px;
+    font-weight:bold;
 }
 
-.site-title {
-  font-size: 36px;
-  color: #0a7a2a;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-  font-weight: bold;
+input,
+textarea{
+    width:100%;
+    padding:8px;
+    margin-top:4px;
+    margin-bottom:10px;
+    box-sizing:border-box;
 }
 
-.slogan {
-  font-size: 16px;
-  font-style: italic;
-  margin-bottom: 5px;
-  color: #555;
+button{
+    padding:12px 18px;
+    background:#0a7a2a;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    font-size:15px;
+    border-radius:5px;
 }
 
-.boas-vindas {
-  background: #dfffe0;
-  padding: 12px 15px;
-  border-radius: 8px;
-  margin-top: 10px;
-  font-size: 18px; /* AUMENTADO */
-  line-height: 1.5;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+button:hover{
+    opacity:.9;
 }
 
-/* =========================
-   RODAPÉ
-========================= */
-.footer {
-  background: #dfffe0;
-  color: #222;
-  padding: 10px 10px;
-  font-size: 13px;
-  border-top: 3px solid white;
+/*==========================
+CONTRATO
+==========================*/
+
+#contrato{
+    margin-top:30px;
+    background:#fff;
+    padding:18mm;
+    border-radius:8px;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+    color:#222;
+    line-height:1.45;
+    font-size:13px;
 }
 
-.footer-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  max-width: 1000px;
-  margin: auto;
-  padding: 5px 0;
+/*==========================
+CABEÇALHO
+==========================*/
+
+.site-header{
+    background:#fff;
+    padding:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
 }
 
-.footer a {
-  color: #0066cc;
-  font-size: 13px;
+.brandline{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
 }
 
-.footer-bottom {
-  text-align: center;
-  margin-top: 5px;
-  font-size: 11px;
+.logo{
+    height:80px;
+    width:auto;
 }
 
+.brand-center{
+    flex:1;
+    text-align:center;
+}
+
+.site-title{
+    font-size:36px;
+    color:#0a7a2a;
+    margin:0;
+}
+
+.slogan{
+    margin:6px 0;
+    color:#555;
+    font-style:italic;
+}
+
+.boas-vindas{
+    background:#dfffe0;
+    padding:12px;
+    border-radius:8px;
+    font-size:18px;
+    font-weight:600;
+}
+
+/*==========================
+CONTRATO
+==========================*/
+
+.cabecalhoContrato{
+
+display:grid;
+
+grid-template-columns:110px 1fr 90px;
+
+align-items:center;
+
+column-gap:18px;
+
+padding:6px 0 10px;
+
+border-bottom:2px solid #0B7A2A;
+
+margin-bottom:15px;
+
+}
+
+.cabecalhoContrato img{
+
+display:block;
+
+width:100%;
+
+height:auto;
+
+object-fit:contain;
+
+}
+
+.centroContrato{
+
+flex:1;
+
+text-align:center;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+justify-content:center;
+
+}
+
+.centroContrato h2{
+
+margin:0;
+
+font-size:27px;
+
+font-weight:800;
+
+color:#0B7A2A;
+
+line-height:1.0;
+
+text-transform:uppercase;
+
+}
+
+.centroContrato h3{
+
+margin:10px 0 8px;
+
+font-size:17px;
+
+font-weight:600;
+
+color:#222;
+
+letter-spacing:1px;
+
+text-transform:uppercase;
+
+}
+
+.tituloClausula{
+    color:#0a7a2a;
+    font-size:15px;
+    margin-top:18px;
+    margin-bottom:6px;
+    border-bottom:1px solid #ddd;
+    padding-bottom:2px;
+}
+
+#contrato p{
+    margin:4px 0;
+    text-align:justify;
+}
+
+.assinaturas{
+    display:flex;
+    justify-content:space-between;
+    gap:50px;
+    margin-top:20px;
+}
+
+.ass{
+    flex:1;
+    text-align:center;
+}
+
+.ass hr{
+    border:none;
+    border-top:1px solid #000;
+    margin-bottom:8px;
+}
+
+/*==========================
+RODAPÉ
+==========================*/
+
+footer{
+    background:#dfffe0;
+    padding:12px;
+    text-align:center;
+    font-size:12px;
+    line-height:1.4;
+}
+
+/*==========================
+IMPRESSÃO
+==========================*/
+
+@page{
+    size: A4;
+    margin: 12mm;
+}
+
+@media print{
+
+    #formulario,
+    .site-header,
+    .site-footer{
+        display:none !important;
+    }
+
+    html,
+    body{
+        background:#fff;
+        margin:0;
+        padding:0;
+    }
+
+    .container{
+        max-width:100%;
+        margin:0;
+        padding:0;
+        box-shadow:none;
+        border:none;
+        background:#fff;
+    }
+
+    #contrato{
+        display:block !important;
+        margin:0;
+        padding:0;
+        box-shadow:none;
+        border:none;
+        font-size:11.5pt;
+        line-height:1.4;
+    }
+
+    .tituloClausula{
+        page-break-after:avoid;
+    }
+
+}
+
+.site-footer{
+
+margin-top:50px;
+
+padding:18px;
+
+background:#dfffe0;
+
+border-top:3px solid #0B7A2A;
+
+text-align:center;
+
+font-size:12px;
+
+line-height:1.5;
+
+color:#333;
+
+}
+
+.site-footer strong{
+
+color:#0B7A2A;
+
+}
+
+.avisoLegal{
+
+margin-top:10px;
+
+font-size:11px;
+
+color:#555;
+
+max-width:900px;
+
+margin-left:auto;
+
+margin-right:auto;
+
+text-align:justify;
+
+}
+
+.fraseInstitucional{
+
+margin-top:4px;
+
+font-size:14px;
+
+font-style:italic;
+
+color:#666;
+
+}
+
+.logoPrometheus{
+
+width:105px !important;
+
+}
+
+.logoAproveitai{
+
+width:75px !important;
+
+justify-self:end;
+
+}
 
 </style>
+
+
 </head>
 
 <body>
-<!-- ✅ CABEÇALHO PADRONIZADO -->
+
 <header class="site-header">
-  <div class="brandline">
-    <img src="logo-prometheus.png" class="logo logo-prometheus">
-    <div class="brand-center">
-      <h1 class="site-title">Plataforma AproveitAI</h1>
-      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
 
-      <!-- Tarja -->
-      <p class="boas-vindas">
-        🏪 <strong>🤝 CONTRATO OFICIAL DE PARCERIA </strong><br>
-        Economize mais. Aproveite melhor.
-      </p>
-    </div>
-    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
-  </div>
-</header>
+<div class="brandline">
 
-<div class="container">
+<img src="logo-prometheus.png" class="logo">
 
-<h1>Gerador de Contrato – Parceiro<br>Plataforma AproveitAI</h1>
+<div class="brand-center">
 
-<label>Nome do Parceiro / Empresa</label>
-<input id="nomeParceiro">
+<h1 class="site-title">
+Plataforma AproveitAI
+</h1>
 
-<label>CNPJ</label>
-<input id="cnpj">
+<p class="slogan">
+Tecnologia com ConsciêncIA gera Resultado.
+</p>
 
-<label>Nome do Responsável Legal</label>
-<input id="responsavel">
+<div class="boas-vindas">
 
-<label>CPF do Responsável Legal</label>
-<input id="cpf">
+🤝 <strong>CONTRATO OFICIAL DE PARCERIA COMERCIAL</strong><br>
 
-<label>Cidade / Estado</label>
-<input id="cidade">
-
-<label>Nome Fantasia</label>
-<input id="nomeFantasia">
-
-<label>Telefone</label>
-<input id="telefone">
-
-<label>E-mail</label>
-<input id="email">
-
-<label>Instagram</label>
-<input id="instagram">
-
-<button onclick="gerar()">GERAR CONTRATO</button>
-
-<button onclick="window.print()">
-🖨️ Salvar / Imprimir PDF
-</button>
-
-<div id="contrato"></div>
+Economize mais. Aproveite melhor.
 
 </div>
 
+</div>
+
+<img src="logo-aproveitai.png" class="logo">
+
+</div>
+
+</header>
+
+<div id="formulario">
+
+<div class="container">
+
+<h2 style="text-align:center;color:#0a7a2a;margin-bottom:20px;">
+Dados do Parceiro
+</h2>
+
+<button onclick="gerar()">
+📄 Gerar Contrato
+</button>
+
+<button onclick="window.print()" style="margin-left:12px;">
+🖨️ Imprimir / Salvar PDF
+</button>
+
+</div>
+
+</div> <!-- FECHA O FORMULÁRIO AQUI -->
+
+<div class="container">
+
+<div id="contrato">
+
+<div class="cabecalhoContrato">
+
+<img src="logo-prometheus.png"
+class="logoPrometheus"
+alt="Prometheus">
+
+<div class="centroContrato">
+
+<h2>CONTRATO DE PARCERIA COMERCIAL</h2>
+
+<h3>PLATAFORMA APROVEITAI</h3>
+
+<p class="fraseInstitucional">
+Tecnologia com ConsciêncIA gera Resultado.
+</p>
+
+</div>
+
+<img src="logo-aproveitai.png"
+class="logoAproveitai"
+alt="AproveitAI">
+
+</div>
+
+<div id="conteudoContrato">
+
+</div>
+
+</div>
+
+
 <script>
-function gerar() {
 
-const nome = document.getElementById("nomeParceiro").value;
-const cnpj = document.getElementById("cnpj").value;
-const resp = document.getElementById("responsavel").value;
-const cpf = document.getElementById("cpf").value;
-const cidade = document.getElementById("cidade").value;
+function gerar(){
 
-const nomeFantasia = document.getElementById("nomeFantasia").value;
-const telefone = document.getElementById("telefone").value;
-const email = document.getElementById("email").value;
-const instagram = document.getElementById("instagram").value;
-document.getElementById("contrato").innerText = `
+const nome=document.getElementById("nomeParceiro").value.trim();
+const nomeFantasia=document.getElementById("nomeFantasia").value.trim();
+const cnpj=document.getElementById("cnpj").value.trim();
+const resp=document.getElementById("responsavel").value.trim();
+const cpf=document.getElementById("cpf").value.trim();
+const cidade=document.getElementById("cidade").value.trim();
+const telefone=document.getElementById("telefone").value.trim();
+const email=document.getElementById("email").value.trim();
+const instagram=document.getElementById("instagram").value.trim();
 
-CONTRATO DE PARCERIA COMERCIAL
-PLATAFORMA APROVEITAI
+document.getElementById("conteudoContrato").innerHTML = `
 
-CONTRATADA
+<div style="margin-bottom:20px;">
 
-PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA
-CNPJ: 58.584.332/0001-40
+<table style="width:100%;border-collapse:collapse;font-size:13px;">
+
+<tr>
+
+<td style="width:48%;vertical-align:top;border:1px solid #ccc;padding:10px;">
+
+<strong>CONTRATADA</strong><br><br>
+
+PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA<br>
+
+CNPJ: 58.584.332/0001-40<br>
+
 Guaçuí – ES
 
-CONTRATANTE
+</td>
 
-Empresa (Razão Social): ${nome}
+<td style="width:4%;border:none;"></td>
 
-Nome Fantasia: ${nomeFantasia}
+<td style="width:48%;vertical-align:top;border:1px solid #ccc;padding:10px;">
 
-CNPJ: ${cnpj}
+<strong>CONTRATANTE</strong><br><br>
 
-Representante Legal: ${resp}
+Razão Social: ${nome}<br>
 
-CPF: ${cpf}
+Nome Fantasia: ${nomeFantasia}<br>
 
-Telefone: ${telefone}
+CNPJ: ${cnpj}<br>
 
-E-mail: ${email}
+Representante: ${resp}<br>
 
-Instagram: ${instagram}
+CPF: ${cpf}<br>
+
+Telefone: ${telefone}<br>
+
+E-mail: ${email}<br>
+
+Instagram: ${instagram}<br>
 
 Cidade/UF: ${cidade}
 
+</td>
 
-1. DO OBJETO
+</tr>
 
-O presente contrato tem por objeto a formalização da parceria comercial entre as partes para divulgação, validação e oferta de benefícios, promoções, vantagens e campanhas aos usuários da Plataforma AproveitAI.
+</table>
 
-2. DA AUTONOMIA DO PARCEIRO
+</div>
 
-2.1 O PARCEIRO possui total autonomia para definir preços, produtos, serviços, benefícios, promoções, percentuais de desconto, condições comerciais e prazos de vigência.
+<hr style="margin:18px 0;">
 
-2.2 A CONTRATADA não interfere nas decisões comerciais do PARCEIRO.
 
-2.3 O PARCEIRO compromete-se a manter atualizadas as informações divulgadas junto à Plataforma AproveitAI.
+<h3 class="tituloClausula">1. DO OBJETO</h3>
 
-3. DO CUMPRIMENTO DAS OFERTAS
+<p><strong>1.1.</strong> O presente contrato tem por objeto formalizar a parceria comercial entre a CONTRATADA e o PARCEIRO para divulgação de produtos, serviços, benefícios, promoções, campanhas e demais ações comerciais por meio da Plataforma AproveitAI.</p>
 
-3.1 O PARCEIRO compromete-se a cumprir os benefícios, promoções e vantagens divulgados durante o período informado.
+<p><strong>1.2.</strong> Os benefícios, promoções, campanhas, percentuais de desconto, regras de utilização, público-alvo, prazos de vigência e demais condições operacionais serão definidos em documento denominado <strong>Ficha de Benefícios, Promoções e Campanhas</strong>, que integra operacionalmente esta parceria.</p>
 
-3.2 Alterações, suspensões ou encerramentos deverão ser comunicados à CONTRATADA com antecedência mínima de 15 (quinze) dias, sempre que possível.
+<p><strong>1.3.</strong> A Ficha poderá ser criada, alterada, suspensa, atualizada ou cancelada a qualquer tempo, por solicitação do PARCEIRO ou da CONTRATADA, sem necessidade de assinatura de novo contrato, desde que não altere as obrigações jurídicas aqui estabelecidas.</p>
 
-4. DA VALIDAÇÃO DOS BENEFÍCIOS
+<p><strong>1.4.</strong> Todas as alterações produzirão efeitos a partir do respectivo cadastro ou atualização na Plataforma AproveitAI.</p>
 
-4.1 A concessão dos benefícios poderá ser condicionada à validação do cliente pelos sistemas oficiais da Plataforma AproveitAI.
 
-4.2 A validação poderá ocorrer por QR Code, painel do parceiro, WhatsApp oficial, site ou outros meios disponibilizados pela CONTRATADA.
+<h3 class="tituloClausula">2. DA AUTONOMIA DO PARCEIRO</h3>
 
-4.3 O PARCEIRO poderá conceder benefícios sem validação, assumindo integralmente os riscos decorrentes dessa decisão.
+<p><strong>2.1.</strong> O PARCEIRO possui total autonomia para definir preços, produtos, serviços, benefícios, promoções, percentuais de desconto, formas de pagamento, regras comerciais e prazos de vigência.</p>
 
-5. DA RESPONSABILIDADE FINANCEIRA
+<p><strong>2.2.</strong> A CONTRATADA não interfere nas decisões comerciais, políticas de preços ou estratégias adotadas pelo PARCEIRO.</p>
 
-5.1 A CONTRATADA não recebe pagamentos em nome do PARCEIRO.
+<p><strong>2.3.</strong> O PARCEIRO compromete-se a manter atualizadas todas as informações cadastradas na Plataforma.</p>
 
-5.2 A CONTRATADA não intermedia vendas, não participa das negociações comerciais e não se responsabiliza por pagamentos, garantias, trocas, devoluções ou conflitos decorrentes da relação comercial entre PARCEIRO e CLIENTE.
+<p><strong>2.4.</strong> O PARCEIRO declara que todas as informações fornecidas são verdadeiras, atualizadas e de sua inteira responsabilidade.</p>
 
-5.3 Toda relação comercial ocorre diretamente entre o CLIENTE e o PARCEIRO.
 
-6. DA DISPONIBILIDADE DOS SISTEMAS
+<h3 class="tituloClausula">3. DO CUMPRIMENTO DAS OFERTAS</h3>
 
-Em caso de indisponibilidade causada por falhas de internet, energia elétrica, equipamentos, provedores ou sistemas de terceiros, a concessão dos benefícios ficará a critério exclusivo do PARCEIRO.
+<p><strong>3.1.</strong> O PARCEIRO compromete-se a cumprir integralmente os benefícios, promoções e vantagens divulgados durante sua vigência.</p>
 
-7. DO USO DE MARCA, NOME E IMAGEM
+<p><strong>3.2.</strong> Alterações, suspensões ou cancelamentos deverão ser comunicados à CONTRATADA com antecedência mínima de 15 (quinze) dias, sempre que possível.</p>
 
-7.1 O PARCEIRO autoriza a utilização de sua marca, nome empresarial, nome fantasia, logotipo, fotografias do estabelecimento e demais materiais institucionais para divulgação da parceria.
+<p><strong>3.3.</strong> Permanecem ressalvadas as hipóteses de caso fortuito, força maior, indisponibilidade justificada de produtos ou serviços, erro material evidente ou determinação legal.</p>
 
-7.2 A divulgação poderá ocorrer em redes sociais, site oficial, campanhas promocionais, anúncios, vídeos, apresentações, materiais impressos e demais canais oficiais da Plataforma AproveitAI.
 
-7.3 A CONTRATADA autoriza o uso da marca Plataforma AproveitAI pelo PARCEIRO exclusivamente para divulgação da parceria.
+<h3 class="tituloClausula">4. DA VALIDAÇÃO DOS BENEFÍCIOS</h3>
 
-7.4 Nenhuma das partes poderá utilizar a marca da outra de forma que cause prejuízo à sua imagem, reputação ou credibilidade.
+<p><strong>4.1.</strong> A concessão dos benefícios deverá ocorrer mediante validação realizada pelos sistemas oficiais da Plataforma AproveitAI.</p>
 
-8. DA DIVULGAÇÃO E MARKETING
+<p><strong>4.2.</strong> A validação poderá ocorrer por QR Code, Painel do Parceiro, WhatsApp Oficial, Site, Aplicativo ou qualquer outro meio tecnológico disponibilizado pela CONTRATADA.</p>
 
-8.1 O PARCEIRO compromete-se a apoiar e divulgar a Plataforma AproveitAI sempre que possível em suas redes sociais, campanhas promocionais, materiais publicitários, ações de marketing e meios de comunicação disponíveis.
+<p><strong>4.3.</strong> Caso o PARCEIRO conceda benefícios sem validação oficial, assumirá integralmente os riscos decorrentes dessa decisão.</p>
 
-8.2 O PARCEIRO autoriza a marcação de seus perfis oficiais em redes sociais e a utilização das informações fornecidas para divulgação institucional da parceria.
+<p><strong>4.4.</strong> A CONTRATADA poderá alterar ou atualizar as tecnologias de validação sempre que necessário, sem necessidade de aditivo contratual.</p>
 
-8.3 A divulgação da parceria poderá ocorrer por meio de cartazes, adesivos, QR Codes, banners, materiais impressos, mídias digitais, vídeos e demais ferramentas disponibilizadas pela CONTRATADA.
 
-8.4 Sempre que possível, o PARCEIRO compromete-se a manter visível em seu estabelecimento material de divulgação da Plataforma AproveitAI.
+<h3 class="tituloClausula">5. DA RESPONSABILIDADE FINANCEIRA</h3>
 
-9. DA PROTEÇÃO DE DADOS
+<p><strong>5.1.</strong> A CONTRATADA não recebe pagamentos em nome do PARCEIRO e não participa da negociação comercial realizada entre PARCEIRO e CLIENTE.</p>
 
-9.1 As partes comprometem-se a observar e cumprir a Lei Geral de Proteção de Dados Pessoais – LGPD (Lei nº 13.709/2018).
+<p><strong>5.2.</strong> A CONTRATADA não responde por cobranças, pagamentos, garantias, trocas, devoluções, vícios, defeitos, inadimplência ou qualquer obrigação decorrente da relação comercial estabelecida entre as partes envolvidas na compra ou contratação.</p>
 
-9.2 Os dados do PARCEIRO poderão ser armazenados e utilizados para fins operacionais, contratuais, fiscais, cadastrais e de divulgação da parceria.
+<p><strong>5.3.</strong> Toda negociação comercial ocorre exclusivamente entre o CLIENTE e o PARCEIRO.</p>
 
-10. DAS MODALIDADES DE PARCERIA
+<p><strong>5.4.</strong> A CONTRATADA não responderá solidária ou subsidiariamente por obrigações assumidas pelo PARCEIRO perante consumidores, fornecedores ou órgãos públicos.</p>
 
-A CONTRATADA poderá disponibilizar modalidades de parceria gratuitas ou remuneradas, mediante comunicação prévia ao PARCEIRO.
 
-11. DA VIGÊNCIA
+<h3 class="tituloClausula">6. DA DISPONIBILIDADE DOS SISTEMAS</h3>
 
-O presente contrato vigorará por prazo indeterminado a partir da assinatura das partes.
+<p><strong>6.1.</strong> Eventuais indisponibilidades decorrentes de internet, energia elétrica, equipamentos, provedores, serviços de terceiros, manutenções programadas, atualizações ou casos fortuitos não caracterizam descumprimento contratual.</p>
 
-12. DA RESCISÃO
+<p><strong>6.2.</strong> Durante eventual indisponibilidade, a concessão dos benefícios ficará a critério exclusivo do PARCEIRO.</p>
 
-12.1 Qualquer das partes poderá rescindir este contrato mediante comunicação prévia mínima de 15 (quinze) dias.
 
-12.2 As promoções já divulgadas deverão ser respeitadas durante o período previamente informado aos usuários, salvo motivo justificável.
+<h3 class="tituloClausula">7. DO USO DA MARCA, NOME E IMAGEM</h3>
 
-13. DO FORO
+<p><strong>7.1.</strong> O PARCEIRO autoriza a utilização de sua razão social, nome fantasia, marca, logotipo, fotografias, endereço comercial e demais materiais institucionais para divulgação da parceria.</p>
 
-Fica eleito o Foro da Comarca de Guaçuí – ES para dirimir quaisquer controvérsias decorrentes deste contrato.
+<p><strong>7.2.</strong> A divulgação poderá ocorrer em redes sociais, site oficial, aplicativo, apresentações comerciais, materiais impressos, campanhas publicitárias, WhatsApp, rádio, televisão e demais meios de comunicação.</p>
 
-Guaçuí – ES, ____/____/________.
+<p><strong>7.3.</strong> A CONTRATADA autoriza o uso da marca Plataforma AproveitAI exclusivamente para divulgação da parceria comercial.</p>
+
+<p><strong>7.4.</strong> Nenhuma das partes poderá utilizar a marca da outra de forma que prejudique sua imagem, reputação ou credibilidade.</p>
+
+<p><strong>7.5.</strong> A presente autorização não implica cessão ou transferência de direitos de propriedade intelectual.</p>
+
+
+<h3 class="tituloClausula">8. DA DIVULGAÇÃO, BENEFÍCIOS E CAMPANHAS</h3>
+
+<p><strong>8.1.</strong> A Plataforma AproveitAI poderá desenvolver campanhas institucionais, promocionais, comerciais, comemorativas e de incentivo envolvendo um ou mais parceiros.</p>
+
+<p><strong>8.2.</strong> A participação do PARCEIRO nas campanhas será sempre facultativa.</p>
+
+<p><strong>8.3.</strong> As regras específicas de cada campanha serão definidas na Ficha de Benefícios, Promoções e Campanhas.</p>
+
+<p><strong>8.4.</strong> O PARCEIRO poderá aderir, alterar, suspender ou cancelar sua participação mediante solicitação formal.</p>
+
+<p><strong>8.5.</strong> A CONTRATADA poderá divulgar campanhas por meio de redes sociais, site, aplicativo, WhatsApp, e-mail, QR Code, rádio, televisão, jornais, materiais impressos, mídia digital ou qualquer outro meio de comunicação disponível.</p>
+
+<h3 class="tituloClausula">9. DA PROTEÇÃO DE DADOS (LGPD)</h3>
+
+<p><strong>9.1.</strong> As partes comprometem-se a cumprir integralmente a Lei Geral de Proteção de Dados Pessoais – LGPD (Lei nº 13.709/2018) e demais normas aplicáveis.</p>
+
+<p><strong>9.2.</strong> O PARCEIRO autoriza a CONTRATADA a coletar, armazenar, tratar, consultar, organizar, compartilhar e utilizar os dados necessários à execução deste contrato, observadas as finalidades legais e contratuais.</p>
+
+<p><strong>9.3.</strong> A CONTRATADA poderá utilizar servidores próprios ou de terceiros, serviços em nuvem, bancos de dados, APIs, ferramentas de automação, inteligência artificial e demais recursos tecnológicos necessários ao funcionamento da Plataforma.</p>
+
+<p><strong>9.4.</strong> Serão adotadas medidas técnicas e administrativas compatíveis para proteção das informações armazenadas.</p>
+
+<p><strong>9.5.</strong> Os dados poderão ser utilizados para emissão de relatórios, auditorias, estatísticas, indicadores, melhorias da plataforma e análises internas, inclusive de forma anonimizada.</p>
+
+<p><strong>9.6.</strong> A CONTRATADA poderá realizar backups periódicos para preservação das informações.</p>
+
+<p><strong>9.7.</strong> Encerrada a parceria, os dados poderão permanecer armazenados pelo prazo necessário ao cumprimento de obrigações legais, fiscais, regulatórias ou para exercício regular de direitos.</p>
+
+
+<h3 class="tituloClausula">10. DO INVESTIMENTO</h3>
+
+<p><strong>10.1.</strong> Durante a campanha de implantação da Plataforma AproveitAI, o PARCEIRO será enquadrado como <strong>Parceiro de Implantação</strong>, ficando isento do pagamento de mensalidade, taxa de adesão ou comissão.</p>
+
+<p><strong>10.2.</strong> O benefício acima possui caráter exclusivamente promocional, não constituindo direito adquirido ou gratuidade permanente.</p>
+
+<p><strong>10.3.</strong> Encerrado o período promocional, a CONTRATADA poderá instituir novos planos comerciais mediante comunicação prévia ao PARCEIRO, que poderá optar pela continuidade ou encerramento da parceria.</p>
+
+<p><strong>10.4.</strong> Serviços adicionais eventualmente contratados poderão possuir cobrança específica.</p>
+
+
+<h3 class="tituloClausula">11. DA VIGÊNCIA E RESCISÃO</h3>
+
+<p><strong>11.1.</strong> O presente contrato vigorará por prazo indeterminado a partir da assinatura.</p>
+
+<p><strong>11.2.</strong> Qualquer das partes poderá rescindir este contrato mediante aviso prévio de 15 (quinze) dias, sem incidência de multa ou indenização.</p>
+
+<p><strong>11.3.</strong> As promoções já divulgadas deverão ser respeitadas durante sua vigência, salvo motivo de força maior ou comum acordo entre as partes.</p>
+
+
+<h3 class="tituloClausula">12. DA PROPRIEDADE INTELECTUAL</h3>
+
+<p><strong>12.1.</strong> Permanecem de propriedade exclusiva da CONTRATADA todos os direitos relativos à Plataforma AproveitAI, incluindo marca, logotipo, identidade visual, domínio, banco de dados, sistemas, APIs, inteligência artificial, QR Codes, Código ERO, layouts, documentos, manuais, algoritmos, códigos-fonte, metodologias e demais ativos tecnológicos.</p>
+
+<p><strong>12.2.</strong> Este contrato não transfere ao PARCEIRO qualquer direito de propriedade intelectual ou licença permanente sobre a Plataforma.</p>
+
+<p><strong>12.3.</strong> É proibida qualquer reprodução, engenharia reversa, cópia, cessão, comercialização ou utilização não autorizada da tecnologia da Plataforma.</p>
+
+
+<h3 class="tituloClausula">13. DA CONFIDENCIALIDADE</h3>
+
+<p><strong>13.1.</strong> As partes comprometem-se a manter absoluto sigilo sobre informações comerciais, estratégicas, financeiras, operacionais e tecnológicas obtidas em razão desta parceria.</p>
+
+<p><strong>13.2.</strong> A obrigação de confidencialidade permanecerá válida mesmo após o encerramento deste contrato.</p>
+
+
+<h3 class="tituloClausula">14. DA LIMITAÇÃO DE RESPONSABILIDADE</h3>
+
+<p><strong>14.1.</strong> A CONTRATADA disponibiliza uma plataforma tecnológica de relacionamento entre parceiros e clientes, não garantindo resultados financeiros, aumento de vendas ou faturamento.</p>
+
+<p><strong>14.2.</strong> A CONTRATADA não responderá por prejuízos decorrentes de decisões comerciais do PARCEIRO, indisponibilidade de internet, energia, equipamentos, serviços de terceiros, caso fortuito ou força maior.</p>
+
+<p><strong>14.3.</strong> A responsabilidade da CONTRATADA limita-se aos serviços efetivamente disponibilizados pela Plataforma.</p>
+
+
+<h3 class="tituloClausula">15. DAS ATUALIZAÇÕES DA PLATAFORMA</h3>
+
+<p><strong>15.1.</strong> A CONTRATADA poderá atualizar, substituir, ampliar, modificar ou descontinuar funcionalidades da Plataforma visando melhorias técnicas, operacionais, legais ou de segurança.</p>
+
+<p><strong>15.2.</strong> Tais alterações não caracterizam descumprimento contratual nem geram direito à indenização.</p>
+
+
+<h3 class="tituloClausula">16. DA AUTORIZAÇÃO DE DIVULGAÇÃO</h3>
+
+<p><strong>16.1.</strong> O PARCEIRO autoriza a utilização de sua marca, razão social, nome fantasia, logotipo, fotografias e demais materiais institucionais para divulgação da parceria.</p>
+
+<p><strong>16.2.</strong> A autorização poderá ser revogada mediante solicitação formal, preservando-se os materiais já produzidos e divulgados anteriormente.</p>
+
+
+<h3 class="tituloClausula">17. DA ASSINATURA ELETRÔNICA</h3>
+
+<p><strong>17.1.</strong> As partes reconhecem como válida a assinatura física, eletrônica ou digital, inclusive mediante aceite realizado pelos sistemas oficiais da Plataforma AproveitAI.</p>
+
+<p><strong>17.2.</strong> A assinatura eletrônica produzirá os mesmos efeitos jurídicos da assinatura manuscrita.</p>
+
+
+<h3 class="tituloClausula">18. DAS DISPOSIÇÕES GERAIS</h3>
+
+<p><strong>18.1.</strong> A eventual tolerância quanto ao descumprimento de qualquer cláusula não implicará renúncia de direitos.</p>
+
+<p><strong>18.2.</strong> A nulidade de qualquer disposição não prejudicará as demais cláusulas deste contrato.</p>
+
+<p><strong>18.3.</strong> Este instrumento substitui quaisquer entendimentos anteriores relativos ao objeto desta parceria.</p>
+
+<p><strong>18.4.</strong> Os casos omissos serão resolvidos de comum acordo entre as partes, observada a legislação brasileira vigente.</p>
+
+
+<h3 class="tituloClausula">19. DO FORO</h3>
+
+<p><strong>19.1.</strong> Fica eleito o Foro da Comarca de Guaçuí – ES, com renúncia expressa de qualquer outro, por mais privilegiado que seja, para dirimir eventuais controvérsias oriundas deste contrato.</p>
+
+
+<h3 class="tituloClausula">OBSERVAÇÃO</h3>
+
+<p>A <strong>Ficha de Benefícios, Promoções e Campanhas</strong> integra operacionalmente este contrato e poderá ser alterada, atualizada, suspensa ou substituída sem necessidade de celebração de novo instrumento contratual, desde que preservadas as obrigações jurídicas aqui estabelecidas.</p>
+
+<p>As partes declaram que leram integralmente este contrato, compreenderam todas as suas cláusulas e o assinam de livre e espontânea vontade.</p>
+
+<br>
+
+<p><strong>Guaçuí – ES, ____/____/________.</strong></p>
+
+<div class="assinaturas">
+
+<div class="ass">
+
+<hr>
+
+<strong>PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA</strong><br>
+
+Representante Legal<br>
+
+Edgar Rocha Oliveira<br>
 
 CONTRATADA
 
-PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA
+</div>
 
-Representante: Edgar Rocha Oliveira
+<div class="ass">
 
-Assinatura: ___________________________________
+<hr>
 
+<strong>${resp}</strong><br>
+
+CPF: ${cpf}<br>
 
 CONTRATANTE
 
-Empresa: ${nome}
+</div>
 
-Representante Legal: ${resp}
-
-CPF: ${cpf}
-
-Assinatura: ____________________________________
+</div>
 
 `;
-}
-</script>
-<!-- ✅ RODAPÉ PADRÃO -->
-<footer style="
-  background:#dfffe0;
-  padding:12px;
-  text-align:center;
-  font-size:12px;
-  line-height:1.4;
-">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
 
-  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
-  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista em meda corrente, salvo autorização expressa do estabelecimento.
+}
+
+</script>
+<!-- ===================================================== -->
+<!-- RODAPÉ PADRÃO -->
+<!-- ===================================================== -->
+
+<footer class="site-footer">
+
+<div>
+
+<strong>Plataforma AproveitAI</strong> • PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA
+
+</div>
+
+<div style="margin-top:6px;">
+
+© 2026 • Todos os direitos reservados.
+
+</div>
+
+<div class="avisoLegal">
+
+<strong>Aviso Legal:</strong>
+
+A Plataforma AproveitAI atua exclusivamente como plataforma tecnológica de relacionamento entre parceiros e clientes.
+
+Os benefícios, descontos, promoções, campanhas, condições comerciais, prazos de vigência, formas de pagamento e demais regras são definidos e concedidos exclusivamente pelos parceiros participantes, que respondem integralmente por sua oferta e cumprimento.
+
+Salvo disposição expressa do parceiro, os benefícios destinam-se a pagamentos realizados à vista em moeda corrente nacional, Pix ou outras modalidades autorizadas pelo próprio estabelecimento.
+
+</div>
+
 </footer>
+
 </body>
+
 </html>

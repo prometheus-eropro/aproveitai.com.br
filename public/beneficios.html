@@ -17,7 +17,10 @@
   <div class="brandline">
     <img src="logo-prometheus.png" class="logo logo-prometheus">
     <div class="brand-center">
-      <h1 class="site-title">Plataforma AproveitAI</h1>
+      <h1 class="site-title">Cartão AproveitAI</h1>
+<p class="subtitulo-plataforma">
+Plataforma Inteligente de Divulgação e Relacionamento Comercial
+</p>
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         🎁 <strong>Benefícios Disponíveis</strong><br>
@@ -57,7 +60,13 @@ fetch(API + "?aba=beneficios")
   d.dados.forEach(b => {
     if (String(b.ativo).toLowerCase() !== "sim") return;
 
-    const exclusivo = (b.grupo && b.grupo.trim()) || (b.idPublico && b.idPublico.trim());
+    const grupo = String(b.grupo || "").trim().toUpperCase();
+
+const exclusivo =
+(
+    (grupo && grupo !== "GERAL") ||
+    (b.idPublico && String(b.idPublico).trim())
+);
 
     const card = document.createElement("div");
     card.className = "card";
@@ -121,7 +130,9 @@ b.dataFim
   font-size:12px;
   line-height:1.4;
 ">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
+  © 2025 Cartão AproveitAI • Plataforma Inteligente de Divulgação e Relacionamento Comercial
+<br>
+PROMETHEUS EROPRO Soluções Inteligentes<br>
 
   <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
   Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
