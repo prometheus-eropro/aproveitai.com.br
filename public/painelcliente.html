@@ -505,27 +505,6 @@ html += `
 
 html += "</table>";
 
-if(dados.quantidade > 5){
-
-html += `
-<div style="
-text-align:center;
-margin-top:12px;
-">
-
-<button
-class="btn-aproveitai"
-onclick="abrirHistoricoCompleto()">
-
-📋 Ver histórico completo
-(${dados.quantidade} registros)
-
-</button>
-
-</div>
-`;
-
-}
 
 document.getElementById("historicoCliente").innerHTML = html;
 
