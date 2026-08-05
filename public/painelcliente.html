@@ -486,9 +486,9 @@ border-collapse:collapse;
 <tr>
 <th>Data</th>
 <th>Parceiro</th>
+<th>Benefício</th>
 <th>Código</th>
-</tr>
-`;
+</tr>`;
 
 dados.historico.forEach(item=>{
 
@@ -496,6 +496,7 @@ html += `
 <tr>
 <td>${item.data}</td>
 <td>${item.parceiro}</td>
+<td>${item.beneficio_utilizado || "-"}</td>
 <td>${item.codigo}</td>
 </tr>
 `;
