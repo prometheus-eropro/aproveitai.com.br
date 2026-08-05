@@ -353,7 +353,10 @@ API_URL+
 
 const d=await r.json();
 
+console.log("LOGIN:");
 console.log(d);
+
+console.log("PARCEIRO_ID =", d.parceiro_id);
 
 if(!d.ok){
 

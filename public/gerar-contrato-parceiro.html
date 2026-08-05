@@ -63,12 +63,12 @@ CONTRATO
 #contrato{
     margin-top:30px;
     background:#fff;
-    padding:18mm;
+    padding:9mm;
     border-radius:8px;
     box-shadow:0 2px 10px rgba(0,0,0,.15);
     color:#222;
-    line-height:1.45;
-    font-size:13px;
+    line-height:1.22;
+    font-size:11.2px;
 }
 
 /*==========================
@@ -202,34 +202,48 @@ text-transform:uppercase;
 
 .tituloClausula{
     color:#0a7a2a;
-    font-size:15px;
-    margin-top:18px;
-    margin-bottom:6px;
+    font-size:14px;
+    margin-top:4px;
+    margin-bottom:1px;
     border-bottom:1px solid #ddd;
     padding-bottom:2px;
 }
 
 #contrato p{
-    margin:4px 0;
+    margin:0;
     text-align:justify;
 }
 
 .assinaturas{
     display:flex;
     justify-content:space-between;
-    gap:50px;
-    margin-top:20px;
+    align-items:flex-start;
+    gap:20px;
+    margin-top:3px;
 }
 
 .ass{
-    flex:1;
-    text-align:center;
+
+flex:1;
+
+text-align:center;
+
+font-size:10px;
+
+line-height:1.3;
+
+padding-top:20px;
+
 }
 
 .ass hr{
-    border:none;
-    border-top:1px solid #000;
-    margin-bottom:8px;
+
+border:none;
+
+border-top:1px solid #000;
+
+margin:25px 0 6px;
+
 }
 
 /*==========================
@@ -250,7 +264,7 @@ IMPRESSÃO
 
 @page{
     size: A4;
-    margin: 12mm;
+    margin: 7mm;
 }
 
 @media print{
@@ -283,8 +297,8 @@ IMPRESSÃO
         padding:0;
         box-shadow:none;
         border:none;
-        font-size:11.5pt;
-        line-height:1.4;
+        font-size:10pX;
+        line-height:1;
     }
 
     .tituloClausula{
@@ -362,6 +376,35 @@ width:75px !important;
 justify-self:end;
 
 }
+@page{
+    size:A4;
+    margin:10mm;
+}
+
+@media print{
+
+body{
+    counter-reset:pagina;
+}
+
+#contrato{
+    position:relative;
+}
+
+}
+
+.tituloClausula{
+    page-break-after:avoid;
+    page-break-inside:avoid;
+}
+
+.assinaturas{
+    page-break-inside:avoid;
+}
+
+p{
+    page-break-inside:avoid;
+}
 
 </style>
 
@@ -410,6 +453,33 @@ Economize mais. Aproveite melhor.
 Dados do Parceiro
 </h2>
 
+<label>Razão Social</label>
+<input id="nomeParceiro" type="text">
+
+<label>Nome Fantasia</label>
+<input id="nomeFantasia" type="text">
+
+<label>CNPJ</label>
+<input id="cnpj" type="text">
+
+<label>Representante Legal</label>
+<input id="responsavel" type="text">
+
+<label>CPF</label>
+<input id="cpf" type="text">
+
+<label>Cidade / Estado</label>
+<input id="cidade" type="text">
+
+<label>Telefone</label>
+<input id="telefone" type="text">
+
+<label>E-mail</label>
+<input id="email" type="email">
+
+<label>Instagram</label>
+<input id="instagram" type="text">
+
 <button onclick="gerar()">
 📄 Gerar Contrato
 </button>
@@ -450,7 +520,8 @@ alt="AproveitAI">
 
 </div>
 
-<div id="conteudoContrato">
+<div id="conteudoContrato"></div>
+
 
 </div>
 
@@ -475,11 +546,10 @@ document.getElementById("conteudoContrato").innerHTML = `
 
 <div style="margin-bottom:20px;">
 
-<table style="width:100%;border-collapse:collapse;font-size:13px;">
 
-<tr>
+<div style="display:flex;gap:15px;margin-bottom:10px;">
 
-<td style="width:48%;vertical-align:top;border:1px solid #ccc;padding:10px;">
+<div style="flex:1;border:1px solid #ccc;padding:6px 8px;font-size:10px;line-height:1.2;">
 
 <strong>CONTRATADA</strong><br><br>
 
@@ -489,11 +559,9 @@ CNPJ: 58.584.332/0001-40<br>
 
 Guaçuí – ES
 
-</td>
+</div>
 
-<td style="width:4%;border:none;"></td>
-
-<td style="width:48%;vertical-align:top;border:1px solid #ccc;padding:10px;">
+<div style="flex:1;border:1px solid #ccc;padding:6px 8px;font-size:10px;line-height:1.2;">
 
 <strong>CONTRATANTE</strong><br><br>
 
@@ -503,7 +571,7 @@ Nome Fantasia: ${nomeFantasia}<br>
 
 CNPJ: ${cnpj}<br>
 
-Representante: ${resp}<br>
+Representante Legal: ${resp}<br>
 
 CPF: ${cpf}<br>
 
@@ -515,22 +583,41 @@ Instagram: ${instagram}<br>
 
 Cidade/UF: ${cidade}
 
-</td>
+</div>
 
-</tr>
+</div>
 
-</table>
+<hr style="margin:8px 0;">
+
 
 </div>
 
 <hr style="margin:18px 0;">
+
+<div style="
+margin:10px 0;
+padding:8px;
+background:#f7f7f7;
+border-left:4px solid #0B7A2A;
+font-size:11px;
+">
+
+<strong>Definições.</strong>
+
+Para fins deste contrato:
+
+<strong>CONTRATADA</strong> corresponde à PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA.
+
+<strong>CONTRATANTE</strong> corresponde ao estabelecimento comercial identificado neste instrumento, também denominado, ao longo deste contrato, simplesmente como <strong>PARCEIRO</strong>.
+
+</div>
 
 
 <h3 class="tituloClausula">1. DO OBJETO</h3>
 
 <p><strong>1.1.</strong> O presente contrato tem por objeto formalizar a parceria comercial entre a CONTRATADA e o PARCEIRO para divulgação de produtos, serviços, benefícios, promoções, campanhas e demais ações comerciais por meio da Plataforma AproveitAI.</p>
 
-<p><strong>1.2.</strong> Os benefícios, promoções, campanhas, percentuais de desconto, regras de utilização, público-alvo, prazos de vigência e demais condições operacionais serão definidos em documento denominado <strong>Ficha de Benefícios, Promoções e Campanhas</strong>, que integra operacionalmente esta parceria.</p>
+<p><strong>1.2.</strong> Os benefícios, promoções, campanhas, percentuais de desconto, regras de utilização, público-alvo, prazos de vigência e demais condições operacionais serão definidos em documento denominado <strong>Ficha de Benefícios e Promoções</strong>, integra operacionalmente o presente contrato, independentemente de assinatura específica, observadas as condições nele estabelecidas.</p>
 
 <p><strong>1.3.</strong> A Ficha poderá ser criada, alterada, suspensa, atualizada ou cancelada a qualquer tempo, por solicitação do PARCEIRO ou da CONTRATADA, sem necessidade de assinatura de novo contrato, desde que não altere as obrigações jurídicas aqui estabelecidas.</p>
 
@@ -605,7 +692,7 @@ Cidade/UF: ${cidade}
 
 <p><strong>8.2.</strong> A participação do PARCEIRO nas campanhas será sempre facultativa.</p>
 
-<p><strong>8.3.</strong> As regras específicas de cada campanha serão definidas na Ficha de Benefícios, Promoções e Campanhas.</p>
+<p><strong>8.3.</strong> As regras específicas de cada campanha serão definidas na Ficha de Benefícios e Promoções.</p>
 
 <p><strong>8.4.</strong> O PARCEIRO poderá aderir, alterar, suspender ou cancelar sua participação mediante solicitação formal.</p>
 
@@ -630,7 +717,7 @@ Cidade/UF: ${cidade}
 
 <h3 class="tituloClausula">10. DO INVESTIMENTO</h3>
 
-<p><strong>10.1.</strong> Durante a campanha de implantação da Plataforma AproveitAI, o PARCEIRO será enquadrado como <strong>Parceiro de Implantação</strong>, ficando isento do pagamento de mensalidade, taxa de adesão ou comissão.</p>
+<p><strong>10.1.</strong> Durante a campanha de implantação da Plataforma AproveitAI, o PARCEIRO será enquadrado como <strong>Parceiro de Implantação</strong>, ficando isento do pagamento de mensalidade, taxa de adesão ou comissão, "enquanto durar a campanha oficial de implantação da Plataforma AproveitAI."</p>
 
 <p><strong>10.2.</strong> O benefício acima possui caráter exclusivamente promocional, não constituindo direito adquirido ou gratuidade permanente.</p>
 
@@ -680,45 +767,55 @@ Cidade/UF: ${cidade}
 <p><strong>15.2.</strong> Tais alterações não caracterizam descumprimento contratual nem geram direito à indenização.</p>
 
 
-<h3 class="tituloClausula">16. DA AUTORIZAÇÃO DE DIVULGAÇÃO</h3>
+<h3 class="tituloClausula">16. DA ASSINATURA ELETRÔNICA</h3>
 
-<p><strong>16.1.</strong> O PARCEIRO autoriza a utilização de sua marca, razão social, nome fantasia, logotipo, fotografias e demais materiais institucionais para divulgação da parceria.</p>
+<p><strong>16.1.</strong> As partes reconhecem como válida a assinatura física, eletrônica ou digital, inclusive mediante aceite realizado pelos sistemas oficiais da Plataforma AproveitAI.</p>
 
-<p><strong>16.2.</strong> A autorização poderá ser revogada mediante solicitação formal, preservando-se os materiais já produzidos e divulgados anteriormente.</p>
-
-
-<h3 class="tituloClausula">17. DA ASSINATURA ELETRÔNICA</h3>
-
-<p><strong>17.1.</strong> As partes reconhecem como válida a assinatura física, eletrônica ou digital, inclusive mediante aceite realizado pelos sistemas oficiais da Plataforma AproveitAI.</p>
-
-<p><strong>17.2.</strong> A assinatura eletrônica produzirá os mesmos efeitos jurídicos da assinatura manuscrita.</p>
+<p><strong>16.2.</strong> A assinatura eletrônica produzirá os mesmos efeitos jurídicos da assinatura manuscrita.</p>
 
 
-<h3 class="tituloClausula">18. DAS DISPOSIÇÕES GERAIS</h3>
+<h3 class="tituloClausula">17. DAS DISPOSIÇÕES GERAIS</h3>
 
-<p><strong>18.1.</strong> A eventual tolerância quanto ao descumprimento de qualquer cláusula não implicará renúncia de direitos.</p>
+<p><strong>17.1.</strong> A eventual tolerância quanto ao descumprimento de qualquer cláusula não implicará renúncia de direitos.</p>
 
-<p><strong>18.2.</strong> A nulidade de qualquer disposição não prejudicará as demais cláusulas deste contrato.</p>
+<p><strong>17.2.</strong> A nulidade de qualquer disposição não prejudicará as demais cláusulas deste contrato.</p>
 
-<p><strong>18.3.</strong> Este instrumento substitui quaisquer entendimentos anteriores relativos ao objeto desta parceria.</p>
+<p><strong>17.3.</strong> Este instrumento substitui quaisquer entendimentos anteriores relativos ao objeto desta parceria.</p>
 
-<p><strong>18.4.</strong> Os casos omissos serão resolvidos de comum acordo entre as partes, observada a legislação brasileira vigente.</p>
-
-
-<h3 class="tituloClausula">19. DO FORO</h3>
-
-<p><strong>19.1.</strong> Fica eleito o Foro da Comarca de Guaçuí – ES, com renúncia expressa de qualquer outro, por mais privilegiado que seja, para dirimir eventuais controvérsias oriundas deste contrato.</p>
+<p><strong>17.4.</strong> Os casos omissos serão resolvidos de comum acordo entre as partes, observada a legislação brasileira vigente.</p>
 
 
-<h3 class="tituloClausula">OBSERVAÇÃO</h3>
+<h3 class="tituloClausula">18. DO FORO</h3>
 
-<p>A <strong>Ficha de Benefícios, Promoções e Campanhas</strong> integra operacionalmente este contrato e poderá ser alterada, atualizada, suspensa ou substituída sem necessidade de celebração de novo instrumento contratual, desde que preservadas as obrigações jurídicas aqui estabelecidas.</p>
+<p><strong>18.1.</strong> Fica eleito o Foro da Comarca de Guaçuí – ES, com renúncia expressa de qualquer outro, por mais privilegiado que seja, para dirimir eventuais controvérsias oriundas deste contrato.</p>
 
-<p>As partes declaram que leram integralmente este contrato, compreenderam todas as suas cláusulas e o assinam de livre e espontânea vontade.</p>
 
 <br>
 
-<p><strong>Guaçuí – ES, ____/____/________.</strong></p>
+<div style="
+margin-top:10px;
+margin-bottom:10px;
+font-size:12px;
+font-weight:bold;
+">
+
+Guaçuí – ES, ______ de _______________________ de 20____.
+
+</div>
+
+<div style="
+margin:12px 0;
+padding:8px;
+border:1px solid #ccc;
+background:#fafafa;
+font-size:10px;
+text-align:center;
+border-radius:5px;
+">
+
+Ao assinarem este instrumento, as partes declaram que leram, compreenderam e concordam integralmente com todas as cláusulas e condições estabelecidas neste contrato.
+
+</div>
 
 <div class="assinaturas">
 
@@ -732,7 +829,7 @@ Representante Legal<br>
 
 Edgar Rocha Oliveira<br>
 
-CONTRATADA
+<b>CONTRATADA</b>
 
 </div>
 
@@ -740,12 +837,17 @@ CONTRATADA
 
 <hr>
 
-<strong>${resp}</strong><br>
+<strong>${nome}</strong><br>
 
-CPF: ${cpf}<br>
+CNPJ: ${cnpj}<br><br>
 
-CONTRATANTE
+Representante Legal:<br>
 
+${resp}<br>
+
+CPF: ${cpf}<br><br>
+
+<b>CONTRATANTE</b>
 </div>
 
 </div>
@@ -755,6 +857,11 @@ CONTRATANTE
 }
 
 </script>
+
+</div>
+
+</div>
+
 <!-- ===================================================== -->
 <!-- RODAPÉ PADRÃO -->
 <!-- ===================================================== -->

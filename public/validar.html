@@ -318,12 +318,24 @@ if(old) old.remove();
 const script = document.createElement("script");
 script.id = "jsonpReq";
 
+const valor = String(clienteId).trim();
+
+const acao =
+/^\d{11}$/.test(valor)
+    ? "buscarClienteCPF"
+    : "buscarClienteId";
+
+const parametro =
+acao === "buscarClienteCPF"
+    ? "&cpf="
+    : "&id=";
+
 script.src =
 GAS_URL +
 "?callback=retornoValidacao" +
-"&acao=buscarClienteId" +
-"&id=" +
-encodeURIComponent(idPublico) +
+"&acao=" + acao +
+parametro +
+encodeURIComponent(valor) +
 "&p=" +
 encodeURIComponent(parceiroId);
 
@@ -936,6 +948,16 @@ navigator.serviceWorker.register('/sw.js');
 });
 
 }
+
+window.addEventListener("load", function () {
+
+    if (clienteId && parceiroId) {
+
+        validar();
+
+    }
+
+});
 
 </script>
 
