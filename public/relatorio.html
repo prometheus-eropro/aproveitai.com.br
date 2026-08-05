@@ -187,7 +187,10 @@ document.getElementById("cabData").innerHTML =
             <td>${r.dataFormatada || new Date(r.data).toLocaleString("pt-BR")}</td>
             <td>${r.grupo || "-"}</td>
             <td>${r.tipo || "-"}</td>
-<td>${r.beneficio_utilizado || "-"}</td>
+<td>
+    <strong>${r.beneficio || "-"}</strong><br>
+    <small>${r.descricao || ""}</small>
+</td>
 <td>${r.codigo || "-"}</td>
           </tr>
         `;
