@@ -875,10 +875,18 @@ function retornoBeneficios(resp){
             document.createElement("option");
 
         option.value =
-            item.tipo;
+    JSON.stringify({
+        tipo: item.tipo,
+        titulo: item.titulo,
+        descricao: item.descricao,
+        parceiro_id: item.parceiro_id
+    });
 
         option.text =
-            item.titulo + " - " + item.descricao;
+    "[" + item.tipo + "] " +
+    item.titulo +
+    " - " +
+    item.descricao;
 
         select.appendChild(option);
 
