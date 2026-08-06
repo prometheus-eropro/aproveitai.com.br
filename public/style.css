@@ -2170,37 +2170,56 @@ color:#666;
 ===================================================== */
 
 .condicoes{
-    margin-top:18px;
-    padding:16px;
-    background:#F3FFF4;
-    border:2px solid #0A7A2A;
-    border-left:8px solid #0A7A2A;
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
 
-    font-size:14px;
-    line-height:1.8;
-    white-space:pre-line;
+    margin-top:18px;
+    padding:18px;
+
+    background:#eefaf0;
+
+    border:2px solid #0b7a2a;
+    border-radius:12px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    gap:12px;
 
     width:100%;
+
+    height:auto;
+    min-height:0;
+
     box-sizing:border-box;
+
 }
 
 .condicoes-titulo{
-    display:flex;
-    justify-content:center;
-    align-items:center;
+
+    font-size:26px;
+    font-weight:700;
+
+    color:#0b7a2a;
 
     text-align:center;
-    font-size:17px;
-    font-weight:bold;
-    color:#0A7A2A;
 
-    margin-bottom:12px;
+    margin:0;
+    padding:0;
+
 }
 
 .condicoes-texto{
+
+    width:100%;
+
     white-space:pre-line;
+
     line-height:1.8;
+
+    text-align:left;
+
+    font-size:15px;
+
     color:#333;
+
 }
