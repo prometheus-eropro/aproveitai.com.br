@@ -102,36 +102,21 @@ ${b.descricao || ""}
 ${
 b.observacoes
 ? `
+<div class="condicoes">
 
-<div style="
-margin-top:18px;
-padding:16px;
-background:#F3FFF4;
-border:2px solid #0A7A2A;
-border-left:8px solid #0A7A2A;
-border-radius:10px;
-box-shadow:0 2px 8px rgba(0,0,0,.08);
-font-size:14px;
-white-space:pre-line;
-line-height:1.8;
-">
+    <div class="condicoes-titulo">
+        📋 CONDIÇÕES DE UTILIZAÇÃO
+    </div>
 
-<div style="
-font-size:17px;
-font-weight:bold;
-color:#0A7A2A;
-margin-bottom:10px;
-">
+    <div class="condicoes-texto">
+        ${b.observacoes}
+    </div>
 
-📋 CONDIÇÕES DE UTILIZAÇÃO
-
-</div>
-
-${b.observacoes}
 </div>
 `
 : ""
 }
+
       <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
       <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
   ${b.zap ? `
