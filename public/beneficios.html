@@ -54,10 +54,21 @@ const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1Sx
 fetch(API + "?aba=beneficios")
 .then(r => r.json())
 .then(d => {
+
   const lista = document.getElementById("lista");
+
   lista.innerHTML = "";
 
+  // ORDEM DE EXIBIÇÃO
+  d.dados.sort((a,b)=>{
+
+      return Number(a.ordem || 9999) - Number(b.ordem || 9999);
+
+  });
+
   d.dados.forEach(b => {
+
+
     if (String(b.ativo).toLowerCase() !== "sim") return;
 
     const grupo = String(b.grupo || "").trim().toUpperCase();
@@ -78,7 +89,49 @@ const exclusivo =
     card.innerHTML = `
       ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
       <h3>${b.titulo || ""}</h3>
-      <p>${b.descricao || ""}</p>
+
+<div style="
+white-space:pre-line;
+line-height:1.7;
+text-align:left;
+margin-top:10px;
+">
+${b.descricao || ""}
+</div>
+
+${
+b.observacoes
+? `
+
+<div style="
+margin-top:18px;
+padding:16px;
+background:#F3FFF4;
+border:2px solid #0A7A2A;
+border-left:8px solid #0A7A2A;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+font-size:14px;
+white-space:pre-line;
+line-height:1.8;
+">
+
+<div style="
+font-size:17px;
+font-weight:bold;
+color:#0A7A2A;
+margin-bottom:10px;
+">
+
+📋 CONDIÇÕES DE UTILIZAÇÃO
+
+</div>
+
+${b.observacoes}
+</div>
+`
+: ""
+}
       <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
       <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
   ${b.zap ? `
@@ -102,17 +155,29 @@ const exclusivo =
        class="btn-link">📍 Como chegar</a>` : ""}
 </div>
 
-      <p><strong>Início:</strong> ${
+      ${
 b.dataInicio
-? new Date(b.dataInicio).toLocaleDateString("pt-BR")
-: "-"
-}</p>
+? `
+<p>
 
-<p><strong>Fim:</strong> ${
+<strong>📅 Vigência:</strong>
+
+${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
+
+${
 b.dataFim
-? new Date(b.dataFim).toLocaleDateString("pt-BR")
-: "-"
-}</p>
+?
+" até "+new Date(b.dataFim).toLocaleDateString("pt-BR")
+:
+""
+
+}
+
+</p>
+`
+:
+""
+}
 
      
     `;
