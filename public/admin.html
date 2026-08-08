@@ -2581,14 +2581,81 @@ function escapeHtml(s){
     .replaceAll("'","&#39;");
 }
 
-/*** 4) JSONP CALL ***/
-async function callAPI(params = {}){
-  if(state.key){
-    params.key = state.key;
-  }
-  const url = API_URL + "?" + new URLSearchParams(params);
-  const r = await fetch(url);
-  return r.json();
+/*** 4) JSONP CALL — SEM CORS ***/
+function callAPI(params = {}){
+
+  return new Promise((resolve, reject)=>{
+
+    if(state.key){
+      params.key = state.key;
+    }
+
+    const callback =
+      "__apv_cb_" +
+      Date.now() +
+      "_" +
+      Math.random().toString(36).slice(2);
+
+    params.callback = callback;
+
+    const script = document.createElement("script");
+
+    const timer = setTimeout(()=>{
+
+      cleanup();
+
+      reject(
+        new Error("Tempo limite de comunicação com a API.")
+      );
+
+    },15000);
+
+
+    function cleanup(){
+
+      clearTimeout(timer);
+
+      try{
+        delete window[callback];
+      }catch(e){}
+
+      if(script.parentNode){
+        script.parentNode.removeChild(script);
+      }
+
+    }
+
+
+    window[callback] = function(resposta){
+
+      cleanup();
+
+      resolve(resposta);
+
+    };
+
+
+    script.onerror = function(){
+
+      cleanup();
+
+      reject(
+        new Error("Erro ao acessar o Google Apps Script.")
+      );
+
+    };
+
+
+    script.src =
+      API_URL +
+      "?" +
+      new URLSearchParams(params).toString();
+
+
+    document.head.appendChild(script);
+
+  });
+
 }
 
 
@@ -4285,22 +4352,38 @@ Salvar Parceiro
 </div>
 
 <script>
-function gerarContratoParceiro(parceiroId) {
-  const url = API_URL + "?action=gerarContratoParceiro&parceiro_id=" + parceiroId;
+async function gerarContratoParceiro(parceiroId){
 
-  fetch(url)
-    .then(r => r.json())
-    .then(resp => {
-      if (resp.ok && resp.pdfUrl) {
-        window.open(resp.pdfUrl, "_blank");
-      } else {
-        alert("PDF não gerado");
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Erro ao gerar contrato");
+  try{
+
+    const resp = await callAPI({
+
+      action:"gerarContratoParceiro",
+      parceiro_id:parceiroId
+
     });
+
+    if(resp && resp.ok && resp.pdfUrl){
+
+      window.open(resp.pdfUrl,"_blank");
+
+    }else{
+
+      alert(
+        resp?.mensagem ||
+        "PDF não gerado."
+      );
+
+    }
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Erro ao gerar contrato.");
+
+  }
+
 }
 
 async function gerarTermosCliente(cpf){
