@@ -1180,19 +1180,60 @@ overflow:hidden;
 
 }
 
-.modal{
+#overlayParceiro .modal{
 
-    width:min(700px,95%);
+width:95%;
+max-width:1200px;
 
-    background:#fff;
+height:92vh;
 
-    border-radius:14px;
+display:flex;
 
-    box-shadow:0 25px 60px rgba(0,0,0,.25);
+flex-direction:column;
 
-    overflow:hidden;
+background:#fff;
 
-    animation:modal .25s ease;
+border-radius:12px;
+
+overflow:hidden;
+
+}
+
+#overlayParceiro .body{
+
+flex:1;
+
+overflow-y:auto;
+
+padding:20px;
+
+}
+
+#overlayParceiro footer{
+
+padding:15px;
+
+background:#fff;
+
+border-top:1px solid #ddd;
+
+display:flex;
+
+justify-content:flex-end;
+
+gap:10px;
+
+}
+
+.row{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:15px;
+
+margin-bottom:15px;
 
 }
 
@@ -1458,6 +1499,293 @@ display:block;
 
 }
 
+.linhaImpl{
+
+padding:8px;
+
+border-bottom:1px solid #ececec;
+
+font-size:14px;
+
+}
+
+/*==================================================
+CENTRAL DE MATERIAIS
+==================================================*/
+
+.materialItem{
+
+border:1px solid #dfe7df;
+
+border-radius:10px;
+
+padding:14px;
+
+margin-bottom:15px;
+
+background:#fff;
+
+}
+
+.materialItem b{
+
+display:block;
+
+font-size:15px;
+
+margin-bottom:8px;
+
+color:#0a7a2a;
+
+}
+
+.materialStatus{
+
+font-size:13px;
+
+margin-bottom:10px;
+
+}
+
+.materialBtns{
+
+display:flex;
+
+gap:8px;
+
+flex-wrap:wrap;
+
+}
+
+.ok{
+
+color:#0a7a2a;
+
+font-weight:bold;
+
+}
+
+/*======================================================
+CENTRAL DE MATERIAIS
+======================================================*/
+
+.materialGrid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+gap:18px;
+
+margin-top:20px;
+
+}
+
+
+.materialCard{
+
+background:#fff;
+
+border:1px solid #dfe5df;
+
+border-radius:12px;
+
+padding:12px;
+
+margin-bottom:10px;
+
+box-shadow:0 2px 8px rgba(0,0,0,.06);
+
+transition:.25s;
+
+}
+
+
+.materialCard:hover{
+
+transform:translateY(-3px);
+
+box-shadow:0 8px 18px rgba(0,0,0,.12);
+
+}
+
+
+.materialCard h4{
+
+margin:0 0 10px;
+
+color:#0B7A2A;
+
+font-size:18px;
+
+}
+
+
+.materialCard p{
+
+font-size:14px;
+
+color:#666;
+
+margin-bottom:16px;
+
+min-height:40px;
+
+}
+
+
+.acoesMaterial{
+
+display:flex;
+
+gap:8px;
+
+flex-wrap:wrap;
+
+}
+
+
+.btnVerde{
+
+background:#0B7A2A;
+
+color:#fff;
+
+font-weight:bold;
+
+}
+
+.implCard{
+
+background:#fff;
+
+border:1px solid #dfe5df;
+
+border-radius:12px;
+
+padding:18px;
+
+min-height:340px;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+.implCard h3{
+
+margin-bottom:15px;
+
+color:#0B7A2A;
+
+font-size:20px;
+
+border-bottom:1px solid #ececec;
+
+padding-bottom:10px;
+
+}
+/* ===================================================
+CENTRAL DE IMPLANTAÇÃO
+=================================================== */
+
+#implantacaoConteudo{
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
+margin-top:20px;
+
+}
+
+#implantacaoConteudo .implCard{
+
+width:100%;
+
+min-height:auto;
+
+}
+
+#implantacaoPainel .implCard{
+
+align-self:start;
+
+height:auto;
+
+min-height:320px;
+
+overflow:hidden;
+
+}
+
+.grid2{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:20px;
+
+margin-top:20px;
+
+}
+
+.card{
+
+background:#fff;
+
+padding:20px;
+
+border-radius:12px;
+
+margin-bottom:20px;
+
+box-shadow:0 2px 10px rgba(0,0,0,.08);
+
+}
+
+.card h2{
+
+margin-bottom:15px;
+
+color:#0b7a2a;
+
+}
+
+.card label{
+
+display:block;
+
+margin-bottom:6px;
+
+font-weight:600;
+
+}
+
+.card input{
+
+width:100%;
+
+padding:10px;
+
+border:1px solid #ddd;
+
+border-radius:8px;
+
+}
+
+@media(max-width:900px){
+
+.grid2{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
 /*==================================================
 =             FIM DO CSS
 ==================================================*/
@@ -1556,6 +1884,22 @@ id="btnMenu">
     🤝 <span class="texto">Parceiros</span>
 </button>
 
+<button class="navbtn" data-view="novo_parceiro">
+
+➕
+
+<span class="texto">
+
+Novo Parceiro
+
+</span>
+
+</button>
+
+<button class="navbtn" data-view="implantacao">
+    🚀 <span class="texto">Implantação</span>
+</button>
+
 <button class="navbtn" data-view="beneficios">
     🎁 <span class="texto">Benefícios</span>
 </button>
@@ -1592,10 +1936,17 @@ id="btnMenu">
     </button>
 
     <button class="navbtn" data-view="admins">
-        👨‍💼 <span class="texto">Administradores</span>
-<div class="toolbar">
 
-    </button>
+👨‍💼
+
+<span class="texto">
+
+Administradores
+
+</span>
+
+</button>
+
 
 </div>
 <div class="hr"></div>
@@ -1794,6 +2145,127 @@ id="btnNovoCliente">
             </div>
           </section>
 
+          <section
+data-section="novo_parceiro"
+style="display:none">
+
+<div id="paginaNovoParceiro"></div>
+
+</section>
+
+          <!-- IMPLANTAÇÃO -->
+
+<section data-section="implantacao" style="display:none">
+
+<div class="pageHeader">
+
+<h1>🚀 Central de Implantação</h1>
+
+<p>
+Selecione um parceiro para administrar toda a implantação.
+</p>
+
+</div>
+
+
+<div class="implCard">
+
+<label>Parceiro</label>
+
+<div class="row">
+
+<select
+id="impParceiro"
+class="input"
+style="flex:1">
+
+<option value="">
+Selecione um parceiro...
+</option>
+
+</select>
+
+<button
+class="btn primary"
+onclick="abrirImplantacao()">
+
+Abrir
+
+</button>
+
+</div>
+
+</div>
+
+
+<div
+id="implantacaoPainel"
+style="display:none;margin-top:20px;">
+
+
+<div id="implantacaoConteudo">
+
+<div class="implCard">
+
+<h3>📄 Dados</h3>
+
+<div id="impDados"></div>
+
+</div>
+
+
+<div class="implCard">
+
+<h3>🎁 Benefícios</h3>
+
+<div id="impBeneficios"></div>
+
+</div>
+
+
+<div class="implCard">
+
+<h3>🔥 Promoções</h3>
+
+<div id="impPromocoes"></div>
+
+</div>
+
+
+<div class="implCard">
+
+<h3>🖨 Materiais</h3>
+
+<div id="impMateriais"></div>
+
+</div>
+
+
+<div class="implCard">
+
+<h3>✅ Checklist</h3>
+
+<div id="impChecklist"></div>
+
+</div>
+
+
+<div class="implCard">
+
+<h3>⚙ Ações</h3>
+
+<div id="impAcoes"></div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
           <!-- BENEFICIOS -->
           <section data-section="beneficios" style="display:none">
             <div class="row">
@@ -1851,12 +2323,38 @@ id="btnNovoCliente">
             </div>
           </section>
 
-            <div class="hint">Somente leitura. Mostra a aba <b>admins</b> (atenção: aqui aparecem senhas).</div>
-            <div class="hr"></div>
-            <div class="tableWrap">
-              <table id="tblAdmins"></table>
-            </div>
-          </section>
+            <section data-section="admins" style="display:none">
+
+<div class="row">
+
+<input
+class="input"
+id="filtroAdmins"
+placeholder="Buscar administrador">
+
+<button
+class="btn"
+id="btnReloadAdmins">
+
+Recarregar
+
+</button>
+
+</div>
+
+<div class="hint">
+Somente leitura.
+</div>
+
+<div class="hr"></div>
+
+<div class="tableWrap">
+
+<table id="tblAdmins"></table>
+
+</div>
+
+</section>
 
 <section data-section="materiais" style="display:none">
 
@@ -2138,12 +2636,14 @@ const views = {
   dashboard: { title:"Dashboard", desc:"Resumo geral do banco e validações." },
   clientes: { title:"Clientes", desc:"Criar, editar, ativar/desativar e gerar termos." },
   parceiros: { title:"Parceiros", desc:"Criar, editar, ativar/desativar, token e contrato." },
+  implantacao:{title:"Implantação",desc:"Central de implantação do parceiro."},
   beneficios: { title:"Benefícios", desc:"Criar, editar e ativar/desativar benefícios." },
   promocoes: { title:"Promoções", desc:"Criar, editar e ativar/desativar promoções." },
   logs: { title:"Logs", desc:"Somente leitura (validações)." },
   log_admin: { title:"Log Admin", desc:"Somente leitura (auditoria)." },
   admins: { title:"Admins", desc:"Somente leitura (atenção às senhas)." },
-
+  novo_parceiro:{title:"Novo Parceiro",desc:"Cadastro completo do parceiro."},
+ 
   gerencial: {
     title:"Gerencial",
     desc:"Indicadores do sistema"
@@ -2176,11 +2676,26 @@ async function loadView(name){
   if(name === "dashboard") return loadDashboard(true);
   if(name === "clientes") return loadClientes(true);
   if(name === "parceiros") return loadParceiros(true);
+  if(name==="implantacao") return loadImplantacao();
   if(name === "beneficios") return loadBeneficios(true);
   if(name === "promocoes") return loadPromocoes(true);
   if(name === "logs") return loadLogs(true);
   if(name === "log_admin") return loadLogAdmin(true);
   if(name === "admins") return loadAdmins(true);
+  if(name==="novo_parceiro"){
+
+renderPaginaNovoParceiro();
+
+return;
+
+}
+if(name==="novo_parceiro"){
+
+renderPaginaNovoParceiro();
+
+return;
+
+}
 }
 
 /*** 7) RENDER TABLES ***/
@@ -2730,46 +3245,6 @@ function editarParceiro(cnpj){
   });
 }
 
-function novoParceiro(){
-  openEditModal({
-    title: "Criar parceiro",
-    hint: "Cria parceiro e gera token automático.",
-    initial: {},
-    fields: [
-      {key:"cnpj", label:"CNPJ", w:"260px"},
-      {key:"nomeFantasia", label:"Nome Fantasia"},
-      {key:"cidade", label:"Cidade"},
-      {key:"ramo", label:"Ramo"},
-      {key:"whatsapp", label:"WhatsApp"},
-      {key:"instagram", label:"Instagram"},
-      {key:"site", label:"Site"},
-      {key:"email", label:"Email"},
-      {key:"logoURL", label:"Logo URL", w:"420px", flex:"1 1 420px"},
-      {key:"contato", label:"Contato"},
-    ],
-    onSave: async (data)=>{
-      const cnpj = apenasNumeros(data.cnpj);
-      if(cnpj.length !== 14) throw new Error("CNPJ_INVALIDO");
-      const r = await callAPI({
-        action:"criar_parceiro",
-        key: state.key,
-        cnpj,
-        nomeFantasia: data.nomeFantasia||"",
-        cidade: data.cidade||"",
-        ramo: data.ramo||"",
-        whatsapp: apenasNumeros(data.whatsapp||""),
-        instagram: data.instagram||"",
-        site: data.site||"",
-        email: data.email||"",
-        logoURL: data.logoURL||"",
-        contato: data.contato||""
-      });
-      toast("Parceiro criado. Token: " + (r.token||""));
-      await loadParceiros(true);
-      await loadDashboard(true);
-    }
-  });
-}
 
 async function contratoParceiro(cnpj){
   try{
@@ -3150,7 +3625,11 @@ $("btnNovoCliente")?.addEventListener("click", () => novoCliente());
 /* ================= PARCEIROS ================= */
 
 $("btnReloadParceiros")?.addEventListener("click", () => loadParceiros(true));
-$("btnNovoParceiro")?.addEventListener("click", () => novoParceiro());
+$("btnNovoParceiro")?.addEventListener("click",()=>{
+
+showView("novo_parceiro");
+
+});
 
 /* ================= BENEFÍCIOS ================= */
 
@@ -3166,6 +3645,12 @@ $("btnNovoPromocao")?.addEventListener("click", () => novoPromocao());
 
 $("btnReloadLogs")?.addEventListener("click", () => loadLogs(true));
 $("btnReloadLogAdmin")?.addEventListener("click", () => loadLogAdmin(true));
+
+$("btnReloadAdmins")?.addEventListener("click",()=>{
+
+loadAdmins(true);
+
+});
 
 /* =====================================
    BOTÃO ATUALIZAR
@@ -3421,6 +3906,317 @@ if(menuHub){
 
 }
 
+async function loadImplantacao(){
+
+await loadParceiros(true);
+
+const sel=document.getElementById("impParceiro");
+
+if(!sel) return;
+
+sel.innerHTML="<option value=''>Selecione...</option>";
+
+state.cache.parceiros.forEach(p=>{
+
+sel.innerHTML+=`
+<option value="${p.parceiro_id}">
+${p.nomeFantasia}
+</option>`;
+
+});
+
+}
+
+/* =====================================================
+   RENDER - DADOS
+===================================================== */
+
+function renderDados(parceiro){
+
+document.getElementById("impDados").innerHTML=`
+
+<table style="width:100%;border-collapse:collapse;">
+
+<tr><td><b>Empresa</b></td><td>${parceiro.nomeFantasia||""}</td></tr>
+
+<tr><td><b>CNPJ</b></td><td>${parceiro.cnpj||""}</td></tr>
+
+<tr><td><b>Cidade</b></td><td>${parceiro.cidade||""}</td></tr>
+
+<tr><td><b>Ramo</b></td><td>${parceiro.ramo||""}</td></tr>
+
+<tr><td><b>Contato</b></td><td>${parceiro.contato||""}</td></tr>
+
+<tr><td><b>WhatsApp</b></td><td>${parceiro.whatsapp||""}</td></tr>
+
+<tr><td><b>E-mail</b></td><td>${parceiro.email||""}</td></tr>
+
+<tr><td><b>Instagram</b></td><td>${parceiro.instagram||""}</td></tr>
+
+<tr><td><b>Site</b></td><td>${parceiro.site||""}</td></tr>
+
+<tr><td><b>Exige placa</b></td><td>${parceiro.exige_placa||"NAO"}</td></tr>
+
+<tr><td><b>Latitude</b></td><td>${parceiro.latitude||""}</td></tr>
+
+<tr><td><b>Longitude</b></td><td>${parceiro.longitude||""}</td></tr>
+
+<tr><td><b>Token</b></td><td>${parceiro.token||""}</td></tr>
+
+<tr><td><b>PIN</b></td><td>${parceiro.PIN_OPERACIONAL||""}</td></tr>
+
+<tr><td><b>Parceiro ID</b></td><td>${parceiro.parceiro_id||""}</td></tr>
+
+<tr><td><b>Status</b></td><td>${parceiro.ativo||""}</td></tr>
+
+</table>
+
+`;
+
+}
+
+/* =====================================================
+   RENDER BENEFICIOS
+===================================================== */
+
+function renderBeneficios(lista){
+
+lista = Array.isArray(lista) ? lista : [];
+
+const div = document.getElementById("impBeneficios");
+
+if(!lista.length){
+
+div.innerHTML="Nenhum benefício cadastrado.";
+
+return;
+
+}
+
+div.innerHTML=
+
+lista.map(b=>`
+
+<div class="linhaImpl">
+
+🎁 <b>${b.titulo||""}</b>
+
+<br>
+
+${b.descricao||""}
+
+</div>
+
+`).join("");
+
+}
+
+/* =====================================================
+   RENDER PROMOÇÕES
+===================================================== */
+
+function renderPromocoes(lista){
+
+lista = Array.isArray(lista) ? lista : [];
+
+const div = document.getElementById("impPromocoes");
+
+if(!lista.length){
+
+div.innerHTML="Nenhuma promoção cadastrada.";
+
+return;
+
+}
+
+div.innerHTML=
+
+lista.map(p=>`
+
+<div class="linhaImpl">
+
+🔥 <b>${p.titulo||""}</b>
+
+<br>
+
+${p.descricao||""}
+
+</div>
+
+`).join("");
+
+}
+
+/* =====================================================
+   RENDER MATERIAIS
+===================================================== */
+
+function renderMateriais(parceiro){
+
+const contrato = parceiro.link_contrato || "";
+
+const qr = parceiro.qrURL || "";
+
+const cartaz = parceiro.link_cartaz || "";
+
+const cartazA4 = parceiro.link_cartaz_a4 || "";
+
+const painel =
+
+"painelparceiro.html?token="+
+
+parceiro.token;
+
+const pagina =
+
+"beneficios.html?parceiro="+
+
+encodeURIComponent(parceiro.nomeFantasia);
+
+
+document.getElementById("impMateriais").innerHTML=`
+
+<div class="materialGrid">
+
+<div class="materialCard">
+
+<h4>📄 Contrato</h4>
+
+<p>Contrato oficial do parceiro.</p>
+
+<div class="acoesMaterial">
+
+<button class="btn"
+onclick="window.open('${contrato}')"
+${!contrato?"disabled":""}>
+👁 Abrir
+</button>
+
+<button class="btn"
+onclick="window.open('${contrato}')"
+${!contrato?"disabled":""}>
+🖨 Imprimir
+</button>
+
+</div>
+
+</div>
+
+<div class="materialCard">
+
+<h4>🧾 QR Parceiro</h4>
+
+<p>QR de validação.</p>
+
+<div class="acoesMaterial">
+
+<button class="btn"
+onclick="window.open('${qr}')"
+${!qr?"disabled":""}>
+👁 Abrir
+</button>
+
+<button class="btn"
+onclick="window.open('${qr}')"
+${!qr?"disabled":""}>
+🖨 Imprimir
+</button>
+
+</div>
+
+</div>
+
+<div class="materialCard">
+
+<h4>🖼 Cartaz Balcão</h4>
+
+<p>Cartaz para caixa.</p>
+
+<div class="acoesMaterial">
+
+<button class="btn"
+onclick="window.open('${cartaz}')"
+${!cartaz?"disabled":""}>
+👁 Abrir
+</button>
+
+<button class="btn"
+onclick="window.open('${cartaz}')"
+${!cartaz?"disabled":""}>
+🖨 Imprimir
+</button>
+
+</div>
+
+</div>
+
+<div class="materialCard">
+
+<h4>🖼 Cartaz A4</h4>
+
+<p>Cartaz vitrine.</p>
+
+<div class="acoesMaterial">
+
+<button class="btn"
+onclick="window.open('${cartazA4}')"
+${!cartazA4?"disabled":""}>
+👁 Abrir
+</button>
+
+<button class="btn"
+onclick="window.open('${cartazA4}')"
+${!cartazA4?"disabled":""}>
+🖨 Imprimir
+</button>
+
+</div>
+
+</div>
+
+<div class="materialCard">
+
+<h4>🌐 Página Oficial</h4>
+
+<p>Página do parceiro.</p>
+
+<div class="acoesMaterial">
+
+<button class="btn"
+onclick="window.open('${pagina}')">
+
+🌍 Abrir
+
+</button>
+
+</div>
+
+</div>
+
+<div class="materialCard">
+
+<h4>🔐 Área do Parceiro</h4>
+
+<p>Acesso do parceiro.</p>
+
+<div class="acoesMaterial">
+
+<button class="btn"
+onclick="window.open('${painel}')">
+
+🔓 Abrir
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
 
 document.addEventListener("DOMContentLoaded", async ()=>{
   try{
@@ -3443,6 +4239,51 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 </script>
 <div class="toast" id="toast"></div>
+
+
+
+<div class="overlay" id="overlayParceiro">
+
+<div class="modal" style="width:95%;max-width:1100px;">
+
+<header>
+
+<h2>Novo Parceiro</h2>
+
+</header>
+
+<div class="body">
+
+<div id="cadastroParceiro"></div>
+
+</div>
+
+<footer>
+
+<button
+class="btn"
+
+onclick="fecharCadastroParceiro()">
+
+Cancelar
+
+</button>
+
+<button
+class="btn primary"
+
+onclick="salvarParceiroCompleto()">
+
+Salvar Parceiro
+
+</button>
+
+</footer>
+
+</div>
+
+</div>
+
 <script>
 function gerarContratoParceiro(parceiroId) {
   const url = API_URL + "?action=gerarContratoParceiro&parceiro_id=" + parceiroId;
@@ -3561,6 +4402,708 @@ if (
     });
 
 }
+
+
+async function abrirImplantacao(){
+
+const id =
+document.getElementById("impParceiro").value;
+
+if(!id){
+    alert("Selecione um parceiro.");
+    return;
+}
+
+const parceiro =
+state.cache.parceiros.find(
+p=>p.parceiro_id==id
+);
+
+const beneficios =
+await callAPI({
+action:"listarBeneficiosParceiro",
+parceiro_id:id
+});
+
+beneficios.dados = beneficios.dados || [];
+
+const promocoes =
+await callAPI({
+action:"listarPromocoesParceiro",
+parceiro_id:id
+});
+
+promocoes.dados = promocoes.dados || [];
+
+document
+.getElementById("implantacaoPainel")
+.style.display="block";
+
+/* ==========================
+   DADOS
+========================== */
+
+renderDados(parceiro);
+
+/* ==========================
+   BENEFICIOS
+========================== */
+
+renderBeneficios(beneficios.dados);
+
+/* ==========================
+   PROMOÇÕES
+========================== */
+
+renderPromocoes(promocoes.dados);
+
+/* =====================================================
+   CENTRAL DE MATERIAIS
+===================================================== */
+
+renderMateriais(parceiro);
+
+/* ==========================
+   CHECKLIST
+========================== */
+
+const temContrato = parceiro.link_contrato ? "✅" : "⬜";
+
+const temBeneficios =
+(beneficios.dados||[]).length ? "✅" : "⬜";
+
+const temPromocoes =
+
+(promocoes.dados || []).length
+
+? "✅"
+
+: "⬜";
+
+const temQR =
+parceiro.qrURL ? "✅" : "⬜";
+
+const temCartaz =
+parceiro.link_cartaz ? "✅" : "⬜";
+
+document.getElementById("impChecklist").innerHTML=`
+
+<h4>Cadastro</h4>
+
+${parceiro.nomeFantasia?"✅":"⬜"} Parceiro cadastrado<br>
+${parceiro.token?"✅":"⬜"} Token<br>
+${parceiro.PIN_OPERACIONAL?"✅":"⬜"} PIN Operacional<br>
+
+<hr>
+
+<h4>Materiais</h4>
+
+${temContrato} Contrato<br>
+${temQR} QR Code<br>
+${temCartaz} Cartaz Balcão<br>
+${parceiro.link_cartaz_a4?"✅":"⬜"} Cartaz A4<br>
+
+<hr>
+
+<h4>Benefícios</h4>
+
+${temBeneficios} Benefícios cadastrados<br>
+
+<hr>
+
+<h4>Promoções</h4>
+
+${temPromocoes} Promoções cadastradas<br>
+
+<hr>
+
+<h4>Treinamento</h4>
+
+⬜ Manual entregue<br>
+⬜ Treinamento realizado<br>
+⬜ Teste de validação<br>
+⬜ Relatório configurado<br>
+
+<hr>
+
+<hr>
+
+<h4>Conferências</h4>
+
+${parceiro.logoURL?"✅":"⬜"} Logo cadastrada<br>
+
+${parceiro.link_maps?"✅":"⬜"} Google Maps<br>
+
+${parceiro.qrURL?"✅":"⬜"} QR Testado<br>
+
+⬜ Página Oficial testada<br>
+
+⬜ Área do Parceiro testada<br>
+
+⬜ Primeiro cliente validado<br>
+
+<h4>Status Final</h4>
+
+⬜ Implantação concluída
+
+`;
+/* ==========================
+   AÇÕES
+========================== */
+
+document.getElementById("impAcoes").innerHTML=`
+
+<button
+class="btn"
+
+onclick="editarParceiro('${parceiro.cnpj}')">
+
+✏ Editar Cadastro
+
+</button>
+
+<button
+class="btn"
+
+onclick="window.print()">
+
+🖨 Imprimir Checklist
+
+</button>
+
+`;
+
+}
+
+
+async function gerarImplantacao(parceiroId){
+
+if(!confirm(
+
+"Gerar toda a implantação deste parceiro?"
+
+)) return;
+
+callAPI({
+
+action:"gerarImplantacao",
+
+parceiro_id:parceiroId
+
+})
+.then(r=>{
+
+if(r.ok){
+
+alert("Implantação concluída.");
+
+abrirImplantacao();
+
+}else{
+
+alert(r.mensagem);
+
+}
+
+});
+
+}
+
+async function salvarParceiroCompleto(){
+
+const parceiro={
+
+razaoSocial:
+document.getElementById("razaoSocial").value.trim(),
+
+nomeFantasia:
+document.getElementById("nomeFantasia").value.trim(),
+
+cnpj:
+document.getElementById("cnpj").value.trim(),
+
+ie:
+document.getElementById("ie").value.trim(),
+
+responsavel:
+document.getElementById("responsavel").value.trim(),
+
+cargo:
+document.getElementById("cargo").value.trim(),
+
+categoria:
+
+document.getElementById("categoria").value.trim(),
+
+ramo:
+document.getElementById("ramo").value.trim(),
+
+horario:
+document.getElementById("horario").value.trim(),
+
+whatsapp:
+document.getElementById("whatsapp").value.trim(),
+
+telefone:
+document.getElementById("telefone").value.trim(),
+
+email:
+document.getElementById("email").value.trim(),
+
+instagram:
+document.getElementById("instagram").value.trim(),
+
+facebook:
+document.getElementById("facebook").value.trim(),
+
+site:
+document.getElementById("site").value.trim(),
+
+cep:
+document.getElementById("cep").value.trim(),
+
+cidade:
+document.getElementById("cidade").value.trim(),
+
+bairro:
+document.getElementById("bairro").value.trim(),
+
+endereco:
+document.getElementById("endereco").value.trim(),
+
+numero:
+document.getElementById("numero").value.trim(),
+
+complemento:
+document.getElementById("complemento").value.trim(),
+
+maps:
+document.getElementById("maps").value.trim(),
+
+exigePlaca:
+document.getElementById("exigePlaca").checked ? "SIM":"NAO"
+
+};
+
+console.log(parceiro);
+
+salvarParceiroServidor(parceiro);
+
+}
+
+async function salvarParceiroServidor(parceiro){
+
+    try{
+
+        const resposta = await callAPI({
+
+            action:"criar_parceiro",
+
+            key:state.key,
+
+            razaoSocial:parceiro.razaoSocial,
+            nomeFantasia:parceiro.nomeFantasia,
+            cnpj:parceiro.cnpj,
+            ie:parceiro.ie,
+
+            responsavel:parceiro.responsavel,
+            cargo:parceiro.cargo,
+
+            ramo:parceiro.ramo,
+
+            horario:parceiro.horario,
+
+            whatsapp:parceiro.whatsapp,
+            telefone:parceiro.telefone,
+
+            email:parceiro.email,
+
+            instagram:parceiro.instagram,
+            facebook:parceiro.facebook,
+            site:parceiro.site,
+
+            cep:parceiro.cep,
+            cidade:parceiro.cidade,
+            bairro:parceiro.bairro,
+
+            endereco:parceiro.endereco,
+            numero:parceiro.numero,
+            complemento:parceiro.complemento,
+
+            maps:parceiro.maps,
+
+            exige_placa:parceiro.exigePlaca
+
+        });
+
+        console.log(resposta);
+
+        if(resposta.ok){
+
+            toast("Parceiro cadastrado.");
+
+            await loadParceiros(true);
+
+            showView("parceiros");
+
+        }else{
+
+            alert(resposta.mensagem || "Erro ao cadastrar parceiro.");
+
+        }
+
+    }catch(e){
+
+        console.error(e);
+
+        alert("Erro de comunicação.");
+
+    }
+
+}
+
+function buscarMaps(){
+
+const rua =
+document.getElementById("endereco").value;
+
+const numero =
+document.getElementById("numero").value;
+
+const bairro =
+document.getElementById("bairro").value;
+
+const cidade =
+document.getElementById("cidade").value;
+
+const uf =
+document.getElementById("uf").value;
+
+const endereco =
+
+`${rua}, ${numero}, ${bairro}, ${cidade}-${uf}`;
+
+window.open(
+
+"https://www.google.com/maps/search/"+
+
+encodeURIComponent(endereco),
+
+"_blank"
+
+);
+
+}
+
+function renderPaginaNovoParceiro(){
+
+document.getElementById("paginaNovoParceiro").innerHTML=`
+
+<div class="card">
+
+<h2>🏢 Dados da Empresa</h2>
+
+<div class="grid2">
+
+<div>
+
+<label>Razão Social</label>
+<input id="razaoSocial">
+
+</div>
+
+<div>
+
+<label>Nome Fantasia</label>
+<input id="nomeFantasia">
+
+</div>
+
+<div>
+
+<label>CNPJ</label>
+<input id="cnpj">
+
+</div>
+
+<div>
+
+<label>Inscrição Estadual</label>
+<input id="ie">
+
+</div>
+
+<div>
+
+<label>Responsável</label>
+<input id="responsavel">
+
+</div>
+
+<div>
+
+<label>Cargo</label>
+<input id="cargo">
+
+</div>
+
+<div>
+
+<div>
+
+<label>Categoria</label>
+
+<select id="categoria">
+
+<option value="">Selecione...</option>
+
+<option value="SUP">Supermercado</option>
+
+<option value="FAR">Farmácia</option>
+
+<option value="COM">Posto de Combustível</option>
+
+<option value="AUT">Autopeças</option>
+
+<option value="OFI">Oficina Mecânica</option>
+
+<option value="MOT">Oficina de Motos</option>
+
+<option value="LAV">Lava Jato</option>
+
+<option value="PAD">Padaria</option>
+
+<option value="RES">Restaurante</option>
+
+<option value="ROU">Loja de Roupas</option>
+
+<option value="CAL">Calçados</option>
+
+<option value="MAT">Material de Construção</option>
+
+<option value="AGR">Agropecuária</option>
+
+<option value="PET">Pet Shop</option>
+
+<option value="ACA">Academia</option>
+
+<option value="BAR">Barbearia</option>
+
+<option value="SAL">Salão de Beleza</option>
+
+<option value="CLI">Clínica</option>
+
+<option value="CON">Contabilidade</option>
+
+<option value="SER">Serviços</option>
+
+<option value="GER">Outros</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>Ramo / Especialidade</label>
+
+<input id="ramo">
+
+</div>
+
+</div>
+
+<div>
+
+<label>Horário</label>
+<input id="horario">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>☎ Contatos</h2>
+
+<div class="grid2">
+
+<div>
+
+<label>WhatsApp</label>
+
+<input id="whatsapp">
+
+</div>
+
+<div>
+
+<label>Telefone</label>
+
+<input id="telefone">
+
+</div>
+
+<div>
+
+<label>Email</label>
+
+<input id="email">
+
+</div>
+
+<div>
+
+<label>Instagram</label>
+
+<input id="instagram">
+
+</div>
+
+<div>
+
+<label>Facebook</label>
+
+<input id="facebook">
+
+</div>
+
+<div>
+
+<label>Site</label>
+
+<input id="site">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>📍 Endereço</h2>
+
+<div class="grid2">
+
+<div>
+
+<label>CEP</label>
+
+<input id="cep">
+
+</div>
+
+<div>
+
+<label>Cidade</label>
+
+<input id="cidade">
+
+</div>
+
+<div>
+
+<label>Bairro</label>
+
+<input id="bairro">
+
+</div>
+
+<div>
+
+<label>Endereço</label>
+
+<input id="endereco">
+
+</div>
+
+<div>
+
+<label>Número</label>
+
+<input id="numero">
+
+</div>
+
+<div>
+
+<label>Complemento</label>
+
+<input id="complemento">
+
+</div>
+
+<div>
+
+<label>Google Maps</label>
+
+<input id="maps">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🖼 Logo</h2>
+
+<input
+type="file"
+id="logo">
+
+</div>
+
+
+<div class="card">
+
+<h2>⚙ Configurações</h2>
+
+<label>
+
+<input
+type="checkbox"
+id="exigePlaca">
+
+Exigir Placa
+
+</label>
+
+</div>
+
+
+<div style="margin-top:25px">
+
+<button
+class="btn">
+
+Cancelar
+
+</button>
+
+<button
+class="btn primary"
+
+onclick="salvarParceiroCompleto()">
+
+💾 Salvar Parceiro
+
+</button>
+
+</div>
+
+`;
+
+}
+
+
 
 </script>
 
