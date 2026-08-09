@@ -465,17 +465,79 @@ if (resp.exige_placa) {
 
 const img = document.getElementById("logoParceiro");
 
-img.src = "/logos/" + parceiroId + ".png";
+if (resp.logoURL) {
 
-img.onload = function () {
-    this.style.display = "block";
-};
+    let urlLogo = String(resp.logoURL).trim();
 
-img.onerror = function () {
-    this.onerror = null;
-    this.src = "/logo-aproveitai.png";
-    this.style.display = "block";
-};
+    console.log("LOGO RECEBIDA:", urlLogo);
+
+    let fileId = "";
+
+    // Formato:
+    // https://drive.google.com/file/d/ID/view
+    let match = urlLogo.match(/\/d\/([a-zA-Z0-9_-]+)/);
+
+    if (match && match[1]) {
+        fileId = match[1];
+    }
+
+    // Formato:
+    // https://drive.google.com/uc?export=view&id=ID
+    if (!fileId) {
+
+        try {
+
+            const u = new URL(urlLogo);
+
+            fileId = u.searchParams.get("id") || "";
+
+        } catch (e) {
+
+            console.log("Erro lendo URL da logo:", e);
+
+        }
+    }
+
+    // Se encontrou ID do Drive,
+    // usa endpoint de visualização direta
+    if (fileId) {
+
+        urlLogo =
+            "https://drive.google.com/thumbnail?id=" +
+            encodeURIComponent(fileId) +
+            "&sz=w500";
+
+    }
+
+    console.log("LOGO FINAL:", urlLogo);
+
+    img.onload = function () {
+
+        console.log("LOGO DO PARCEIRO CARREGADA");
+
+        this.style.display = "block";
+
+    };
+
+    img.onerror = function () {
+
+        console.log("ERRO AO CARREGAR LOGO:", urlLogo);
+
+        // Não coloca a logo AproveitAI no lugar.
+        // Assim sabemos se realmente houve falha.
+        this.style.display = "none";
+
+    };
+
+    img.src = urlLogo;
+
+} else {
+
+    console.log("PARCEIRO SEM LOGO CADASTRADA");
+
+    img.style.display = "none";
+
+}
 
 document.getElementById("nomeCliente").innerText =
 resp.nomeCliente || "";
