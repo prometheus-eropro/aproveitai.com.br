@@ -4825,14 +4825,14 @@ async function salvarParceiroCompleto(){
 
 /* ======================================================
    LOGO DO PARCEIRO
+   A logo NÃO será enviada no criar_parceiro.
+   O upload será feito depois que recebermos o parceiro_id.
 ====================================================== */
 
 const inputLogo =
   document.getElementById("logo");
 
-let logoNome = "";
-let logoBase64 = "";
-
+let arquivoLogo = null;
 
 if(
   inputLogo &&
@@ -4840,11 +4840,7 @@ if(
   inputLogo.files.length > 0
 ){
 
-  const arquivo =
-    inputLogo.files[0];
-
-
-  /* TIPOS PERMITIDOS */
+  arquivoLogo = inputLogo.files[0];
 
   const tiposPermitidos = [
     "image/png",
@@ -4852,34 +4848,19 @@ if(
     "image/webp"
   ];
 
-
-  if(
-    !tiposPermitidos.includes(
-      arquivo.type
-    )
-  ){
+  if(!tiposPermitidos.includes(arquivoLogo.type)){
 
     alert(
       "Logo inválida.\n\n" +
-      "Utilize PNG, JPG, JPEG ou WebP."
+      "Utilize PNG, JPG/JPEG ou WebP."
     );
 
     return;
-
   }
 
+  const limite = 2 * 1024 * 1024;
 
-  /*
-   * LIMITE DE 2 MB
-   *
-   * Logo não precisa ser uma imagem enorme.
-   */
-
-  const limite =
-    2 * 1024 * 1024;
-
-
-  if(arquivo.size > limite){
+  if(arquivoLogo.size > limite){
 
     alert(
       "A logo é muito grande.\n\n" +
@@ -4887,33 +4868,7 @@ if(
     );
 
     return;
-
   }
-
-
-  logoNome =
-    arquivo.name;
-
-
-  try{
-
-    logoBase64 =
-      await arquivoParaBase64(
-        arquivo
-      );
-
-  }catch(erro){
-
-    console.error(erro);
-
-    alert(
-      "Não foi possível preparar a logo."
-    );
-
-    return;
-
-  }
-
 }
 
 const parceiro={
@@ -4988,14 +4943,84 @@ document.getElementById("maps").value.trim(),
 exigePlaca:
 document.getElementById("exigePlaca").checked ? "SIM":"NAO",
 
-logoNome: logoNome,
-logoBase64: logoBase64
+arquivoLogo: arquivoLogo
 
 };
 
 console.log(parceiro);
 
 salvarParceiroServidor(parceiro);
+
+}
+
+
+/* ======================================================
+   UPLOAD DA LOGO DO PARCEIRO
+   Envia a imagem separadamente via POST
+====================================================== */
+
+async function enviarLogoParceiro(parceiroId, arquivo){
+
+  if(!arquivo){
+    return {
+      ok:true,
+      semLogo:true
+    };
+  }
+
+  const base64 =
+    await arquivoParaBase64(arquivo);
+
+const payload = {
+
+  action:"upload_logo_parceiro",
+
+  key:state.key,
+
+  parceiro_id:parceiroId,
+
+  logo_nome:arquivo.name,
+
+  logo_base64:base64
+
+};
+
+  const resposta =
+    await fetch(API_URL,{
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+
+      body:JSON.stringify(payload)
+
+    });
+
+  if(!resposta.ok){
+
+    throw new Error(
+      "Falha HTTP no upload da logo: " +
+      resposta.status
+    );
+
+  }
+
+  const resultado =
+    await resposta.json();
+
+  if(!resultado.ok){
+
+    throw new Error(
+      resultado.erro ||
+      resultado.mensagem ||
+      "Erro ao salvar logo."
+    );
+
+  }
+
+  return resultado;
 
 }
 
@@ -5043,22 +5068,89 @@ async function salvarParceiroServidor(parceiro){
 
     exige_placa:parceiro.exigePlaca,
 
-    logo_nome:parceiro.logoNome,
-    logo_base64:parceiro.logoBase64
-
-});
+  });
 
         console.log(resposta);
 
         if(resposta.ok){
 
-            toast("Parceiro cadastrado.");
+    const parceiroId =
+      resposta.parceiro_id;
 
-            await loadParceiros(true);
+    if(!parceiroId){
 
-            showView("parceiros");
+      throw new Error(
+        "Parceiro criado, mas a API não retornou parceiro_id."
+      );
 
-        }else{
+    }
+
+    /* ==========================================
+       ENVIA LOGO DEPOIS DO CADASTRO
+    ========================================== */
+
+    if(parceiro.arquivoLogo){
+
+      toast("🖼 Enviando logo...");
+
+      try{
+
+        const resultadoLogo =
+          await enviarLogoParceiro(
+            parceiroId,
+            parceiro.arquivoLogo
+          );
+
+        console.log(
+          "UPLOAD LOGO:",
+          resultadoLogo
+        );
+
+        toast("✅ Logo salva.");
+
+      }catch(erroLogo){
+
+        console.error(
+          "ERRO LOGO:",
+          erroLogo
+        );
+
+        /*
+         * NÃO apagamos o parceiro.
+         * Cadastro já foi realizado.
+         */
+
+        alert(
+          "⚠️ O parceiro foi cadastrado, " +
+          "mas houve erro ao salvar a logo.\n\n" +
+          erroLogo.message +
+          "\n\n" +
+          "A implantação poderá ser reprocessada."
+        );
+
+      }
+
+    }
+
+    toast(
+      "✅ Parceiro " +
+      parceiroId +
+      " cadastrado."
+    );
+
+    await loadParceiros(true);
+
+    showView("parceiros");
+
+}else{
+
+    alert(
+      resposta.erro ||
+      resposta.mensagem ||
+      "Erro ao cadastrar parceiro."
+    );
+
+}
 
             alert(resposta.mensagem || "Erro ao cadastrar parceiro.");
 
