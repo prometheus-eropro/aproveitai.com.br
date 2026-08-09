@@ -5085,87 +5085,80 @@ async function salvarParceiroServidor(parceiro){
 
     }
 
-    /* ==========================================
-       ENVIA LOGO DEPOIS DO CADASTRO
-    ========================================== */
+/* ==========================================
+   ENVIA LOGO DEPOIS DO CADASTRO
+========================================== */
 
-    if(parceiro.arquivoLogo){
+if(parceiro.arquivoLogo){
 
-      toast("🖼 Enviando logo...");
+  toast("🖼 Enviando logo...");
 
-      try{
+  try{
 
-        const resultadoLogo =
-          await enviarLogoParceiro(
-            parceiroId,
-            parceiro.arquivoLogo
-          );
+    const resultadoLogo =
+      await enviarLogoParceiro(
+        parceiroId,
+        parceiro.arquivoLogo
+      );
 
-        console.log(
-          "UPLOAD LOGO:",
-          resultadoLogo
-        );
-
-        toast("✅ Logo salva.");
-
-      }catch(erroLogo){
-
-        console.error(
-          "ERRO LOGO:",
-          erroLogo
-        );
-
-        /*
-         * NÃO apagamos o parceiro.
-         * Cadastro já foi realizado.
-         */
-
-        alert(
-          "⚠️ O parceiro foi cadastrado, " +
-          "mas houve erro ao salvar a logo.\n\n" +
-          erroLogo.message +
-          "\n\n" +
-          "A implantação poderá ser reprocessada."
-        );
-
-      }
-
-    }
-
-    toast(
-      "✅ Parceiro " +
-      parceiroId +
-      " cadastrado."
+    console.log(
+      "UPLOAD LOGO:",
+      resultadoLogo
     );
 
-    await loadParceiros(true);
+    toast("✅ Logo salva.");
 
-    showView("parceiros");
+  }catch(erroLogo){
+
+    console.error(
+      "ERRO LOGO:",
+      erroLogo
+    );
+
+    alert(
+      "⚠️ O parceiro foi cadastrado, " +
+      "mas houve erro ao salvar a logo.\n\n" +
+      erroLogo.message +
+      "\n\n" +
+      "A implantação poderá ser reprocessada."
+    );
+
+  }
+
+}
+
+toast(
+  "✅ Parceiro " +
+  parceiroId +
+  " cadastrado."
+);
+
+await loadParceiros(true);
+
+showView("parceiros");
 
 }else{
 
-    alert(
-      resposta.erro ||
-      resposta.mensagem ||
-      "Erro ao cadastrar parceiro."
-    );
+  alert(
+    resposta.erro ||
+    resposta.mensagem ||
+    "Erro ao cadastrar parceiro."
+  );
 
 }
 
-            alert(resposta.mensagem || "Erro ao cadastrar parceiro.");
+}catch(e){
 
-        }
+  console.error(e);
 
-    }catch(e){
-
-        console.error(e);
-
-        alert("Erro de comunicação.");
-
-    }
+  alert(
+    "Erro de comunicação.\n\n" +
+    (e.message || e)
+  );
 
 }
 
+}
 function buscarMaps(){
 
 const rua =
