@@ -4697,6 +4697,15 @@ onclick="editarParceiro('${parceiro.cnpj}')">
 
 <button
 class="btn"
+style="background:#0b7a2a;color:white"
+onclick="reprocessarImplantacao('${parceiro.parceiro_id}')">
+
+🔄 Verificar / Regerar Implantação
+
+</button>
+
+<button
+class="btn"
 
 onclick="window.print()">
 
@@ -4742,7 +4751,170 @@ alert(r.mensagem);
 
 }
 
+function arquivoParaBase64(arquivo){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader =
+      new FileReader();
+
+    reader.onload = function(){
+
+      const resultado =
+        String(reader.result || "");
+
+      const base64 =
+        resultado.includes(",")
+        ? resultado.split(",")[1]
+        : resultado;
+
+      resolve(base64);
+
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(arquivo);
+
+  });
+
+}
+
+
+/* ======================================================
+   CONVERTE ARQUIVO DE LOGO PARA BASE64
+====================================================== */
+
+function arquivoParaBase64(arquivo){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader = new FileReader();
+
+    reader.onload = function(){
+
+      const resultado =
+        String(reader.result || "");
+
+      const base64 =
+        resultado.includes(",")
+          ? resultado.split(",")[1]
+          : resultado;
+
+      resolve(base64);
+
+    };
+
+    reader.onerror = function(){
+
+      reject(
+        new Error(
+          "Não foi possível ler a logo."
+        )
+      );
+
+    };
+
+    reader.readAsDataURL(arquivo);
+
+  });
+
+}
+
 async function salvarParceiroCompleto(){
+
+/* ======================================================
+   LOGO DO PARCEIRO
+====================================================== */
+
+const inputLogo =
+  document.getElementById("logo");
+
+let logoNome = "";
+let logoBase64 = "";
+
+
+if(
+  inputLogo &&
+  inputLogo.files &&
+  inputLogo.files.length > 0
+){
+
+  const arquivo =
+    inputLogo.files[0];
+
+
+  /* TIPOS PERMITIDOS */
+
+  const tiposPermitidos = [
+    "image/png",
+    "image/jpeg",
+    "image/webp"
+  ];
+
+
+  if(
+    !tiposPermitidos.includes(
+      arquivo.type
+    )
+  ){
+
+    alert(
+      "Logo inválida.\n\n" +
+      "Utilize PNG, JPG, JPEG ou WebP."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * LIMITE DE 2 MB
+   *
+   * Logo não precisa ser uma imagem enorme.
+   */
+
+  const limite =
+    2 * 1024 * 1024;
+
+
+  if(arquivo.size > limite){
+
+    alert(
+      "A logo é muito grande.\n\n" +
+      "Utilize uma imagem de até 2 MB."
+    );
+
+    return;
+
+  }
+
+
+  logoNome =
+    arquivo.name;
+
+
+  try{
+
+    logoBase64 =
+      await arquivoParaBase64(
+        arquivo
+      );
+
+  }catch(erro){
+
+    console.error(erro);
+
+    alert(
+      "Não foi possível preparar a logo."
+    );
+
+    return;
+
+  }
+
+}
 
 const parceiro={
 
@@ -4814,7 +4986,10 @@ maps:
 document.getElementById("maps").value.trim(),
 
 exigePlaca:
-document.getElementById("exigePlaca").checked ? "SIM":"NAO"
+document.getElementById("exigePlaca").checked ? "SIM":"NAO",
+
+logoNome: logoNome,
+logoBase64: logoBase64
 
 };
 
@@ -4830,44 +5005,48 @@ async function salvarParceiroServidor(parceiro){
 
         const resposta = await callAPI({
 
-            action:"criar_parceiro",
+    action:"criar_parceiro",
 
-            key:state.key,
+    key:state.key,
 
-            razaoSocial:parceiro.razaoSocial,
-            nomeFantasia:parceiro.nomeFantasia,
-            cnpj:parceiro.cnpj,
-            ie:parceiro.ie,
+    razaoSocial:parceiro.razaoSocial,
+    nomeFantasia:parceiro.nomeFantasia,
+    cnpj:parceiro.cnpj,
+    ie:parceiro.ie,
 
-            responsavel:parceiro.responsavel,
-            cargo:parceiro.cargo,
+    responsavel:parceiro.responsavel,
+    cargo:parceiro.cargo,
 
-            ramo:parceiro.ramo,
+    categoria:parceiro.categoria,
+    ramo:parceiro.ramo,
 
-            horario:parceiro.horario,
+    horario:parceiro.horario,
 
-            whatsapp:parceiro.whatsapp,
-            telefone:parceiro.telefone,
+    whatsapp:parceiro.whatsapp,
+    telefone:parceiro.telefone,
 
-            email:parceiro.email,
+    email:parceiro.email,
 
-            instagram:parceiro.instagram,
-            facebook:parceiro.facebook,
-            site:parceiro.site,
+    instagram:parceiro.instagram,
+    facebook:parceiro.facebook,
+    site:parceiro.site,
 
-            cep:parceiro.cep,
-            cidade:parceiro.cidade,
-            bairro:parceiro.bairro,
+    cep:parceiro.cep,
+    cidade:parceiro.cidade,
+    bairro:parceiro.bairro,
 
-            endereco:parceiro.endereco,
-            numero:parceiro.numero,
-            complemento:parceiro.complemento,
+    endereco:parceiro.endereco,
+    numero:parceiro.numero,
+    complemento:parceiro.complemento,
 
-            maps:parceiro.maps,
+    maps:parceiro.maps,
 
-            exige_placa:parceiro.exigePlaca
+    exige_placa:parceiro.exigePlaca,
 
-        });
+    logo_nome:parceiro.logoNome,
+    logo_base64:parceiro.logoBase64
+
+});
 
         console.log(resposta);
 
@@ -5186,11 +5365,24 @@ document.getElementById("paginaNovoParceiro").innerHTML=`
 
 <div class="card">
 
-<h2>🖼 Logo</h2>
+<h2>🖼 Logo do Parceiro</h2>
+
+<label>
+Selecione a logo
+</label>
 
 <input
 type="file"
-id="logo">
+id="logo"
+accept="image/png,image/jpeg,image/webp">
+
+<small style="
+display:block;
+margin-top:8px;
+color:#666;
+">
+Formatos permitidos: PNG, JPG/JPEG ou WebP • Máximo 2 MB
+</small>
 
 </div>
 
@@ -5236,7 +5428,127 @@ onclick="salvarParceiroCompleto()">
 
 }
 
+async function reprocessarImplantacao(parceiroId){
 
+  parceiroId = String(parceiroId || "").trim();
+
+  if(!parceiroId){
+
+    alert("Parceiro sem parceiro_id.");
+
+    return;
+
+  }
+
+  const confirmar = confirm(
+    "Verificar e completar a implantação de " +
+    parceiroId +
+    "?\n\n" +
+    "O sistema irá localizar o parceiro e gerar novamente os itens faltantes."
+  );
+
+  if(!confirmar) return;
+
+
+  try{
+
+    toast("🔄 Verificando implantação...");
+
+    const resposta = await callAPI({
+
+      action: "reprocessar_implantacao",
+
+      parceiro_id: parceiroId
+
+    });
+
+
+    console.log(
+      "REPROCESSAMENTO:",
+      resposta
+    );
+
+
+    if(!resposta || !resposta.ok){
+
+      alert(
+        "Não foi possível completar a implantação.\n\n" +
+        (
+          resposta?.erro ||
+          resposta?.mensagem ||
+          "Erro não identificado."
+        )
+      );
+
+      return;
+
+    }
+
+
+    alert(
+      "✅ IMPLANTAÇÃO PROCESSADA\n\n" +
+      "Parceiro: " +
+      (resposta.parceiro || parceiroId) +
+      "\nID: " +
+      (resposta.parceiro_id || parceiroId) +
+      (
+        resposta.linha
+          ? "\nLinha localizada: " + resposta.linha
+          : ""
+      )
+    );
+
+
+    /*
+     * ATUALIZA OS DADOS DOS PARCEIROS
+     */
+
+    await loadParceiros(true);
+
+
+    /*
+     * MANTÉM O MESMO PARCEIRO SELECIONADO
+     */
+
+    const select =
+      document.getElementById("impParceiro");
+
+    if(select){
+
+      select.value = parceiroId;
+
+    }
+
+
+    /*
+     * REABRE A IMPLANTAÇÃO
+     * PARA MOSTRAR OS NOVOS DADOS
+     */
+
+    await abrirImplantacao();
+
+
+    toast("✅ Implantação atualizada");
+
+
+  }catch(erro){
+
+    console.error(
+      "ERRO REPROCESSAMENTO:",
+      erro
+    );
+
+    alert(
+      "Erro ao reprocessar implantação.\n\n" +
+      (
+        erro?.message ||
+        String(erro)
+      )
+    );
+
+  }
+
+}
 
 </script>
 
