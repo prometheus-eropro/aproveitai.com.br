@@ -261,17 +261,89 @@ const site = String(p.site || "");
 const email = String(p.email || "");
 const maps = String(p.link_maps || "");
 
-let logo =
-    p.parceiro_id
-        ? `/logos/${p.parceiro_id}.png`
-        : "logo-aproveitai.png";
+const logoURL =
+  String(p.logoURL || "").trim();
 
-    parceirosDiv.innerHTML += `
+const nomeFantasia =
+  String(
+    p.nomeFantasia ||
+    p.nome_fantasia ||
+    p.razaoSocial ||
+    "Parceiro"
+  ).trim();
+
+const identidadeParceiro = logoURL
+  ? `
+    <img
+      src="${logoURL}"
+      alt="${nomeFantasia}"
+      style="
+        max-width:160px;
+        max-height:100px;
+        object-fit:contain;
+        margin-bottom:10px;
+      "
+      onerror="
+        this.style.display='none';
+        this.nextElementSibling.style.display='flex';
+      "
+    >
+
+    <div
+      style="
+        display:none;
+        min-height:75px;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        font-size:21px;
+        font-weight:800;
+        color:#0b7a2a;
+        margin-bottom:10px;
+      "
+    >
+      ${nomeFantasia}
+    </div>
+  `
+  : `
+    <div
+      style="
+        min-height:75px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        font-size:21px;
+        font-weight:800;
+        color:#0b7a2a;
+        margin-bottom:10px;
+      "
+    >
+      ${nomeFantasia}
+    </div>
+  `;
+    
+<div
+      style="
+        min-height:75px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        font-size:21px;
+        font-weight:800;
+        color:#0b7a2a;
+        margin-bottom:10px;
+      "
+    >
+      ${nomeFantasia}
+    </div>
+  `;
+
+parceirosDiv.innerHTML += `
       <div class="card">
-<img
-    src="${logo}"
-    style="max-height:100px;margin-bottom:10px"
-    onerror="this.src='logo-aproveitai.png'">
+
+        ${identidadeParceiro}
 
         <h3>${nome}</h3>
         <p>📍 <b>Cidade:</b> ${cidade}</p>
