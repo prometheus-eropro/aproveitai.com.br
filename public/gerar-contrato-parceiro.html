@@ -447,50 +447,61 @@ Economize mais. Aproveite melhor.
 
 <div id="formulario">
 
-<div class="container">
+  <div class="container">
 
-<h2 style="text-align:center;color:#0a7a2a;margin-bottom:20px;">
-Dados do Parceiro
-</h2>
+    <h2 style="
+      text-align:center;
+      color:#0a7a2a;
+      margin-bottom:10px;
+    ">
+      Gerar Contrato do Parceiro
+    </h2>
 
-<label>Razão Social</label>
-<input id="nomeParceiro" type="text">
+    <p style="
+      text-align:center;
+      color:#666;
+      margin-bottom:20px;
+    ">
+      Informe o ID do parceiro para carregar
+      automaticamente os dados cadastrados.
+    </p>
 
-<label>Nome Fantasia</label>
-<input id="nomeFantasia" type="text">
+    <label>ID do Parceiro</label>
 
-<label>CNPJ</label>
-<input id="cnpj" type="text">
+    <input
+      id="parceiroId"
+      type="text"
+      placeholder="Ex.: AUT0001"
+      autocomplete="off"
+    >
 
-<label>Representante Legal</label>
-<input id="responsavel" type="text">
+    <button
+      type="button"
+      onclick="carregarParceiro()"
+    >
+      📄 Carregar Contrato
+    </button>
 
-<label>CPF</label>
-<input id="cpf" type="text">
+    <button
+      type="button"
+      onclick="window.print()"
+      style="margin-left:12px;"
+    >
+      🖨️ Imprimir / Salvar PDF
+    </button>
 
-<label>Cidade / Estado</label>
-<input id="cidade" type="text">
+    <div
+      id="statusContrato"
+      style="
+        margin-top:15px;
+        font-size:13px;
+        font-weight:bold;
+      "
+    ></div>
 
-<label>Telefone</label>
-<input id="telefone" type="text">
-
-<label>E-mail</label>
-<input id="email" type="email">
-
-<label>Instagram</label>
-<input id="instagram" type="text">
-
-<button onclick="gerar()">
-📄 Gerar Contrato
-</button>
-
-<button onclick="window.print()" style="margin-left:12px;">
-🖨️ Imprimir / Salvar PDF
-</button>
+  </div>
 
 </div>
-
-</div> <!-- FECHA O FORMULÁRIO AQUI -->
 
 <div class="container">
 
@@ -530,58 +541,499 @@ alt="AproveitAI">
 
 <script>
 
-function gerar(){
+/* ======================================================
+   CONFIGURAÇÃO
+====================================================== */
 
-const nome=document.getElementById("nomeParceiro").value.trim();
-const nomeFantasia=document.getElementById("nomeFantasia").value.trim();
-const cnpj=document.getElementById("cnpj").value.trim();
-const resp=document.getElementById("responsavel").value.trim();
-const cpf=document.getElementById("cpf").value.trim();
-const cidade=document.getElementById("cidade").value.trim();
-const telefone=document.getElementById("telefone").value.trim();
-const email=document.getElementById("email").value.trim();
-const instagram=document.getElementById("instagram").value.trim();
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzTAptalNlsrwf7t1LrJ7H_cC4wyc1DyEqDZ00dX9g2d4t80adfrgfPNmKNcnWKQ8hY/exec";
+
+
+let parceiroContrato = null;
+
+
+/* ======================================================
+   CARREGAR PARCEIRO
+====================================================== */
+
+async function carregarParceiro(){
+
+  const parceiroId =
+    String(
+      document.getElementById("parceiroId").value || ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const status =
+    document.getElementById("statusContrato");
+
+
+  if(!parceiroId){
+
+    status.style.color = "#b00020";
+
+    status.textContent =
+      "Informe o ID do parceiro.";
+
+    return;
+
+  }
+
+
+  status.style.color = "#555";
+
+  status.textContent =
+    "Carregando dados do parceiro...";
+
+
+  try{
+
+    /*
+     * O contrato consulta a aba parceiros
+     * através da mesma API do Admin.
+     */
+
+    const url =
+      GAS_URL +
+      "?aba=parceiros" +
+      "&key=" +
+      encodeURIComponent(
+        obterChaveAdmin()
+      ) +
+      "&callback=receberParceirosContrato";
+
+
+    window.callbackContratoParceiro =
+      parceiroId;
+
+
+    const script =
+      document.createElement("script");
+
+
+    script.src =
+      url.replace(
+        "callback=receberParceirosContrato",
+        "callback=receberParceirosContrato"
+      );
+
+
+    script.onerror =
+      function(){
+
+        status.style.color =
+          "#b00020";
+
+        status.textContent =
+          "Erro ao consultar o parceiro.";
+
+        script.remove();
+
+      };
+
+
+    document.body.appendChild(
+      script
+    );
+
+
+  }catch(erro){
+
+    console.error(erro);
+
+    status.style.color =
+      "#b00020";
+
+    status.textContent =
+      "Erro ao carregar parceiro.";
+
+  }
+
+}
+
+
+/* ======================================================
+   RECEBE PARCEIROS DA API
+====================================================== */
+
+function receberParceirosContrato(resposta){
+
+  const status =
+    document.getElementById(
+      "statusContrato"
+    );
+
+
+  if(
+    !resposta ||
+    !resposta.ok
+  ){
+
+    status.style.color =
+      "#b00020";
+
+    status.textContent =
+      resposta?.erro ||
+      "Não foi possível consultar os parceiros.";
+
+    return;
+
+  }
+
+
+  const lista =
+    resposta.dados ||
+    resposta.parceiros ||
+    [];
+
+
+  const parceiroId =
+    String(
+      window.callbackContratoParceiro || ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const parceiro =
+    lista.find(p =>
+
+      String(
+        p.parceiro_id || ""
+      )
+      .trim()
+      .toUpperCase()
+      === parceiroId
+
+    );
+
+
+  if(!parceiro){
+
+    status.style.color =
+      "#b00020";
+
+    status.textContent =
+      "Parceiro não encontrado.";
+
+    return;
+
+  }
+
+
+  parceiroContrato =
+    parceiro;
+
+
+  status.style.color =
+    "#0B7A2A";
+
+  status.textContent =
+    "✓ Parceiro localizado: " +
+    (
+      parceiro.nomeFantasia ||
+      parceiro.razaoSocial ||
+      parceiro.parceiro_id
+    );
+
+
+  gerarContrato(
+    parceiro
+  );
+
+}
+
+
+/* ======================================================
+   RECUPERA CHAVE DO ADMIN
+====================================================== */
+
+function obterChaveAdmin(){
+
+  /*
+   * Usa a chave armazenada pelo Admin.
+   * Se o nome usado no seu Admin for diferente,
+   * ajustaremos no próximo passo.
+   */
+
+  return (
+    localStorage.getItem("aproveitai_admin_key") ||
+    sessionStorage.getItem("aproveitai_admin_key") ||
+    ""
+  );
+
+}
+
+
+/* ======================================================
+   FORMATA CPF
+====================================================== */
+
+function formatarCPF(valor){
+
+  const n =
+    String(valor || "")
+    .replace(/\D/g,"");
+
+
+  if(n.length !== 11)
+    return valor || "";
+
+
+  return (
+    n.slice(0,3) + "." +
+    n.slice(3,6) + "." +
+    n.slice(6,9) + "-" +
+    n.slice(9,11)
+  );
+
+}
+
+
+/* ======================================================
+   FORMATA CNPJ
+====================================================== */
+
+function formatarCNPJ(valor){
+
+  const n =
+    String(valor || "")
+    .replace(/\D/g,"");
+
+
+  if(n.length !== 14)
+    return valor || "";
+
+
+  return (
+    n.slice(0,2) + "." +
+    n.slice(2,5) + "." +
+    n.slice(5,8) + "/" +
+    n.slice(8,12) + "-" +
+    n.slice(12,14)
+  );
+
+}
+
+
+/* ======================================================
+   GERA CONTRATO
+====================================================== */
+
+function gerarContrato(p){
+
+  const tipo =
+    String(
+      p.tipo_documento || ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const nome =
+    p.razaoSocial ||
+    p.nomeFantasia ||
+    "";
+
+
+  const nomeFantasia =
+    p.nomeFantasia || "";
+
+
+  const cnpj =
+    formatarCNPJ(
+      p.cnpj || ""
+    );
+
+
+  const cpfParceiro =
+    formatarCPF(
+      p.cpf || ""
+    );
+
+
+  const representante =
+    p.representante_legal ||
+    p.contato ||
+    "";
+
+
+  const cpfRepresentante =
+    formatarCPF(
+      p.cpf_representante || ""
+    );
+
+
+  const telefone =
+    p.whatsapp ||
+    p.telefone ||
+    "";
+
+
+  const email =
+    p.email || "";
+
+
+  const instagram =
+    p.instagram || "";
+
+
+  const cidade =
+    [
+      p.cidade || "",
+      p.uf || ""
+    ]
+    .filter(Boolean)
+    .join(" / ");
+
+
+  const parceiroId =
+  p.parceiro_id || "";
+
+
+/* ======================================================
+   IDENTIFICAÇÃO DO CONTRATO
+====================================================== */
+
+const numeroContrato =
+  gerarNumeroContrato(
+    parceiroId
+  );
+
+
+const pessoaFisica =
+  tipo === "CPF" ||
+  (
+    cpfParceiro &&
+    !cnpj
+  );
+
+
+  let dadosContratante = "";
+
+
+  if(pessoaFisica){
+
+    dadosContratante = `
+
+      <strong>CONTRATANTE</strong><br><br>
+
+      Nome:
+      ${nomeFantasia || nome}<br>
+
+      CPF:
+      ${cpfParceiro}<br>
+
+      ${telefone
+        ? `Telefone: ${telefone}<br>`
+        : ""
+      }
+
+      ${email
+        ? `E-mail: ${email}<br>`
+        : ""
+      }
+
+      ${instagram
+        ? `Instagram: ${instagram}<br>`
+        : ""
+      }
+
+      ${cidade
+        ? `Cidade/UF: ${cidade}<br>`
+        : ""
+      }
+
+      ID Parceiro:
+      ${parceiroId}
+
+    `;
+
+  }else{
+
+    dadosContratante = `
+
+      <strong>CONTRATANTE</strong><br><br>
+
+      Razão Social:
+      ${nome}<br>
+
+      ${nomeFantasia
+        ? `Nome Fantasia: ${nomeFantasia}<br>`
+        : ""
+      }
+
+      CNPJ:
+      ${cnpj}<br>
+
+      ${representante
+        ? `Representante para assinatura: ${representante}<br>`
+        : ""
+      }
+
+      ${cpfRepresentante
+        ? `CPF do representante: ${cpfRepresentante}<br>`
+        : ""
+      }
+
+      ${telefone
+        ? `Telefone: ${telefone}<br>`
+        : ""
+      }
+
+      ${email
+        ? `E-mail: ${email}<br>`
+        : ""
+      }
+
+      ${instagram
+        ? `Instagram: ${instagram}<br>`
+        : ""
+      }
+
+      ${cidade
+        ? `Cidade/UF: ${cidade}<br>`
+        : ""
+      }
+
+      ID Parceiro:
+      ${parceiroId}
+
+    `;
+
+  }
 
 document.getElementById("conteudoContrato").innerHTML = `
+
+<div style="
+margin-bottom:10px;
+padding:6px 8px;
+background:#f7f7f7;
+border:1px solid #ddd;
+font-size:10px;
+text-align:right;
+">
+
+<strong>Contrato nº:</strong>
+${numeroContrato}
+
+</div>
 
 <div style="margin-bottom:20px;">
 
 
 <div style="display:flex;gap:15px;margin-bottom:10px;">
 
-<div style="flex:1;border:1px solid #ccc;padding:6px 8px;font-size:10px;line-height:1.2;">
+<div style="
+flex:1;
+border:1px solid #ccc;
+padding:6px 8px;
+font-size:10px;
+line-height:1.2;
+">
 
-<strong>CONTRATADA</strong><br><br>
-
-PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA<br>
-
-CNPJ: 58.584.332/0001-40<br>
-
-Guaçuí – ES
-
-</div>
-
-<div style="flex:1;border:1px solid #ccc;padding:6px 8px;font-size:10px;line-height:1.2;">
-
-<strong>CONTRATANTE</strong><br><br>
-
-Razão Social: ${nome}<br>
-
-Nome Fantasia: ${nomeFantasia}<br>
-
-CNPJ: ${cnpj}<br>
-
-Representante Legal: ${resp}<br>
-
-CPF: ${cpf}<br>
-
-Telefone: ${telefone}<br>
-
-E-mail: ${email}<br>
-
-Instagram: ${instagram}<br>
-
-Cidade/UF: ${cidade}
+${dadosContratante}
 
 </div>
 
@@ -617,9 +1069,9 @@ Para fins deste contrato:
 
 <p><strong>1.1.</strong> O presente contrato tem por objeto formalizar a parceria comercial entre a CONTRATADA e o PARCEIRO para divulgação de produtos, serviços, benefícios, promoções, campanhas e demais ações comerciais por meio da Plataforma AproveitAI.</p>
 
-<p><strong>1.2.</strong> Os benefícios, promoções, campanhas, percentuais de desconto, regras de utilização, público-alvo, prazos de vigência e demais condições operacionais serão definidos em documento denominado <strong>Ficha de Benefícios e Promoções</strong>, integra operacionalmente o presente contrato, independentemente de assinatura específica, observadas as condições nele estabelecidas.</p>
+<p><strong>1.2.</strong> Os benefícios oferecidos pelo PARCEIRO, bem como eventuais promoções, campanhas, percentuais de desconto, regras de utilização, público-alvo, formas de pagamento, prazos de vigência e demais condições operacionais serão registrados na <strong>Ficha Operacional do Parceiro</strong> e/ou na Plataforma AproveitAI, cujos registros passam a integrar operacionalmente a presente parceria.</p>
 
-<p><strong>1.3.</strong> A Ficha poderá ser criada, alterada, suspensa, atualizada ou cancelada a qualquer tempo, por solicitação do PARCEIRO ou da CONTRATADA, sem necessidade de assinatura de novo contrato, desde que não altere as obrigações jurídicas aqui estabelecidas.</p>
+<p><strong>1.3.</strong> Os benefícios e demais condições comerciais poderão ser incluídos, alterados, suspensos ou encerrados por solicitação do PARCEIRO, sem necessidade de celebração de novo contrato, desde que respeitadas as ofertas válidas já utilizadas ou autorizadas e as demais obrigações previstas neste instrumento.</p>
 
 <p><strong>1.4.</strong> Todas as alterações produzirão efeitos a partir do respectivo cadastro ou atualização na Plataforma AproveitAI.</p>
 
@@ -692,7 +1144,7 @@ Para fins deste contrato:
 
 <p><strong>8.2.</strong> A participação do PARCEIRO nas campanhas será sempre facultativa.</p>
 
-<p><strong>8.3.</strong> As regras específicas de cada campanha serão definidas na Ficha de Benefícios e Promoções.</p>
+<p><strong>8.3.</strong> As regras específicas de cada campanha serão registradas na <strong>Ficha Operacional do Parceiro</strong> e/ou na Plataforma AproveitAI.</p>
 
 <p><strong>8.4.</strong> O PARCEIRO poderá aderir, alterar, suspender ou cancelar sua participação mediante solicitação formal.</p>
 
@@ -717,7 +1169,7 @@ Para fins deste contrato:
 
 <h3 class="tituloClausula">10. DO INVESTIMENTO</h3>
 
-<p><strong>10.1.</strong> Durante a campanha de implantação da Plataforma AproveitAI, o PARCEIRO será enquadrado como <strong>Parceiro de Implantação</strong>, ficando isento do pagamento de mensalidade, taxa de adesão ou comissão, "enquanto durar a campanha oficial de implantação da Plataforma AproveitAI."</p>
+<p><strong>10.1.</strong> Durante a campanha de implantação da Plataforma AproveitAI, o PARCEIRO será enquadrado como <strong>Parceiro de Implantação</strong>, ficando isento do pagamento de mensalidade, taxa de adesão ou comissão enquanto durar a campanha oficial de implantação da Plataforma AproveitAI.</p>
 
 <p><strong>10.2.</strong> O benefício acima possui caráter exclusivamente promocional, não constituindo direito adquirido ou gratuidade permanente.</p>
 
@@ -803,6 +1255,7 @@ Guaçuí – ES, ______ de _______________________ de 20____.
 
 </div>
 
+
 <div style="
 margin:12px 0;
 padding:8px;
@@ -813,46 +1266,190 @@ text-align:center;
 border-radius:5px;
 ">
 
-Ao assinarem este instrumento, as partes declaram que leram, compreenderam e concordam integralmente com todas as cláusulas e condições estabelecidas neste contrato.
+Ao assinarem este instrumento, as partes declaram que leram,
+compreenderam e concordam integralmente com todas as cláusulas
+e condições estabelecidas neste contrato.
 
 </div>
 
+
 <div class="assinaturas">
+
+
+<!-- ==========================================
+     CONTRATADA
+========================================== -->
 
 <div class="ass">
 
 <hr>
 
-<strong>PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA</strong><br>
+<strong>
+PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA
+</strong>
 
-Representante Legal<br>
+<br>
 
-Edgar Rocha Oliveira<br>
+CNPJ: 61.871.212/0001-21
+
+<br><br>
+
+Representante:
+
+<br>
+
+Edgar Rocha Oliveira
+
+<br><br>
 
 <b>CONTRATADA</b>
 
 </div>
 
+
+<!-- ==========================================
+     CONTRATANTE
+========================================== -->
+
 <div class="ass">
 
 <hr>
 
-<strong>${nome}</strong><br>
+<strong>
+${pessoaFisica
+  ? (nomeFantasia || nome)
+  : nome
+}
+</strong>
 
-CNPJ: ${cnpj}<br><br>
+<br>
 
-Representante Legal:<br>
 
-${resp}<br>
+${pessoaFisica
 
-CPF: ${cpf}<br><br>
+  ? `
+
+    CPF:
+    ${cpfParceiro}
+
+    <br><br>
+
+  `
+
+  : `
+
+    CNPJ:
+    ${cnpj}
+
+    <br><br>
+
+
+    ${representante
+
+      ? `
+
+        Representante para assinatura:
+
+        <br>
+
+        ${representante}
+
+        <br>
+
+      `
+
+      : ""
+
+    }
+
+
+    ${cpfRepresentante
+
+      ? `
+
+        CPF:
+        ${cpfRepresentante}
+
+        <br><br>
+
+      `
+
+      : "<br>"
+
+    }
+
+  `
+
+}
+
 
 <b>CONTRATANTE</b>
+
 </div>
+
 
 </div>
 
 `;
+
+}
+
+
+/* ======================================================
+   CARREGA AUTOMATICAMENTE PELO PARCEIRO_ID DA URL
+
+   Exemplo:
+   gerar-contrato-parceiro.html?p=AUT0001
+====================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const parceiroId =
+      String(
+        params.get("p") ||
+        params.get("parceiro_id") ||
+        ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    if(parceiroId){
+
+      const campo =
+        document.getElementById(
+          "parceiroId"
+        );
+
+
+      if(campo){
+
+        campo.value =
+          parceiroId;
+
+      }
+
+
+      carregarParceiro();
+
+    }
+
+  }
+);
+
+function gerarNumeroContrato(parceiroId) {
+
+  if (!parceiroId) return "";
+
+  return `CTR-${parceiroId}`;
 
 }
 

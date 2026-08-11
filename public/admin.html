@@ -2631,6 +2631,119 @@ function escapeHtml(s){
     .replaceAll("'","&#39;");
 }
 
+/* ======================================================
+   DOCUMENTOS CPF / CNPJ
+====================================================== */
+
+function validarCPF(cpf){
+
+  cpf = apenasNumeros(cpf);
+
+  if(cpf.length !== 11) return false;
+
+  if(/^(\d)\1{10}$/.test(cpf)) return false;
+
+  let soma = 0;
+
+  for(let i = 0; i < 9; i++){
+    soma += Number(cpf[i]) * (10 - i);
+  }
+
+  let digito =
+    11 - (soma % 11);
+
+  if(digito >= 10) digito = 0;
+
+  if(digito !== Number(cpf[9])){
+    return false;
+  }
+
+
+  soma = 0;
+
+  for(let i = 0; i < 10; i++){
+    soma += Number(cpf[i]) * (11 - i);
+  }
+
+  digito =
+    11 - (soma % 11);
+
+  if(digito >= 10) digito = 0;
+
+  return digito === Number(cpf[10]);
+
+}
+
+
+function validarCNPJ(cnpj){
+
+  cnpj = apenasNumeros(cnpj);
+
+  if(cnpj.length !== 14) return false;
+
+  if(/^(\d)\1{13}$/.test(cnpj)) return false;
+
+
+  function calcular(base, pesos){
+
+    let soma = 0;
+
+    for(let i = 0; i < pesos.length; i++){
+      soma += Number(base[i]) * pesos[i];
+    }
+
+    const resto = soma % 11;
+
+    return resto < 2
+      ? 0
+      : 11 - resto;
+
+  }
+
+
+  const d1 = calcular(
+    cnpj,
+    [5,4,3,2,9,8,7,6,5,4,3,2]
+  );
+
+  if(d1 !== Number(cnpj[12])){
+    return false;
+  }
+
+
+  const d2 = calcular(
+    cnpj,
+    [6,5,4,3,2,9,8,7,6,5,4,3,2]
+  );
+
+  return d2 === Number(cnpj[13]);
+
+}
+
+
+function formatarCPF(cpf){
+
+  cpf = apenasNumeros(cpf);
+
+  return cpf.replace(
+    /^(\d{3})(\d{3})(\d{3})(\d{2})$/,
+    "$1.$2.$3-$4"
+  );
+
+}
+
+
+function formatarCNPJ(cnpj){
+
+  cnpj = apenasNumeros(cnpj);
+
+  return cnpj.replace(
+    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+    "$1.$2.$3/$4-$5"
+  );
+
+}
+
 /*** 4) JSONP CALL — SEM CORS ***/
 function callAPI(params = {}){
 
@@ -2890,51 +3003,180 @@ function downloadCSV(filename, rows){
 let editCtx = null;
 
 function openEditModal({title, hint, fields, initial, onSave}){
-  editCtx = { fields, onSave, initial: initial||{} };
 
-  $("editTitle").textContent = title || "Editar";
-  $("editHint").textContent = hint || "";
+  editCtx = {
+    fields,
+    onSave,
+    initial: initial || {}
+  };
+
+  $("editTitle").textContent =
+    title || "Editar";
+
+  $("editHint").textContent =
+    hint || "";
 
   const form = $("editForm");
+
   form.innerHTML = "";
 
-  fields.forEach(f=>{
-    const wrap = document.createElement("div");
-    wrap.style.minWidth = f.w || "220px";
-    wrap.style.flex = f.flex || "0 0 auto";
 
-    const lab = document.createElement("div");
+  fields.forEach(f => {
+
+    const wrap =
+      document.createElement("div");
+
+    wrap.style.minWidth =
+      f.w || "220px";
+
+    wrap.style.flex =
+      f.flex || "0 0 auto";
+
+
+    const lab =
+      document.createElement("div");
+
     lab.className = "hint";
+
     lab.style.fontWeight = "900";
+
     lab.style.marginBottom = "6px";
-    lab.textContent = f.label || f.key;
+
+    lab.textContent =
+      f.label || f.key;
+
 
     let input;
+
+
+    /* ==========================================
+       TEXTAREA
+    ========================================== */
+
     if(f.type === "textarea"){
-      input = document.createElement("textarea");
-    }else if(f.type === "select"){
-      input = document.createElement("select");
-      (f.options||[]).forEach(opt=>{
-        const o=document.createElement("option");
-        o.value=opt.value; o.textContent=opt.label;
-        input.appendChild(o);
-      });
-    }else{
-      input = document.createElement("input");
-      input.type = f.type || "text";
-      input.className = "input";
+
+      input =
+        document.createElement("textarea");
+
     }
+
+
+    /* ==========================================
+       SELECT
+    ========================================== */
+
+    else if(f.type === "select"){
+
+      input =
+        document.createElement("select");
+
+
+      (f.options || []).forEach(opt => {
+
+        const o =
+          document.createElement("option");
+
+        o.value =
+          opt.value;
+
+        o.textContent =
+          opt.label;
+
+        input.appendChild(o);
+
+      });
+
+    }
+
+
+    /* ==========================================
+       FILE
+    ========================================== */
+
+    else if(f.type === "file"){
+
+      input =
+        document.createElement("input");
+
+      input.type = "file";
+
+
+      if(f.accept){
+
+        input.setAttribute(
+          "accept",
+          f.accept
+        );
+
+      }
+
+    }
+
+
+    /* ==========================================
+       INPUT NORMAL
+    ========================================== */
+
+    else{
+
+      input =
+        document.createElement("input");
+
+      input.type =
+        f.type || "text";
+
+    }
+
+
     input.classList.add("input");
-    input.dataset.key = f.key;
-    input.value = (initial && initial[f.key] != null) ? String(initial[f.key]) : (f.default ?? "");
-    if(f.readonly) input.setAttribute("readonly","readonly");
+
+    input.dataset.key =
+      f.key;
+
+
+    /* ==========================================
+       VALOR INICIAL
+
+       FILE não pode receber value programaticamente
+    ========================================== */
+
+    if(f.type !== "file"){
+
+      input.value =
+        (
+          initial &&
+          initial[f.key] != null
+        )
+          ? String(initial[f.key])
+          : (f.default ?? "");
+
+    }
+
+
+    if(f.readonly){
+
+      input.setAttribute(
+        "readonly",
+        "readonly"
+      );
+
+    }
+
 
     wrap.appendChild(lab);
+
     wrap.appendChild(input);
+
     form.appendChild(wrap);
+
   });
 
-  showOverlay("overlayEdit", true);
+
+  showOverlay(
+    "overlayEdit",
+    true
+  );
+
 }
 
 function closeEditModal(){
@@ -2943,25 +3185,114 @@ function closeEditModal(){
 }
 
 async function saveEditModal(){
+
   if(!editCtx) return;
 
   const patch = {};
-  document.querySelectorAll("#editForm .input, #editForm textarea, #editForm select").forEach(el=>{
-    const k = el.dataset.key;
-    if(!k) return;
-    patch[k] = el.value;
-  });
+
+
+  /* ======================================================
+     MONTA DADOS DO FORMULÁRIO
+  ====================================================== */
+
+  document
+    .querySelectorAll(
+      "#editForm .input, #editForm textarea, #editForm select"
+    )
+    .forEach(el => {
+
+      const k =
+        el.dataset.key;
+
+      if(!k) return;
+
+
+      /* ==========================================
+         CAMPO DE ARQUIVO
+      ========================================== */
+
+      if(
+        el.tagName === "INPUT" &&
+        el.type === "file"
+      ){
+
+        patch[k] =
+          (
+            el.files &&
+            el.files.length > 0
+          )
+            ? el.files[0]
+            : null;
+
+        return;
+
+      }
+
+
+      /* ==========================================
+         CHECKBOX
+      ========================================== */
+
+      if(
+        el.tagName === "INPUT" &&
+        el.type === "checkbox"
+      ){
+
+        patch[k] =
+          el.checked
+            ? "SIM"
+            : "NAO";
+
+        return;
+
+      }
+
+
+      /* ==========================================
+         CAMPOS NORMAIS
+      ========================================== */
+
+      patch[k] =
+        el.value;
+
+    });
+
 
   try{
-    $("btnEditSave").disabled = true;
-    await editCtx.onSave(patch, editCtx.initial);
+
+    $("btnEditSave").disabled =
+      true;
+
+
+    await editCtx.onSave(
+      patch,
+      editCtx.initial
+    );
+
+
     closeEditModal();
+
+
   }catch(err){
-    console.error(err);
-    toast("Erro ao salvar");
+
+    console.error(
+      "ERRO AO SALVAR EDIÇÃO:",
+      err
+    );
+
+
+    toast(
+      "Erro ao salvar"
+    );
+
+
   }finally{
-    $("btnEditSave").disabled = false;
+
+    $("btnEditSave").disabled =
+      false;
+
   }
+
 }
 
 /*** 9) API ACTIONS ***/
@@ -3290,78 +3621,704 @@ async function loadParceiros(force=false){
 }
 
 function renderParceiros(){
-  const q = ($("filtroParceiros").value||"").trim().toLowerCase();
-  const rows = state.cache.parceiros.filter(p=>{
-    if(!q) return true;
-    const blob = JSON.stringify(p).toLowerCase();
-    return blob.includes(q);
-  });
 
-  renderTable("tblParceiros", rows, [
-    {key:"nomeFantasia", label:"Nome Fantasia"},
-    {key:"cnpj", label:"CNPJ"},
-    {key:"cidade", label:"Cidade"},
-    {key:"ramo", label:"Ramo"},
-    {key:"whatsapp", label:"WhatsApp"},
-    {key:"token", label:"Token"},
-    {key:"ativo", label:"Status", render:(r)=> (String(r.ativo||"").toLowerCase()==="sim" ? "SIM" : "NAO") },
-  ],{
-    actions: (p)=>{
-      const ativo = String(p.ativo||"").trim().toLowerCase()==="sim";
-      const cnpj = p.cnpj || "";
-      const cnpjId = apenasNumeros(cnpj) || cnpj;
-      return `
-        <button class="btn" onclick="toggleParceiro('${cnpjId}', ${ativo})">${ativo?'Inativar':'Ativar'}</button>
-        <button class="btn" onclick="editarParceiro('${cnpjId}')">Editar</button>
-        <button class="btn" onclick="contratoParceiro('${cnpjId}')">Contrato (PDF)</button>
-      `;
+  const q =
+    ($("filtroParceiros").value || "")
+    .trim()
+    .toLowerCase();
+
+  const rows =
+    (state.cache.parceiros || [])
+    .filter(p => {
+
+      if(!q) return true;
+
+      return JSON.stringify(p)
+        .toLowerCase()
+        .includes(q);
+
+    });
+
+
+  renderTable(
+    "tblParceiros",
+    rows,
+    [
+
+      {
+        key:"nomeFantasia",
+        label:"Parceiro"
+      },
+
+      {
+        key:"tipo_documento",
+        label:"Tipo"
+      },
+
+      {
+        key:"documento",
+        label:"CPF / CNPJ",
+
+        render:(p)=>{
+
+          const tipo =
+            String(
+              p.tipo_documento || ""
+            ).toUpperCase();
+
+          if(tipo === "CPF"){
+            return p.cpf || "";
+          }
+
+          return p.cnpj || "";
+
+        }
+      },
+
+      {
+        key:"cidade",
+        label:"Cidade"
+      },
+
+      {
+        key:"ramo",
+        label:"Ramo"
+      },
+
+      {
+        key:"parceiro_id",
+        label:"ID"
+      },
+
+      {
+        key:"ativo",
+        label:"Status",
+
+        render:(p)=>
+          String(p.ativo || "")
+          .toLowerCase() === "sim"
+          ? "SIM"
+          : "NAO"
+      }
+
+    ],
+
+    {
+
+      actions:(p)=>{
+
+        const ativo =
+          String(p.ativo || "")
+          .trim()
+          .toLowerCase() === "sim";
+
+        const parceiroId =
+          String(
+            p.parceiro_id || ""
+          ).trim();
+
+        if(!parceiroId){
+          return "Sem parceiro_id";
+        }
+
+        return `
+
+          <button
+            class="btn"
+            onclick="toggleParceiro(
+              '${escapeJs(parceiroId)}',
+              ${ativo}
+            )">
+
+            ${ativo ? "Inativar" : "Ativar"}
+
+          </button>
+
+          <button
+            class="btn"
+            onclick="editarParceiro(
+              '${escapeJs(parceiroId)}'
+            )">
+            Editar
+          </button>
+
+          <button
+  class="btn"
+  onclick="gerarContratoParceiro('${escapeJs(p.parceiro_id)}')">
+  Contrato
+</button>
+
+        `;
+
+      }
+
     }
-  });
+  );
+
 }
 
-async function toggleParceiro(cnpj, ativo){
+async function toggleParceiro(
+  parceiroId,
+  ativo
+){
+
   try{
-    await apiAlterarStatus("parceiros","cnpj",cnpj, ativo ? "NAO" : "SIM");
-    toast("Status atualizado");
+
+    if(!(await ensureLogin())) return;
+
+
+    const parceiro =
+      (state.cache.parceiros || [])
+      .find(p =>
+
+        String(
+          p.parceiro_id || ""
+        ).trim() ===
+
+        String(
+          parceiroId || ""
+        ).trim()
+
+      );
+
+
+    if(!parceiro){
+
+      alert(
+        "Parceiro não localizado."
+      );
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       INATIVAR
+    ========================================== */
+
+    if(ativo){
+
+      const confirmar =
+        confirm(
+          "Deseja realmente INATIVAR " +
+          (parceiro.nomeFantasia || parceiroId) +
+          "?"
+        );
+
+      if(!confirmar) return;
+
+
+      await apiAlterarStatus(
+        "parceiros",
+        "parceiro_id",
+        parceiroId,
+        "NAO"
+      );
+
+
+      toast(
+        "🔴 Parceiro inativado."
+      );
+
+      await loadParceiros(true);
+      await loadDashboard(true);
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       ATIVAR — BENEFÍCIO É OBRIGATÓRIO
+    ========================================== */
+
+    toast(
+      "🔎 Verificando benefício..."
+    );
+
+
+    await loadBeneficios(true);
+
+
+    const beneficios =
+      (state.cache.beneficios || [])
+      .filter(b =>
+
+        String(
+          b.parceiro_id || ""
+        ).trim() ===
+
+        String(
+          parceiroId
+        ).trim()
+
+      );
+
+
+    if(!beneficios.length){
+
+      alert(
+        "⚠️ PARCEIRO NÃO PODE SER ATIVADO\n\n" +
+
+        "Cadastre pelo menos um benefício para " +
+
+        (parceiro.nomeFantasia || parceiroId) +
+
+        "."
+      );
+
+      return;
+
+    }
+
+
+    const temBeneficioAtivo =
+      beneficios.some(b =>
+
+        String(
+          b.ativo || ""
+        )
+        .trim()
+        .toUpperCase() === "SIM"
+
+      );
+
+
+    if(!temBeneficioAtivo){
+
+      alert(
+        "⚠️ PARCEIRO NÃO PODE SER ATIVADO\n\n" +
+
+        "O parceiro possui benefício cadastrado, " +
+        "mas nenhum benefício está ATIVO."
+      );
+
+      return;
+
+    }
+
+
+    const confirmar =
+      confirm(
+
+        "ATIVAR PARCEIRO?\n\n" +
+
+        (parceiro.nomeFantasia || parceiroId) +
+
+        "\nID: " +
+        parceiroId +
+
+        "\n\nBenefícios ativos verificados."
+
+      );
+
+
+    if(!confirmar) return;
+
+
+    await apiAlterarStatus(
+      "parceiros",
+      "parceiro_id",
+      parceiroId,
+      "SIM"
+    );
+
+
+    toast(
+      "✅ Parceiro ativado."
+    );
+
+
     await loadParceiros(true);
     await loadDashboard(true);
-  }catch(err){ toast("Erro ao alterar status"); }
+
+
+  }catch(err){
+
+    console.error(
+      "ERRO STATUS PARCEIRO:",
+      err
+    );
+
+    alert(
+      "Erro ao alterar status do parceiro."
+    );
+
+  }
+
 }
 
-function editarParceiro(cnpj){
-  const p = state.cache.parceiros.find(x => apenasNumeros(x.cnpj) === apenasNumeros(cnpj)) || {};
+function editarParceiro(parceiroId){
+
+  const p =
+    (state.cache.parceiros || [])
+    .find(x =>
+
+      String(
+        x.parceiro_id || ""
+      ).trim() ===
+
+      String(
+        parceiroId || ""
+      ).trim()
+
+    );
+
+
+  if(!p){
+
+    alert(
+      "Parceiro não localizado."
+    );
+
+    return;
+
+  }
+
+
   openEditModal({
-    title: "Editar parceiro",
-    hint: "Salva via action=atualizar_parceiro (patch) + action=alterar_status quando necessário.",
-    initial: p,
-    fields: [
-      {key:"cnpj", label:"CNPJ (id)", readonly:true, w:"260px"},
-      {key:"nomeFantasia", label:"Nome Fantasia"},
-      {key:"cidade", label:"Cidade"},
-      {key:"ramo", label:"Ramo"},
-      {key:"whatsapp", label:"WhatsApp"},
-      {key:"instagram", label:"Instagram"},
-      {key:"site", label:"Site"},
-      {key:"email", label:"Email"},
-      {key:"logoURL", label:"Logo URL", w:"420px", flex:"1 1 420px"},
-      {key:"contato", label:"Contato"},
-    ],
-    onSave: async (patch)=>{
-      delete patch.cnpj;
-      if(patch.whatsapp) patch.whatsapp = apenasNumeros(patch.whatsapp);
-      // sua função atualizar_parceiro aplica patch por cabeçalho
-      await callAPI({
-        action:"atualizar_parceiro",
-        key: state.key,
-        cnpj,
-        patch: JSON.stringify(patch)
-      });
-      toast("Parceiro atualizado");
-      await loadParceiros(true);
-    }
-  });
-}
 
+    title:
+      "Editar Parceiro",
+
+    hint:
+      "ID operacional: " +
+      parceiroId +
+      " — os dados podem ser atualizados sem alterar o ID do parceiro.",
+
+    initial:p,
+
+
+    fields:[
+
+      /* ==========================================
+         IDENTIFICAÇÃO
+      ========================================== */
+
+      {
+        key:"parceiro_id",
+        label:"ID",
+        readonly:true
+      },
+
+      {
+        key:"tipo_documento",
+        label:"Tipo",
+        readonly:true
+      },
+
+      {
+        key:"cnpj",
+        label:"CNPJ",
+        readonly:true
+      },
+
+      {
+        key:"cpf",
+        label:"CPF",
+        readonly:true
+      },
+
+      {
+        key:"razaoSocial",
+        label:"Nome / Razão Social",
+        w:"420px"
+      },
+
+      {
+        key:"nomeFantasia",
+        label:"Nome Fantasia / Exibição",
+        w:"420px"
+      },
+
+
+      /* ==========================================
+         ENDEREÇO
+      ========================================== */
+
+      {
+        key:"endereco",
+        label:"Endereço",
+        w:"420px"
+      },
+
+      {
+        key:"numero",
+        label:"Número"
+      },
+
+      {
+        key:"complemento",
+        label:"Complemento"
+      },
+
+      {
+        key:"bairro",
+        label:"Bairro"
+      },
+
+      {
+        key:"cidade",
+        label:"Cidade"
+      },
+
+      {
+        key:"uf",
+        label:"UF"
+      },
+
+      {
+        key:"cep",
+        label:"CEP"
+      },
+
+
+      /* ==========================================
+         RESPONSÁVEL / CONTATO
+      ========================================== */
+
+      {
+        key:"responsavel",
+        label:"Responsável"
+      },
+
+      {
+        key:"cargo",
+        label:"Cargo"
+      },
+
+      {
+        key:"whatsapp",
+        label:"WhatsApp"
+      },
+
+      {
+        key:"telefone",
+        label:"Telefone"
+      },
+
+      {
+        key:"email",
+        label:"E-mail"
+      },
+
+      {
+        key:"instagram",
+        label:"Instagram"
+      },
+
+      {
+        key:"facebook",
+        label:"Facebook"
+      },
+
+      {
+        key:"site",
+        label:"Site"
+      },
+
+
+      /* ==========================================
+         LOCALIZAÇÃO / CLASSIFICAÇÃO
+      ========================================== */
+
+      {
+        key:"link_maps",
+        label:"Google Maps",
+        w:"520px",
+        flex:"1 1 520px"
+      },
+
+      {
+        key:"ramo",
+        label:"Ramo"
+      },
+
+      {
+        key:"categoria",
+        label:"Categoria"
+      },
+
+      {
+        key:"horario",
+        label:"Horário"
+      },
+
+
+      /* ==========================================
+         NOVA LOGO
+      ========================================== */
+
+      {
+        key:"nova_logo",
+        label:"Adicionar / Trocar Logo",
+        type:"file",
+        accept:"image/png,image/jpeg,image/webp",
+        w:"420px"
+      }
+
+    ],
+
+
+    onSave:async (patch)=>{
+
+      /* ==========================================
+         PEGA NOVA LOGO ANTES DE REMOVER DO PATCH
+      ========================================== */
+
+      const novaLogo =
+        patch.nova_logo || null;
+
+
+      delete patch.nova_logo;
+
+
+      /* ==========================================
+         CAMPOS QUE NÃO PODEM SER ALTERADOS
+         NESTA EDIÇÃO COMUM
+      ========================================== */
+
+      delete patch.parceiro_id;
+
+      delete patch.tipo_documento;
+
+      delete patch.cnpj;
+
+      delete patch.cpf;
+
+
+      /* ==========================================
+         NORMALIZA DADOS
+      ========================================== */
+
+      if(patch.whatsapp){
+
+        patch.whatsapp =
+          apenasNumeros(
+            patch.whatsapp
+          );
+
+      }
+
+
+      if(patch.telefone){
+
+        patch.telefone =
+          apenasNumeros(
+            patch.telefone
+          );
+
+      }
+
+
+      if(patch.uf){
+
+        patch.uf =
+          String(
+            patch.uf
+          )
+          .trim()
+          .toUpperCase();
+
+      }
+
+
+      /* ==========================================
+         ATUALIZA DADOS CADASTRAIS
+      ========================================== */
+
+      await callAPI({
+
+        action:
+          "atualizar_parceiro",
+
+        key:
+          state.key,
+
+        parceiro_id:
+          parceiroId,
+
+        patch:
+          JSON.stringify(patch)
+
+      });
+
+
+      /* ==========================================
+         TROCA LOGO SOMENTE SE FOI SELECIONADA
+      ========================================== */
+
+      if(novaLogo){
+
+        toast(
+          "🖼 Atualizando logo..."
+        );
+
+
+        try{
+
+          const resultadoLogo =
+            await trocarLogoParceiro(
+              parceiroId,
+              novaLogo
+            );
+
+
+          if(
+            !resultadoLogo ||
+            resultadoLogo.ok !== true
+          ){
+
+            throw new Error(
+              resultadoLogo?.erro ||
+              resultadoLogo?.mensagem ||
+              "Erro ao atualizar logo."
+            );
+
+          }
+
+
+          toast(
+            "✅ Logo atualizada."
+          );
+
+
+        }catch(erroLogo){
+
+          console.error(
+            "ERRO AO TROCAR LOGO:",
+            erroLogo
+          );
+
+
+          alert(
+            "Os dados do parceiro foram atualizados, " +
+            "mas houve erro ao salvar a nova logo.\n\n" +
+            (erroLogo.message || erroLogo)
+          );
+
+        }
+
+      }
+
+
+      /* ==========================================
+         ATUALIZA CACHE / TELA
+      ========================================== */
+
+      await loadParceiros(true);
+
+
+      toast(
+        "✅ Parceiro atualizado."
+      );
+
+    }
+
+  });
+
+}
 
 async function contratoParceiro(cnpj){
   try{
@@ -3435,123 +4392,1086 @@ function editarBeneficio(descricao){
   });
 }
 function novoBeneficio(){
+
+  /* ==========================================
+     MONTA LISTA DE PARCEIROS
+  ========================================== */
+
+  const parceiros =
+    (state.cache.parceiros || [])
+    .slice()
+    .sort((a,b)=>
+      String(a.nomeFantasia || "")
+      .localeCompare(
+        String(b.nomeFantasia || ""),
+        "pt-BR"
+      )
+    );
+
+
+  if(!parceiros.length){
+
+    alert(
+      "Nenhum parceiro carregado.\n\n" +
+      "Abra primeiro a área Parceiros e recarregue os dados."
+    );
+
+    return;
+  }
+
+
+  const opcoesParceiros =
+    parceiros.map(p=>({
+
+      value:
+        String(
+          p.parceiro_id || ""
+        ).trim(),
+
+      label:
+        (
+          p.nomeFantasia ||
+          p.razaoSocial ||
+          p.parceiro_id
+        ) +
+        " — " +
+        (p.parceiro_id || "SEM ID")
+
+    }))
+    .filter(p=>p.value);
+
+
   openEditModal({
-    title:"Criar benefício",
-    hint:"Cria via action=criar_beneficio.",
-    initial:{},
+
+    title:"Criar Benefício",
+
+    hint:
+      "Selecione o parceiro. O sistema utilizará automaticamente o parceiro_id.",
+
+    initial:{
+      ativo:"SIM"
+    },
+
     fields:[
-      {key:"parceiro", label:"Parceiro"},
-      {key:"grupo", label:"Grupo"},
-      {key:"descricao", label:"Descrição", w:"520px", flex:"1 1 520px"},
-      {key:"regra", label:"Regra", type:"textarea", w:"520px", flex:"1 1 520px"},
+
+      {
+        key:"parceiro_id",
+        label:"Parceiro",
+        type:"select",
+        options:[
+          {
+            value:"",
+            label:"Selecione o parceiro..."
+          },
+          ...opcoesParceiros
+        ],
+        w:"420px"
+      },
+
+      {
+        key:"titulo",
+        label:"Título",
+        w:"420px"
+      },
+
+      {
+        key:"descricao",
+        label:"Descrição",
+        type:"textarea",
+        w:"520px",
+        flex:"1 1 520px"
+      },
+
+      {
+        key:"grupo",
+        label:"Grupo",
+        default:"GERAL"
+      },
+
+      {
+        key:"categoria",
+        label:"Categoria"
+      },
+
+      {
+        key:"ordem",
+        label:"Ordem",
+        type:"number"
+      },
+
+      {
+        key:"observacoes",
+        label:"Condições / Observações",
+        type:"textarea",
+        w:"520px",
+        flex:"1 1 520px"
+      },
+
+      {
+        key:"ativo",
+        label:"Status",
+        type:"select",
+        options:[
+          {
+            value:"SIM",
+            label:"Ativo"
+          },
+          {
+            value:"NAO",
+            label:"Inativo"
+          }
+        ]
+      }
+
     ],
+
+
     onSave: async (data)=>{
-      if(!data.descricao) throw new Error("DESCRICAO_OBRIGATORIA");
-      await callAPI({
-        action:"criar_beneficio",
-        key: state.key,
-        parceiro: data.parceiro||"",
-        grupo: data.grupo||"",
-        descricao: data.descricao||"",
-        regra: data.regra||""
-      });
-      toast("Benefício criado");
+
+      /* ==========================================
+         VALIDAÇÕES
+      ========================================== */
+
+      if(!data.parceiro_id){
+
+        alert(
+          "Selecione o parceiro."
+        );
+
+        throw new Error(
+          "PARCEIRO_OBRIGATORIO"
+        );
+
+      }
+
+
+      if(!data.titulo){
+
+        alert(
+          "Informe o título do benefício."
+        );
+
+        throw new Error(
+          "TITULO_OBRIGATORIO"
+        );
+
+      }
+
+
+      if(!data.descricao){
+
+        alert(
+          "Informe a descrição do benefício."
+        );
+
+        throw new Error(
+          "DESCRICAO_OBRIGATORIA"
+        );
+
+      }
+
+
+      /* ==========================================
+         LOCALIZA PARCEIRO
+      ========================================== */
+
+      const parceiro =
+        parceiros.find(p=>
+
+          String(
+            p.parceiro_id || ""
+          ).trim() ===
+
+          String(
+            data.parceiro_id || ""
+          ).trim()
+
+        );
+
+
+      if(!parceiro){
+
+        alert(
+          "Parceiro não localizado."
+        );
+
+        throw new Error(
+          "PARCEIRO_NAO_LOCALIZADO"
+        );
+
+      }
+
+
+      /* ==========================================
+         ENVIA PARA API
+      ========================================== */
+
+      const resposta =
+        await callAPI({
+
+          action:"criar_beneficio",
+
+          key:state.key,
+
+          parceiro_id:
+            data.parceiro_id,
+
+          parceiro:
+            parceiro.nomeFantasia || "",
+
+          titulo:
+            data.titulo || "",
+
+          descricao:
+            data.descricao || "",
+
+          grupo:
+            data.grupo || "GERAL",
+
+          categoria:
+            data.categoria || "",
+
+          ordem:
+            data.ordem || "",
+
+          observacoes:
+            data.observacoes || "",
+
+          ativo:
+            data.ativo || "SIM"
+
+        });
+
+
+      console.log(
+        "CRIAR BENEFICIO:",
+        resposta
+      );
+
+
+      if(
+        resposta &&
+        resposta.ok === false
+      ){
+
+        alert(
+          resposta.erro ||
+          resposta.mensagem ||
+          "Não foi possível criar o benefício."
+        );
+
+        throw new Error(
+          "ERRO_CRIAR_BENEFICIO"
+        );
+
+      }
+
+
+      toast(
+        "✅ Benefício cadastrado."
+      );
+
+
       await loadBeneficios(true);
+
     }
+
   });
+
 }
 
-/* ---------- PROMOÇÕES ---------- */
+/* ======================================================
+   PROMOÇÕES
+   PADRÃO OFICIAL APROVEITAI
+
+   - Promoção é OPCIONAL
+   - Cada promoção é um novo registro
+   - Nunca sobrescreve outra promoção
+   - Usa parceiro_id
+   - Usa promocao_id como identificador
+====================================================== */
+
+
+/* ======================================================
+   CARREGAR PROMOÇÕES
+====================================================== */
+
 async function loadPromocoes(force=false){
+
   if(state.loaded.promocoes && !force) return;
-  const r = await callAPI({ aba:"promocoes" });
-  state.cache.promocoes = r.dados || [];
+
+  const r = await callAPI({
+    aba:"promocoes"
+  });
+
+  state.cache.promocoes =
+    r.dados || [];
+
   state.loaded.promocoes = true;
+
   renderPromocoes();
+
 }
+
+
+/* ======================================================
+   EXIBIR PROMOÇÕES
+====================================================== */
+
 function renderPromocoes(){
-  const q = ($("filtroPromocoes").value||"").trim().toLowerCase();
-  const rows = state.cache.promocoes.filter(p=>{
-    if(!q) return true;
-    const blob = JSON.stringify(p).toLowerCase();
-    return blob.includes(q);
-  });
 
-  renderTable("tblPromocoes", rows, [
-    {key:"parceiro", label:"Parceiro"},
-    {key:"titulo", label:"Título"},
-    {key:"descricao", label:"Descrição"},
-    {key:"inicio", label:"Início"},
-    {key:"fim", label:"Fim"},
-    {key:"ativo", label:"Status", render:(r)=> (String(r.ativo||"").toLowerCase()==="sim" ? "SIM" : "NAO") },
-  ],{
-    actions: (p)=>{
-      const ativo = String(p.ativo||"").trim().toLowerCase()==="sim";
-      const id = (p.titulo || "").trim();
-      return `
-        <button class="btn" onclick="togglePromocao('${escapeJs(id)}', ${ativo})">${ativo?'Inativar':'Ativar'}</button>
-        <button class="btn" onclick="editarPromocao('${escapeJs(id)}')">Editar</button>
-      `;
+  const q =
+    ($("filtroPromocoes").value || "")
+    .trim()
+    .toLowerCase();
+
+  const rows =
+    (state.cache.promocoes || [])
+    .filter(p => {
+
+      if(!q) return true;
+
+      return JSON.stringify(p)
+        .toLowerCase()
+        .includes(q);
+
+    });
+
+
+  renderTable(
+    "tblPromocoes",
+    rows,
+    [
+
+      {
+        key:"promocao_id",
+        label:"ID"
+      },
+
+      {
+        key:"parceiro",
+        label:"Parceiro"
+      },
+
+      {
+        key:"titulo",
+        label:"Título"
+      },
+
+      {
+        key:"descricao",
+        label:"Descrição"
+      },
+
+      {
+        key:"dataInicio",
+        label:"Início"
+      },
+
+      {
+        key:"dataFim",
+        label:"Fim"
+      },
+
+      {
+        key:"ativo",
+        label:"Status",
+
+        render:(r)=>{
+
+          return String(r.ativo || "")
+            .trim()
+            .toLowerCase() === "sim"
+
+            ? "SIM"
+            : "NAO";
+
+        }
+      }
+
+    ],
+
+    {
+
+      actions:(p)=>{
+
+        const ativo =
+          String(p.ativo || "")
+          .trim()
+          .toLowerCase() === "sim";
+
+        const promocaoId =
+          String(
+            p.promocao_id || ""
+          ).trim();
+
+
+        /*
+         * REGISTROS ANTIGOS
+         * SEM promocao_id
+         */
+
+        if(!promocaoId){
+
+          return `
+            <span class="chip orange">
+              Registro antigo
+            </span>
+          `;
+
+        }
+
+
+        return `
+
+          <button
+            class="btn"
+            onclick="togglePromocao(
+              '${escapeJs(promocaoId)}',
+              ${ativo}
+            )">
+
+            ${ativo ? "Inativar" : "Ativar"}
+
+          </button>
+
+
+          <button
+            class="btn"
+            onclick="editarPromocao(
+              '${escapeJs(promocaoId)}'
+            )">
+
+            Editar
+
+          </button>
+
+        `;
+
+      }
+
     }
-  });
+
+  );
+
 }
-async function togglePromocao(titulo, ativo){
+
+
+/* ======================================================
+   ATIVAR / INATIVAR PROMOÇÃO
+====================================================== */
+
+async function togglePromocao(
+  promocaoId,
+  ativo
+){
+
   try{
-    await apiAlterarStatus("promocoes","titulo",titulo, ativo ? "NAO" : "SIM");
-    toast("Status atualizado");
+
+    await apiAlterarStatus(
+
+      "promocoes",
+
+      "promocao_id",
+
+      promocaoId,
+
+      ativo
+        ? "NAO"
+        : "SIM"
+
+    );
+
+
+    toast(
+      ativo
+        ? "Promoção inativada."
+        : "Promoção ativada."
+    );
+
+
     await loadPromocoes(true);
-  }catch(err){ toast("Erro ao alterar status"); }
-}
-function editarPromocao(titulo){
-  const p = state.cache.promocoes.find(x => String(x.titulo||"").trim() === String(titulo||"").trim()) || {};
-  openEditModal({
-    title:"Editar promoção",
-    hint:"Identificador usado: titulo (precisa existir e bater exatamente).",
-    initial:p,
-    fields:[
-      {key:"titulo", label:"Título (id)", readonly:true, w:"520px", flex:"1 1 520px"},
-      {key:"parceiro", label:"Parceiro"},
-      {key:"descricao", label:"Descrição", type:"textarea", w:"520px", flex:"1 1 520px"},
-      {key:"inicio", label:"Início"},
-      {key:"fim", label:"Fim"},
-    ],
-    onSave: async (patch)=>{
-      delete patch.titulo;
-      await apiAtualizarRegistro("promocoes","titulo",titulo, patch);
-      toast("Promoção atualizada");
-      await loadPromocoes(true);
-    }
-  });
-}
-function novoPromocao(){
-  openEditModal({
-    title:"Criar promoção",
-    hint:"Cria via action=criar_promocao.",
-    initial:{},
-    fields:[
-      {key:"parceiro", label:"Parceiro"},
-      {key:"titulo", label:"Título"},
-      {key:"descricao", label:"Descrição", type:"textarea", w:"520px", flex:"1 1 520px"},
-      {key:"inicio", label:"Início (YYYY-MM-DD)"},
-      {key:"fim", label:"Fim (YYYY-MM-DD)"},
-    ],
-    onSave: async (data)=>{
-      if(!data.titulo) throw new Error("TITULO_OBRIGATORIO");
-      await callAPI({
-        action:"criar_promocao",
-        key: state.key,
-        parceiro: data.parceiro||"",
-        titulo: data.titulo||"",
-        descricao: data.descricao||"",
-        inicio: data.inicio||"",
-        fim: data.fim||""
-      });
-      toast("Promoção criada");
-      await loadPromocoes(true);
-    }
-  });
+
+
+  }catch(err){
+
+    console.error(
+      "ERRO STATUS PROMOÇÃO:",
+      err
+    );
+
+    toast(
+      "Erro ao alterar promoção."
+    );
+
+  }
+
 }
 
+
+/* ======================================================
+   EDITAR PROMOÇÃO
+====================================================== */
+
+function editarPromocao(promocaoId){
+
+  const p =
+    (state.cache.promocoes || [])
+    .find(x =>
+
+      String(
+        x.promocao_id || ""
+      ).trim() ===
+
+      String(
+        promocaoId || ""
+      ).trim()
+
+    );
+
+
+  if(!p){
+
+    alert(
+      "Promoção não localizada."
+    );
+
+    return;
+
+  }
+
+
+  openEditModal({
+
+    title:
+      "Editar Promoção",
+
+    hint:
+      "Promoção: " +
+      promocaoId,
+
+    initial:p,
+
+
+    fields:[
+
+      {
+        key:"promocao_id",
+        label:"ID da Promoção",
+        readonly:true
+      },
+
+      {
+        key:"parceiro",
+        label:"Parceiro",
+        readonly:true,
+        w:"420px"
+      },
+
+      {
+        key:"titulo",
+        label:"Título",
+        w:"420px"
+      },
+
+      {
+        key:"descricao",
+        label:"Descrição",
+        type:"textarea",
+        w:"520px",
+        flex:"1 1 520px"
+      },
+
+      {
+        key:"dataInicio",
+        label:"Data Inicial",
+        type:"date"
+      },
+
+      {
+        key:"dataFim",
+        label:"Data Final",
+        type:"date"
+      },
+
+      {
+        key:"grupo",
+        label:"Grupo"
+      },
+
+      {
+        key:"categoria",
+        label:"Categoria"
+      },
+
+      {
+        key:"ordem",
+        label:"Ordem",
+        type:"number"
+      },
+
+      {
+        key:"observacoes",
+        label:"Condições / Observações",
+        type:"textarea",
+        w:"520px",
+        flex:"1 1 520px"
+      },
+
+      {
+        key:"ativo",
+        label:"Status",
+        type:"select",
+
+        options:[
+
+          {
+            value:"SIM",
+            label:"Ativa"
+          },
+
+          {
+            value:"NAO",
+            label:"Inativa"
+          }
+
+        ]
+
+      }
+
+    ],
+
+
+    onSave:async (patch)=>{
+
+      /*
+       * NÃO PERMITE TROCAR
+       * IDENTIFICADORES
+       */
+
+      delete patch.promocao_id;
+      delete patch.parceiro_id;
+      delete patch.parceiro;
+
+
+      await apiAtualizarRegistro(
+
+        "promocoes",
+
+        "promocao_id",
+
+        promocaoId,
+
+        patch
+
+      );
+
+
+      toast(
+        "✅ Promoção atualizada."
+      );
+
+
+      await loadPromocoes(true);
+
+    }
+
+  });
+
+}
+
+
+/* ======================================================
+   NOVA PROMOÇÃO
+====================================================== */
+
+async function novoPromocao(){
+
+  /*
+   * GARANTE LISTA ATUALIZADA
+   * DE PARCEIROS
+   */
+
+  if(
+    !state.cache.parceiros ||
+    !state.cache.parceiros.length
+  ){
+
+    await loadParceiros(true);
+
+  }
+
+
+  const parceiros =
+    (state.cache.parceiros || [])
+    .slice()
+    .sort((a,b)=>
+
+      String(
+        a.nomeFantasia || ""
+      ).localeCompare(
+
+        String(
+          b.nomeFantasia || ""
+        ),
+
+        "pt-BR"
+
+      )
+
+    );
+
+
+  if(!parceiros.length){
+
+    alert(
+      "Nenhum parceiro cadastrado."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * MONTA SELECT
+   */
+
+  const opcoesParceiros =
+    parceiros
+    .map(p => ({
+
+      value:
+        String(
+          p.parceiro_id || ""
+        ).trim(),
+
+      label:
+        (
+          p.nomeFantasia ||
+          p.razaoSocial ||
+          p.parceiro_id
+        ) +
+        " — " +
+        (
+          p.parceiro_id ||
+          "SEM ID"
+        )
+
+    }))
+    .filter(
+      p => p.value
+    );
+
+
+  openEditModal({
+
+    title:
+      "Criar Promoção",
+
+    hint:
+      "Promoções são opcionais. Cada promoção será salva como um novo registro.",
+
+
+    initial:{
+
+      grupo:"GERAL",
+
+      ativo:"SIM"
+
+    },
+
+
+    fields:[
+
+      {
+        key:"parceiro_id",
+        label:"Parceiro",
+        type:"select",
+
+        options:[
+
+          {
+            value:"",
+            label:"Selecione o parceiro..."
+          },
+
+          ...opcoesParceiros
+
+        ],
+
+        w:"420px"
+      },
+
+
+      {
+        key:"titulo",
+        label:"Título",
+        w:"420px"
+      },
+
+
+      {
+        key:"descricao",
+        label:"Descrição",
+        type:"textarea",
+        w:"520px",
+        flex:"1 1 520px"
+      },
+
+
+      {
+        key:"dataInicio",
+        label:"Data Inicial",
+        type:"date"
+      },
+
+
+      {
+        key:"dataFim",
+        label:"Data Final",
+        type:"date"
+      },
+
+
+      {
+        key:"grupo",
+        label:"Grupo",
+        default:"GERAL"
+      },
+
+
+      {
+        key:"categoria",
+        label:"Categoria"
+      },
+
+
+      {
+        key:"ordem",
+        label:"Ordem",
+        type:"number"
+      },
+
+
+      {
+        key:"observacoes",
+        label:"Condições / Observações",
+        type:"textarea",
+        w:"520px",
+        flex:"1 1 520px"
+      },
+
+
+      {
+        key:"ativo",
+        label:"Status",
+        type:"select",
+
+        options:[
+
+          {
+            value:"SIM",
+            label:"Ativa"
+          },
+
+          {
+            value:"NAO",
+            label:"Inativa"
+          }
+
+        ]
+
+      }
+
+    ],
+
+
+    onSave:async (data)=>{
+
+
+      /* ==============================
+         VALIDAÇÕES
+      ============================== */
+
+      if(!data.parceiro_id){
+
+        alert(
+          "Selecione o parceiro."
+        );
+
+        throw new Error(
+          "PARCEIRO_OBRIGATORIO"
+        );
+
+      }
+
+
+      if(!data.titulo){
+
+        alert(
+          "Informe o título da promoção."
+        );
+
+        throw new Error(
+          "TITULO_OBRIGATORIO"
+        );
+
+      }
+
+
+      if(!data.descricao){
+
+        alert(
+          "Informe a descrição da promoção."
+        );
+
+        throw new Error(
+          "DESCRICAO_OBRIGATORIA"
+        );
+
+      }
+
+
+      /*
+       * VALIDA DATAS
+       */
+
+      if(
+        data.dataInicio &&
+        data.dataFim &&
+        data.dataFim < data.dataInicio
+      ){
+
+        alert(
+          "A data final não pode ser anterior à data inicial."
+        );
+
+        throw new Error(
+          "DATA_INVALIDA"
+        );
+
+      }
+
+
+      /* ==============================
+         LOCALIZA PARCEIRO
+      ============================== */
+
+      const parceiro =
+        parceiros.find(p =>
+
+          String(
+            p.parceiro_id || ""
+          ).trim() ===
+
+          String(
+            data.parceiro_id || ""
+          ).trim()
+
+        );
+
+
+      if(!parceiro){
+
+        alert(
+          "Parceiro não localizado."
+        );
+
+        throw new Error(
+          "PARCEIRO_NAO_LOCALIZADO"
+        );
+
+      }
+
+
+      /* ==============================
+         ENVIA
+      ============================== */
+
+      const resposta =
+        await callAPI({
+
+          action:
+            "criar_promocao",
+
+          key:
+            state.key,
+
+          parceiro_id:
+            data.parceiro_id,
+
+          parceiro:
+            parceiro.nomeFantasia ||
+            parceiro.razaoSocial ||
+            "",
+
+          titulo:
+            data.titulo || "",
+
+          descricao:
+            data.descricao || "",
+
+          dataInicio:
+            data.dataInicio || "",
+
+          dataFim:
+            data.dataFim || "",
+
+          grupo:
+            data.grupo || "GERAL",
+
+          categoria:
+            data.categoria || "",
+
+          ordem:
+            data.ordem || "",
+
+          observacoes:
+            data.observacoes || "",
+
+          ativo:
+            data.ativo || "SIM"
+
+        });
+
+
+      console.log(
+        "CRIAR PROMOÇÃO:",
+        resposta
+      );
+
+
+      if(
+        resposta &&
+        resposta.ok === false
+      ){
+
+        alert(
+          resposta.erro ||
+          resposta.mensagem ||
+          "Não foi possível criar a promoção."
+        );
+
+        throw new Error(
+          "ERRO_CRIAR_PROMOCAO"
+        );
+
+      }
+
+
+      toast(
+        "✅ Promoção cadastrada."
+      );
+
+
+      await loadPromocoes(true);
+
+    }
+
+  });
+
+}
 /* ---------- LOGS / LOG_ADMIN / ADMINS ---------- */
 async function loadLogs(force=false){
   if(state.loaded.logs && !force) return;
@@ -4050,41 +5970,159 @@ ${p.nomeFantasia}
 
 function renderDados(parceiro){
 
-document.getElementById("impDados").innerHTML=`
+  const tipoDocumento =
+    String(
+      parceiro.tipo_documento || ""
+    )
+    .trim()
+    .toUpperCase();
+
+  const cpf =
+    String(
+      parceiro.cpf || ""
+    ).replace(/\D/g,"");
+
+  const cnpj =
+    String(
+      parceiro.cnpj || ""
+    ).replace(/\D/g,"");
+
+
+  let tipoExibicao = "";
+  let documentoExibicao = "";
+
+
+  /* ==========================================
+     IDENTIFICA CPF / CNPJ
+  ========================================== */
+
+  if(
+    tipoDocumento === "CPF" ||
+    (!cnpj && cpf)
+  ){
+
+    tipoExibicao = "CPF";
+
+    documentoExibicao =
+      cpf.length === 11
+        ? formatarCPF(cpf)
+        : (parceiro.cpf || "");
+
+  }else{
+
+    tipoExibicao = "CNPJ";
+
+    documentoExibicao =
+      cnpj.length === 14
+        ? formatarCNPJ(cnpj)
+        : (parceiro.cnpj || "");
+
+  }
+
+
+  /* ==========================================
+     CONTATO / RESPONSÁVEL
+  ========================================== */
+
+  const responsavel =
+    parceiro.responsavel ||
+    parceiro.contato ||
+    "";
+
+
+  /* ==========================================
+     RENDERIZA CENTRAL
+  ========================================== */
+
+  document.getElementById("impDados").innerHTML = `
 
 <table style="width:100%;border-collapse:collapse;">
 
-<tr><td><b>Empresa</b></td><td>${parceiro.nomeFantasia||""}</td></tr>
+<tr>
+<td><b>Parceiro</b></td>
+<td>${parceiro.nomeFantasia || parceiro.razaoSocial || ""}</td>
+</tr>
 
-<tr><td><b>CNPJ</b></td><td>${parceiro.cnpj||""}</td></tr>
+<tr>
+<td><b>${tipoExibicao}</b></td>
+<td>${documentoExibicao}</td>
+</tr>
 
-<tr><td><b>Cidade</b></td><td>${parceiro.cidade||""}</td></tr>
+<tr>
+<td><b>Razão Social / Nome</b></td>
+<td>${parceiro.razaoSocial || ""}</td>
+</tr>
 
-<tr><td><b>Ramo</b></td><td>${parceiro.ramo||""}</td></tr>
+<tr>
+<td><b>Responsável</b></td>
+<td>${responsavel}</td>
+</tr>
 
-<tr><td><b>Contato</b></td><td>${parceiro.contato||""}</td></tr>
+<tr>
+<td><b>Cidade</b></td>
+<td>${parceiro.cidade || ""}</td>
+</tr>
 
-<tr><td><b>WhatsApp</b></td><td>${parceiro.whatsapp||""}</td></tr>
+<tr>
+<td><b>Ramo</b></td>
+<td>${parceiro.ramo || ""}</td>
+</tr>
 
-<tr><td><b>E-mail</b></td><td>${parceiro.email||""}</td></tr>
+<tr>
+<td><b>WhatsApp</b></td>
+<td>${parceiro.whatsapp || ""}</td>
+</tr>
 
-<tr><td><b>Instagram</b></td><td>${parceiro.instagram||""}</td></tr>
+<tr>
+<td><b>E-mail</b></td>
+<td>${parceiro.email || ""}</td>
+</tr>
 
-<tr><td><b>Site</b></td><td>${parceiro.site||""}</td></tr>
+<tr>
+<td><b>Instagram</b></td>
+<td>${parceiro.instagram || ""}</td>
+</tr>
 
-<tr><td><b>Exige placa</b></td><td>${parceiro.exige_placa||"NAO"}</td></tr>
+<tr>
+<td><b>Site</b></td>
+<td>${parceiro.site || ""}</td>
+</tr>
 
-<tr><td><b>Latitude</b></td><td>${parceiro.latitude||""}</td></tr>
+<tr>
+<td><b>Google Maps</b></td>
+<td>
+${
+  parceiro.link_maps
+    ? `<a href="${parceiro.link_maps}" target="_blank">Abrir localização</a>`
+    : "Não informado"
+}
+</td>
+</tr>
 
-<tr><td><b>Longitude</b></td><td>${parceiro.longitude||""}</td></tr>
+<tr>
+<td><b>Exige placa</b></td>
+<td>${parceiro.exige_placa || "NAO"}</td>
+</tr>
 
-<tr><td><b>Token</b></td><td>${parceiro.token||""}</td></tr>
+<tr>
+<td><b>Token</b></td>
+<td>${parceiro.token || ""}</td>
+</tr>
 
-<tr><td><b>PIN</b></td><td>${parceiro.PIN_OPERACIONAL||""}</td></tr>
+<tr>
+<td><b>PIN</b></td>
+<td>${parceiro.PIN_OPERACIONAL || ""}</td>
+</tr>
 
-<tr><td><b>Parceiro ID</b></td><td>${parceiro.parceiro_id||""}</td></tr>
+<tr>
+<td><b>Parceiro ID</b></td>
+<td>${parceiro.parceiro_id || ""}</td>
+</tr>
 
-<tr><td><b>Status</b></td><td>${parceiro.ativo||""}</td></tr>
+<tr>
+<td><b>Status</b></td>
+<td>${parceiro.ativo || ""}</td>
+</tr>
 
 </table>
 
@@ -4096,35 +6134,54 @@ document.getElementById("impDados").innerHTML=`
    RENDER BENEFICIOS
 ===================================================== */
 
-function renderBeneficios(lista){
+function renderBeneficiosImplantacao(lista){
 
-lista = Array.isArray(lista) ? lista : [];
+  lista = Array.isArray(lista)
+    ? lista
+    : [];
 
-const div = document.getElementById("impBeneficios");
+  const div =
+    document.getElementById("impBeneficios");
 
-if(!lista.length){
+  if(!div) return;
 
-div.innerHTML="Nenhum benefício cadastrado.";
 
-return;
+  if(!lista.length){
 
-}
+    div.innerHTML =
+      "Nenhum benefício cadastrado.";
 
-div.innerHTML=
+    return;
 
-lista.map(b=>`
+  }
 
-<div class="linhaImpl">
 
-🎁 <b>${b.titulo||""}</b>
+  div.innerHTML =
+    lista.map(b => `
 
-<br>
+      <div class="linhaImpl">
 
-${b.descricao||""}
+        🎁 <b>${escapeHtml(b.titulo || "")}</b>
 
-</div>
+        <br>
 
-`).join("");
+        ${escapeHtml(b.descricao || "")}
+
+        ${
+          b.observacoes
+            ? `
+              <br>
+              <small>
+                <b>Condições:</b>
+                ${escapeHtml(b.observacoes)}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `).join("");
 
 }
 
@@ -4132,35 +6189,68 @@ ${b.descricao||""}
    RENDER PROMOÇÕES
 ===================================================== */
 
-function renderPromocoes(lista){
+function renderPromocoesImplantacao(lista){
 
-lista = Array.isArray(lista) ? lista : [];
+  lista = Array.isArray(lista)
+    ? lista
+    : [];
 
-const div = document.getElementById("impPromocoes");
+  const div =
+    document.getElementById("impPromocoes");
 
-if(!lista.length){
+  if(!div) return;
 
-div.innerHTML="Nenhuma promoção cadastrada.";
 
-return;
+  if(!lista.length){
 
-}
+    div.innerHTML =
+      "Nenhuma promoção cadastrada.";
 
-div.innerHTML=
+    return;
 
-lista.map(p=>`
+  }
 
-<div class="linhaImpl">
 
-🔥 <b>${p.titulo||""}</b>
+  div.innerHTML =
+    lista.map(p => `
 
-<br>
+      <div class="linhaImpl">
 
-${p.descricao||""}
+        🔥 <b>${escapeHtml(p.titulo || "")}</b>
 
-</div>
+        <br>
 
-`).join("");
+        ${escapeHtml(p.descricao || "")}
+
+        ${
+          p.dataInicio || p.dataFim
+            ? `
+              <br>
+              <small>
+                <b>Período:</b>
+                ${escapeHtml(p.dataInicio || "—")}
+                até
+                ${escapeHtml(p.dataFim || "—")}
+              </small>
+            `
+            : ""
+        }
+
+        ${
+          p.observacoes
+            ? `
+              <br>
+              <small>
+                <b>Condições:</b>
+                ${escapeHtml(p.observacoes)}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `).join("");
 
 }
 
@@ -4582,13 +6672,17 @@ renderDados(parceiro);
    BENEFICIOS
 ========================== */
 
-renderBeneficios(beneficios.dados);
+renderBeneficiosImplantacao(
+  beneficios.dados
+);
 
 /* ==========================
    PROMOÇÕES
 ========================== */
 
-renderPromocoes(promocoes.dados);
+renderPromocoesImplantacao(
+  promocoes.dados
+);
 
 /* =====================================================
    CENTRAL DE MATERIAIS
@@ -4689,7 +6783,7 @@ document.getElementById("impAcoes").innerHTML=`
 <button
 class="btn"
 
-onclick="editarParceiro('${parceiro.cnpj}')">
+onclick="editarParceiro('${parceiro.parceiro_id}')">
 
 ✏ Editar Cadastro
 
@@ -4781,178 +6875,455 @@ function arquivoParaBase64(arquivo){
 }
 
 
-/* ======================================================
-   CONVERTE ARQUIVO DE LOGO PARA BASE64
-====================================================== */
-
-function arquivoParaBase64(arquivo){
-
-  return new Promise((resolve,reject)=>{
-
-    const reader = new FileReader();
-
-    reader.onload = function(){
-
-      const resultado =
-        String(reader.result || "");
-
-      const base64 =
-        resultado.includes(",")
-          ? resultado.split(",")[1]
-          : resultado;
-
-      resolve(base64);
-
-    };
-
-    reader.onerror = function(){
-
-      reject(
-        new Error(
-          "Não foi possível ler a logo."
-        )
-      );
-
-    };
-
-    reader.readAsDataURL(arquivo);
-
-  });
-
-}
-
 async function salvarParceiroCompleto(){
 
-/* ======================================================
-   LOGO DO PARCEIRO
-   A logo NÃO será enviada no criar_parceiro.
-   O upload será feito depois que recebermos o parceiro_id.
-====================================================== */
+  /* ======================================================
+     1 - DOCUMENTO DO PARCEIRO — CPF OU CNPJ
+  ====================================================== */
 
-const inputLogo =
-  document.getElementById("logo");
+  const tipoDocumento =
+    String(
+      document.getElementById("tipo_documento")?.value || ""
+    )
+    .trim()
+    .toUpperCase();
 
-let arquivoLogo = null;
+  const documento =
+    String(
+      document.getElementById("documentoParceiro")?.value || ""
+    )
+    .replace(/\D/g,"");
 
-if(
-  inputLogo &&
-  inputLogo.files &&
-  inputLogo.files.length > 0
-){
 
-  arquivoLogo = inputLogo.files[0];
-
-  const tiposPermitidos = [
-    "image/png",
-    "image/jpeg",
-    "image/webp"
-  ];
-
-  if(!tiposPermitidos.includes(arquivoLogo.type)){
+  if(
+    tipoDocumento !== "CPF" &&
+    tipoDocumento !== "CNPJ"
+  ){
 
     alert(
-      "Logo inválida.\n\n" +
-      "Utilize PNG, JPG/JPEG ou WebP."
+      "Selecione o tipo de documento: CPF ou CNPJ."
     );
 
     return;
   }
 
-  const limite = 2 * 1024 * 1024;
 
-  if(arquivoLogo.size > limite){
+  if(!documento){
 
     alert(
-      "A logo é muito grande.\n\n" +
-      "Utilize uma imagem de até 2 MB."
+      "Informe o " +
+      tipoDocumento +
+      " do parceiro."
     );
 
     return;
   }
+
+
+  /* ======================================================
+     2 - VALIDA CPF / CNPJ
+  ====================================================== */
+
+  if(
+    tipoDocumento === "CPF" &&
+    !validarCPF(documento)
+  ){
+
+    alert(
+      "CPF inválido.\n\n" +
+      "Confira os números informados."
+    );
+
+    return;
+  }
+
+
+  if(
+    tipoDocumento === "CNPJ" &&
+    !validarCNPJ(documento)
+  ){
+
+    alert(
+      "CNPJ inválido.\n\n" +
+      "Confira os números informados."
+    );
+
+    return;
+  }
+
+
+  const cpf =
+    tipoDocumento === "CPF"
+      ? documento
+      : "";
+
+  const cnpj =
+    tipoDocumento === "CNPJ"
+      ? documento
+      : "";
+
+
+  /* ======================================================
+     3 - LOGO DO PARCEIRO
+
+     A logo NÃO vai no criar_parceiro.
+     Primeiro criamos o parceiro e recebemos parceiro_id.
+     Depois salvarParceiroServidor() envia a logo.
+  ====================================================== */
+
+  const inputLogo =
+    document.getElementById("logo");
+
+  let arquivoLogo = null;
+
+
+  if(
+    inputLogo &&
+    inputLogo.files &&
+    inputLogo.files.length > 0
+  ){
+
+    arquivoLogo =
+      inputLogo.files[0];
+
+
+    const tiposPermitidos = [
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ];
+
+
+    if(
+      !tiposPermitidos.includes(
+        arquivoLogo.type
+      )
+    ){
+
+      alert(
+        "Logo inválida.\n\n" +
+        "Utilize PNG, JPG/JPEG ou WebP."
+      );
+
+      return;
+    }
+
+
+    const limite =
+      2 * 1024 * 1024;
+
+
+    if(
+      arquivoLogo.size > limite
+    ){
+
+      alert(
+        "A logo é muito grande.\n\n" +
+        "Utilize uma imagem de até 2 MB."
+      );
+
+      return;
+    }
+
+  }
+
+
+  /* ======================================================
+     4 - MONTA DADOS DO PARCEIRO
+  ====================================================== */
+
+  const parceiro = {
+
+    /* IDENTIFICAÇÃO */
+
+    razaoSocial:
+      document
+        .getElementById("razaoSocial")
+        .value
+        .trim(),
+
+    nomeFantasia:
+      document
+        .getElementById("nomeFantasia")
+        .value
+        .trim(),
+
+    tipo_documento:
+      tipoDocumento,
+
+    cnpj:
+      cnpj,
+
+    cpf:
+      cpf,
+
+    ie:
+      document
+        .getElementById("ie")
+        .value
+        .trim(),
+
+
+    /* RESPONSÁVEL */
+
+    responsavel:
+      document
+        .getElementById("responsavel")
+        .value
+        .trim(),
+
+    cargo:
+      document
+        .getElementById("cargo")
+        .value
+        .trim(),
+
+    representante_legal:
+  document
+    .getElementById("representante_legal")
+    ?.value
+    .trim() || "",
+
+cpf_representante:
+  document
+    .getElementById("cpf_representante")
+    ?.value
+    .replace(/\D/g,"") || "",
+
+
+    /* CLASSIFICAÇÃO */
+
+    categoria:
+      document
+        .getElementById("categoria")
+        .value
+        .trim(),
+
+    ramo:
+      document
+        .getElementById("ramo")
+        .value
+        .trim(),
+
+    horario:
+      document
+        .getElementById("horario")
+        .value
+        .trim(),
+
+
+    /* CONTATOS */
+
+    whatsapp:
+      document
+        .getElementById("whatsapp")
+        .value
+        .trim(),
+
+    telefone:
+      document
+        .getElementById("telefone")
+        .value
+        .trim(),
+
+    email:
+      document
+        .getElementById("email")
+        .value
+        .trim(),
+
+    instagram:
+      document
+        .getElementById("instagram")
+        .value
+        .trim(),
+
+    facebook:
+      document
+        .getElementById("facebook")
+        .value
+        .trim(),
+
+    site:
+      document
+        .getElementById("site")
+        .value
+        .trim(),
+
+
+    /* ENDEREÇO */
+
+    cep:
+      document
+        .getElementById("cep")
+        .value
+        .trim(),
+
+    cidade:
+      document
+        .getElementById("cidade")
+        .value
+        .trim(),
+
+    uf:
+     document
+       .getElementById("uf")
+        ?.value
+       .trim()
+       .toUpperCase() || "",
+
+    bairro:
+      document
+        .getElementById("bairro")
+        .value
+        .trim(),
+
+    endereco:
+      document
+        .getElementById("endereco")
+        .value
+        .trim(),
+
+    numero:
+      document
+        .getElementById("numero")
+        .value
+        .trim(),
+
+    complemento:
+      document
+        .getElementById("complemento")
+        .value
+        .trim(),
+
+    link_maps:
+      document
+        .getElementById("link_maps")
+        .value
+        .trim(),
+
+
+    /* CONFIGURAÇÕES */
+
+    exigePlaca:
+      document
+        .getElementById("exigePlaca")
+        .checked
+          ? "SIM"
+          : "NAO",
+
+
+    /* LOGO TEMPORÁRIA */
+
+    arquivoLogo:
+      arquivoLogo
+
+  };
+
+
+  /* ======================================================
+     5 - CAMPOS OBRIGATÓRIOS
+  ====================================================== */
+
+  if(
+    !parceiro.razaoSocial &&
+    !parceiro.nomeFantasia
+  ){
+
+    alert(
+      tipoDocumento === "CPF"
+        ? "Informe o nome do parceiro."
+        : "Informe a Razão Social ou o Nome Fantasia."
+    );
+
+    return;
+  }
+
+
+  if(!parceiro.nomeFantasia){
+
+    alert(
+      "Informe o Nome Fantasia / Nome de Exibição."
+    );
+
+    return;
+  }
+
+
+  if(!parceiro.categoria){
+
+    alert(
+      "Informe a categoria do parceiro."
+    );
+
+    return;
+  }
+
+
+  if(!parceiro.ramo){
+
+    alert(
+      "Informe o ramo / atividade do parceiro."
+    );
+
+    return;
+  }
+
+
+  if(!parceiro.endereco){
+
+    alert(
+      "Informe o endereço do parceiro."
+    );
+
+    return;
+  }
+
+
+  if(!parceiro.cidade){
+
+    alert(
+      "Informe a cidade do parceiro."
+    );
+
+    return;
+  }
+
+
+  /* ======================================================
+     6 - ENVIA PARA O SERVIDOR
+  ====================================================== */
+
+  console.log(
+    "PARCEIRO PARA CADASTRO:",
+    parceiro
+  );
+
+
+  try{
+
+    await salvarParceiroServidor(
+      parceiro
+    );
+
+  }catch(erro){
+
+    console.error(
+      "ERRO AO SALVAR PARCEIRO:",
+      erro
+    );
+
+    alert(
+      "Erro ao salvar parceiro.\n\n" +
+      (
+        erro.message ||
+        String(erro)
+      )
+    );
+
+  }
+
 }
-
-const parceiro={
-
-razaoSocial:
-document.getElementById("razaoSocial").value.trim(),
-
-nomeFantasia:
-document.getElementById("nomeFantasia").value.trim(),
-
-cnpj:
-document.getElementById("cnpj").value.trim(),
-
-ie:
-document.getElementById("ie").value.trim(),
-
-responsavel:
-document.getElementById("responsavel").value.trim(),
-
-cargo:
-document.getElementById("cargo").value.trim(),
-
-categoria:
-
-document.getElementById("categoria").value.trim(),
-
-ramo:
-document.getElementById("ramo").value.trim(),
-
-horario:
-document.getElementById("horario").value.trim(),
-
-whatsapp:
-document.getElementById("whatsapp").value.trim(),
-
-telefone:
-document.getElementById("telefone").value.trim(),
-
-email:
-document.getElementById("email").value.trim(),
-
-instagram:
-document.getElementById("instagram").value.trim(),
-
-facebook:
-document.getElementById("facebook").value.trim(),
-
-site:
-document.getElementById("site").value.trim(),
-
-cep:
-document.getElementById("cep").value.trim(),
-
-cidade:
-document.getElementById("cidade").value.trim(),
-
-bairro:
-document.getElementById("bairro").value.trim(),
-
-endereco:
-document.getElementById("endereco").value.trim(),
-
-numero:
-document.getElementById("numero").value.trim(),
-
-complemento:
-document.getElementById("complemento").value.trim(),
-
-maps:
-document.getElementById("maps").value.trim(),
-
-exigePlaca:
-document.getElementById("exigePlaca").checked ? "SIM":"NAO",
-
-arquivoLogo: arquivoLogo
-
-};
-
-console.log(parceiro);
-
-salvarParceiroServidor(parceiro);
-
-}
-
 
 /* ======================================================
    UPLOAD DA LOGO DO PARCEIRO
@@ -5024,58 +7395,208 @@ const payload = {
 
 }
 
+async function trocarLogoParceiro(
+  parceiroId,
+  arquivo
+){
+
+  if(!parceiroId){
+    throw new Error(
+      "parceiro_id não informado."
+    );
+  }
+
+  if(!arquivo){
+    return {
+      ok:true,
+      semAlteracao:true
+    };
+  }
+
+
+  const tiposPermitidos = [
+    "image/png",
+    "image/jpeg",
+    "image/webp"
+  ];
+
+
+  if(
+    !tiposPermitidos.includes(
+      arquivo.type
+    )
+  ){
+
+    throw new Error(
+      "Utilize uma logo PNG, JPG/JPEG ou WebP."
+    );
+
+  }
+
+
+  const limite =
+    2 * 1024 * 1024;
+
+
+  if(arquivo.size > limite){
+
+    throw new Error(
+      "A logo deve possuir no máximo 2 MB."
+    );
+
+  }
+
+
+  return await enviarLogoParceiro(
+    parceiroId,
+    arquivo
+  );
+
+}
+
 async function salvarParceiroServidor(parceiro){
 
-    try{
+  try{
 
-        const resposta = await callAPI({
+    const resposta = await callAPI({
 
-    action:"criar_parceiro",
+      action:"criar_parceiro",
 
-    key:state.key,
+      key:state.key,
 
-    razaoSocial:parceiro.razaoSocial,
-    nomeFantasia:parceiro.nomeFantasia,
-    cnpj:parceiro.cnpj,
-    ie:parceiro.ie,
+      /* IDENTIFICAÇÃO */
 
-    responsavel:parceiro.responsavel,
-    cargo:parceiro.cargo,
+      razaoSocial:
+        parceiro.razaoSocial || "",
 
-    categoria:parceiro.categoria,
-    ramo:parceiro.ramo,
+      nomeFantasia:
+        parceiro.nomeFantasia || "",
 
-    horario:parceiro.horario,
+      tipo_documento:
+        parceiro.tipo_documento || "",
 
-    whatsapp:parceiro.whatsapp,
-    telefone:parceiro.telefone,
+      cnpj:
+        parceiro.cnpj || "",
 
-    email:parceiro.email,
+      cpf:
+        parceiro.cpf || "",
 
-    instagram:parceiro.instagram,
-    facebook:parceiro.facebook,
-    site:parceiro.site,
+      ie:
+        parceiro.ie || "",
 
-    cep:parceiro.cep,
-    cidade:parceiro.cidade,
-    bairro:parceiro.bairro,
 
-    endereco:parceiro.endereco,
-    numero:parceiro.numero,
-    complemento:parceiro.complemento,
+      /* RESPONSÁVEL */
 
-    maps:parceiro.maps,
+      responsavel:
+        parceiro.responsavel || "",
 
-    exige_placa:parceiro.exigePlaca,
+      cargo:
+        parceiro.cargo || "",
 
-  });
+      representante_legal:
+  parceiro.representante_legal || "",
 
-        console.log(resposta);
+cpf_representante:
+  parceiro.cpf_representante || "",
 
-        if(resposta.ok){
+
+      /* CLASSIFICAÇÃO */
+
+      categoria:
+        parceiro.categoria || "",
+
+      ramo:
+        parceiro.ramo || "",
+
+      horario:
+        parceiro.horario || "",
+
+
+      /* CONTATOS */
+
+      whatsapp:
+        parceiro.whatsapp || "",
+
+      telefone:
+        parceiro.telefone || "",
+
+      email:
+        parceiro.email || "",
+
+      instagram:
+        parceiro.instagram || "",
+
+      facebook:
+        parceiro.facebook || "",
+
+      site:
+        parceiro.site || "",
+
+
+      /* ENDEREÇO */
+
+      cep:
+        parceiro.cep || "",
+
+      cidade:
+        parceiro.cidade || "",
+
+      bairro:
+        parceiro.bairro || "",
+
+      endereco:
+        parceiro.endereco || "",
+
+      numero:
+        parceiro.numero || "",
+
+      complemento:
+        parceiro.complemento || "",
+
+      uf:
+        parceiro.uf || "",
+
+      link_maps:
+        parceiro.link_maps || "",
+
+
+      /* CONFIGURAÇÕES */
+
+      exige_placa:
+        parceiro.exigePlaca || "NAO"
+
+    });
+
+
+    console.log(
+      "RESPOSTA CRIAR PARCEIRO:",
+      resposta
+    );
+
+
+    if(
+      !resposta ||
+      resposta.ok !== true
+    ){
+
+      throw new Error(
+        resposta?.erro ||
+        resposta?.mensagem ||
+        "Erro ao cadastrar parceiro."
+      );
+
+    }
+
+
+    /* ==========================================
+       PARCEIRO CRIADO
+    ========================================== */
 
     const parceiroId =
-      resposta.parceiro_id;
+      String(
+        resposta.parceiro_id || ""
+      ).trim();
+
 
     if(!parceiroId){
 
@@ -5085,110 +7606,185 @@ async function salvarParceiroServidor(parceiro){
 
     }
 
-/* ==========================================
-   ENVIA LOGO DEPOIS DO CADASTRO
-========================================== */
 
-if(parceiro.arquivoLogo){
+    /* ==========================================
+       ENVIA LOGO DEPOIS DO CADASTRO
+    ========================================== */
 
-  toast("🖼 Enviando logo...");
+    if(parceiro.arquivoLogo){
 
-  try{
-
-    const resultadoLogo =
-      await enviarLogoParceiro(
-        parceiroId,
-        parceiro.arquivoLogo
+      toast(
+        "🖼 Enviando logo..."
       );
 
-    console.log(
-      "UPLOAD LOGO:",
-      resultadoLogo
+
+      try{
+
+        const resultadoLogo =
+          await enviarLogoParceiro(
+            parceiroId,
+            parceiro.arquivoLogo
+          );
+
+
+        console.log(
+          "UPLOAD LOGO:",
+          resultadoLogo
+        );
+
+
+        if(
+          !resultadoLogo ||
+          resultadoLogo.ok !== true
+        ){
+
+          throw new Error(
+            resultadoLogo?.erro ||
+            resultadoLogo?.mensagem ||
+            "Erro ao salvar logo."
+          );
+
+        }
+
+
+        toast(
+          "✅ Logo salva."
+        );
+
+
+      }catch(erroLogo){
+
+        console.error(
+          "ERRO LOGO:",
+          erroLogo
+        );
+
+
+        alert(
+          "⚠️ O parceiro foi cadastrado, " +
+          "mas houve erro ao salvar a logo.\n\n" +
+          (erroLogo.message || erroLogo) +
+          "\n\n" +
+          "A logo poderá ser adicionada novamente depois."
+        );
+
+      }
+
+    }
+
+
+    /* ==========================================
+       FINALIZA
+    ========================================== */
+
+    toast(
+      "✅ Parceiro " +
+      parceiroId +
+      " cadastrado como INATIVO."
     );
 
-    toast("✅ Logo salva.");
 
-  }catch(erroLogo){
+    await loadParceiros(true);
+
+    showView("parceiros");
+
+
+    return {
+      ok:true,
+      parceiro_id:parceiroId
+    };
+
+
+  }catch(e){
 
     console.error(
-      "ERRO LOGO:",
-      erroLogo
+      "ERRO CADASTRO PARCEIRO:",
+      e
     );
 
+
     alert(
-      "⚠️ O parceiro foi cadastrado, " +
-      "mas houve erro ao salvar a logo.\n\n" +
-      erroLogo.message +
-      "\n\n" +
-      "A implantação poderá ser reprocessada."
+      "Erro ao cadastrar parceiro.\n\n" +
+      (e.message || e)
     );
+
+
+    throw e;
 
   }
 
 }
 
-toast(
-  "✅ Parceiro " +
-  parceiroId +
-  " cadastrado."
-);
-
-await loadParceiros(true);
-
-showView("parceiros");
-
-}else{
-
-  alert(
-    resposta.erro ||
-    resposta.mensagem ||
-    "Erro ao cadastrar parceiro."
-  );
-
-}
-
-}catch(e){
-
-  console.error(e);
-
-  alert(
-    "Erro de comunicação.\n\n" +
-    (e.message || e)
-  );
-
-}
-
-}
 function buscarMaps(){
 
-const rua =
-document.getElementById("endereco").value;
+  const nome =
+    document
+      .getElementById("nomeFantasia")
+      ?.value
+      .trim() || "";
 
-const numero =
-document.getElementById("numero").value;
+  const rua =
+    document
+      .getElementById("endereco")
+      ?.value
+      .trim() || "";
 
-const bairro =
-document.getElementById("bairro").value;
+  const numero =
+    document
+      .getElementById("numero")
+      ?.value
+      .trim() || "";
 
-const cidade =
-document.getElementById("cidade").value;
+  const bairro =
+    document
+      .getElementById("bairro")
+      ?.value
+      .trim() || "";
 
-const uf =
-document.getElementById("uf").value;
+  const cidade =
+    document
+      .getElementById("cidade")
+      ?.value
+      .trim() || "";
 
-const endereco =
+  const uf =
+    document
+      .getElementById("uf")
+      ?.value
+      .trim() || "";
 
-`${rua}, ${numero}, ${bairro}, ${cidade}-${uf}`;
 
-window.open(
+  const partes = [
+    nome,
+    rua,
+    numero,
+    bairro,
+    cidade,
+    uf
+  ]
+  .filter(Boolean);
 
-"https://www.google.com/maps/search/"+
 
-encodeURIComponent(endereco),
+  if(!partes.length){
 
-"_blank"
+    alert(
+      "Informe pelo menos o nome ou endereço do parceiro antes de pesquisar."
+    );
 
-);
+    return;
+
+  }
+
+
+  const pesquisa =
+    partes.join(", ");
+
+
+  window.open(
+    "https://www.google.com/maps/search/?api=1&query=" +
+    encodeURIComponent(pesquisa),
+    "_blank"
+  );
 
 }
 
@@ -5218,8 +7814,25 @@ document.getElementById("paginaNovoParceiro").innerHTML=`
 
 <div>
 
-<label>CNPJ</label>
-<input id="cnpj">
+<label>Tipo de Documento</label>
+
+<select id="tipo_documento" onchange="alterarTipoDocumentoParceiro()">
+
+<option value="CNPJ">CNPJ</option>
+<option value="CPF">CPF</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label id="labelDocumentoParceiro">CNPJ</label>
+
+<input
+id="documentoParceiro"
+inputmode="numeric"
+placeholder="Digite o CNPJ">
 
 </div>
 
@@ -5242,6 +7855,25 @@ document.getElementById("paginaNovoParceiro").innerHTML=`
 <label>Cargo</label>
 <input id="cargo">
 
+</div>
+
+<div class="field">
+  <label>Representante Legal</label>
+  <input
+    id="representante_legal"
+    type="text"
+    placeholder="Necessário para contrato de pessoa jurídica"
+  >
+</div>
+
+<div class="field">
+  <label>CPF do Representante Legal</label>
+  <input
+    id="cpf_representante"
+    type="text"
+    inputmode="numeric"
+    placeholder="000.000.000-00"
+  >
 </div>
 
 <div>
@@ -5439,8 +8071,9 @@ document.getElementById("paginaNovoParceiro").innerHTML=`
 
 <label>Google Maps</label>
 
-<input id="maps">
-
+<input
+id="link_maps"
+placeholder="Cole o link do Google Maps">
 </div>
 
 </div>
@@ -5512,6 +8145,37 @@ onclick="salvarParceiroCompleto()">
 `;
 
 }
+
+function alterarTipoDocumentoParceiro(){
+
+  const tipo =
+    document.getElementById("tipo_documento")?.value || "CNPJ";
+
+  const label =
+    document.getElementById("labelDocumentoParceiro");
+
+  const campo =
+    document.getElementById("documentoParceiro");
+
+  if(!label || !campo) return;
+
+
+  if(tipo === "CPF"){
+
+    label.textContent = "CPF";
+    campo.placeholder = "Digite o CPF";
+
+  }else{
+
+    label.textContent = "CNPJ";
+    campo.placeholder = "Digite o CNPJ";
+
+  }
+
+  campo.value = "";
+
+}
+
 
 async function reprocessarImplantacao(parceiroId){
 
@@ -5632,6 +8296,41 @@ async function reprocessarImplantacao(parceiroId){
     );
 
   }
+
+}
+
+function gerarContratoParceiro(parceiroId){
+
+  parceiroId =
+    String(
+      parceiroId || ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  if(!parceiroId){
+
+    alert(
+      "Parceiro sem ID operacional."
+    );
+
+    return;
+
+  }
+
+
+  const url =
+    "gerar-contrato-parceiro.html?p=" +
+    encodeURIComponent(
+      parceiroId
+    );
+
+
+  window.open(
+    url,
+    "_blank"
+  );
 
 }
 
