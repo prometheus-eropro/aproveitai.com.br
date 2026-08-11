@@ -239,113 +239,533 @@ function preencherFiltros() {
 /* =========================
    RENDERIZAR CARDS
 ========================= */
+/* =========================
+   RENDERIZAR CARDS
+========================= */
 function renderizar(lista) {
+
   parceirosDiv.innerHTML = "";
 
   if (!lista.length) {
-    parceirosDiv.innerHTML = "<p>Nenhum parceiro encontrado com os filtros informados.</p>";
+    parceirosDiv.innerHTML =
+      "<p>Nenhum parceiro encontrado com os filtros informados.</p>";
     return;
   }
 
   lista.forEach(p => {
-    if (String(p.ativo).toLowerCase() !== "sim") return;
 
-    const nome = p.nomeFantasia || p.nome || "Parceiro";
-const cidade = p.cidade || "-";
-const ramo = p.ramo || "-";
-const desconto = p.tipoDesconto || "";
+    if (String(p.ativo || "").toLowerCase() !== "sim") return;
 
-const whatsapp = String(p.whatsapp || "").replace(/\D/g, "");
-const instagram = String(p.instagram || "");
-const site = String(p.site || "");
-const email = String(p.email || "");
-const maps = String(p.link_maps || "");
+    const parceiroId =
+      String(p.parceiro_id || "").trim();
 
-const logoURL =
-  String(p.logoURL || "").trim();
+    const nomeFantasia =
+      String(
+        p.nomeFantasia ||
+        p.nome_fantasia ||
+        p.nome ||
+        p.razaoSocial ||
+        "Parceiro"
+      ).trim();
 
-const nomeFantasia =
-  String(
-    p.nomeFantasia ||
-    p.nome_fantasia ||
-    p.razaoSocial ||
-    "Parceiro"
-  ).trim();
+    const cidade =
+      String(p.cidade || "-").trim();
 
-const identidadeParceiro = logoURL
+    const uf =
+      String(p.uf || "").trim();
+
+    const ramo =
+      String(p.ramo || p.categoria || "-").trim();
+
+    const whatsapp =
+      String(p.whatsapp || "").replace(/\D/g, "");
+
+    const instagram =
+      String(p.instagram || "").trim();
+
+    const site =
+      String(p.site || "").trim();
+
+    const email =
+      String(p.email || "").trim();
+
+    const maps =
+      String(p.link_maps || p.maps || "").trim();
+
+    const logoURL =
+      String(p.logoURL || p.logo || "").trim();
+
+
+    /* =========================
+       IDENTIDADE VISUAL
+    ========================= */
+
+    const identidade = logoURL
   ? `
-    <img
-      src="${logoURL}"
-      alt="${nomeFantasia}"
-      style="
-        max-width:160px;
-        max-height:100px;
-        object-fit:contain;
-        margin-bottom:10px;
-      "
-      onerror="
-        this.style.display='none';
-        this.nextElementSibling.style.display='flex';
-      "
-    >
-
-    <div
-      style="
-        display:none;
-        min-height:75px;
-        align-items:center;
-        justify-content:center;
-        text-align:center;
-        font-size:21px;
-        font-weight:800;
-        color:#0b7a2a;
-        margin-bottom:10px;
-      "
-    >
-      ${nomeFantasia}
+    <div class="parceiro-logo-box">
+      <img
+        src="${logoURL}"
+        alt="${nomeFantasia}"
+        class="parceiro-logo"
+        onerror="this.parentElement.style.display='none'"
+      >
     </div>
   `
-  : `
-    <div
-      style="
-        min-height:75px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        text-align:center;
-        font-size:21px;
-        font-weight:800;
-        color:#0b7a2a;
-        margin-bottom:10px;
-      "
-    >
-      ${nomeFantasia}
-    </div>
-  `;
+  : "";
+        <div class="parceiro-logo-box">
 
-parceirosDiv.innerHTML += `
-      <div class="card">
-
-        ${identidadeParceiro}
-
-        <h3>${nome}</h3>
-        <p>📍 <b>Cidade:</b> ${cidade}</p>
-        <p>🏷 <b>Categoria:</b> ${ramo}</p>
-        ${desconto ? `<p><b>Desconto:</b> ${desconto}</p>` : ""}
-
-        <div class="card-contatos-texto">
-          ${whatsapp ? `<a class="tag-contato tag-whatsapp" target="_blank" href="https://wa.me/55${whatsapp}">WhatsApp</a>` : ""}
-          ${instagram ? `<a class="tag-contato tag-instagram" target="_blank" href="https://instagram.com/${instagram.replace("@","")}">Instagram</a>` : ""}
-          ${site ? `<a class="tag-contato tag-site" target="_blank" href="${site}">Site</a>` : ""}
-          ${email ? `<a class="tag-contato tag-email" href="mailto:${email}">E-mail</a>` : ""}
-          ${maps ? `<a href="${maps}" target="_blank">📍 Como chegar</a>` : ""}
+          <div class="parceiro-sem-logo">
+            ${nomeFantasia}
+          </div>
 
         </div>
+      `;
+
+
+    /* =========================
+       CONTATOS
+    ========================= */
+
+    const contatos = `
+
+      <div class="parceiro-contatos">
+
+        ${whatsapp ? `
+          <a
+            class="tag-contato"
+            target="_blank"
+            href="https://wa.me/55${whatsapp}">
+            WhatsApp
+          </a>
+        ` : ""}
+
+        ${instagram ? `
+          <a
+            class="tag-contato"
+            target="_blank"
+            href="${
+              instagram.startsWith("http")
+                ? instagram
+                : "https://instagram.com/" +
+                  instagram.replace("@","")
+            }">
+            Instagram
+          </a>
+        ` : ""}
+
+        ${site ? `
+          <a
+            class="tag-contato"
+            target="_blank"
+            href="${site}">
+            Site
+          </a>
+        ` : ""}
+
+        ${email ? `
+          <a
+            class="tag-contato"
+            href="mailto:${email}">
+            E-mail
+          </a>
+        ` : ""}
+
       </div>
     `;
+
+
+    /* =========================
+       CARD
+    ========================= */
+
+    parceirosDiv.innerHTML += `
+
+      <div
+        class="card card-parceiro"
+        id="card-${parceiroId}"
+      >
+
+        ${identidade}
+
+        <h3 class="parceiro-nome">
+          ${nomeFantasia}
+        </h3>
+
+        <div class="parceiro-info">
+
+          <p>
+            📍 <b>${cidade}${uf ? " - " + uf : ""}</b>
+          </p>
+
+          <p>
+            🏷 <b>${ramo}</b>
+          </p>
+
+        </div>
+
+
+        <div
+          id="acoes-${parceiroId}"
+          class="parceiro-acoes"
+        ></div>
+
+
+        ${contatos}
+
+
+        ${maps ? `
+          <a
+            href="${maps}"
+            target="_blank"
+            class="btn-como-chegar">
+            📍 Como chegar
+          </a>
+        ` : ""}
+
+
+        <div
+          id="detalhes-${parceiroId}"
+          class="parceiro-detalhes"
+          style="display:none">
+        </div>
+
+      </div>
+
+    `;
+
+
+    /* verifica se possui benefício/promoção */
+
+    verificarConteudoParceiro(parceiroId);
+
   });
+
 }
 
+/* =====================================================
+   VERIFICAR BENEFÍCIOS E PROMOÇÕES DO PARCEIRO
+===================================================== */
+
+async function verificarConteudoParceiro(parceiroId) {
+
+  if (!parceiroId) return;
+
+  const area =
+    document.getElementById("acoes-" + parceiroId);
+
+  if (!area) return;
+
+  try {
+
+    const [resBeneficios, resPromocoes] =
+      await Promise.all([
+
+        fetch(
+          API_URL +
+          "?acao=listarBeneficiosParceiro&parceiro_id=" +
+          encodeURIComponent(parceiroId)
+        ),
+
+        fetch(
+          API_URL +
+          "?acao=listarPromocoesParceiro&parceiro_id=" +
+          encodeURIComponent(parceiroId)
+        )
+
+      ]);
+
+
+    const beneficios =
+      await resBeneficios.json();
+
+    const promocoes =
+      await resPromocoes.json();
+
+console.log(
+  "CONTEÚDO PARCEIRO:",
+  parceiroId,
+  {
+    beneficios: beneficios,
+    promocoes: promocoes
+  }
+);
+
+
+    const temBeneficios =
+      beneficios.ok &&
+      Array.isArray(beneficios.dados) &&
+      beneficios.dados.length > 0;
+
+
+    const temPromocoes =
+      promocoes.ok &&
+      Array.isArray(promocoes.dados) &&
+      promocoes.dados.length > 0;
+
+
+    let html = "";
+
+
+    if (temBeneficios) {
+
+      html += `
+
+        <button
+          class="btn-conteudo-parceiro"
+          onclick="abrirBeneficiosParceiro('${parceiroId}')">
+
+          🎁 Ver Benefícios
+
+        </button>
+
+      `;
+
+    }
+
+
+    if (temPromocoes) {
+
+      html += `
+
+        <button
+          class="btn-conteudo-parceiro btn-promocao"
+          onclick="abrirPromocoesParceiro('${parceiroId}')">
+
+          🔥 Ver Promoções
+
+        </button>
+
+      `;
+
+    }
+
+
+    area.innerHTML = html;
+
+
+    /* guarda temporariamente para não consultar novamente */
+
+    window["beneficios_" + parceiroId] =
+      temBeneficios
+        ? beneficios.dados
+        : [];
+
+    window["promocoes_" + parceiroId] =
+      temPromocoes
+        ? promocoes.dados
+        : [];
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar conteúdo do parceiro:",
+      parceiroId,
+      erro
+    );
+
+  }
+
+}
+
+/* =====================================================
+   ABRIR BENEFÍCIOS DO PARCEIRO
+===================================================== */
+
+function abrirBeneficiosParceiro(parceiroId) {
+
+  const lista =
+    window["beneficios_" + parceiroId] || [];
+
+  const area =
+    document.getElementById(
+      "detalhes-" + parceiroId
+    );
+
+  if (!area) return;
+
+
+  if (!lista.length) {
+
+    area.style.display = "none";
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <div class="conteudo-parceiro">
+
+      <h4>🎁 Benefícios</h4>
+
+  `;
+
+
+  lista.forEach(b => {
+
+    html += `
+
+      <div class="mini-beneficio">
+
+        <strong>
+          ${b.titulo || "Benefício"}
+        </strong>
+
+        ${
+          b.descricao
+            ? `<p>${b.descricao}</p>`
+            : ""
+        }
+
+        ${
+          b.observacoes
+            ? `
+              <small>
+                <b>Condições:</b>
+                ${b.observacoes}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  });
+
+
+  html += `
+
+      <button
+        class="btn-fechar-detalhes"
+        onclick="fecharDetalhesParceiro('${parceiroId}')">
+
+        Fechar
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  area.innerHTML = html;
+
+  area.style.display = "block";
+
+}
+
+/* =====================================================
+   ABRIR PROMOÇÕES DO PARCEIRO
+===================================================== */
+
+function abrirPromocoesParceiro(parceiroId) {
+
+  const lista =
+    window["promocoes_" + parceiroId] || [];
+
+  const area =
+    document.getElementById(
+      "detalhes-" + parceiroId
+    );
+
+  if (!area) return;
+
+
+  if (!lista.length) {
+
+    area.style.display = "none";
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <div class="conteudo-parceiro">
+
+      <h4>🔥 Promoções</h4>
+
+  `;
+
+
+  lista.forEach(p => {
+
+    html += `
+
+      <div class="mini-promocao">
+
+        <strong>
+          ${p.titulo || "Promoção"}
+        </strong>
+
+        ${
+          p.descricao
+            ? `<p>${p.descricao}</p>`
+            : ""
+        }
+
+        ${
+          p.dataFim
+            ? `
+              <small>
+                Válida até:
+                ${new Date(
+                  p.dataFim
+                ).toLocaleDateString("pt-BR")}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  });
+
+
+  html += `
+
+      <button
+        class="btn-fechar-detalhes"
+        onclick="fecharDetalhesParceiro('${parceiroId}')">
+
+        Fechar
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  area.innerHTML = html;
+
+  area.style.display = "block";
+
+}
+
+function fecharDetalhesParceiro(parceiroId) {
+
+  const area =
+    document.getElementById(
+      "detalhes-" + parceiroId
+    );
+
+  if (area) {
+
+    area.style.display = "none";
+
+    area.innerHTML = "";
+
+  }
+
+}
 /* =========================
    FILTRAR
 ========================= */
