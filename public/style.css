@@ -2256,3 +2256,288 @@ color:#666;
     background:#e68900;
 }
 
+/* =====================================================
+   CARDS DOS PARCEIROS — VITRINE COMERCIAL
+===================================================== */
+
+.card-parceiro{
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+
+  min-height:430px;
+
+  padding:22px 18px;
+
+  border-radius:18px;
+
+  background:#fff;
+
+  box-shadow:
+    0 8px 24px
+    rgba(0,0,0,.08);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+
+}
+
+.card-parceiro:hover{
+
+  transform:translateY(-3px);
+
+  box-shadow:
+    0 12px 28px
+    rgba(0,0,0,.12);
+
+}
+
+
+/* LOGO */
+
+.parceiro-logo-box{
+
+  width:180px;
+  height:115px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  margin-bottom:10px;
+
+}
+
+.parceiro-logo{
+
+  max-width:170px;
+  max-height:105px;
+
+  object-fit:contain;
+
+}
+
+
+/* SEM LOGO */
+
+.parceiro-sem-logo{
+
+  width:150px;
+  height:90px;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:10px;
+
+  border:2px solid #0b7a2a;
+
+  border-radius:14px;
+
+  color:#0b7a2a;
+
+  font-size:18px;
+
+  font-weight:800;
+
+  text-align:center;
+
+}
+
+
+/* NOME */
+
+.parceiro-nome{
+
+  margin:4px 0 12px;
+
+  text-align:center;
+
+  color:#123;
+
+  font-size:18px;
+
+}
+
+
+/* INFORMAÇÕES */
+
+.parceiro-info{
+
+  width:100%;
+
+  text-align:center;
+
+  min-height:70px;
+
+}
+
+.parceiro-info p{
+
+  margin:7px 0;
+
+}
+
+
+/* BENEFÍCIO / PROMOÇÃO */
+
+.parceiro-acoes{
+
+  display:flex;
+
+  gap:8px;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+  margin:12px 0;
+
+}
+
+.btn-conteudo-parceiro{
+
+  border:none;
+
+  border-radius:9px;
+
+  padding:9px 13px;
+
+  background:#0b7a2a;
+
+  color:white;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+}
+
+.btn-conteudo-parceiro:hover{
+
+  opacity:.88;
+
+}
+
+.btn-promocao{
+
+  background:#e88900;
+
+}
+
+
+/* CONTATOS */
+
+.parceiro-contatos{
+
+  display:flex;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+  gap:7px;
+
+  margin-top:auto;
+
+}
+
+.tag-contato{
+
+  padding:7px 11px;
+
+  border-radius:8px;
+
+  background:#dcf8e7;
+
+  border:1px solid #8bd8aa;
+
+  color:#075d26;
+
+  text-decoration:none;
+
+  font-size:13px;
+
+}
+
+
+/* MAPS */
+
+.btn-como-chegar{
+
+  margin-top:12px;
+
+  text-decoration:none;
+
+  font-weight:700;
+
+  color:#0875d1;
+
+}
+
+
+/* DETALHES */
+
+.parceiro-detalhes{
+
+  width:100%;
+
+  margin-top:16px;
+
+}
+
+.conteudo-parceiro{
+
+  padding:14px;
+
+  border-radius:12px;
+
+  background:#f5faf6;
+
+  border:1px solid #d4e8d8;
+
+}
+
+.conteudo-parceiro h4{
+
+  color:#0b7a2a;
+
+  margin-top:0;
+
+}
+
+.mini-beneficio,
+.mini-promocao{
+
+  padding:10px 0;
+
+  border-bottom:1px solid #ddd;
+
+}
+
+.mini-beneficio p,
+.mini-promocao p{
+
+  white-space:pre-line;
+
+  margin:5px 0;
+
+}
+
+.btn-fechar-detalhes{
+
+  margin-top:12px;
+
+  padding:7px 14px;
+
+  border:none;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+}
