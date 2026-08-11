@@ -2541,3 +2541,53 @@ color:#666;
   cursor:pointer;
 
 }
+
+/* =====================================================
+   CARDS PARCEIROS — IDENTIDADE
+===================================================== */
+
+.card-parceiro .parceiro-nome{
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  color: #087c2c;
+
+  margin: 16px 12px 12px;
+  padding-bottom: 10px;
+
+  border-bottom: 2px solid #e5f2e9;
+}
+
+
+/* CIDADE */
+
+.card-parceiro .parceiro-info p{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  margin: 8px 0;
+
+  font-size: 15px;
+}
+
+
+/* RAMO DO PARCEIRO */
+
+.card-parceiro .parceiro-ramo{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 7px 13px;
+
+  background: #eef9f1;
+  border: 1px solid #b9e5c6;
+  border-radius: 20px;
+
+  color: #075f25;
+  font-weight: 700;
+}

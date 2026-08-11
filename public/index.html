@@ -390,8 +390,10 @@ function renderizar(lista) {
           </p>
 
           <p>
-            🏷 <b>${ramo}</b>
-          </p>
+  <span class="parceiro-ramo">
+    🏷️ ${ramo}
+  </span>
+</p>
 
         </div>
 
@@ -442,91 +444,126 @@ async function verificarConteudoParceiro(parceiroId) {
 
   if (!parceiroId) return;
 
-  const area =
-    document.getElementById("acoes-" + parceiroId);
+  const area = document.getElementById("acoes-" + parceiroId);
 
   if (!area) return;
 
   try {
 
-    const [resBeneficios, resPromocoes] =
-      await Promise.all([
+    const [resBeneficios, resPromocoes] = await Promise.all([
 
-        fetch(
-          API_URL +
-          "?acao=listarBeneficiosParceiro&parceiro_id=" +
-          encodeURIComponent(parceiroId)
-        ),
+      fetch(
+        API_URL +
+        "?acao=listarBeneficiosParceiro&parceiro_id=" +
+        encodeURIComponent(parceiroId)
+      ),
 
-        fetch(
-          API_URL +
-          "?acao=listarPromocoesParceiro&parceiro_id=" +
-          encodeURIComponent(parceiroId)
-        )
+      fetch(
+        API_URL +
+        "?acao=listarPromocoesParceiro&parceiro_id=" +
+        encodeURIComponent(parceiroId)
+      )
 
-      ]);
+    ]);
 
-
-    const beneficios =
-      await resBeneficios.json();
-
-    const promocoes =
-      await resPromocoes.json();
-
-console.log(
-  "CONTEÚDO PARCEIRO:",
-  parceiroId,
-  {
-    beneficios: beneficios,
-    promocoes: promocoes
-  }
-);
+    const respostaBeneficios = await resBeneficios.json();
+    const respostaPromocoes = await resPromocoes.json();
 
 
-    const temBeneficios =
-      beneficios.ok &&
-      Array.isArray(beneficios.dados) &&
-      beneficios.dados.length > 0;
+    /* ==========================================
+       NORMALIZA RESPOSTA DA API
+    ========================================== */
+
+    const listaBeneficios =
+      Array.isArray(respostaBeneficios)
+        ? respostaBeneficios
+        : Array.isArray(respostaBeneficios.dados)
+          ? respostaBeneficios.dados
+          : Array.isArray(respostaBeneficios.beneficios)
+            ? respostaBeneficios.beneficios
+            : [];
 
 
-    const temPromocoes =
-      promocoes.ok &&
-      Array.isArray(promocoes.dados) &&
-      promocoes.dados.length > 0;
+    const listaPromocoes =
+      Array.isArray(respostaPromocoes)
+        ? respostaPromocoes
+        : Array.isArray(respostaPromocoes.dados)
+          ? respostaPromocoes.dados
+          : Array.isArray(respostaPromocoes.promocoes)
+            ? respostaPromocoes.promocoes
+            : [];
 
+
+    const beneficiosAtivos = listaBeneficios.filter(item => {
+
+      const ativo = String(item.ativo ?? "sim")
+        .trim()
+        .toLowerCase();
+
+      return ativo !== "nao" && ativo !== "não";
+
+    });
+
+
+    const promocoesAtivas = listaPromocoes.filter(item => {
+
+      const ativo = String(item.ativo ?? "sim")
+        .trim()
+        .toLowerCase();
+
+      return ativo !== "nao" && ativo !== "não";
+
+    });
+
+
+    console.log(
+      "CONTEÚDO PARCEIRO:",
+      parceiroId,
+      {
+        beneficios: beneficiosAtivos,
+        promocoes: promocoesAtivas
+      }
+    );
+
+
+    /* ==========================================
+       GUARDA CONTEÚDO
+    ========================================== */
+
+    window["beneficios_" + parceiroId] = beneficiosAtivos;
+    window["promocoes_" + parceiroId] = promocoesAtivas;
+
+
+    /* ==========================================
+       CRIA SOMENTE BOTÕES NECESSÁRIOS
+    ========================================== */
 
     let html = "";
 
 
-    if (temBeneficios) {
+    if (beneficiosAtivos.length > 0) {
 
       html += `
-
         <button
+          type="button"
           class="btn-conteudo-parceiro"
           onclick="abrirBeneficiosParceiro('${parceiroId}')">
-
-          🎁 Ver Benefícios
-
+          🎁 Benefícios
         </button>
-
       `;
 
     }
 
 
-    if (temPromocoes) {
+    if (promocoesAtivas.length > 0) {
 
       html += `
-
         <button
+          type="button"
           class="btn-conteudo-parceiro btn-promocao"
           onclick="abrirPromocoesParceiro('${parceiroId}')">
-
-          🔥 Ver Promoções
-
+          🔥 Promoções
         </button>
-
       `;
 
     }
@@ -535,26 +572,15 @@ console.log(
     area.innerHTML = html;
 
 
-    /* guarda temporariamente para não consultar novamente */
-
-    window["beneficios_" + parceiroId] =
-      temBeneficios
-        ? beneficios.dados
-        : [];
-
-    window["promocoes_" + parceiroId] =
-      temPromocoes
-        ? promocoes.dados
-        : [];
-
-
   } catch (erro) {
 
     console.error(
-      "Erro ao verificar conteúdo do parceiro:",
+      "Erro ao carregar conteúdo do parceiro:",
       parceiroId,
       erro
     );
+
+    area.innerHTML = "";
 
   }
 
@@ -575,6 +601,18 @@ function abrirBeneficiosParceiro(parceiroId) {
     );
 
   if (!area) return;
+
+if (
+  area.style.display === "block" &&
+  area.dataset.tipo === "beneficios"
+) {
+  area.style.display = "none";
+  area.innerHTML = "";
+  area.dataset.tipo = "";
+  return;
+}
+
+area.dataset.tipo = "beneficios";
 
 
   if (!lista.length) {
@@ -666,6 +704,17 @@ function abrirPromocoesParceiro(parceiroId) {
 
   if (!area) return;
 
+if (
+  area.style.display === "block" &&
+  area.dataset.tipo === "promocoes"
+) {
+  area.style.display = "none";
+  area.innerHTML = "";
+  area.dataset.tipo = "";
+  return;
+}
+
+area.dataset.tipo = "promocoes";
 
   if (!lista.length) {
 
