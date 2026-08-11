@@ -1836,6 +1836,151 @@ grid-template-columns:1fr;
   opacity: 1;
 }
 
+/* =========================================================
+   MODAL DE EDIÇÃO — CORREÇÃO DEFINITIVA
+========================================================= */
+
+/* Fundo escuro atrás do modal */
+#overlayEdit{
+  position: fixed !important;
+  inset: 0 !important;
+
+  background: rgba(0,0,0,.72) !important;
+
+  z-index: 99999 !important;
+
+  display: none;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 20px !important;
+
+  overflow-y: auto !important;
+}
+
+/* Quando estiver aberto */
+#overlayEdit.show{
+  display: flex !important;
+}
+
+/* Caixa branca do modal */
+#overlayEdit .modal{
+  width: min(1000px, 96vw) !important;
+
+  max-height: 90vh !important;
+
+  background: #ffffff !important;
+
+  border-radius: 16px !important;
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.35) !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  overflow: hidden !important;
+
+  margin: auto !important;
+}
+
+/* Cabeçalho fica visível */
+#overlayEdit .modal-head{
+  flex: 0 0 auto !important;
+
+  background: #ffffff !important;
+
+  padding: 18px 22px !important;
+
+  border-bottom: 1px solid #ddd !important;
+}
+
+/* Parte dos campos é que rola */
+#overlayEdit .body{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  padding: 20px 22px !important;
+
+  background: #ffffff !important;
+}
+
+/* Formulário */
+#editForm{
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 14px !important;
+}
+
+/* Rodapé sempre visível */
+#overlayEdit footer{
+  flex: 0 0 auto !important;
+
+  background: #ffffff !important;
+
+  padding: 14px 22px !important;
+
+  border-top: 1px solid #ddd !important;
+
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+
+  z-index: 10 !important;
+}
+
+/* Textos */
+#overlayEdit,
+#overlayEdit label,
+#overlayEdit .hint{
+  color: #222 !important;
+}
+
+/* Campos */
+#overlayEdit input,
+#overlayEdit select,
+#overlayEdit textarea{
+  background: #ffffff !important;
+  color: #111 !important;
+
+  border: 1px solid #bbb !important;
+
+  opacity: 1 !important;
+}
+
+/* Campo somente leitura */
+#overlayEdit input[readonly]{
+  background: #eeeeee !important;
+  color: #555 !important;
+}
+
+/* Celular */
+@media(max-width:700px){
+
+  #overlayEdit{
+    padding: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  #overlayEdit .modal{
+  width: min(1000px, 96vw) !important;
+
+  height: 90vh !important;
+  max-height: 90vh !important;
+    margin-top: 8px !important;
+  }
+
+  #editForm > div{
+    width: 100% !important;
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+}
+
 /*==================================================
 =             FIM DO CSS
 ==================================================*/
