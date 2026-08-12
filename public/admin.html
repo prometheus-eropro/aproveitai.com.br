@@ -8052,13 +8052,6 @@ cpf_representante:
         .value
         .trim(),
 
-     uf:
-  document
-    .getElementById("uf")
-    .value
-    .trim()
-    .toUpperCase(),
-
     uf:
      document
        .getElementById("uf")
@@ -8511,73 +8504,6 @@ quantidade_veiculos:
       );
 
     }
-
-
-    /* ==========================================
-       ENVIA LOGO DEPOIS DO CADASTRO
-    ========================================== */
-
-    if(parceiro.arquivoLogo){
-
-      toast(
-        "🖼 Enviando logo..."
-      );
-
-
-      try{
-
-        const resultadoLogo =
-          await enviarLogoParceiro(
-            parceiroId,
-            parceiro.arquivoLogo
-          );
-
-
-        console.log(
-          "UPLOAD LOGO:",
-          resultadoLogo
-        );
-
-
-        if(
-          !resultadoLogo ||
-          resultadoLogo.ok !== true
-        ){
-
-          throw new Error(
-            resultadoLogo?.erro ||
-            resultadoLogo?.mensagem ||
-            "Erro ao salvar logo."
-          );
-
-        }
-
-
-        toast(
-          "✅ Logo salva."
-        );
-
-
-      }catch(erroLogo){
-
-        console.error(
-          "ERRO LOGO:",
-          erroLogo
-        );
-
-
-        alert(
-          "⚠️ O parceiro foi cadastrado, " +
-          "mas houve erro ao salvar a logo.\n\n" +
-          (erroLogo.message || erroLogo) +
-          "\n\n" +
-          "A logo poderá ser adicionada novamente depois."
-        );
-
-      }
-
-    }
-
 
     /* ==========================================
        FINALIZA
