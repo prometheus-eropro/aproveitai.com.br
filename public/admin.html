@@ -4482,40 +4482,178 @@ async function loadBeneficios(force=false){
   renderBeneficios();
 }
 function renderBeneficios(){
-  const q = ($("filtroBeneficios").value||"").trim().toLowerCase();
-  const rows = state.cache.beneficios.filter(b=>{
-    if(!q) return true;
-    const blob = JSON.stringify(b).toLowerCase();
-    return blob.includes(q);
-  });
 
-  renderTable("tblBeneficios", rows, [
-    {key:"parceiro", label:"Parceiro"},
-    {key:"grupo", label:"Grupo"},
-    {key:"descricao", label:"Descrição"},
-    {key:"regra", label:"Regra"},
-    {key:"ativo", label:"Status", render:(r)=> (String(r.ativo||"").toLowerCase()==="sim" ? "SIM" : "NAO") },
-  ],{
-    actions: (b)=>{
-      const ativo = String(b.ativo||"").trim().toLowerCase()==="sim";
-      const id = (b.descricao || "").trim();
-      return `
-        <button class="btn" onclick="toggleBeneficio('${escapeJs(id)}', ${ativo})">${ativo?'Inativar':'Ativar'}</button>
-        <button class="btn" onclick="editarBeneficio('${escapeJs(id)}')">Editar</button>
-      `;
+  const q =
+    ($("filtroBeneficios").value || "")
+      .trim()
+      .toLowerCase();
+
+  const rows =
+    state.cache.beneficios.filter(b => {
+
+      if(!q) return true;
+
+      const blob =
+        JSON.stringify(b).toLowerCase();
+
+      return blob.includes(q);
+
+    });
+
+
+  renderTable(
+    "tblBeneficios",
+    rows,
+    [
+
+      {
+        key:"parceiro",
+        label:"Parceiro"
+      },
+
+      {
+        key:"grupo",
+        label:"Grupo"
+      },
+
+      {
+        key:"descricao",
+        label:"Descrição"
+      },
+
+      {
+        key:"regra",
+        label:"Regra"
+      },
+
+      {
+        key:"ativo",
+        label:"Status",
+        render:(r)=>
+          String(r.ativo || "")
+            .trim()
+            .toLowerCase() === "sim"
+              ? "SIM"
+              : "NAO"
+      }
+
+    ],
+    {
+
+      actions:(b)=>{
+
+        const ativo =
+          String(b.ativo || "")
+            .trim()
+            .toLowerCase() === "sim";
+
+
+        const beneficioId =
+          String(
+            b.beneficio_id || ""
+          ).trim();
+
+
+        if(!beneficioId){
+
+          return `
+            <button
+              class="btn"
+              disabled
+              title="Benefício antigo sem beneficio_id">
+              Sem ID
+            </button>
+          `;
+
+        }
+
+
+        return `
+
+          <button
+            class="btn"
+            onclick="toggleBeneficio(
+              '${escapeJs(beneficioId)}',
+              ${ativo}
+            )">
+            ${ativo ? "Inativar" : "Ativar"}
+          </button>
+
+          <button
+            class="btn"
+            onclick="editarBeneficio(
+              '${escapeJs(beneficioId)}'
+            )">
+            Editar
+          </button>
+
+        `;
+
+      }
+
     }
-  });
+  );
+
 }
+
 function escapeJs(s){
   return String(s??"").replaceAll("\\","\\\\").replaceAll("'","\\'");
 }
-async function toggleBeneficio(descricao, ativo){
+async function toggleBeneficio(beneficioId, ativo){
+
   try{
-    await apiAlterarStatus("beneficios","descricao",descricao, ativo ? "NAO" : "SIM");
-    toast("Status atualizado");
+
+    const id =
+      String(
+        beneficioId || ""
+      ).trim();
+
+
+    if(!id){
+
+      alert(
+        "Não foi possível alterar o status.\n\n" +
+        "Benefício sem beneficio_id."
+      );
+
+      return;
+
+    }
+
+
+    await apiAlterarStatus(
+      "beneficios",
+      "beneficio_id",
+      id,
+      ativo ? "NAO" : "SIM"
+    );
+
+
+    toast(
+      ativo
+        ? "Benefício inativado."
+        : "Benefício ativado."
+    );
+
+
     await loadBeneficios(true);
-  }catch(err){ toast("Erro ao alterar status"); }
+
+
+  }catch(err){
+
+    console.error(
+      "Erro ao alterar benefício:",
+      err
+    );
+
+    toast(
+      "Erro ao alterar status do benefício."
+    );
+
+  }
+
 }
+
 function editarBeneficio(beneficioId){
 
   const id =
