@@ -4516,26 +4516,142 @@ async function toggleBeneficio(descricao, ativo){
     await loadBeneficios(true);
   }catch(err){ toast("Erro ao alterar status"); }
 }
-function editarBeneficio(descricao){
-  const b = state.cache.beneficios.find(x => String(x.descricao||"").trim() === String(descricao||"").trim()) || {};
+function editarBeneficio(beneficioId){
+
+  const id =
+    String(beneficioId || "").trim();
+
+  const b =
+    state.cache.beneficios.find(
+      x =>
+        String(x.beneficio_id || "").trim() === id
+    ) || {};
+
+  if(!b.beneficio_id){
+
+    alert(
+      "Benefício não localizado.\n\n" +
+      "ID: " + id
+    );
+
+    return;
+  }
+
+
   openEditModal({
+
     title:"Editar benefício",
-    hint:"Identificador usado: descricao (precisa existir e bater exatamente).",
-    initial: b,
+
+    hint:
+      "ID: " + b.beneficio_id +
+      " • O nome do benefício e o parceiro são permanentes.",
+
+    initial:b,
+
     fields:[
-      {key:"descricao", label:"Descrição (id)", readonly:true, w:"520px", flex:"1 1 520px"},
-      {key:"parceiro", label:"Parceiro"},
-      {key:"grupo", label:"Grupo"},
-      {key:"regra", label:"Regra", type:"textarea", w:"520px", flex:"1 1 520px"},
+
+      {
+        key:"beneficio_id",
+        label:"ID do Benefício",
+        readonly:true,
+        w:"220px"
+      },
+
+      {
+        key:"titulo",
+        label:"Nome do Benefício",
+        readonly:true,
+        w:"360px"
+      },
+
+      {
+        key:"parceiro",
+        label:"Parceiro",
+        readonly:true,
+        w:"300px"
+      },
+
+      {
+        key:"descricao",
+        label:"Descrição",
+        type:"textarea",
+        w:"720px",
+        flex:"1 1 720px"
+      },
+
+      {
+        key:"grupo",
+        label:"Grupo",
+        w:"200px"
+      },
+
+      {
+        key:"categoria",
+        label:"Categoria",
+        w:"220px"
+      },
+
+      {
+        key:"ordem",
+        label:"Ordem",
+        w:"120px"
+      },
+
+      {
+        key:"observacoes",
+        label:"Condições / Observações",
+        type:"textarea",
+        w:"720px",
+        flex:"1 1 720px"
+      },
+
+      {
+        key:"ativo",
+        label:"Status",
+        type:"select",
+        options:[
+          {value:"SIM", label:"Ativo"},
+          {value:"NAO", label:"Inativo"}
+        ],
+        w:"200px"
+      }
+
     ],
+
+
     onSave: async (patch)=>{
-      delete patch.descricao;
-      await apiAtualizarRegistro("beneficios","descricao",descricao, patch);
-      toast("Benefício atualizado");
+
+      /* CAMPOS PERMANENTES */
+
+      delete patch.beneficio_id;
+      delete patch.titulo;
+      delete patch.parceiro;
+      delete patch.parceiro_id;
+
+
+      await apiAtualizarRegistro(
+        "beneficios",
+        "beneficio_id",
+        id,
+        patch
+      );
+
+
+      toast(
+        patch.ativo === "NAO"
+          ? "Benefício desativado. Histórico preservado."
+          : "Benefício atualizado."
+      );
+
+
       await loadBeneficios(true);
+
     }
+
   });
+
 }
+
 function novoBeneficio(){
 
   /* ==========================================
@@ -4613,11 +4729,12 @@ function novoBeneficio(){
         w:"420px"
       },
 
-      {
-        key:"titulo",
-        label:"Título",
-        w:"420px"
-      },
+{
+  key:"titulo",
+  label:"Título da Promoção",
+  readonly:true,
+  w:"420px"
+},
 
       {
         key:"descricao",
@@ -5194,9 +5311,14 @@ function editarPromocao(promocaoId){
        * IDENTIFICADORES
        */
 
-      delete patch.promocao_id;
-      delete patch.parceiro_id;
-      delete patch.parceiro;
+      /* ==========================================
+   CAMPOS DE IDENTIDADE — NÃO ALTERAR
+========================================== */
+
+delete patch.promocao_id;
+delete patch.parceiro_id;
+delete patch.parceiro;
+delete patch.titulo;
 
 
       await apiAtualizarRegistro(
