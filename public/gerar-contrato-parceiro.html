@@ -483,12 +483,12 @@ Economize mais. Aproveite melhor.
     </button>
 
     <button
-      type="button"
-      onclick="window.print()"
-      style="margin-left:12px;"
-    >
-      🖨️ Imprimir / Salvar PDF
-    </button>
+  type="button"
+  onclick="emitirContrato()"
+  style="margin-left:12px;"
+>
+  📄 Emitir Contrato
+</button>
 
     <div
       id="statusContrato"
@@ -751,13 +751,9 @@ function receberParceirosContrato(resposta){
 
 function obterChaveAdmin(){
 
-  /*
-   * Usa a chave armazenada pelo Admin.
-   * Se o nome usado no seu Admin for diferente,
-   * ajustaremos no próximo passo.
-   */
-
   return (
+    localStorage.getItem("apv_admin_key") ||
+    sessionStorage.getItem("apv_admin_key") ||
     localStorage.getItem("aproveitai_admin_key") ||
     sessionStorage.getItem("aproveitai_admin_key") ||
     ""
@@ -879,16 +875,58 @@ function gerarContrato(p){
     p.instagram || "";
 
 
-  const cidade =
-    [
-      p.cidade || "",
-      p.uf || ""
-    ]
-    .filter(Boolean)
-    .join(" / ");
+const cidade =
+  [
+    p.cidade || "",
+    p.uf || ""
+  ]
+  .filter(Boolean)
+  .join(" / ");
 
 
-  const parceiroId =
+/* ======================================================
+   ENDEREÇO COMPLETO DO PARCEIRO
+====================================================== */
+
+const cep =
+  String(p.cep || "").trim();
+
+const endereco =
+  String(p.endereco || "").trim();
+
+const numero =
+  String(p.numero || "").trim();
+
+const complemento =
+  String(p.complemento || "").trim();
+
+const bairro =
+  String(p.bairro || "").trim();
+
+
+const enderecoCompleto =
+  [
+    endereco,
+
+    numero
+      ? "nº " + numero
+      : "",
+
+    complemento,
+
+    bairro,
+
+    cep
+      ? "CEP " + cep
+      : "",
+
+    cidade
+  ]
+  .filter(Boolean)
+  .join(", ");
+
+
+const parceiroId =
   p.parceiro_id || "";
 
 
@@ -896,11 +934,11 @@ function gerarContrato(p){
    IDENTIFICAÇÃO DO CONTRATO
 ====================================================== */
 
-const numeroContrato =
-  gerarNumeroContrato(
-    parceiroId
-  );
 
+const numeroContrato =
+  String(
+    p.numero_contrato || ""
+  ).trim();
 
 const pessoaFisica =
   tipo === "CPF" ||
@@ -940,10 +978,10 @@ const pessoaFisica =
         : ""
       }
 
-      ${cidade
-        ? `Cidade/UF: ${cidade}<br>`
-        : ""
-      }
+     ${enderecoCompleto
+  ? `Endereço: ${enderecoCompleto}<br>`
+  : ""
+}
 
       ID Parceiro:
       ${parceiroId}
@@ -972,6 +1010,7 @@ const pessoaFisica =
         : ""
       }
 
+
       ${cpfRepresentante
         ? `CPF do representante: ${cpfRepresentante}<br>`
         : ""
@@ -992,10 +1031,10 @@ const pessoaFisica =
         : ""
       }
 
-      ${cidade
-        ? `Cidade/UF: ${cidade}<br>`
-        : ""
-      }
+      ${enderecoCompleto
+  ? `Endereço: ${enderecoCompleto}<br>`
+  : ""
+}
 
       ID Parceiro:
       ${parceiroId}
@@ -1445,11 +1484,175 @@ document.addEventListener(
   }
 );
 
-function gerarNumeroContrato(parceiroId) {
+/* ======================================================
+   EMITIR CONTRATO OFICIAL
+====================================================== */
 
-  if (!parceiroId) return "";
+async function emitirContrato(){
 
-  return `CTR-${parceiroId}`;
+  const status =
+    document.getElementById("statusContrato");
+
+  if(!parceiroContrato){
+
+    alert(
+      "Carregue primeiro os dados do parceiro."
+    );
+
+    return;
+  }
+
+
+  const parceiroId =
+    String(
+      parceiroContrato.parceiro_id || ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  if(!parceiroId){
+
+    alert(
+      "Parceiro sem parceiro_id."
+    );
+
+    return;
+  }
+
+
+  const numeroContrato =
+    String(
+      parceiroContrato.numero_contrato || ""
+    ).trim();
+
+
+  if(!numeroContrato){
+
+    alert(
+      "O parceiro ainda não possui número de contrato."
+    );
+
+    return;
+  }
+
+
+  /* ==========================================
+     CONFIRMAÇÃO OPERACIONAL
+  ========================================== */
+
+  const confirmar =
+    confirm(
+      "Emitir oficialmente o contrato " +
+      numeroContrato +
+      "?\n\n" +
+      "Confira os dados antes de continuar."
+    );
+
+
+  if(!confirmar){
+    return;
+  }
+
+
+  /*
+   * Primeiro abre a impressão.
+   * O registro de emissão só será feito
+   * após a confirmação do usuário.
+   */
+
+  window.print();
+
+
+  const confirmarEmissao =
+    confirm(
+      "O contrato foi salvo/impresso corretamente?\n\n" +
+      "Clique em OK somente se a emissão foi concluída."
+    );
+
+
+  if(!confirmarEmissao){
+    return;
+  }
+
+
+  status.style.color = "#555";
+
+  status.textContent =
+    "Registrando emissão do contrato...";
+
+
+  try{
+
+    const dados =
+      new URLSearchParams();
+
+    dados.append(
+      "action",
+      "registrarContratoEmitido"
+    );
+
+    dados.append(
+      "key",
+      obterChaveAdmin()
+    );
+
+    dados.append(
+      "parceiro_id",
+      parceiroId
+    );
+
+    dados.append(
+      "numero_contrato",
+      numeroContrato
+    );
+
+
+    const resposta =
+      await fetch(
+        GAS_URL,
+        {
+          method: "POST",
+          body: dados
+        }
+      );
+
+
+    const json =
+      await resposta.json();
+
+
+    if(!json.ok){
+
+      throw new Error(
+        json.msg ||
+        json.erro ||
+        "Erro ao registrar contrato."
+      );
+
+    }
+
+
+    status.style.color = "#0B7A2A";
+
+    status.textContent =
+      "✓ Contrato " +
+      numeroContrato +
+      " emitido e registrado.";
+
+
+  }catch(erro){
+
+    console.error(erro);
+
+    status.style.color = "#b00020";
+
+    status.textContent =
+      "O contrato foi impresso, mas houve erro " +
+      "ao registrar a emissão: " +
+      erro.message;
+
+  }
 
 }
 

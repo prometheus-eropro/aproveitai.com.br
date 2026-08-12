@@ -6276,7 +6276,8 @@ ${
 }
 
 /* =====================================================
-   RENDER BENEFICIOS
+   RENDER BENEFÍCIOS DA IMPLANTAÇÃO
+   BENEFÍCIO É OBRIGATÓRIO
 ===================================================== */
 
 function renderBeneficiosImplantacao(lista){
@@ -6291,47 +6292,136 @@ function renderBeneficiosImplantacao(lista){
   if(!div) return;
 
 
+  /* ==========================================
+     SEM BENEFÍCIO
+  ========================================== */
+
   if(!lista.length){
 
-    div.innerHTML =
-      "Nenhum benefício cadastrado.";
+    div.innerHTML = `
+
+      <div style="
+        padding:14px;
+        background:#fff8e1;
+        border-left:4px solid #f0b400;
+        border-radius:7px;
+      ">
+
+        <strong style="color:#9a6700;">
+          ⚠ Nenhum benefício cadastrado
+        </strong>
+
+        <div style="margin-top:6px;">
+          O parceiro precisa possuir pelo menos
+          um benefício para concluir a implantação.
+        </div>
+
+      </div>
+
+    `;
 
     return;
-
   }
 
 
-  div.innerHTML =
-    lista.map(b => `
+  /* ==========================================
+     COM BENEFÍCIOS
+  ========================================== */
+
+  div.innerHTML = `
+
+    <div style="
+      margin-bottom:10px;
+      padding:9px 12px;
+      background:#eaf7ee;
+      border-left:4px solid #0b7a2a;
+      border-radius:7px;
+    ">
+
+      <strong>
+        ✅ ${lista.length}
+        ${lista.length === 1
+          ? "benefício cadastrado"
+          : "benefícios cadastrados"}
+      </strong>
+
+    </div>
+
+    ${lista.map(b => `
 
       <div class="linhaImpl">
 
-        🎁 <b>${escapeHtml(b.titulo || "")}</b>
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          gap:10px;
+          align-items:flex-start;
+        ">
 
-        <br>
+          <div>
 
-        ${escapeHtml(b.descricao || "")}
+            🎁
+            <b>
+              ${escapeHtml(
+                b.titulo ||
+                b.descricao ||
+                "Benefício"
+              )}
+            </b>
+
+          </div>
+
+          ${
+            String(b.ativo || "")
+              .toUpperCase() === "SIM"
+            ? `
+              <span style="
+                font-size:11px;
+                font-weight:bold;
+                color:#0b7a2a;
+              ">
+                ATIVO
+              </span>
+            `
+            : ""
+          }
+
+        </div>
+
+        ${
+          b.titulo && b.descricao
+          ? `
+            <div style="margin-top:5px;">
+              ${escapeHtml(b.descricao)}
+            </div>
+          `
+          : ""
+        }
 
         ${
           b.observacoes
-            ? `
-              <br>
+          ? `
+            <div style="margin-top:6px;">
               <small>
                 <b>Condições:</b>
                 ${escapeHtml(b.observacoes)}
               </small>
-            `
-            : ""
+            </div>
+          `
+          : ""
         }
 
       </div>
 
-    `).join("");
+    `).join("")}
+
+  `;
 
 }
 
 /* =====================================================
-   RENDER PROMOÇÕES
+   RENDER PROMOÇÕES DA IMPLANTAÇÃO
+   PROMOÇÃO É OPCIONAL
 ===================================================== */
 
 function renderPromocoesImplantacao(lista){
@@ -6346,227 +6436,626 @@ function renderPromocoesImplantacao(lista){
   if(!div) return;
 
 
+  /* ==========================================
+     SEM PROMOÇÃO
+  ========================================== */
+
   if(!lista.length){
 
-    div.innerHTML =
-      "Nenhuma promoção cadastrada.";
+    div.innerHTML = `
+
+      <div style="
+        padding:12px;
+        background:#f5f5f5;
+        border-left:4px solid #999;
+        border-radius:7px;
+      ">
+
+        <strong>
+          Nenhuma promoção cadastrada
+        </strong>
+
+        <div
+          style="
+            margin-top:5px;
+            font-size:12px;
+            color:#666;
+          "
+        >
+          Promoções são opcionais e podem ser
+          cadastradas durante ou após a implantação.
+        </div>
+
+      </div>
+
+    `;
 
     return;
-
   }
 
 
-  div.innerHTML =
-    lista.map(p => `
+  /* ==========================================
+     COM PROMOÇÕES
+  ========================================== */
+
+  div.innerHTML = `
+
+    <div style="
+      margin-bottom:10px;
+      padding:9px 12px;
+      background:#f3eafa;
+      border-left:4px solid #7b1fa2;
+      border-radius:7px;
+    ">
+
+      <strong>
+        📣 ${lista.length}
+        ${lista.length === 1
+          ? "promoção cadastrada"
+          : "promoções cadastradas"}
+      </strong>
+
+    </div>
+
+
+    ${lista.map(p => `
 
       <div class="linhaImpl">
 
-        🔥 <b>${escapeHtml(p.titulo || "")}</b>
+        <div>
 
-        <br>
+          🔥
+          <b>
+            ${escapeHtml(
+              p.titulo ||
+              p.descricao ||
+              "Promoção"
+            )}
+          </b>
 
-        ${escapeHtml(p.descricao || "")}
+        </div>
+
+        ${
+          p.titulo && p.descricao
+          ? `
+            <div style="margin-top:5px;">
+              ${escapeHtml(p.descricao)}
+            </div>
+          `
+          : ""
+        }
 
         ${
           p.dataInicio || p.dataFim
-            ? `
-              <br>
+          ? `
+            <div style="margin-top:6px;">
               <small>
+
                 <b>Período:</b>
-                ${escapeHtml(p.dataInicio || "—")}
+
+                ${escapeHtml(
+                  p.dataInicio || "—"
+                )}
+
                 até
-                ${escapeHtml(p.dataFim || "—")}
+
+                ${escapeHtml(
+                  p.dataFim || "—"
+                )}
+
               </small>
-            `
-            : ""
+            </div>
+          `
+          : ""
         }
 
         ${
           p.observacoes
-            ? `
-              <br>
+          ? `
+            <div style="margin-top:6px;">
               <small>
+
                 <b>Condições:</b>
-                ${escapeHtml(p.observacoes)}
+
+                ${escapeHtml(
+                  p.observacoes
+                )}
+
               </small>
-            `
-            : ""
+            </div>
+          `
+          : ""
         }
 
       </div>
 
-    `).join("");
+    `).join("")}
+
+  `;
 
 }
 
 /* =====================================================
    RENDER MATERIAIS
 ===================================================== */
+/* =====================================================
+   ABRIR DOCUMENTO
+===================================================== */
 
-function renderMateriais(parceiro){
+function abrirDocumento(url){
 
-const contrato = parceiro.link_contrato || "";
+  url =
+    String(url || "").trim();
 
-const qr = parceiro.qrURL || "";
+  if(!url){
 
-const cartaz = parceiro.link_cartaz || "";
+    alert("Documento ainda não disponível.");
+    return;
 
-const cartazA4 = parceiro.link_cartaz_a4 || "";
+  }
 
-const painel =
+  window.open(
+    url,
+    "_blank",
+    "noopener,noreferrer"
+  );
 
-"painelparceiro.html?token="+
+}
 
-parceiro.token;
 
-const pagina =
+/* =====================================================
+   IMPRIMIR DOCUMENTO
 
-"beneficios.html?parceiro="+
+   Abre o documento oficial.
+   O usuário utiliza a impressão do navegador/Drive.
+===================================================== */
 
-encodeURIComponent(parceiro.nomeFantasia);
+function imprimirDocumento(url){
 
+  url =
+    String(url || "").trim();
 
-document.getElementById("impMateriais").innerHTML=`
+  if(!url){
 
-<div class="materialGrid">
+    alert("Documento ainda não disponível.");
+    return;
 
-<div class="materialCard">
+  }
 
-<h4>📄 Contrato</h4>
+  const janela =
+    window.open(
+      url,
+      "_blank"
+    );
 
-<p>Contrato oficial do parceiro.</p>
+  if(!janela){
 
-<div class="acoesMaterial">
+    alert(
+      "O navegador bloqueou a abertura. " +
+      "Libere pop-ups para imprimir."
+    );
 
-<button class="btn"
-onclick="window.open('${contrato}')"
-${!contrato?"disabled":""}>
-👁 Abrir
-</button>
+    return;
 
-<button class="btn"
-onclick="window.open('${contrato}')"
-${!contrato?"disabled":""}>
-🖨 Imprimir
-</button>
+  }
 
-</div>
+}
 
-</div>
+/* =====================================================
+   CENTRAL DE MATERIAIS DA IMPLANTAÇÃO
+===================================================== */
 
-<div class="materialCard">
+function renderMateriais(parceiro, biblioteca){
 
-<h4>🧾 QR Parceiro</h4>
+  parceiro = parceiro || {};
+  biblioteca = biblioteca || {};
 
-<p>QR de validação.</p>
+  /* ==========================================
+     MATERIAIS INDIVIDUAIS DO PARCEIRO
+  ========================================== */
 
-<div class="acoesMaterial">
+  const contrato =
+    parceiro.link_contrato || "";
 
-<button class="btn"
-onclick="window.open('${qr}')"
-${!qr?"disabled":""}>
-👁 Abrir
-</button>
+  const qr =
+    parceiro.qrURL || "";
 
-<button class="btn"
-onclick="window.open('${qr}')"
-${!qr?"disabled":""}>
-🖨 Imprimir
-</button>
+  const cartaz =
+    parceiro.link_cartaz || "";
 
-</div>
+  const cartazA4 =
+    parceiro.link_cartaz_a4 || "";
 
-</div>
 
-<div class="materialCard">
+  /* ==========================================
+     BIBLIOTECA OFICIAL
+  ========================================== */
 
-<h4>🖼 Cartaz Balcão</h4>
+  const manual =
+    biblioteca.manual_parceiro || "";
 
-<p>Cartaz para caixa.</p>
+  const kit =
+    biblioteca.kit_implantacao || "";
 
-<div class="acoesMaterial">
+  const apresentacao =
+    biblioteca.apresentacao || "";
 
-<button class="btn"
-onclick="window.open('${cartaz}')"
-${!cartaz?"disabled":""}>
-👁 Abrir
-</button>
 
-<button class="btn"
-onclick="window.open('${cartaz}')"
-${!cartaz?"disabled":""}>
-🖨 Imprimir
-</button>
+  /* ==========================================
+     LINKS DO SISTEMA
+  ========================================== */
 
-</div>
+  const painel =
+    "painelparceiro.html?p=" +
+    encodeURIComponent(
+      parceiro.parceiro_id || ""
+    );
 
-</div>
+  const pagina =
+    "beneficios.html?parceiro=" +
+    encodeURIComponent(
+      parceiro.nomeFantasia || ""
+    );
 
-<div class="materialCard">
 
-<h4>🖼 Cartaz A4</h4>
+  /* ==========================================
+     MONTA CENTRAL
+  ========================================== */
 
-<p>Cartaz vitrine.</p>
+  document
+    .getElementById("impMateriais")
+    .innerHTML = `
 
-<div class="acoesMaterial">
 
-<button class="btn"
-onclick="window.open('${cartazA4}')"
-${!cartazA4?"disabled":""}>
-👁 Abrir
-</button>
+    <!-- =====================================
+         DOCUMENTOS DO PARCEIRO
+    ====================================== -->
 
-<button class="btn"
-onclick="window.open('${cartazA4}')"
-${!cartazA4?"disabled":""}>
-🖨 Imprimir
-</button>
+    <div style="
+      margin-bottom:12px;
+      padding:10px 12px;
+      background:#eaf7ee;
+      border-left:4px solid #0b7a2a;
+      border-radius:7px;
+    ">
 
-</div>
+      <strong>
+        📁 Documentos e Materiais do Parceiro
+      </strong>
 
-</div>
+      <div style="
+        margin-top:4px;
+        font-size:12px;
+        color:#555;
+      ">
+        Arquivos específicos de
+        ${escapeHtml(
+          parceiro.nomeFantasia || "Parceiro"
+        )}.
+      </div>
 
-<div class="materialCard">
+    </div>
 
-<h4>🌐 Página Oficial</h4>
 
-<p>Página do parceiro.</p>
+    <div class="materialGrid">
 
-<div class="acoesMaterial">
 
-<button class="btn"
-onclick="window.open('${pagina}')">
+      <!-- CONTRATO -->
 
-🌍 Abrir
+      <div class="materialCard">
 
-</button>
+        <h4>📄 Contrato</h4>
 
-</div>
+        <p>
+          Contrato individual deste parceiro.
+        </p>
 
-</div>
+        <div class="acoesMaterial">
 
-<div class="materialCard">
+          <button
+            class="btn"
+            onclick="abrirDocumento('${contrato}')"
+            ${!contrato ? "disabled" : ""}
+          >
+            👁 Abrir
+          </button>
 
-<h4>🔐 Área do Parceiro</h4>
+          <button
+            class="btn"
+            onclick="imprimirDocumento('${contrato}')"
+            ${!contrato ? "disabled" : ""}
+          >
+            🖨 Imprimir
+          </button>
 
-<p>Acesso do parceiro.</p>
+        </div>
 
-<div class="acoesMaterial">
+      </div>
 
-<button class="btn"
-onclick="window.open('${painel}')">
 
-🔓 Abrir
+      <!-- QR -->
 
-</button>
+      <div class="materialCard">
 
-</div>
+        <h4>🧾 QR Parceiro</h4>
 
-</div>
+        <p>
+          QR oficial de validação do parceiro.
+        </p>
 
-</div>
+        <div class="acoesMaterial">
 
-`;
+          <button
+            class="btn"
+            onclick="abrirDocumento('${qr}')"
+            ${!qr ? "disabled" : ""}
+          >
+            👁 Abrir
+          </button>
+
+          <button
+            class="btn"
+            onclick="imprimirDocumento('${qr}')"
+            ${!qr ? "disabled" : ""}
+          >
+            🖨 Imprimir
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- CARTAZ BALCÃO -->
+
+      <div class="materialCard">
+
+        <h4>🖼 Cartaz Balcão</h4>
+
+        <p>
+          Material individual para balcão ou caixa.
+        </p>
+
+        <div class="acoesMaterial">
+
+          <button
+            class="btn"
+            onclick="abrirDocumento('${cartaz}')"
+            ${!cartaz ? "disabled" : ""}
+          >
+            👁 Abrir
+          </button>
+
+          <button
+            class="btn"
+            onclick="imprimirDocumento('${cartaz}')"
+            ${!cartaz ? "disabled" : ""}
+          >
+            🖨 Imprimir
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- CARTAZ A4 -->
+
+      <div class="materialCard">
+
+        <h4>🖼 Cartaz A4</h4>
+
+        <p>
+          Material individual para exposição.
+        </p>
+
+        <div class="acoesMaterial">
+
+          <button
+            class="btn"
+            onclick="abrirDocumento('${cartazA4}')"
+            ${!cartazA4 ? "disabled" : ""}
+          >
+            👁 Abrir
+          </button>
+
+          <button
+            class="btn"
+            onclick="imprimirDocumento('${cartazA4}')"
+            ${!cartazA4 ? "disabled" : ""}
+          >
+            🖨 Imprimir
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- PÁGINA OFICIAL -->
+
+      <div class="materialCard">
+
+        <h4>🌐 Página Oficial</h4>
+
+        <p>
+          Página pública do parceiro.
+        </p>
+
+        <div class="acoesMaterial">
+
+          <button
+            class="btn"
+            onclick="abrirDocumento('${pagina}')"
+          >
+            🌍 Abrir
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- PAINEL -->
+
+      <div class="materialCard">
+
+        <h4>🔐 Área do Parceiro</h4>
+
+        <p>
+          Painel operacional do parceiro.
+        </p>
+
+        <div class="acoesMaterial">
+
+          <button
+            class="btn"
+            onclick="abrirDocumento('${painel}')"
+          >
+            🔓 Abrir
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================
+         BIBLIOTECA OFICIAL
+    ====================================== -->
+
+    <div style="
+      margin-top:25px;
+      margin-bottom:12px;
+      padding:10px 12px;
+      background:#eef4ff;
+      border-left:4px solid #1565c0;
+      border-radius:7px;
+    ">
+
+      <strong>
+        📚 Biblioteca Oficial AproveitAI
+      </strong>
+
+      <div style="
+        margin-top:4px;
+        font-size:12px;
+        color:#555;
+      ">
+        Documentos oficiais e genéricos.
+        Sempre utilize esta biblioteca para
+        abrir ou imprimir a versão oficial.
+      </div>
+
+    </div>
+
+
+    <div class="materialGrid">
+
+
+      <!-- MANUAL -->
+
+      <div class="materialCard">
+
+        <h4>📘 Manual do Parceiro</h4>
+
+        <p>
+          Manual oficial para orientação e entrega.
+        </p>
+
+        <div class="acoesMaterial">
+
+          <button
+            class="btn"
+            onclick="abrirDocumento('${manual}')"
+            ${!manual ? "disabled" : ""}
+          >
+            👁 Abrir
+          </button>
+
+          <button
+            class="btn"
+            onclick="imprimirDocumento('${manual}')"
+            ${!manual ? "disabled" : ""}
+          >
+            🖨 Imprimir
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- KIT -->
+
+      <div class="materialCard">
+
+        <h4>📋 Kit de Implantação</h4>
+
+        <p>
+          Documento oficial de apoio à implantação.
+        </p>
+
+        <div class="acoesMaterial">
+
+          <button
+            class="btn"
+            onclick="abrirDocumento('${kit}')"
+            ${!kit ? "disabled" : ""}
+          >
+            👁 Abrir
+          </button>
+
+          <button
+            class="btn"
+            onclick="imprimirDocumento('${kit}')"
+            ${!kit ? "disabled" : ""}
+          >
+            🖨 Imprimir
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- APRESENTAÇÃO -->
+
+      <div class="materialCard">
+
+        <h4>📊 Apresentação AproveitAI</h4>
+
+        <p>
+          Apresentação institucional oficial.
+        </p>
+
+        <div class="acoesMaterial">
+
+          <button
+            class="btn"
+            onclick="abrirDocumento('${apresentacao}')"
+            ${!apresentacao ? "disabled" : ""}
+          >
+            👁 Abrir
+          </button>
+
+          <button
+            class="btn"
+            onclick="imprimirDocumento('${apresentacao}')"
+            ${!apresentacao ? "disabled" : ""}
+          >
+            🖨 Imprimir
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
 
 }
 
@@ -6797,11 +7286,39 @@ beneficios.dados = beneficios.dados || [];
 
 const promocoes =
 await callAPI({
-action:"listarPromocoesParceiro",
-parceiro_id:id
+  action:"listarPromocoesParceiro",
+  parceiro_id:id
 });
 
-promocoes.dados = promocoes.dados || [];
+promocoes.dados =
+  promocoes.dados || [];
+
+/* ==========================
+   BIBLIOTECA OFICIAL
+========================== */
+
+let biblioteca = {
+  dados:{}
+};
+
+try{
+
+  biblioteca =
+    await callAPI({
+      acao:"bibliotecaOficial"
+    });
+
+}catch(erro){
+
+  console.warn(
+    "Biblioteca Oficial não carregada:",
+    erro
+  );
+
+}
+
+biblioteca.dados =
+  biblioteca.dados || {};
 
 document
 .getElementById("implantacaoPainel")
@@ -6833,7 +7350,10 @@ renderPromocoesImplantacao(
    CENTRAL DE MATERIAIS
 ===================================================== */
 
-renderMateriais(parceiro);
+renderMateriais(
+  parceiro,
+  biblioteca.dados
+);
 
 /* ==========================
    CHECKLIST
@@ -6925,38 +7445,184 @@ ${parceiro.qrURL?"✅":"⬜"} QR Testado<br>
 
 document.getElementById("impAcoes").innerHTML=`
 
-<button
-class="btn"
+<div style="
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+">
 
-onclick="editarParceiro('${parceiro.parceiro_id}')">
+  <button
+    class="btn"
+    onclick="editarParceiro('${parceiro.parceiro_id}')"
+  >
+    ✏ Editar Cadastro
+  </button>
 
-✏ Editar Cadastro
 
-</button>
+  <button
+    class="btn"
+    style="background:#0b7a2a;color:white"
+    onclick="reprocessarImplantacao('${parceiro.parceiro_id}')"
+  >
+    🔄 Gerar / Regerar Arquivos
+  </button>
 
-<button
-class="btn"
-style="background:#0b7a2a;color:white"
-onclick="reprocessarImplantacao('${parceiro.parceiro_id}')">
 
-🔄 Verificar / Regerar Implantação
+  <button
+    class="btn"
+    style="background:#1565c0;color:white"
+    onclick="abrirBeneficioImplantacao('${parceiro.parceiro_id}')"
+  >
+    🎁 Cadastrar Benefício
+  </button>
 
-</button>
 
-<button
-class="btn"
+  <button
+    class="btn"
+    style="background:#7b1fa2;color:white"
+    onclick="abrirPromocaoImplantacao('${parceiro.parceiro_id}')"
+  >
+    📣 Cadastrar Promoção
+  </button>
 
-onclick="window.print()">
 
-🖨 Imprimir Checklist
+  <button
+    class="btn"
+    onclick="window.print()"
+  >
+    🖨 Imprimir Checklist
+  </button>
 
-</button>
+</div>
+
+<div style="
+  margin-top:12px;
+  padding:10px 12px;
+  background:#fff8e1;
+  border-left:4px solid #f0b400;
+  border-radius:6px;
+">
+
+  <strong>🎁 Benefício obrigatório.</strong>
+
+  O parceiro precisa possuir pelo menos
+  um benefício cadastrado antes da ativação.
+
+  Promoções são opcionais.
+
+</div>
 
 `;
+}
+
+/* =====================================================
+   BENEFÍCIO A PARTIR DA IMPLANTAÇÃO
+===================================================== */
+
+/* =====================================================
+   NOVO BENEFÍCIO PELA IMPLANTAÇÃO
+   Já leva o parceiro selecionado
+===================================================== */
+
+function abrirBeneficioImplantacao(parceiroId){
+
+  parceiroId =
+    String(parceiroId || "")
+      .trim()
+      .toUpperCase();
+
+  if(!parceiroId){
+
+    alert("Parceiro não identificado.");
+    return;
+
+  }
+
+  const parceiro =
+    state.cache.parceiros.find(
+      p =>
+        String(p.parceiro_id || "")
+          .trim()
+          .toUpperCase() === parceiroId
+    );
+
+
+  if(!parceiro){
+
+    alert("Parceiro não encontrado.");
+    return;
+
+  }
+
+
+  /* GUARDA ORIGEM */
+
+  sessionStorage.setItem(
+    "apv_parceiro_implantacao",
+    parceiroId
+  );
+
+
+  /* ABRE O FORMULÁRIO ADMINISTRATIVO JÁ COM O PARCEIRO */
+
+  novoBeneficio({
+    parceiro_id: parceiroId,
+    parceiro: parceiro.nomeFantasia || ""
+  });
 
 }
 
 
+/* =====================================================
+   NOVA PROMOÇÃO PELA IMPLANTAÇÃO
+   Já leva o parceiro selecionado
+===================================================== */
+
+function abrirPromocaoImplantacao(parceiroId){
+
+  parceiroId =
+    String(parceiroId || "")
+      .trim()
+      .toUpperCase();
+
+  if(!parceiroId){
+
+    alert("Parceiro não identificado.");
+    return;
+
+  }
+
+
+  const parceiro =
+    state.cache.parceiros.find(
+      p =>
+        String(p.parceiro_id || "")
+          .trim()
+          .toUpperCase() === parceiroId
+    );
+
+
+  if(!parceiro){
+
+    alert("Parceiro não encontrado.");
+    return;
+
+  }
+
+
+  sessionStorage.setItem(
+    "apv_parceiro_implantacao",
+    parceiroId
+  );
+
+
+  novoPromocao({
+    parceiro_id: parceiroId,
+    parceiro: parceiro.nomeFantasia || ""
+  });
+
+}
 async function gerarImplantacao(parceiroId){
 
 if(!confirm(
@@ -7019,6 +7685,82 @@ function arquivoParaBase64(arquivo){
 
 }
 
+function abrirGoogleMapsParceiro(){
+
+  const endereco =
+    document.getElementById("endereco")?.value.trim() || "";
+
+  const numero =
+    document.getElementById("numero")?.value.trim() || "";
+
+  const bairro =
+    document.getElementById("bairro")?.value.trim() || "";
+
+  const cidade =
+    document.getElementById("cidade")?.value.trim() || "";
+
+  const uf =
+    document.getElementById("uf")?.value.trim() || "";
+
+  const busca =
+    [
+      endereco,
+      numero,
+      bairro,
+      cidade,
+      uf
+    ]
+    .filter(Boolean)
+    .join(", ");
+
+  const url =
+    busca
+      ? "https://www.google.com/maps/search/?api=1&query=" +
+        encodeURIComponent(busca)
+      : "https://www.google.com/maps";
+
+  window.open(
+    url,
+    "_blank"
+  );
+
+}
+
+function atualizarQuantidadeVeiculos(){
+
+  const exige =
+    document.getElementById("exigePlaca")?.value || "NAO";
+
+  const bloco =
+    document.getElementById("blocoQuantidadeVeiculos");
+
+  const quantidade =
+    document.getElementById("quantidadeVeiculos");
+
+  if(!bloco) return;
+
+  if(exige === "SIM"){
+
+    bloco.style.display = "block";
+
+    if(
+      quantidade &&
+      !quantidade.value
+    ){
+      quantidade.value = "2";
+    }
+
+  }else{
+
+    bloco.style.display = "none";
+
+    if(quantidade){
+      quantidade.value = "";
+    }
+
+  }
+
+}
 
 async function salvarParceiroCompleto(){
 
@@ -7310,6 +8052,13 @@ cpf_representante:
         .value
         .trim(),
 
+     uf:
+  document
+    .getElementById("uf")
+    .value
+    .trim()
+    .toUpperCase(),
+
     uf:
      document
        .getElementById("uf")
@@ -7348,14 +8097,23 @@ cpf_representante:
         .trim(),
 
 
-    /* CONFIGURAÇÕES */
+   /* CONFIGURAÇÕES */
 
-    exigePlaca:
-      document
-        .getElementById("exigePlaca")
-        .checked
-          ? "SIM"
-          : "NAO",
+exigePlaca:
+  document
+    .getElementById("exigePlaca")
+    .value,
+
+quantidadeVeiculos:
+  document
+    .getElementById("exigePlaca")
+    .value === "SIM"
+      ? (
+          document
+            .getElementById("quantidadeVeiculos")
+            ?.value || "2"
+        )
+      : "",
 
 
     /* LOGO TEMPORÁRIA */
@@ -7705,10 +8463,13 @@ cpf_representante:
         parceiro.link_maps || "",
 
 
-      /* CONFIGURAÇÕES */
+     /* CONFIGURAÇÕES */
 
-      exige_placa:
-        parceiro.exigePlaca || "NAO"
+exige_placa:
+  parceiro.exigePlaca || "NAO",
+
+quantidade_veiculos:
+  parceiro.quantidadeVeiculos || ""
 
     });
 
@@ -8162,112 +8923,113 @@ placeholder="Digite o CNPJ">
 
 <h2>📍 Endereço</h2>
 
-<div class="grid2">
+<!-- CEP -->
+<div style="
+display:grid;
+grid-template-columns:180px 1fr 120px;
+gap:15px;
+margin-bottom:15px;
+">
 
 <div>
-
-<div>
-
 <label>CEP</label>
-
 <input
 id="cep"
-inputmode="numeric"
 placeholder="00000-000">
-
 </div>
 
 <div>
-
-<label>Cidade</label>
-
-<input id="cidade">
-
-</div>
-
-<div>
-
-<label>UF</label>
-
-<select id="uf">
-
-<option value="">Selecione...</option>
-
-<option value="AC">AC</option>
-<option value="AL">AL</option>
-<option value="AP">AP</option>
-<option value="AM">AM</option>
-<option value="BA">BA</option>
-<option value="CE">CE</option>
-<option value="DF">DF</option>
-<option value="ES">ES</option>
-<option value="GO">GO</option>
-<option value="MA">MA</option>
-<option value="MT">MT</option>
-<option value="MS">MS</option>
-<option value="MG">MG</option>
-<option value="PA">PA</option>
-<option value="PB">PB</option>
-<option value="PR">PR</option>
-<option value="PE">PE</option>
-<option value="PI">PI</option>
-<option value="RJ">RJ</option>
-<option value="RN">RN</option>
-<option value="RS">RS</option>
-<option value="RO">RO</option>
-<option value="RR">RR</option>
-<option value="SC">SC</option>
-<option value="SP">SP</option>
-<option value="SE">SE</option>
-<option value="TO">TO</option>
-
-</select>
-
-</div>
-
-<div>
-
-<label>Bairro</label>
-
-<input id="bairro">
-
-</div>
-
-</div>
-
-<div>
-
 <label>Endereço</label>
-
-<input id="endereco">
-
+<input
+id="endereco"
+placeholder="Rua, Avenida, Rodovia...">
 </div>
 
 <div>
-
 <label>Número</label>
-
-<input id="numero">
+<input
+id="numero"
+placeholder="Nº">
+</div>
 
 </div>
 
-<div>
 
+<!-- COMPLEMENTO / BAIRRO -->
+<div style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-bottom:15px;
+">
+
+<div>
 <label>Complemento</label>
-
-<input id="complemento">
-
+<input
+id="complemento"
+placeholder="Loja, sala, referência...">
 </div>
 
 <div>
+<label>Bairro</label>
+<input
+id="bairro"
+placeholder="Bairro">
+</div>
+
+</div>
+
+
+<!-- CIDADE / UF -->
+<div style="
+display:grid;
+grid-template-columns:1fr 100px;
+gap:15px;
+margin-bottom:15px;
+">
 
 <div>
+<label>Cidade</label>
+<input
+id="cidade"
+placeholder="Cidade">
+</div>
 
-<label>Google Maps</label>
+<div>
+<label>UF</label>
+<input
+id="uf"
+maxlength="2"
+placeholder="ES"
+style="text-transform:uppercase;">
+</div>
+
+</div>
+
+
+<!-- GOOGLE MAPS -->
+<div>
+
+<label>Google Maps / Como chegar</label>
+
+<div style="
+display:grid;
+grid-template-columns:1fr auto;
+gap:10px;
+">
 
 <input
 id="link_maps"
-placeholder="Cole o link do Google Maps">
+placeholder="Cole aqui o link do Google Maps">
+
+<button
+type="button"
+class="btn secondary"
+onclick="abrirGoogleMapsParceiro()">
+
+📍 Abrir Google Maps
+
+</button>
 
 </div>
 
@@ -8304,15 +9066,37 @@ Formatos permitidos: PNG, JPG/JPEG ou WebP • Máximo 2 MB
 
 <h2>⚙ Configurações</h2>
 
-<label>
+<div style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+align-items:end;
+">
 
-<input
-type="checkbox"
-id="exigePlaca">
+  <div>
+    <label>Exige placa?</label>
 
-Exigir Placa
+    <select
+      id="exigePlaca"
+      onchange="atualizarQuantidadeVeiculos()"
+    >
+      <option value="NAO">Não</option>
+      <option value="SIM">Sim</option>
+    </select>
+  </div>
 
-</label>
+  <div id="blocoQuantidadeVeiculos" style="display:none;">
+    <label>Quantos veículos podem ser cadastrados?</label>
+
+    <input
+      type="number"
+      id="quantidadeVeiculos"
+      min="1"
+      max="20"
+      value="2"
+      placeholder="Ex.: 2"
+    >
+  </div>
 
 </div>
 
