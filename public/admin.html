@@ -9344,21 +9344,24 @@ function alterarTipoDocumentoParceiro(){
 
 async function reprocessarImplantacao(parceiroId){
 
-  parceiroId = String(parceiroId || "").trim();
+  parceiroId =
+    String(parceiroId || "")
+    .trim()
+    .toUpperCase();
 
   if(!parceiroId){
 
     alert("Parceiro sem parceiro_id.");
 
     return;
-
   }
 
+
   const confirmar = confirm(
-    "Verificar e completar a implantação de " +
+    "Gerar / completar os arquivos de " +
     parceiroId +
     "?\n\n" +
-    "O sistema irá localizar o parceiro e gerar novamente os itens faltantes."
+    "O sistema irá verificar a implantação e gerar somente o que estiver faltando."
   );
 
   if(!confirmar) return;
@@ -9366,13 +9369,27 @@ async function reprocessarImplantacao(parceiroId){
 
   try{
 
-    toast("🔄 Verificando implantação...");
+    toast("🔄 Iniciando geração dos arquivos...");
+
+
+    /*
+     * DISPARA O PROCESSAMENTO
+     *
+     * IMPORTANTE:
+     * Não vamos mais deixar o navegador
+     * esperando toda a geração terminar.
+     */
 
     const resposta = await callAPI({
 
-      action: "reprocessar_implantacao",
+      action:
+        "reprocessar_implantacao",
 
-      parceiro_id: parceiroId
+      parceiro_id:
+        parceiroId,
+
+      modo:
+        "iniciar"
 
     });
 
@@ -9383,66 +9400,87 @@ async function reprocessarImplantacao(parceiroId){
     );
 
 
-    if(!resposta || !resposta.ok){
+    if(
+      !resposta ||
+      resposta.ok !== true
+    ){
 
-      alert(
-        "Não foi possível completar a implantação.\n\n" +
-        (
-          resposta?.erro ||
-          resposta?.mensagem ||
-          "Erro não identificado."
-        )
+      throw new Error(
+
+        resposta?.erro ||
+        resposta?.mensagem ||
+        "Não foi possível iniciar a implantação."
+
       );
-
-      return;
 
     }
 
 
+    /*
+     * A API respondeu.
+     * Não fazemos outra chamada pesada agora.
+     */
+
+    toast(
+      "✅ Processamento iniciado"
+    );
+
+
     alert(
-      "✅ IMPLANTAÇÃO PROCESSADA\n\n" +
+      "✅ PROCESSAMENTO INICIADO\n\n" +
       "Parceiro: " +
-      (resposta.parceiro || parceiroId) +
-      "\nID: " +
-      (resposta.parceiro_id || parceiroId) +
-      (
-        resposta.linha
-          ? "\nLinha localizada: " + resposta.linha
-          : ""
-      )
+      parceiroId +
+      "\n\n" +
+      "A estrutura e os arquivos estão sendo verificados.\n\n" +
+      "A tela será atualizada."
     );
 
 
     /*
-     * ATUALIZA OS DADOS DOS PARCEIROS
+     * PEQUENA PAUSA
+     * PARA O GOOGLE ATUALIZAR PLANILHA/DRIVE
+     */
+
+    await new Promise(
+      resolve =>
+        setTimeout(resolve, 2500)
+    );
+
+
+    /*
+     * RECARREGA PARCEIROS
      */
 
     await loadParceiros(true);
 
 
     /*
-     * MANTÉM O MESMO PARCEIRO SELECIONADO
+     * MANTÉM PARCEIRO SELECIONADO
      */
 
     const select =
-      document.getElementById("impParceiro");
+      document.getElementById(
+        "impParceiro"
+      );
 
     if(select){
 
-      select.value = parceiroId;
+      select.value =
+        parceiroId;
 
     }
 
 
     /*
-     * REABRE A IMPLANTAÇÃO
-     * PARA MOSTRAR OS NOVOS DADOS
+     * REABRE A CENTRAL
      */
 
     await abrirImplantacao();
 
 
-    toast("✅ Implantação atualizada");
+    toast(
+      "✅ Implantação atualizada"
+    );
 
 
   }catch(erro){
@@ -9452,8 +9490,9 @@ async function reprocessarImplantacao(parceiroId){
       erro
     );
 
+
     alert(
-      "Erro ao reprocessar implantação.\n\n" +
+      "Erro ao iniciar a geração.\n\n" +
       (
         erro?.message ||
         String(erro)
