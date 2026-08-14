@@ -2690,7 +2690,8 @@ target="_blank">
  *   - clientes: criar_cliente / atualizar_registro / alterar_status / gerar_termos_cliente
  *   - parceiros: criar_parceiro / atualizar_parceiro / atualizar_registro / alterar_status / gerarContrato / listar_parceiros
  *   - beneficios: criar_beneficio / atualizar_registro / alterar_status
- *   - promocoes: criar_promocao / atualizar_registro / alterar_status
+ *   - promocoes: criar_
+ / atualizar_registro / alterar_status
  *   - logs, log_admin, admins: somente leitura via ?aba=
  **************************************************************/
 
@@ -4820,7 +4821,8 @@ function novoBeneficio(){
 
 
   const opcoesParceiros =
-    parceiros.map(p=>({
+    parceiros
+    .map(p=>({
 
       value:
         String(
@@ -4840,14 +4842,20 @@ function novoBeneficio(){
     .filter(p=>p.value);
 
 
+  /* ==========================================
+     ABRE MODAL
+  ========================================== */
+
   openEditModal({
 
     title:"Criar Benefício",
 
     hint:
-      "Selecione o parceiro. O sistema utilizará automaticamente o parceiro_id.",
+      "Selecione o parceiro e cadastre o benefício. " +
+      "O parceiro_id será utilizado automaticamente.",
 
     initial:{
+      grupo:"GERAL",
       ativo:"SIM"
     },
 
@@ -4867,12 +4875,11 @@ function novoBeneficio(){
         w:"420px"
       },
 
-{
-  key:"titulo",
-  label:"Título da Promoção",
-  readonly:true,
-  w:"420px"
-},
+      {
+        key:"titulo",
+        label:"Título do Benefício",
+        w:"420px"
+      },
 
       {
         key:"descricao",
@@ -4885,18 +4892,20 @@ function novoBeneficio(){
       {
         key:"grupo",
         label:"Grupo",
-        default:"GERAL"
+        w:"220px"
       },
 
       {
         key:"categoria",
-        label:"Categoria"
+        label:"Categoria",
+        w:"220px"
       },
 
       {
         key:"ordem",
         label:"Ordem",
-        type:"number"
+        type:"number",
+        w:"120px"
       },
 
       {
@@ -4920,11 +4929,16 @@ function novoBeneficio(){
             value:"NAO",
             label:"Inativo"
           }
-        ]
+        ],
+        w:"180px"
       }
 
     ],
 
+
+    /* ==========================================
+       SALVAR
+    ========================================== */
 
     onSave: async (data)=>{
 
@@ -4941,11 +4955,10 @@ function novoBeneficio(){
         throw new Error(
           "PARCEIRO_OBRIGATORIO"
         );
-
       }
 
 
-      if(!data.titulo){
+      if(!String(data.titulo || "").trim()){
 
         alert(
           "Informe o título do benefício."
@@ -4954,11 +4967,10 @@ function novoBeneficio(){
         throw new Error(
           "TITULO_OBRIGATORIO"
         );
-
       }
 
 
-      if(!data.descricao){
+      if(!String(data.descricao || "").trim()){
 
         alert(
           "Informe a descrição do benefício."
@@ -4967,12 +4979,11 @@ function novoBeneficio(){
         throw new Error(
           "DESCRICAO_OBRIGATORIA"
         );
-
       }
 
 
       /* ==========================================
-         LOCALIZA PARCEIRO
+         LOCALIZA PARCEIRO SELECIONADO
       ========================================== */
 
       const parceiro =
@@ -4998,7 +5009,6 @@ function novoBeneficio(){
         throw new Error(
           "PARCEIRO_NAO_LOCALIZADO"
         );
-
       }
 
 
@@ -5014,28 +5024,45 @@ function novoBeneficio(){
           key:state.key,
 
           parceiro_id:
-            data.parceiro_id,
+            String(
+              data.parceiro_id || ""
+            ).trim(),
 
           parceiro:
-            parceiro.nomeFantasia || "",
+            parceiro.nomeFantasia ||
+            parceiro.razaoSocial ||
+            "",
+
+          parceiroCnpj:
+            parceiro.cnpj || "",
 
           titulo:
-            data.titulo || "",
+            String(
+              data.titulo || ""
+            ).trim(),
 
           descricao:
-            data.descricao || "",
+            String(
+              data.descricao || ""
+            ).trim(),
 
           grupo:
-            data.grupo || "GERAL",
+            String(
+              data.grupo || "GERAL"
+            ).trim(),
 
           categoria:
-            data.categoria || "",
+            String(
+              data.categoria || ""
+            ).trim(),
 
           ordem:
             data.ordem || "",
 
           observacoes:
-            data.observacoes || "",
+            String(
+              data.observacoes || ""
+            ).trim(),
 
           ativo:
             data.ativo || "SIM"
@@ -5044,26 +5071,39 @@ function novoBeneficio(){
 
 
       console.log(
-        "CRIAR BENEFICIO:",
+        "CRIAR BENEFÍCIO:",
         resposta
       );
 
 
+      /* ==========================================
+         CONFERE RESPOSTA
+      ========================================== */
+
       if(
-        resposta &&
+        !resposta ||
         resposta.ok === false
       ){
 
         alert(
-          resposta.erro ||
-          resposta.mensagem ||
+          resposta?.erro ||
+          resposta?.mensagem ||
+          resposta?.msg ||
           "Não foi possível criar o benefício."
         );
 
         throw new Error(
           "ERRO_CRIAR_BENEFICIO"
         );
+      }
 
+
+      /* ==========================================
+         LIMPA CACHE E RECARREGA
+      ========================================== */
+
+      if(state.loaded){
+        state.loaded.beneficios = false;
       }
 
 
@@ -5870,13 +5910,40 @@ async function novoPromocao(){
       );
 
 
+      /*
+       * FORÇA A LIMPEZA DO CACHE
+       * ANTES DE CONSULTAR NOVAMENTE
+       */
+
+      if(state.loaded){
+        state.loaded.promocoes = false;
+      }
+
+
+      if(state.cache){
+        state.cache.promocoes = [];
+      }
+
+
+      /*
+       * BUSCA NOVAMENTE NA PLANILHA
+       */
+
       await loadPromocoes(true);
+
+
+      console.log(
+        "PROMOÇÕES ATUALIZADAS:",
+        state.cache.promocoes
+      );
 
     }
 
   });
 
 }
+
+
 /* ---------- LOGS / LOG_ADMIN / ADMINS ---------- */
 async function loadLogs(force=false){
   if(state.loaded.logs && !force) return;
@@ -7536,22 +7603,58 @@ state.cache.parceiros.find(
 p=>p.parceiro_id==id
 );
 
-const beneficios =
+/* ==========================
+   BUSCA BENEFÍCIOS
+========================== */
+
+const beneficiosResp =
 await callAPI({
-action:"listarBeneficiosParceiro",
-parceiro_id:id
+  action:"listarBeneficiosParceiro",
+  parceiro_id:id
 });
 
-beneficios.dados = beneficios.dados || [];
+console.log(
+  "RESPOSTA BENEFÍCIOS IMPLANTAÇÃO:",
+  beneficiosResp
+);
 
-const promocoes =
+const beneficios = {
+  dados:
+    Array.isArray(beneficiosResp)
+      ? beneficiosResp
+      : Array.isArray(beneficiosResp?.dados)
+        ? beneficiosResp.dados
+        : Array.isArray(beneficiosResp?.beneficios)
+          ? beneficiosResp.beneficios
+          : []
+};
+
+
+/* ==========================
+   BUSCA PROMOÇÕES
+========================== */
+
+const promocoesResp =
 await callAPI({
   action:"listarPromocoesParceiro",
   parceiro_id:id
 });
 
-promocoes.dados =
-  promocoes.dados || [];
+console.log(
+  "RESPOSTA PROMOÇÕES IMPLANTAÇÃO:",
+  promocoesResp
+);
+
+const promocoes = {
+  dados:
+    Array.isArray(promocoesResp)
+      ? promocoesResp
+      : Array.isArray(promocoesResp?.dados)
+        ? promocoesResp.dados
+        : Array.isArray(promocoesResp?.promocoes)
+          ? promocoesResp.promocoes
+          : []
+};
 
 /* ==========================
    BIBLIOTECA OFICIAL
