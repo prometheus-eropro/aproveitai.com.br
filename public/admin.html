@@ -7985,38 +7985,6 @@ function abrirPromocaoImplantacao(parceiroId){
   });
 
 }
-async function gerarImplantacao(parceiroId){
-
-if(!confirm(
-
-"Gerar toda a implantação deste parceiro?"
-
-)) return;
-
-callAPI({
-
-action:"gerarImplantacao",
-
-parceiro_id:parceiroId
-
-})
-.then(r=>{
-
-if(r.ok){
-
-alert("Implantação concluída.");
-
-abrirImplantacao();
-
-}else{
-
-alert(r.mensagem);
-
-}
-
-});
-
-}
 
 function arquivoParaBase64(arquivo){
 
