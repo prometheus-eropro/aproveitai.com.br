@@ -6860,16 +6860,15 @@ function renderPromocoesImplantacao(lista){
 
                 <b>Período:</b>
 
-                ${escapeHtml(
-                  p.dataInicio || "—"
-                )}
+               ${escapeHtml(
+  formatarDataBR(p.dataInicio) || "—"
+)}
 
-                até
+até
 
-                ${escapeHtml(
-                  p.dataFim || "—"
-                )}
-
+${escapeHtml(
+  formatarDataBR(p.dataFim) || "—"
+)}
               </small>
             </div>
           `
