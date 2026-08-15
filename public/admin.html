@@ -7659,28 +7659,49 @@ const promocoes = {
    BIBLIOTECA OFICIAL
 ========================== */
 
-let biblioteca = {
-  dados:{}
-};
+let biblioteca = {};
 
 try{
 
-  biblioteca =
+  const bibliotecaResp =
     await callAPI({
-      acao:"bibliotecaOficial"
+      action:"bibliotecaOficial"
     });
+
+  console.log(
+    "RESPOSTA BIBLIOTECA OFICIAL:",
+    bibliotecaResp
+  );
+
+  if(
+    bibliotecaResp &&
+    bibliotecaResp.ok
+  ){
+
+    biblioteca =
+      bibliotecaResp.dados ||
+      bibliotecaResp.biblioteca ||
+      bibliotecaResp;
+
+  }else{
+
+    console.warn(
+      "Biblioteca Oficial retornou sem sucesso:",
+      bibliotecaResp
+    );
+
+  }
 
 }catch(erro){
 
-  console.warn(
-    "Biblioteca Oficial não carregada:",
+  console.error(
+    "ERRO AO CARREGAR BIBLIOTECA OFICIAL:",
     erro
   );
 
-}
+  biblioteca = {};
 
-biblioteca.dados =
-  biblioteca.dados || {};
+}
 
 document
 .getElementById("implantacaoPainel")
@@ -7714,7 +7735,7 @@ renderPromocoesImplantacao(
 
 renderMateriais(
   parceiro,
-  biblioteca.dados
+  biblioteca
 );
 
 /* ==========================
