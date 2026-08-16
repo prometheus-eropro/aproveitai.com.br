@@ -78,7 +78,14 @@ fetch(API + "?aba=promocoes")
 const exclusivo =
 (
     (grupo && grupo !== "GERAL") ||
-    (p.idPublico && String(p.idPublico).trim())
+
+    (p.idPublico &&
+     String(p.idPublico).trim() !== "") ||
+
+    (p.cpf &&
+     String(p.cpf)
+       .replace(/\D/g,"")
+       .trim() !== "")
 );
 
     const card = document.createElement("div");

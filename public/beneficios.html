@@ -76,7 +76,14 @@ fetch(API + "?aba=beneficios")
 const exclusivo =
 (
     (grupo && grupo !== "GERAL") ||
-    (b.idPublico && String(b.idPublico).trim())
+
+    (b.idPublico &&
+     String(b.idPublico).trim() !== "") ||
+
+    (b.cpf &&
+     String(b.cpf)
+       .replace(/\D/g,"")
+       .trim() !== "")
 );
 
     const card = document.createElement("div");

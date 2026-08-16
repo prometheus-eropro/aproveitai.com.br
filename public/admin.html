@@ -4791,11 +4791,38 @@ function editarBeneficio(beneficioId){
 
 }
 
-function novoBeneficio(){
+async function novoBeneficio(dadosIniciais = {}){
+
+/* ==========================================
+   GARANTE CLIENTES PARA LISTA DE GRUPOS
+========================================== */
+
+if(
+  !state.cache.clientes ||
+  !state.cache.clientes.length
+){
+
+  if(
+    typeof loadClientes === "function"
+  ){
+
+    await loadClientes(true);
+
+  }
+
+}
 
   /* ==========================================
-     MONTA LISTA DE PARCEIROS
+     GARANTE PARCEIROS CARREGADOS
   ========================================== */
+
+  if(
+    !state.cache.parceiros ||
+    !state.cache.parceiros.length
+  ){
+    await loadParceiros(true);
+  }
+
 
   const parceiros =
     (state.cache.parceiros || [])
@@ -4811,14 +4838,15 @@ function novoBeneficio(){
 
   if(!parceiros.length){
 
-    alert(
-      "Nenhum parceiro carregado.\n\n" +
-      "Abra primeiro a área Parceiros e recarregue os dados."
-    );
+    alert("Nenhum parceiro cadastrado.");
 
     return;
   }
 
+
+  /* ==========================================
+     SELECT DE PARCEIROS
+  ========================================== */
 
   const opcoesParceiros =
     parceiros
@@ -4843,7 +4871,102 @@ function novoBeneficio(){
 
 
   /* ==========================================
-     ABRE MODAL
+     PARCEIRO RECEBIDO DA IMPLANTAÇÃO
+  ========================================== */
+
+  const parceiroInicialId =
+    String(
+      dadosIniciais.parceiro_id || ""
+    ).trim();
+
+
+  const sugestao =
+    sugerirBeneficioAproveitai_(
+      parceiroInicialId
+    );
+
+/* ==========================================
+   GRUPOS EXISTENTES
+========================================== */
+
+const gruposDisponiveis =
+  obterGruposAproveitai_();
+
+
+const opcoesGrupos = [
+
+  {
+    value:"",
+    label:"Selecione o grupo..."
+  },
+
+  ...gruposDisponiveis.map(g => ({
+
+    value:g,
+    label:g
+
+  }))
+
+];
+
+  /* ==========================================
+     DADOS INICIAIS
+  ========================================== */
+
+  const initial = {
+
+    parceiro_id:
+      parceiroInicialId,
+
+    titulo:
+      dadosIniciais.titulo || "",
+
+    descricao:
+      dadosIniciais.descricao || "",
+
+    grupo:
+  normalizarSegmentacaoAproveitai_(
+    dadosIniciais.grupo ||
+    sugestao.grupo
+  ),
+
+grupo_destino:
+  dadosIniciais.grupo_destino || "",
+
+idPublico:
+  dadosIniciais.idPublico || "",
+
+cpf:
+  String(
+    dadosIniciais.cpf || ""
+  ).replace(/\D/g,""),
+
+categoria:
+      dadosIniciais.categoria ||
+      sugestao.categoria ||
+      "",
+
+    ordem:
+      dadosIniciais.ordem || "",
+
+    forma_pagamento:
+      dadosIniciais.forma_pagamento ||
+      sugestao.forma_pagamento ||
+      pagamentoPadraoAproveitai_(),
+
+    observacoes:
+      dadosIniciais.observacoes ||
+      sugestao.observacoes ||
+      condicoesPadraoAproveitai_(),
+
+    ativo:
+      dadosIniciais.ativo || "SIM"
+
+  };
+
+
+  /* ==========================================
+     MODAL
   ========================================== */
 
   openEditModal({
@@ -4851,13 +4974,10 @@ function novoBeneficio(){
     title:"Criar Benefício",
 
     hint:
-      "Selecione o parceiro e cadastre o benefício. " +
-      "O parceiro_id será utilizado automaticamente.",
+      "Selecione o parceiro. O sistema sugere o padrão operacional, " +
+      "mas todos os dados comerciais continuam editáveis.",
 
-    initial:{
-      grupo:"GERAL",
-      ativo:"SIM"
-    },
+    initial:initial,
 
     fields:[
 
@@ -4890,15 +5010,65 @@ function novoBeneficio(){
       },
 
       {
-        key:"grupo",
-        label:"Grupo",
+        key:"categoria",
+        label:"Categoria",
         w:"220px"
       },
 
       {
-        key:"categoria",
-        label:"Categoria",
-        w:"220px"
+        key:"grupo",
+        label:"Segmentação",
+        type:"select",
+      {
+ {
+  key:"grupo_destino",
+  label:"Grupo específico",
+  type:"select",
+
+  options:
+    opcoesGrupos,
+
+  w:"320px"
+},
+
+{
+  key:"idPublico",
+  label:"ID Público do Cliente",
+  placeholder:"Ex.: APV-000001",
+  w:"260px"
+},
+
+{
+  key:"cpf",
+  label:"CPF do Cliente",
+  placeholder:"Somente números",
+  w:"220px"
+},
+        options:[
+          {
+            value:"GERAL",
+            label:"GERAL — Todos os clientes"
+          },
+          {
+            value:"GRUPO",
+            label:"GRUPO — Grupo específico"
+          },
+          {
+            value:"ID",
+            label:"ID — Cliente específico"
+          },
+          {
+            value:"CPF",
+            label:"CPF — Cliente específico"
+          }
+        ],
+        w:"260px"
+      },
+
+      {
+        key:"forma_pagamento",
+        label:"Forma de Pagamento",
+        w:"260px"
       },
 
       {
@@ -4942,15 +5112,9 @@ function novoBeneficio(){
 
     onSave: async (data)=>{
 
-      /* ==========================================
-         VALIDAÇÕES
-      ========================================== */
-
       if(!data.parceiro_id){
 
-        alert(
-          "Selecione o parceiro."
-        );
+        alert("Selecione o parceiro.");
 
         throw new Error(
           "PARCEIRO_OBRIGATORIO"
@@ -4980,11 +5144,73 @@ function novoBeneficio(){
           "DESCRICAO_OBRIGATORIA"
         );
       }
-
-
+      
       /* ==========================================
-         LOCALIZA PARCEIRO SELECIONADO
-      ========================================== */
+   VALIDA SEGMENTAÇÃO
+========================================== */
+
+const segmentacao =
+  normalizarSegmentacaoAproveitai_(
+    data.grupo
+  );
+
+
+if(
+  segmentacao === "GRUPO" &&
+  !String(
+    data.grupo_destino || ""
+  ).trim()
+){
+
+  alert(
+    "Informe qual grupo receberá este benefício."
+  );
+
+  throw new Error(
+    "GRUPO_DESTINO_OBRIGATORIO"
+  );
+}
+
+
+if(
+  segmentacao === "ID" &&
+  !String(
+    data.idPublico || ""
+  ).trim()
+){
+
+  alert(
+    "Informe o ID Público do cliente."
+  );
+
+  throw new Error(
+    "ID_PUBLICO_OBRIGATORIO"
+  );
+}
+
+
+if(segmentacao === "CPF"){
+
+  const cpfDestino =
+    String(
+      data.cpf || ""
+    ).replace(/\D/g,"");
+
+
+  if(cpfDestino.length !== 11){
+
+    alert(
+      "Informe um CPF válido com 11 números."
+    );
+
+    throw new Error(
+      "CPF_DESTINO_INVALIDO"
+    );
+  }
+
+}
+
+
 
       const parceiro =
         parceiros.find(p=>
@@ -5012,9 +5238,49 @@ function novoBeneficio(){
       }
 
 
-      /* ==========================================
-         ENVIA PARA API
-      ========================================== */
+     /* ==========================================
+   MONTA DESTINO REAL
+========================================== */
+
+const segmentacao =
+  normalizarSegmentacaoAproveitai_(
+    data.grupo
+  );
+
+
+let grupoFinal = "GERAL";
+let idPublicoFinal = "";
+let cpfFinal = "";
+
+
+if(segmentacao === "GRUPO"){
+
+  grupoFinal =
+    String(
+      data.grupo_destino || ""
+    ).trim();
+
+}
+
+
+if(segmentacao === "ID"){
+
+  idPublicoFinal =
+    String(
+      data.idPublico || ""
+    ).trim();
+
+}
+
+
+if(segmentacao === "CPF"){
+
+  cpfFinal =
+    String(
+      data.cpf || ""
+    ).replace(/\D/g,"");
+
+}
 
       const resposta =
         await callAPI({
@@ -5046,10 +5312,14 @@ function novoBeneficio(){
               data.descricao || ""
             ).trim(),
 
-          grupo:
-            String(
-              data.grupo || "GERAL"
-            ).trim(),
+         grupo:
+  grupoFinal,
+
+idPublico:
+  idPublicoFinal,
+
+cpf:
+  cpfFinal,
 
           categoria:
             String(
@@ -5058,6 +5328,12 @@ function novoBeneficio(){
 
           ordem:
             data.ordem || "",
+
+          forma_pagamento:
+            String(
+              data.forma_pagamento ||
+              pagamentoPadraoAproveitai_()
+            ).trim(),
 
           observacoes:
             String(
@@ -5076,10 +5352,6 @@ function novoBeneficio(){
       );
 
 
-      /* ==========================================
-         CONFERE RESPOSTA
-      ========================================== */
-
       if(
         !resposta ||
         resposta.ok === false
@@ -5097,10 +5369,6 @@ function novoBeneficio(){
         );
       }
 
-
-      /* ==========================================
-         LIMPA CACHE E RECARREGA
-      ========================================== */
 
       if(state.loaded){
         state.loaded.beneficios = false;
@@ -5530,20 +5798,35 @@ delete patch.titulo;
    NOVA PROMOÇÃO
 ====================================================== */
 
-async function novoPromocao(){
+async function novoPromocao(dadosIniciais = {}){
 
-  /*
-   * GARANTE LISTA ATUALIZADA
-   * DE PARCEIROS
-   */
+/* ==========================================
+   GARANTE CLIENTES PARA LISTA DE GRUPOS
+========================================== */
+
+if(
+  !state.cache.clientes ||
+  !state.cache.clientes.length
+){
+
+  if(
+    typeof loadClientes === "function"
+  ){
+
+    await loadClientes(true);
+
+  }
+
+}
+  /* ==========================================
+     GARANTE PARCEIROS CARREGADOS
+  ========================================== */
 
   if(
     !state.cache.parceiros ||
     !state.cache.parceiros.length
   ){
-
     await loadParceiros(true);
-
   }
 
 
@@ -5561,7 +5844,6 @@ async function novoPromocao(){
         ),
 
         "pt-BR"
-
       )
 
     );
@@ -5574,13 +5856,12 @@ async function novoPromocao(){
     );
 
     return;
-
   }
 
 
-  /*
-   * MONTA SELECT
-   */
+  /* ==========================================
+     SELECT PARCEIROS
+  ========================================== */
 
   const opcoesParceiros =
     parceiros
@@ -5609,22 +5890,125 @@ async function novoPromocao(){
     );
 
 
+  /* ==========================================
+     PARCEIRO RECEBIDO DA IMPLANTAÇÃO
+  ========================================== */
+
+  const parceiroInicialId =
+    String(
+      dadosIniciais.parceiro_id || ""
+    ).trim();
+
+
+  const sugestao =
+    sugerirPromocaoAproveitai_(
+      parceiroInicialId
+    );
+
+/* ==========================================
+   GRUPOS EXISTENTES
+========================================== */
+
+const gruposDisponiveis =
+  obterGruposAproveitai_();
+
+
+const opcoesGrupos = [
+
+  {
+    value:"",
+    label:"Selecione o grupo..."
+  },
+
+  ...gruposDisponiveis.map(g => ({
+
+    value:g,
+    label:g
+
+  }))
+
+];
+
+  /* ==========================================
+     DADOS INICIAIS
+  ========================================== */
+
+  const initial = {
+
+    parceiro_id:
+      parceiroInicialId,
+
+    titulo:
+      dadosIniciais.titulo || "",
+
+    descricao:
+      dadosIniciais.descricao || "",
+
+    dataInicio:
+      dadosIniciais.dataInicio || "",
+
+    dataFim:
+      dadosIniciais.dataFim || "",
+
+    grupo:
+  normalizarSegmentacaoAproveitai_(
+    dadosIniciais.grupo ||
+    sugestao.grupo
+  ),
+
+grupo_destino:
+  dadosIniciais.grupo_destino || "",
+
+idPublico:
+  dadosIniciais.idPublico || "",
+
+cpf:
+  String(
+    dadosIniciais.cpf || ""
+  ).replace(/\D/g,""),
+
+categoria:
+
+     
+
+    categoria:
+      dadosIniciais.categoria ||
+      sugestao.categoria ||
+      "",
+
+    ordem:
+      dadosIniciais.ordem || "",
+
+    forma_pagamento:
+      dadosIniciais.forma_pagamento ||
+      sugestao.forma_pagamento ||
+      pagamentoPadraoAproveitai_(),
+
+    observacoes:
+      dadosIniciais.observacoes ||
+      sugestao.observacoes ||
+      "",
+
+    ativo:
+      dadosIniciais.ativo || "SIM"
+
+  };
+
+
+  /* ==========================================
+     MODAL
+  ========================================== */
+
   openEditModal({
 
     title:
       "Criar Promoção",
 
     hint:
-      "Promoções são opcionais. Cada promoção será salva como um novo registro.",
+      "Promoções são opcionais. O sistema aplica o padrão operacional, " +
+      "mas as condições continuam editáveis.",
 
-
-    initial:{
-
-      grupo:"GERAL",
-
-      ativo:"SIM"
-
-    },
+    initial:initial,
 
 
     fields:[
@@ -5680,15 +6064,74 @@ async function novoPromocao(){
 
 
       {
-        key:"grupo",
-        label:"Grupo",
-        default:"GERAL"
+        key:"categoria",
+        label:"Categoria",
+        w:"220px"
       },
 
 
       {
-        key:"categoria",
-        label:"Categoria"
+        key:"grupo",
+        label:"Segmentação",
+        type:"select",
+
+        options:[
+
+          {
+            value:"GERAL",
+            label:"GERAL — Todos os clientes"
+          },
+
+          {
+            value:"GRUPO",
+            label:"GRUPO — Grupo específico"
+          },
+
+          {
+            value:"ID",
+            label:"ID — Cliente específico"
+          },
+
+          {
+            value:"CPF",
+            label:"CPF — Cliente específico"
+          }
+
+        ],
+
+        w:"260px"
+      },
+
+     {
+  {
+  key:"grupo_destino",
+  label:"Grupo específico",
+  type:"select",
+
+  options:
+    opcoesGrupos,
+
+  w:"320px"
+},
+
+{
+  key:"idPublico",
+  label:"ID Público do Cliente",
+  placeholder:"Ex.: APV-000001",
+  w:"260px"
+},
+
+{
+  key:"cpf",
+  label:"CPF do Cliente",
+  placeholder:"Somente números",
+  w:"220px"
+},
+
+      {
+        key:"forma_pagamento",
+        label:"Forma de Pagamento",
+        w:"260px"
       },
 
 
@@ -5732,12 +6175,12 @@ async function novoPromocao(){
     ],
 
 
+    /* ==========================================
+       SALVAR
+    ========================================== */
+
     onSave:async (data)=>{
 
-
-      /* ==============================
-         VALIDAÇÕES
-      ============================== */
 
       if(!data.parceiro_id){
 
@@ -5748,11 +6191,10 @@ async function novoPromocao(){
         throw new Error(
           "PARCEIRO_OBRIGATORIO"
         );
-
       }
 
 
-      if(!data.titulo){
+      if(!String(data.titulo || "").trim()){
 
         alert(
           "Informe o título da promoção."
@@ -5761,11 +6203,10 @@ async function novoPromocao(){
         throw new Error(
           "TITULO_OBRIGATORIO"
         );
-
       }
 
 
-      if(!data.descricao){
+      if(!String(data.descricao || "").trim()){
 
         alert(
           "Informe a descrição da promoção."
@@ -5774,13 +6215,73 @@ async function novoPromocao(){
         throw new Error(
           "DESCRICAO_OBRIGATORIA"
         );
-
       }
 
+       /* ==========================================
+   VALIDA SEGMENTAÇÃO
+========================================== */
 
-      /*
-       * VALIDA DATAS
-       */
+const segmentacao =
+  normalizarSegmentacaoAproveitai_(
+    data.grupo
+  );
+
+
+if(
+  segmentacao === "GRUPO" &&
+  !String(
+    data.grupo_destino || ""
+  ).trim()
+){
+
+  alert(
+    "Informe qual grupo receberá esta promoção."
+  );
+
+  throw new Error(
+    "GRUPO_DESTINO_OBRIGATORIO"
+  );
+}
+
+
+if(
+  segmentacao === "ID" &&
+  !String(
+    data.idPublico || ""
+  ).trim()
+){
+
+  alert(
+    "Informe o ID Público do cliente."
+  );
+
+  throw new Error(
+    "ID_PUBLICO_OBRIGATORIO"
+  );
+}
+
+
+if(segmentacao === "CPF"){
+
+  const cpfDestino =
+    String(
+      data.cpf || ""
+    ).replace(/\D/g,"");
+
+
+  if(cpfDestino.length !== 11){
+
+    alert(
+      "Informe um CPF válido com 11 números."
+    );
+
+    throw new Error(
+      "CPF_DESTINO_INVALIDO"
+    );
+  }
+
+}
+
 
       if(
         data.dataInicio &&
@@ -5795,13 +6296,8 @@ async function novoPromocao(){
         throw new Error(
           "DATA_INVALIDA"
         );
-
       }
 
-
-      /* ==============================
-         LOCALIZA PARCEIRO
-      ============================== */
 
       const parceiro =
         parceiros.find(p =>
@@ -5826,13 +6322,52 @@ async function novoPromocao(){
         throw new Error(
           "PARCEIRO_NAO_LOCALIZADO"
         );
-
       }
 
 
-      /* ==============================
-         ENVIA
-      ============================== */
+      /* ==========================================
+   MONTA DESTINO REAL
+========================================== */
+
+const segmentacao =
+  normalizarSegmentacaoAproveitai_(
+    data.grupo
+  );
+
+
+let grupoFinal = "GERAL";
+let idPublicoFinal = "";
+let cpfFinal = "";
+
+
+if(segmentacao === "GRUPO"){
+
+  grupoFinal =
+    String(
+      data.grupo_destino || ""
+    ).trim();
+
+}
+
+
+if(segmentacao === "ID"){
+
+  idPublicoFinal =
+    String(
+      data.idPublico || ""
+    ).trim();
+
+}
+
+
+if(segmentacao === "CPF"){
+
+  cpfFinal =
+    String(
+      data.cpf || ""
+    ).replace(/\D/g,"");
+
+}
 
       const resposta =
         await callAPI({
@@ -5844,18 +6379,27 @@ async function novoPromocao(){
             state.key,
 
           parceiro_id:
-            data.parceiro_id,
+            String(
+              data.parceiro_id || ""
+            ).trim(),
 
           parceiro:
             parceiro.nomeFantasia ||
             parceiro.razaoSocial ||
             "",
 
+          parceiroCnpj:
+            parceiro.cnpj || "",
+
           titulo:
-            data.titulo || "",
+            String(
+              data.titulo || ""
+            ).trim(),
 
           descricao:
-            data.descricao || "",
+            String(
+              data.descricao || ""
+            ).trim(),
 
           dataInicio:
             data.dataInicio || "",
@@ -5864,16 +6408,32 @@ async function novoPromocao(){
             data.dataFim || "",
 
           grupo:
-            data.grupo || "GERAL",
+  grupoFinal,
+
+idPublico:
+  idPublicoFinal,
+
+cpf:
+  cpfFinal,
 
           categoria:
-            data.categoria || "",
+            String(
+              data.categoria || ""
+            ).trim(),
 
           ordem:
             data.ordem || "",
 
+          forma_pagamento:
+            String(
+              data.forma_pagamento ||
+              pagamentoPadraoAproveitai_()
+            ).trim(),
+
           observacoes:
-            data.observacoes || "",
+            String(
+              data.observacoes || ""
+            ).trim(),
 
           ativo:
             data.ativo || "SIM"
@@ -5888,32 +6448,22 @@ async function novoPromocao(){
 
 
       if(
-        resposta &&
+        !resposta ||
         resposta.ok === false
       ){
 
         alert(
-          resposta.erro ||
-          resposta.mensagem ||
+          resposta?.erro ||
+          resposta?.mensagem ||
+          resposta?.msg ||
           "Não foi possível criar a promoção."
         );
 
         throw new Error(
           "ERRO_CRIAR_PROMOCAO"
         );
-
       }
 
-
-      toast(
-        "✅ Promoção cadastrada."
-      );
-
-
-      /*
-       * FORÇA A LIMPEZA DO CACHE
-       * ANTES DE CONSULTAR NOVAMENTE
-       */
 
       if(state.loaded){
         state.loaded.promocoes = false;
@@ -5925,24 +6475,18 @@ async function novoPromocao(){
       }
 
 
-      /*
-       * BUSCA NOVAMENTE NA PLANILHA
-       */
+      toast(
+        "✅ Promoção cadastrada."
+      );
+
 
       await loadPromocoes(true);
-
-
-      console.log(
-        "PROMOÇÕES ATUALIZADAS:",
-        state.cache.promocoes
-      );
 
     }
 
   });
 
 }
-
 
 /* ---------- LOGS / LOG_ADMIN / ADMINS ---------- */
 async function loadLogs(force=false){
@@ -8036,6 +8580,465 @@ function arquivoParaBase64(arquivo){
 
 }
 
+/* =====================================================
+   APROVEITAI — AUTOMAÇÃO BENEFÍCIOS / PROMOÇÕES
+   PADRÃO OPERACIONAL OFICIAL
+===================================================== */
+
+/*
+ * Retorna condições padrão.
+ *
+ * IMPORTANTE:
+ * É apenas uma sugestão inicial.
+ * O administrador continua podendo editar.
+ */
+function condicoesPadraoAproveitai_(){
+
+  return "Válido para clientes com cadastro ativo na Plataforma AproveitAI. " +
+         "Pagamento em Dinheiro ou Pix. " +
+         "Benefício sujeito às condições, produtos, serviços e restrições definidas pelo parceiro. " +
+         "Validação obrigatória pela Plataforma antes da conclusão da compra.";
+
+}
+
+
+/*
+ * Forma de pagamento operacional padrão.
+ *
+ * Não bloqueia alteração pelo administrador.
+ */
+function pagamentoPadraoAproveitai_(){
+
+  return "Dinheiro ou Pix";
+
+}
+
+
+/*
+ * Padroniza segmentação.
+ */
+function normalizarSegmentacaoAproveitai_(valor){
+
+  const v =
+    String(valor || "")
+      .trim()
+      .toUpperCase();
+
+  if(!v){
+    return "GERAL";
+  }
+
+  return v;
+
+}
+
+
+/*
+ * Define automaticamente se a oferta
+ * deve ser considerada exclusiva.
+ *
+ * GERAL = pública
+ * GRUPO / CPF / ID = exclusiva
+ */
+function ofertaExclusivaAproveitai_(dados){
+
+  dados = dados || {};
+
+  const grupo =
+    String(dados.grupo || "")
+      .trim()
+      .toUpperCase();
+
+  const idPublico =
+    String(
+      dados.idPublico ||
+      dados.id_publico ||
+      ""
+    ).trim();
+
+  const cpf =
+    String(dados.cpf || "")
+      .replace(/\D/g,"");
+
+  if(
+    grupo &&
+    grupo !== "GERAL"
+  ){
+    return true;
+  }
+
+  if(idPublico){
+    return true;
+  }
+
+  if(cpf){
+    return true;
+  }
+
+  return false;
+
+}
+
+
+/*
+ * Busca parceiro pelo parceiro_id.
+ *
+ * Serve para benefício e promoção.
+ */
+function buscarParceiroAutomacao_(parceiroId){
+
+  parceiroId =
+    String(parceiroId || "")
+      .trim()
+      .toUpperCase();
+
+  if(!parceiroId){
+    return null;
+  }
+
+  return (
+    state.cache.parceiros || []
+  ).find(p =>
+
+    String(
+      p.parceiro_id || ""
+    )
+    .trim()
+    .toUpperCase() === parceiroId
+
+  ) || null;
+
+}
+
+
+/*
+ * Sugestões de categoria conforme ramo.
+ *
+ * NÃO obriga o uso.
+ * Apenas reduz digitação.
+ */
+function categoriasSugeridasAproveitai_(ramo){
+
+  const r =
+    String(ramo || "")
+      .trim()
+      .toUpperCase();
+
+  if(
+    r.includes("POSTO") ||
+    r.includes("COMBUST")
+  ){
+    return [
+      "COMBUSTÍVEL",
+      "SERVIÇO",
+      "PRODUTO",
+      "OUTROS"
+    ];
+  }
+
+  if(
+    r.includes("AUTO") ||
+    r.includes("OFICINA") ||
+    r.includes("VEÍC")
+  ){
+    return [
+      "PEÇAS",
+      "SERVIÇO",
+      "ACESSÓRIOS",
+      "PRODUTO",
+      "OUTROS"
+    ];
+  }
+
+  if(
+    r.includes("FARM")
+  ){
+    return [
+      "MEDICAMENTOS",
+      "HIGIENE",
+      "PERFUMARIA",
+      "PRODUTO",
+      "OUTROS"
+    ];
+  }
+
+  if(
+    r.includes("SUPERM") ||
+    r.includes("MERCADO")
+  ){
+    return [
+      "ALIMENTOS",
+      "BEBIDAS",
+      "HIGIENE",
+      "LIMPEZA",
+      "PRODUTO",
+      "OUTROS"
+    ];
+  }
+
+  if(
+    r.includes("PADARIA") ||
+    r.includes("PANIF")
+  ){
+    return [
+      "PADARIA",
+      "ALIMENTOS",
+      "BEBIDAS",
+      "PRODUTO",
+      "OUTROS"
+    ];
+  }
+
+  if(
+    r.includes("GÁS") ||
+    r.includes("GAS")
+  ){
+    return [
+      "GÁS",
+      "PRODUTO",
+      "ENTREGA",
+      "OUTROS"
+    ];
+  }
+
+  if(
+    r.includes("RESTAUR") ||
+    r.includes("LANCH") ||
+    r.includes("PIZ")
+  ){
+    return [
+      "ALIMENTAÇÃO",
+      "BEBIDAS",
+      "DELIVERY",
+      "OUTROS"
+    ];
+  }
+
+  if(
+    r.includes("ROUP") ||
+    r.includes("VEST") ||
+    r.includes("CALÇ")
+  ){
+    return [
+      "VESTUÁRIO",
+      "CALÇADOS",
+      "ACESSÓRIOS",
+      "PRODUTO",
+      "OUTROS"
+    ];
+  }
+
+  return [
+    "PRODUTO",
+    "SERVIÇO",
+    "OUTROS"
+  ];
+
+}
+
+
+/*
+ * Monta sugestão inicial de benefício.
+ *
+ * Não salva nada.
+ * Não altera registros existentes.
+ */
+function sugerirBeneficioAproveitai_(parceiroId){
+
+  const parceiro =
+    buscarParceiroAutomacao_(
+      parceiroId
+    );
+
+  const ramo =
+    parceiro
+      ? parceiro.ramo || ""
+      : "";
+
+  const categorias =
+    categoriasSugeridasAproveitai_(
+      ramo
+    );
+
+  return {
+
+    parceiro_id:
+      parceiroId || "",
+
+    parceiro:
+      parceiro
+        ? (
+            parceiro.nomeFantasia ||
+            parceiro.razaoSocial ||
+            parceiro.nome ||
+            ""
+          )
+        : "",
+
+    categoria:
+      categorias[0] || "PRODUTO",
+
+    categoriasSugeridas:
+      categorias,
+
+    titulo:
+      "",
+
+    descricao:
+      "",
+
+    grupo:
+      "GERAL",
+
+    idPublico:
+      "",
+
+    cpf:
+      "",
+
+    forma_pagamento:
+      pagamentoPadraoAproveitai_(),
+
+    observacoes:
+      condicoesPadraoAproveitai_(),
+
+    ativo:
+      "SIM"
+
+  };
+
+}
+
+
+/*
+ * Monta sugestão inicial de promoção.
+ *
+ * Não salva nada.
+ * Não altera registros existentes.
+ */
+function sugerirPromocaoAproveitai_(parceiroId){
+
+  const base =
+    sugerirBeneficioAproveitai_(
+      parceiroId
+    );
+
+  return {
+
+    parceiro_id:
+      base.parceiro_id,
+
+    parceiro:
+      base.parceiro,
+
+    categoria:
+      base.categoria,
+
+    categoriasSugeridas:
+      base.categoriasSugeridas,
+
+    titulo:
+      "",
+
+    descricao:
+      "",
+
+    grupo:
+      "GERAL",
+
+    idPublico:
+      "",
+
+    cpf:
+      "",
+
+    forma_pagamento:
+      pagamentoPadraoAproveitai_(),
+
+    observacoes:
+      "Promoção válida durante o período informado. " +
+      condicoesPadraoAproveitai_(),
+
+    ativo:
+      "SIM"
+
+  };
+
+}
+
+/* =====================================================
+   LISTA OFICIAL DE GRUPOS
+
+   Busca automaticamente os grupos existentes
+   no cadastro de clientes.
+
+   - elimina vazios
+   - elimina duplicados
+   - ignora GERAL
+   - ordena alfabeticamente
+===================================================== */
+
+function obterGruposAproveitai_(){
+
+  const clientes =
+    state.cache.clientes || [];
+
+  const mapa = new Map();
+
+
+  clientes.forEach(c => {
+
+    const grupo =
+      String(
+        c.grupo || ""
+      ).trim();
+
+
+    if(!grupo){
+      return;
+    }
+
+
+    if(
+      grupo.toUpperCase() === "GERAL"
+    ){
+      return;
+    }
+
+
+    const chave =
+      grupo
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"");
+
+
+    /*
+     * Mantém a primeira grafia encontrada,
+     * evitando duplicidade.
+     */
+
+    if(!mapa.has(chave)){
+      mapa.set(chave, grupo);
+    }
+
+  });
+
+
+  return Array
+    .from(mapa.values())
+    .sort((a,b)=>
+      a.localeCompare(
+        b,
+        "pt-BR",
+        {
+          sensitivity:"base"
+        }
+      )
+    );
+
+}
+
 function abrirGoogleMapsParceiro(){
 
   const endereco =
@@ -9115,14 +10118,34 @@ placeholder="Digite o CNPJ">
 
 </div>
 
-<div>
+<label>Ramo</label>
 
-<label>Ramo / Especialidade</label>
+<select id="MESMO_ID_QUE_JA_EXISTE" required>
+  <option value="">Selecione o ramo</option>
 
-<input id="ramo">
-
-</div>
-
+  <option value="SUPERMERCADO">Supermercado</option>
+  <option value="FARMACIA">Farmácia</option>
+  <option value="POSTO">Posto de Combustível</option>
+  <option value="AUTOPECAS">Autopeças</option>
+  <option value="OFICINA">Oficina Mecânica</option>
+  <option value="MOTOS">Oficina / Peças para Motos</option>
+  <option value="LAVAJATO">Lava Jato</option>
+  <option value="PADARIA">Padaria</option>
+  <option value="RESTAURANTE">Restaurante</option>
+  <option value="LOJADEROUPAS">Loja de Roupas</option>
+  <option value="CALCADOS">Calçados</option>
+  <option value="MATERIALDECONSTRUCAO">Material de Construção</option>
+  <option value="AGROPECUARIA">Agropecuária</option>
+  <option value="PETSHOP">Pet Shop</option>
+  <option value="ACADEMIA">Academia</option>
+  <option value="BARBEARIA">Barbearia</option>
+  <option value="SALAO">Salão de Beleza</option>
+  <option value="CLINICA">Clínica</option>
+  <option value="CONTABILIDADE">Contabilidade</option>
+  <option value="INTERNET">Internet</option>
+  <option value="SERVICOS">Serviços</option>
+  <option value="OUTROS">Outros</option>
+</select>
 </div>
 
 <div>
