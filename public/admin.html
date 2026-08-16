@@ -6076,59 +6076,49 @@ categoria:
         key:"grupo",
         label:"Segmentação",
         type:"select",
-
         options:[
-
           {
             value:"GERAL",
             label:"GERAL — Todos os clientes"
           },
-
           {
             value:"GRUPO",
             label:"GRUPO — Grupo específico"
           },
-
           {
             value:"ID",
             label:"ID — Cliente específico"
           },
-
           {
             value:"CPF",
             label:"CPF — Cliente específico"
           }
-
         ],
-
         w:"260px"
       },
 
-     {
-  {
-  key:"grupo_destino",
-  label:"Grupo específico",
-  type:"select",
+      {
+        key:"grupo_destino",
+        label:"Grupo específico",
+        type:"select",
+        options:opcoesGrupos,
+        w:"320px"
+      },
 
-  options:
-    opcoesGrupos,
+      {
+        key:"idPublico",
+        label:"ID Público do Cliente",
+        placeholder:"Ex.: APV-000001",
+        w:"260px"
+      },
 
-  w:"320px"
-},
+      {
+        key:"cpf",
+        label:"CPF do Cliente",
+        placeholder:"Somente números",
+        w:"220px"
+      },
 
-{
-  key:"idPublico",
-  label:"ID Público do Cliente",
-  placeholder:"Ex.: APV-000001",
-  w:"260px"
-},
-
-{
-  key:"cpf",
-  label:"CPF do Cliente",
-  placeholder:"Somente números",
-  w:"220px"
-},
 
       {
         key:"forma_pagamento",
@@ -6327,15 +6317,9 @@ if(segmentacao === "CPF"){
       }
 
 
-      /* ==========================================
+    /* ==========================================
    MONTA DESTINO REAL
 ========================================== */
-
-const segmentacao =
-  normalizarSegmentacaoAproveitai_(
-    data.grupo
-  );
-
 
 let grupoFinal = "GERAL";
 let idPublicoFinal = "";
@@ -6370,7 +6354,6 @@ if(segmentacao === "CPF"){
     ).replace(/\D/g,"");
 
 }
-
       const resposta =
         await callAPI({
 
