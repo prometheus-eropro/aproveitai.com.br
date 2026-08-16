@@ -3309,13 +3309,107 @@ function openEditModal({title, hint, fields, initial, onSave}){
     }
 
 
-    wrap.appendChild(lab);
+       wrap.appendChild(lab);
 
     wrap.appendChild(input);
 
     form.appendChild(wrap);
 
+
+    /* ==========================================
+       EXIBIÇÃO CONDICIONAL DE CAMPOS
+
+       Uso opcional:
+       showWhen:{
+         key:"grupo",
+         value:"GRUPO"
+       }
+
+       Campos sem showWhen continuam normais.
+    ========================================== */
+
+    if(f.showWhen){
+
+      wrap.dataset.showWhenKey =
+        String(
+          f.showWhen.key || ""
+        );
+
+      wrap.dataset.showWhenValue =
+        String(
+          f.showWhen.value || ""
+        );
+
+    }
+
   });
+
+
+  /* ==========================================
+     ATUALIZA CAMPOS CONDICIONAIS
+  ========================================== */
+
+  function atualizarCamposCondicionais(){
+
+    const condicionais =
+      form.querySelectorAll(
+        "[data-show-when-key]"
+      );
+
+
+    condicionais.forEach(wrap => {
+
+      const chave =
+        wrap.dataset.showWhenKey;
+
+      const valorEsperado =
+        String(
+          wrap.dataset.showWhenValue || ""
+        );
+
+
+      const controlador =
+        form.querySelector(
+          `[data-key="${chave}"]`
+        );
+
+
+      if(!controlador){
+
+        wrap.style.display = "";
+
+        return;
+      }
+
+
+      const valorAtual =
+        String(
+          controlador.value || ""
+        );
+
+
+      wrap.style.display =
+        valorAtual === valorEsperado
+          ? ""
+          : "none";
+
+    });
+
+  }
+
+
+  /* ==========================================
+     ESCUTA ALTERAÇÕES DO FORMULÁRIO
+  ========================================== */
+
+  form.addEventListener(
+    "change",
+    atualizarCamposCondicionais
+  );
+
+
+  /* Primeira atualização ao abrir */
+  atualizarCamposCondicionais();
 
 
   showOverlay(
@@ -5040,27 +5134,41 @@ categoria:
   w:"260px"
 },
 
-{
-  key:"grupo_destino",
-  label:"Grupo específico",
-  type:"select",
-  options:opcoesGrupos,
-  w:"320px"
-},
+      {
+        key:"grupo_destino",
+        label:"Grupo específico",
+        type:"select",
+        options:opcoesGrupos,
+        w:"320px",
 
-{
-  key:"idPublico",
-  label:"ID Público do Cliente",
-  placeholder:"Ex.: APV-000001",
-  w:"260px"
-},
+        showWhen:{
+          key:"grupo",
+          value:"GRUPO"
+        }
+      },
+      {
+        key:"idPublico",
+        label:"ID Público do Cliente",
+        placeholder:"Ex.: APV-000001",
+        w:"260px",
 
-{
-  key:"cpf",
-  label:"CPF do Cliente",
-  placeholder:"Somente números",
-  w:"220px"
-},
+        showWhen:{
+          key:"grupo",
+          value:"ID"
+        }
+      },
+
+      {
+        key:"cpf",
+        label:"CPF do Cliente",
+        placeholder:"Somente números",
+        w:"220px",
+
+        showWhen:{
+          key:"grupo",
+          value:"CPF"
+        }
+      },
 
 {
   key:"forma_pagamento",
@@ -6082,27 +6190,44 @@ categoria:
         w:"260px"
       },
 
-      {
-        key:"grupo_destino",
-        label:"Grupo específico",
-        type:"select",
-        options:opcoesGrupos,
-        w:"320px"
-      },
+{
+  key:"grupo_destino",
+  label:"Grupo específico",
+  type:"select",
 
-      {
-        key:"idPublico",
-        label:"ID Público do Cliente",
-        placeholder:"Ex.: APV-000001",
-        w:"260px"
-      },
+  options:
+    opcoesGrupos,
 
-      {
-        key:"cpf",
-        label:"CPF do Cliente",
-        placeholder:"Somente números",
-        w:"220px"
-      },
+  w:"320px",
+
+  showWhen:{
+    key:"grupo",
+    value:"GRUPO"
+  }
+},
+
+{
+  key:"idPublico",
+  label:"ID Público do Cliente",
+  placeholder:"Ex.: APV-000001",
+  w:"260px",
+
+  showWhen:{
+    key:"grupo",
+    value:"ID"
+  }
+},
+  {
+  key:"cpf",
+  label:"CPF do Cliente",
+  placeholder:"Somente números",
+  w:"220px",
+
+  showWhen:{
+    key:"grupo",
+    value:"CPF"
+  }
+},
 
       {
         key:"forma_pagamento",
