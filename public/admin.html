@@ -5015,20 +5015,36 @@ categoria:
         w:"220px"
       },
 
-      {
-        key:"grupo",
-        label:"Segmentação",
-        type:"select",
+{
+  key:"grupo",
+  label:"Segmentação",
+  type:"select",
+  options:[
+    {
+      value:"GERAL",
+      label:"GERAL — Todos os clientes"
+    },
+    {
+      value:"GRUPO",
+      label:"GRUPO — Grupo específico"
+    },
+    {
+      value:"ID",
+      label:"ID — Cliente específico"
+    },
+    {
+      value:"CPF",
+      label:"CPF — Cliente específico"
+    }
+  ],
+  w:"260px"
 },
-      {
 
+{
   key:"grupo_destino",
   label:"Grupo específico",
   type:"select",
-
-  options:
-    opcoesGrupos,
-
+  options:opcoesGrupos,
   w:"320px"
 },
 
@@ -5044,34 +5060,13 @@ categoria:
   label:"CPF do Cliente",
   placeholder:"Somente números",
   w:"220px"
-}
+},
 
-        options:[
-          {
-            value:"GERAL",
-            label:"GERAL — Todos os clientes"
-          },
-          {
-            value:"GRUPO",
-            label:"GRUPO — Grupo específico"
-          },
-          {
-            value:"ID",
-            label:"ID — Cliente específico"
-          },
-          {
-            value:"CPF",
-            label:"CPF — Cliente específico"
-          }
-        ],
-        w:"260px"
-      },
-
-      {
-        key:"forma_pagamento",
-        label:"Forma de Pagamento",
-        w:"260px"
-      },
+{
+  key:"forma_pagamento",
+  label:"Forma de Pagamento",
+  w:"260px"
+},
 
       {
         key:"ordem",
