@@ -5240,15 +5240,9 @@ if(segmentacao === "CPF"){
       }
 
 
-     /* ==========================================
+    /* ==========================================
    MONTA DESTINO REAL
 ========================================== */
-
-const segmentacao =
-  normalizarSegmentacaoAproveitai_(
-    data.grupo
-  );
-
 
 let grupoFinal = "GERAL";
 let idPublicoFinal = "";
@@ -6072,7 +6066,7 @@ categoria:
       },
 
 
-      {
+           {
         key:"grupo",
         label:"Segmentação",
         type:"select",
@@ -6118,6 +6112,7 @@ categoria:
         placeholder:"Somente números",
         w:"220px"
       },
+
 
 
       {
