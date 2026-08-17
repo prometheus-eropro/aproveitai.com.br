@@ -8683,7 +8683,7 @@ document.getElementById("impAcoes").innerHTML=`
 
   <button
     class="btn"
-    onclick="window.print()"
+    onclick="imprimirChecklistImplantacao('${parceiro.parceiro_id}')"
   >
     🖨 Imprimir Checklist
   </button>
@@ -9272,7 +9272,6 @@ const resp =
 /* =====================================================
    CONCLUIR IMPLANTAÇÃO
 ===================================================== */
-
 async function concluirImplantacao(
   parceiroId
 ){
@@ -9343,6 +9342,7 @@ async function concluirImplantacao(
 
       let mensagem =
         resp?.erro ||
+        resp?.mensagem ||
         "Não foi possível concluir a implantação.";
 
 
@@ -9370,14 +9370,19 @@ async function concluirImplantacao(
 
 
     /*
-     * Atualiza cache do Admin.
+     * Atualiza a lista de parceiros
+     * sem depender da antiga loadAll().
      */
-    await loadAll();
+    if(typeof loadParceiros === "function"){
+
+      await loadParceiros(true);
+
+    }
 
 
     /*
-     * Reabre a implantação para mostrar
-     * o estado final atualizado.
+     * Mantém o parceiro selecionado
+     * após atualizar a lista.
      */
     const select =
       document.getElementById(
@@ -9393,7 +9398,15 @@ async function concluirImplantacao(
     }
 
 
-    await abrirImplantacao();
+    /*
+     * Reabre somente uma vez a implantação
+     * para atualizar checklist e status.
+     */
+    if(typeof abrirImplantacao === "function"){
+
+      await abrirImplantacao();
+
+    }
 
 
   }catch(erro){
