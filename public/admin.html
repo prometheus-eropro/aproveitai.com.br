@@ -3402,9 +3402,75 @@ function openEditModal({title, hint, fields, initial, onSave}){
      ESCUTA ALTERAÇÕES DO FORMULÁRIO
   ========================================== */
 
-  form.addEventListener(
+    form.addEventListener(
     "change",
-    atualizarCamposCondicionais
+    function(e){
+
+      const campoAlterado =
+        e.target;
+
+
+      /* ==========================================
+         LIMPA DESTINOS NÃO UTILIZADOS
+         AO TROCAR A SEGMENTAÇÃO
+      ========================================== */
+
+      if(
+        campoAlterado &&
+        campoAlterado.dataset.key === "grupo"
+      ){
+
+        const segmentacao =
+          String(
+            campoAlterado.value || ""
+          ).trim();
+
+
+        const campoGrupo =
+          form.querySelector(
+            '[data-key="grupo_destino"]'
+          );
+
+        const campoId =
+          form.querySelector(
+            '[data-key="idPublico"]'
+          );
+
+        const campoCpf =
+          form.querySelector(
+            '[data-key="cpf"]'
+          );
+
+
+        if(
+          campoGrupo &&
+          segmentacao !== "GRUPO"
+        ){
+          campoGrupo.value = "";
+        }
+
+
+        if(
+          campoId &&
+          segmentacao !== "ID"
+        ){
+          campoId.value = "";
+        }
+
+
+        if(
+          campoCpf &&
+          segmentacao !== "CPF"
+        ){
+          campoCpf.value = "";
+        }
+
+      }
+
+
+      atualizarCamposCondicionais();
+
+    }
   );
 
 
@@ -8376,90 +8442,127 @@ renderMateriais(
   biblioteca
 );
 
-/* ==========================
-   CHECKLIST
-========================== */
+/* =====================================================
+   CHECKLIST OFICIAL DA IMPLANTAÇÃO
+===================================================== */
 
-const temContrato = parceiro.link_contrato ? "✅" : "⬜";
+let checklist = null;
 
-const temBeneficios =
-(beneficios.dados||[]).length ? "✅" : "⬜";
+try{
 
-const temPromocoes =
+const implantacaoResp =
+  await callAPI({
+    action:"consultar_implantacao",
+    parceiro_id:id
+  });
 
-(promocoes.dados || []).length
+console.log(
+  "CONSULTA IMPLANTAÇÃO:",
+  implantacaoResp
+);
 
-? "✅"
 
-: "⬜";
+if(
+  implantacaoResp &&
+  implantacaoResp.ok
+){
 
-const temQR =
-parceiro.qrURL ? "✅" : "⬜";
+  checklist = {
 
-const temCartaz =
-parceiro.link_cartaz ? "✅" : "⬜";
+    ok:true,
 
-document.getElementById("impChecklist").innerHTML=`
+    automaticos:
+      implantacaoResp.sincronizacao?.automaticos ||
+      {},
 
-<h4>Cadastro</h4>
+    manuais:
+      implantacaoResp.implantacao ||
+      {},
 
-${parceiro.nomeFantasia?"✅":"⬜"} Parceiro cadastrado<br>
-${parceiro.token?"✅":"⬜"} Token<br>
-${parceiro.PIN_OPERACIONAL?"✅":"⬜"} PIN Operacional<br>
+    implantacao:
+      implantacaoResp.implantacao ||
+      {},
 
-<hr>
+    conclusao:
+      implantacaoResp.conclusao ||
+      {}
 
-<h4>Materiais</h4>
+  };
 
-${temContrato} Contrato<br>
-${temQR} QR Code<br>
-${temCartaz} Cartaz Balcão<br>
-${parceiro.link_cartaz_a4?"✅":"⬜"} Cartaz A4<br>
+}else{
 
-<hr>
+  checklist = {
 
-<h4>Benefícios</h4>
+    ok:false,
 
-${temBeneficios} Benefícios cadastrados<br>
+    erro:
+      implantacaoResp?.erro ||
+      "Não foi possível consultar a implantação."
 
-<hr>
+  };
 
-<h4>Promoções</h4>
+}
 
-${temPromocoes} Promoções cadastradas<br>
+  console.log(
+    "CHECKLIST IMPLANTAÇÃO:",
+    checklist
+  );
 
-<hr>
+}catch(erro){
 
-<h4>Treinamento</h4>
+  console.error(
+    "ERRO CHECKLIST:",
+    erro
+  );
 
-⬜ Manual entregue<br>
-⬜ Treinamento realizado<br>
-⬜ Teste de validação<br>
-⬜ Relatório configurado<br>
+}
 
-<hr>
 
-<hr>
+/*
+ * Se o GAS ainda não retornar o checklist,
+ * não quebra a Central de Implantação.
+ */
+if(
+  !checklist ||
+  checklist.ok === false
+){
 
-<h4>Conferências</h4>
+  document
+    .getElementById("impChecklist")
+    .innerHTML = `
 
-${parceiro.logoURL?"✅":"⬜"} Logo cadastrada<br>
+      <div style="
+        padding:12px;
+        background:#fff8e1;
+        border-left:4px solid #f0b400;
+        border-radius:6px;
+      ">
 
-${parceiro.link_maps?"✅":"⬜"} Google Maps<br>
+        <strong>
+          ⚠ Checklist não sincronizado
+        </strong>
 
-${parceiro.qrURL?"✅":"⬜"} QR Testado<br>
+        <div style="margin-top:6px">
+          ${
+            checklist?.erro ||
+            checklist?.mensagem ||
+            "Não foi possível consultar o checklist."
+          }
+        </div>
 
-⬜ Página Oficial testada<br>
+      </div>
 
-⬜ Área do Parceiro testada<br>
+    `;
 
-⬜ Primeiro cliente validado<br>
+}else{
 
-<h4>Status Final</h4>
+  renderChecklistImplantacao(
+    parceiro,
+    checklist
+  );
 
-⬜ Implantação concluída
+}
 
-`;
 /* ==========================
    AÇÕES
 ========================== */
@@ -8507,6 +8610,17 @@ document.getElementById("impAcoes").innerHTML=`
     📣 Cadastrar Promoção
   </button>
 
+<button
+  class="btn"
+  style="
+    background:#0b7a2a;
+    color:white;
+    font-weight:900;
+  "
+  onclick="concluirImplantacao('${parceiro.parceiro_id}')"
+>
+  ✅ Concluir Implantação
+</button>
 
   <button
     class="btn"
@@ -8535,6 +8649,692 @@ document.getElementById("impAcoes").innerHTML=`
 </div>
 
 `;
+}
+
+/* =====================================================
+   APROVEITAI — CHECKLIST OFICIAL DE IMPLANTAÇÃO
+===================================================== */
+
+function renderChecklistImplantacao(
+  parceiro,
+  checklist
+){
+
+  const box =
+    document.getElementById(
+      "impChecklist"
+    );
+
+
+  if(!box){
+    return;
+  }
+
+
+  const automaticos =
+    checklist.automaticos || {};
+
+
+  const manuais =
+    checklist.manuais || {};
+
+
+  const parceiroId =
+    String(
+      parceiro?.parceiro_id || ""
+    ).trim();
+
+
+  /* ==========================================
+     ÍCONE AUTOMÁTICO
+  ========================================== */
+
+  const icone = valor => {
+
+    const v =
+      String(
+        valor || ""
+      )
+      .trim()
+      .toUpperCase();
+
+    return v === "SIM"
+      ? "✅"
+      : "❌";
+
+  };
+
+
+  /* ==========================================
+     ITEM AUTOMÁTICO
+  ========================================== */
+
+  const auto = (
+    campo,
+    titulo,
+    opcional = false
+  ) => {
+
+    const valor =
+      String(
+        automaticos[campo] || ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    /*
+     * Promoção é opcional.
+     */
+    if(
+      opcional &&
+      valor !== "SIM"
+    ){
+
+      return `
+        <div class="imp-check-item">
+          ➖ ${titulo}
+          <span class="hint">
+            (opcional)
+          </span>
+        </div>
+      `;
+
+    }
+
+
+    return `
+      <div class="imp-check-item">
+        ${icone(valor)}
+        ${titulo}
+      </div>
+    `;
+
+  };
+
+
+  /* ==========================================
+     VALOR DOS ITENS MANUAIS
+
+     O retorno futuro do GAS poderá trazer
+     os valores reais. Enquanto não houver,
+     considera NAO.
+  ========================================== */
+
+  const valorManual = campo => {
+
+    const v =
+      String(
+        manuais[campo] || ""
+      )
+      .trim()
+      .toUpperCase();
+
+    return v === "SIM";
+
+  };
+
+
+  /* ==========================================
+     CHECKBOX MANUAL
+  ========================================== */
+
+  const manual = (
+    campo,
+    titulo
+  ) => {
+
+    const marcado =
+      valorManual(campo)
+        ? "checked"
+        : "";
+
+
+    return `
+      <label
+        class="imp-check-item"
+        style="
+          display:flex;
+          align-items:center;
+          gap:8px;
+          cursor:pointer;
+        "
+      >
+
+        <input
+          type="checkbox"
+          ${marcado}
+
+          onchange="
+            alterarChecklistManual(
+              '${parceiroId}',
+              '${campo}',
+              this.checked,
+              this
+            )
+          "
+        >
+
+        <span>
+          ${titulo}
+        </span>
+
+      </label>
+    `;
+
+  };
+
+
+  /* ==========================================
+     REQUISITOS AUTOMÁTICOS OBRIGATÓRIOS
+  ========================================== */
+
+  const obrigatoriosAutomaticos = [
+
+    "cadastro_ok",
+    "beneficio_ok",
+    "contrato_emitido",
+    "qr_gerado",
+    "contato_ok",
+    "endereco_ok",
+    "logo_ok",
+    "token_ok",
+    "pin_ok",
+    "painel_ok",
+    "forma_pagamento_ok",
+    "cartaz_balcao_ok",
+    "cartaz_a4_ok",
+    "manual_ok",
+    "kit_implantacao_ok",
+    "apresentacao_ok"
+
+  ];
+
+
+  const automaticosConcluidos =
+    obrigatoriosAutomaticos.every(
+      campo =>
+        String(
+          automaticos[campo] || ""
+        )
+        .trim()
+        .toUpperCase() === "SIM"
+    );
+
+
+  /* ==========================================
+     HTML
+  ========================================== */
+
+  box.innerHTML = `
+
+    <div class="imp-check-section">
+
+      <h4>
+        🏢 Cadastro e Acesso
+      </h4>
+
+      ${auto(
+        "cadastro_ok",
+        "Cadastro do parceiro"
+      )}
+
+      ${auto(
+        "contato_ok",
+        "Contato cadastrado"
+      )}
+
+      ${auto(
+        "endereco_ok",
+        "Endereço"
+      )}
+
+      ${auto(
+        "maps_ok",
+        "Google Maps"
+      )}
+
+      ${auto(
+        "logo_ok",
+        "Logo"
+      )}
+
+      ${auto(
+        "token_ok",
+        "Token"
+      )}
+
+      ${auto(
+        "pin_ok",
+        "PIN Operacional"
+      )}
+
+      ${auto(
+        "painel_ok",
+        "Área do Parceiro"
+      )}
+
+    </div>
+
+
+    <hr>
+
+
+    <div class="imp-check-section">
+
+      <h4>
+        🎁 Comercial
+      </h4>
+
+      ${auto(
+        "beneficio_ok",
+        "Benefício cadastrado"
+      )}
+
+      ${auto(
+        "forma_pagamento_ok",
+        "Forma de pagamento definida"
+      )}
+
+      ${auto(
+        "promocao_ok",
+        "Promoção cadastrada",
+        true
+      )}
+
+    </div>
+
+
+    <hr>
+
+
+    <div class="imp-check-section">
+
+      <h4>
+        📄 Documentação
+      </h4>
+
+      ${auto(
+        "contrato_emitido",
+        "Contrato emitido"
+      )}
+
+      ${manual(
+        "contrato_assinado",
+        "Contrato assinado"
+      )}
+
+      ${auto(
+        "manual_ok",
+        "Manual disponível"
+      )}
+
+      ${auto(
+        "kit_implantacao_ok",
+        "Kit de Implantação disponível"
+      )}
+
+      ${auto(
+        "apresentacao_ok",
+        "Apresentação disponível"
+      )}
+
+      ${auto(
+        "ficha_operacional_ok",
+        "Ficha Operacional"
+      )}
+
+    </div>
+
+
+    <hr>
+
+
+    <div class="imp-check-section">
+
+      <h4>
+        📦 Materiais
+      </h4>
+
+      ${auto(
+        "qr_gerado",
+        "QR oficial gerado"
+      )}
+
+      ${auto(
+        "cartaz_balcao_ok",
+        "Cartaz Balcão 10×15"
+      )}
+
+      ${auto(
+        "cartaz_a4_ok",
+        "Cartaz A4"
+      )}
+
+      ${manual(
+        "qr_entregue",
+        "QR entregue"
+      )}
+
+      ${manual(
+        "cartaz_entregue",
+        "Cartaz entregue"
+      )}
+
+      ${manual(
+        "manual_entregue",
+        "Manual entregue"
+      )}
+
+    </div>
+
+
+    <hr>
+
+
+    <div class="imp-check-section">
+
+      <h4>
+        🎓 Implantação e Treinamento
+      </h4>
+
+      ${manual(
+        "treinamento_realizado",
+        "Treinamento realizado"
+      )}
+
+      ${manual(
+        "teste_validacao",
+        "Teste de validação realizado"
+      )}
+
+    </div>
+
+
+    <hr>
+
+
+    <div style="
+      margin-top:12px;
+      padding:12px;
+      border-radius:8px;
+      background:#f7f7f7;
+    ">
+
+      <strong>
+        Status técnico:
+      </strong>
+
+      ${
+        automaticosConcluidos
+          ? "✅ Requisitos automáticos concluídos"
+          : "⚠ Existem requisitos automáticos pendentes"
+      }
+
+      <div
+        class="hint"
+        style="margin-top:6px"
+      >
+        Última sincronização:
+        ${
+          automaticos.ultima_sincronizacao ||
+          "não informada"
+        }
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+/* =====================================================
+   ALTERAR ITEM MANUAL DO CHECKLIST
+===================================================== */
+
+async function alterarChecklistManual(
+  parceiroId,
+  campo,
+  marcado,
+  checkbox
+){
+
+  const valor =
+    marcado
+      ? "SIM"
+      : "NAO";
+
+
+  /*
+   * Evita clique repetido enquanto salva.
+   */
+  if(checkbox){
+    checkbox.disabled = true;
+  }
+
+
+  try{
+
+const resp =
+  await callAPI({
+
+    action:
+      "salvar_checklist_implantacao",
+
+    parceiro_id:
+      parceiroId,
+
+    campo:
+      campo,
+
+    valor:
+      valor
+
+  });
+
+    console.log(
+      "ATUALIZAÇÃO CHECKLIST:",
+      resp
+    );
+
+
+    if(
+      !resp ||
+      resp.ok === false
+    ){
+
+      throw new Error(
+        resp?.erro ||
+        resp?.mensagem ||
+        "Não foi possível atualizar o checklist."
+      );
+
+    }
+
+
+    toast(
+      marcado
+        ? "✅ Item confirmado."
+        : "Item desmarcado."
+    );
+
+
+  }catch(erro){
+
+    /*
+     * Volta visualmente ao estado anterior
+     * se o GAS não conseguir salvar.
+     */
+    if(checkbox){
+      checkbox.checked =
+        !marcado;
+    }
+
+
+    alert(
+      "Erro ao atualizar checklist:\n\n" +
+      (
+        erro?.message ||
+        erro
+      )
+    );
+
+
+  }finally{
+
+    if(checkbox){
+      checkbox.disabled = false;
+    }
+
+  }
+
+}
+
+/* =====================================================
+   CONCLUIR IMPLANTAÇÃO
+===================================================== */
+
+async function concluirImplantacao(
+  parceiroId
+){
+
+  parceiroId =
+    String(
+      parceiroId || ""
+    )
+    .trim();
+
+
+  if(!parceiroId){
+
+    alert(
+      "Parceiro não informado."
+    );
+
+    return;
+
+  }
+
+
+  const confirmar =
+    confirm(
+      "Concluir oficialmente esta implantação?\n\n" +
+      "O sistema verificará novamente todos os " +
+      "requisitos obrigatórios antes da conclusão."
+    );
+
+
+  if(!confirmar){
+    return;
+  }
+
+
+  try{
+
+    const resp =
+      await callAPI({
+
+        action:
+          "concluir_implantacao",
+
+        parceiro_id:
+          parceiroId
+
+      });
+
+
+    console.log(
+      "CONCLUSÃO IMPLANTAÇÃO:",
+      resp
+    );
+
+
+    if(
+      !resp ||
+      resp.ok === false
+    ){
+
+      const pendencias =
+        Array.isArray(
+          resp?.pendencias
+        )
+          ? resp.pendencias
+          : [];
+
+
+      let mensagem =
+        resp?.erro ||
+        "Não foi possível concluir a implantação.";
+
+
+      if(pendencias.length){
+
+        mensagem +=
+          "\n\nPendências:\n• " +
+          pendencias.join(
+            "\n• "
+          );
+
+      }
+
+
+      alert(mensagem);
+
+      return;
+
+    }
+
+
+    alert(
+      "✅ Implantação concluída com sucesso."
+    );
+
+
+    /*
+     * Atualiza cache do Admin.
+     */
+    await loadAll();
+
+
+    /*
+     * Reabre a implantação para mostrar
+     * o estado final atualizado.
+     */
+    const select =
+      document.getElementById(
+        "impParceiro"
+      );
+
+
+    if(select){
+
+      select.value =
+        parceiroId;
+
+    }
+
+
+    await abrirImplantacao();
+
+
+  }catch(erro){
+
+    console.error(
+      "ERRO AO CONCLUIR IMPLANTAÇÃO:",
+      erro
+    );
+
+
+    alert(
+      "Erro ao concluir implantação:\n\n" +
+      (
+        erro?.message ||
+        erro
+      )
+    );
+
+  }
+
 }
 
 /* =====================================================
