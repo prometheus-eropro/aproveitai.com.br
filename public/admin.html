@@ -7697,18 +7697,37 @@ function renderMateriais(parceiro, biblioteca){
     parceiro.link_cartaz_a4 || "";
 
 
-  /* ==========================================
+    /* ==========================================
      BIBLIOTECA OFICIAL
+
+     O GAS retorna cada arquivo como objeto:
+     {
+       ok,
+       id,
+       nome,
+       url
+     }
+
+     Portanto, para abrir/imprimir,
+     precisamos utilizar especificamente .url.
   ========================================== */
 
   const manual =
-    biblioteca.manual_parceiro || "";
+    biblioteca.manual_comunicacao?.url ||
+    biblioteca.manual_parceiro?.url ||
+    biblioteca.manual_comunicacao ||
+    biblioteca.manual_parceiro ||
+    "";
 
   const kit =
-    biblioteca.kit_implantacao || "";
+    biblioteca.kit_implantacao?.url ||
+    biblioteca.kit_implantacao ||
+    "";
 
   const apresentacao =
-    biblioteca.apresentacao || "";
+    biblioteca.apresentacao?.url ||
+    biblioteca.apresentacao ||
+    "";
 
 
   /* ==========================================
