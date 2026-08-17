@@ -8779,7 +8779,7 @@ function renderChecklistImplantacao(
      CHECKBOX MANUAL
   ========================================== */
 
-  const manual = (
+    const manual = (
     campo,
     titulo
   ) => {
@@ -8792,18 +8792,29 @@ function renderChecklistImplantacao(
 
     return `
       <label
-        class="imp-check-item"
         style="
           display:flex;
           align-items:center;
+          justify-content:flex-start;
           gap:8px;
+          width:100%;
+          margin:4px 0;
           cursor:pointer;
+          text-align:left;
         "
       >
 
         <input
           type="checkbox"
           ${marcado}
+
+          style="
+            width:16px;
+            height:16px;
+            margin:0;
+            padding:0;
+            flex:0 0 16px;
+          "
 
           onchange="
             alterarChecklistManual(
@@ -8815,7 +8826,14 @@ function renderChecklistImplantacao(
           "
         >
 
-        <span>
+        <span
+          style="
+            display:inline-block;
+            margin:0;
+            padding:0;
+            text-align:left;
+          "
+        >
           ${titulo}
         </span>
 
@@ -8836,8 +8854,9 @@ function renderChecklistImplantacao(
     "contrato_emitido",
     "qr_gerado",
     "contato_ok",
-    "endereco_ok",
-    "logo_ok",
+      "endereco_ok",
+  "maps_ok",
+  "logo_ok",,
     "token_ok",
     "pin_ok",
     "painel_ok",
@@ -8846,9 +8865,10 @@ function renderChecklistImplantacao(
     "cartaz_a4_ok",
     "manual_ok",
     "kit_implantacao_ok",
-    "apresentacao_ok"
+    "apresentacao_ok",
+  "ficha_operacional_ok"
 
-  ];
+];
 
 
   const automaticosConcluidos =
