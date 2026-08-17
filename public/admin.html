@@ -10140,21 +10140,50 @@ function atualizarQuantidadeVeiculos(){
 async function salvarParceiroCompleto(){
 
   /* ======================================================
+     FUNÇÕES AUXILIARES SEGURAS
+  ====================================================== */
+
+  const valorCampo = (id) => {
+
+    const el =
+      document.getElementById(id);
+
+    if(!el){
+      console.warn(
+        "CAMPO NÃO ENCONTRADO NO FORMULÁRIO:",
+        id
+      );
+      return "";
+    }
+
+    return String(
+      el.value || ""
+    ).trim();
+
+  };
+
+
+  const valorNumerico = (id) => {
+
+    return valorCampo(id)
+      .replace(/\D/g,"");
+
+  };
+
+
+  /* ======================================================
      1 - DOCUMENTO DO PARCEIRO — CPF OU CNPJ
   ====================================================== */
 
   const tipoDocumento =
-    String(
-      document.getElementById("tipo_documento")?.value || ""
-    )
-    .trim()
-    .toUpperCase();
+    valorCampo("tipo_documento")
+      .toUpperCase();
+
 
   const documento =
-    String(
-      document.getElementById("documentoParceiro")?.value || ""
-    )
-    .replace(/\D/g,"");
+    valorNumerico(
+      "documentoParceiro"
+    );
 
 
   if(
@@ -10167,6 +10196,7 @@ async function salvarParceiroCompleto(){
     );
 
     return;
+
   }
 
 
@@ -10179,6 +10209,7 @@ async function salvarParceiroCompleto(){
     );
 
     return;
+
   }
 
 
@@ -10197,6 +10228,7 @@ async function salvarParceiroCompleto(){
     );
 
     return;
+
   }
 
 
@@ -10211,6 +10243,7 @@ async function salvarParceiroCompleto(){
     );
 
     return;
+
   }
 
 
@@ -10218,6 +10251,7 @@ async function salvarParceiroCompleto(){
     tipoDocumento === "CPF"
       ? documento
       : "";
+
 
   const cnpj =
     tipoDocumento === "CNPJ"
@@ -10227,14 +10261,13 @@ async function salvarParceiroCompleto(){
 
   /* ======================================================
      3 - LOGO DO PARCEIRO
-
-     A logo NÃO vai no criar_parceiro.
-     Primeiro criamos o parceiro e recebemos parceiro_id.
-     Depois salvarParceiroServidor() envia a logo.
   ====================================================== */
 
   const inputLogo =
-    document.getElementById("logo");
+    document.getElementById(
+      "logo"
+    );
+
 
   let arquivoLogo = null;
 
@@ -10268,6 +10301,7 @@ async function salvarParceiroCompleto(){
       );
 
       return;
+
     }
 
 
@@ -10285,13 +10319,24 @@ async function salvarParceiroCompleto(){
       );
 
       return;
+
     }
 
   }
 
 
   /* ======================================================
-     4 - MONTA DADOS DO PARCEIRO
+     4 - CONFIGURAÇÕES
+  ====================================================== */
+
+  const exigePlaca =
+    valorCampo(
+      "exigePlaca"
+    );
+
+
+  /* ======================================================
+     5 - MONTA DADOS DO PARCEIRO
   ====================================================== */
 
   const parceiro = {
@@ -10299,16 +10344,14 @@ async function salvarParceiroCompleto(){
     /* IDENTIFICAÇÃO */
 
     razaoSocial:
-      document
-        .getElementById("razaoSocial")
-        .value
-        .trim(),
+      valorCampo(
+        "razaoSocial"
+      ),
 
     nomeFantasia:
-      document
-        .getElementById("nomeFantasia")
-        .value
-        .trim(),
+      valorCampo(
+        "nomeFantasia"
+      ),
 
     tipo_documento:
       tipoDocumento,
@@ -10320,168 +10363,141 @@ async function salvarParceiroCompleto(){
       cpf,
 
     ie:
-      document
-        .getElementById("ie")
-        .value
-        .trim(),
+      valorCampo(
+        "ie"
+      ),
 
 
     /* RESPONSÁVEL */
 
     responsavel:
-      document
-        .getElementById("responsavel")
-        .value
-        .trim(),
+      valorCampo(
+        "responsavel"
+      ),
 
     cargo:
-      document
-        .getElementById("cargo")
-        .value
-        .trim(),
+      valorCampo(
+        "cargo"
+      ),
 
     representante_legal:
-  document
-    .getElementById("representante_legal")
-    ?.value
-    .trim() || "",
+      valorCampo(
+        "representante_legal"
+      ),
 
-cpf_representante:
-  document
-    .getElementById("cpf_representante")
-    ?.value
-    .replace(/\D/g,"") || "",
+    cpf_representante:
+      valorNumerico(
+        "cpf_representante"
+      ),
 
 
     /* CLASSIFICAÇÃO */
 
     categoria:
-      document
-        .getElementById("categoria")
-        .value
-        .trim(),
+      valorCampo(
+        "categoria"
+      ),
 
     ramo:
-      document
-        .getElementById("ramo")
-        .value
-        .trim(),
+      valorCampo(
+        "ramo"
+      ),
 
     horario:
-      document
-        .getElementById("horario")
-        .value
-        .trim(),
+      valorCampo(
+        "horario"
+      ),
 
 
     /* CONTATOS */
 
     whatsapp:
-      document
-        .getElementById("whatsapp")
-        .value
-        .trim(),
+      valorCampo(
+        "whatsapp"
+      ),
 
     telefone:
-      document
-        .getElementById("telefone")
-        .value
-        .trim(),
+      valorCampo(
+        "telefone"
+      ),
 
     email:
-      document
-        .getElementById("email")
-        .value
-        .trim(),
+      valorCampo(
+        "email"
+      ),
 
     instagram:
-      document
-        .getElementById("instagram")
-        .value
-        .trim(),
+      valorCampo(
+        "instagram"
+      ),
 
     facebook:
-      document
-        .getElementById("facebook")
-        .value
-        .trim(),
+      valorCampo(
+        "facebook"
+      ),
 
     site:
-      document
-        .getElementById("site")
-        .value
-        .trim(),
+      valorCampo(
+        "site"
+      ),
 
 
     /* ENDEREÇO */
 
     cep:
-      document
-        .getElementById("cep")
-        .value
-        .trim(),
+      valorCampo(
+        "cep"
+      ),
 
     cidade:
-      document
-        .getElementById("cidade")
-        .value
-        .trim(),
+      valorCampo(
+        "cidade"
+      ),
 
     uf:
-     document
-       .getElementById("uf")
-        ?.value
-       .trim()
-       .toUpperCase() || "",
+      valorCampo(
+        "uf"
+      ).toUpperCase(),
 
     bairro:
-      document
-        .getElementById("bairro")
-        .value
-        .trim(),
+      valorCampo(
+        "bairro"
+      ),
 
     endereco:
-      document
-        .getElementById("endereco")
-        .value
-        .trim(),
+      valorCampo(
+        "endereco"
+      ),
 
     numero:
-      document
-        .getElementById("numero")
-        .value
-        .trim(),
+      valorCampo(
+        "numero"
+      ),
 
     complemento:
-      document
-        .getElementById("complemento")
-        .value
-        .trim(),
+      valorCampo(
+        "complemento"
+      ),
 
     link_maps:
-      document
-        .getElementById("link_maps")
-        .value
-        .trim(),
+      valorCampo(
+        "link_maps"
+      ),
 
 
-   /* CONFIGURAÇÕES */
+    /* CONFIGURAÇÕES */
 
-exigePlaca:
-  document
-    .getElementById("exigePlaca")
-    .value,
+    exigePlaca:
+      exigePlaca,
 
-quantidadeVeiculos:
-  document
-    .getElementById("exigePlaca")
-    .value === "SIM"
-      ? (
-          document
-            .getElementById("quantidadeVeiculos")
-            ?.value || "2"
-        )
-      : "",
+    quantidadeVeiculos:
+      exigePlaca === "SIM"
+        ? (
+            valorCampo(
+              "quantidadeVeiculos"
+            ) || "2"
+          )
+        : "",
 
 
     /* LOGO TEMPORÁRIA */
@@ -10493,7 +10509,7 @@ quantidadeVeiculos:
 
 
   /* ======================================================
-     5 - CAMPOS OBRIGATÓRIOS
+     6 - CAMPOS OBRIGATÓRIOS
   ====================================================== */
 
   if(
@@ -10508,6 +10524,7 @@ quantidadeVeiculos:
     );
 
     return;
+
   }
 
 
@@ -10518,6 +10535,7 @@ quantidadeVeiculos:
     );
 
     return;
+
   }
 
 
@@ -10528,6 +10546,7 @@ quantidadeVeiculos:
     );
 
     return;
+
   }
 
 
@@ -10538,6 +10557,7 @@ quantidadeVeiculos:
     );
 
     return;
+
   }
 
 
@@ -10548,6 +10568,7 @@ quantidadeVeiculos:
     );
 
     return;
+
   }
 
 
@@ -10558,11 +10579,12 @@ quantidadeVeiculos:
     );
 
     return;
+
   }
 
 
   /* ======================================================
-     6 - ENVIA PARA O SERVIDOR
+     7 - LOG OPERACIONAL
   ====================================================== */
 
   console.log(
@@ -10570,6 +10592,25 @@ quantidadeVeiculos:
     parceiro
   );
 
+
+  console.log(
+    "DOCUMENTO:",
+    tipoDocumento,
+    documento
+  );
+
+
+  console.log(
+    "LOGO SELECIONADA:",
+    arquivoLogo
+      ? arquivoLogo.name
+      : "SEM LOGO"
+  );
+
+
+  /* ======================================================
+     8 - ENVIA PARA O SERVIDOR
+  ====================================================== */
 
   try{
 
@@ -10584,10 +10625,11 @@ quantidadeVeiculos:
       erro
     );
 
+
     alert(
       "Erro ao salvar parceiro.\n\n" +
       (
-        erro.message ||
+        erro?.message ||
         String(erro)
       )
     );
@@ -10595,136 +10637,6 @@ quantidadeVeiculos:
   }
 
 }
-
-/* ======================================================
-   UPLOAD DA LOGO DO PARCEIRO
-   Envia a imagem separadamente via POST
-====================================================== */
-
-async function enviarLogoParceiro(parceiroId, arquivo){
-
-  if(!arquivo){
-    return {
-      ok:true,
-      semLogo:true
-    };
-  }
-
-  const base64 =
-    await arquivoParaBase64(arquivo);
-
-const payload = {
-
-  action:"upload_logo_parceiro",
-
-  key:state.key,
-
-  parceiro_id:parceiroId,
-
-  logo_nome:arquivo.name,
-
-  logo_base64:base64
-
-};
-
-  const resposta =
-    await fetch(API_URL,{
-
-      method:"POST",
-
-      headers:{
-        "Content-Type":"text/plain;charset=utf-8"
-      },
-
-      body:JSON.stringify(payload)
-
-    });
-
-  if(!resposta.ok){
-
-    throw new Error(
-      "Falha HTTP no upload da logo: " +
-      resposta.status
-    );
-
-  }
-
-  const resultado =
-    await resposta.json();
-
-  if(!resultado.ok){
-
-    throw new Error(
-      resultado.erro ||
-      resultado.mensagem ||
-      "Erro ao salvar logo."
-    );
-
-  }
-
-  return resultado;
-
-}
-
-async function trocarLogoParceiro(
-  parceiroId,
-  arquivo
-){
-
-  if(!parceiroId){
-    throw new Error(
-      "parceiro_id não informado."
-    );
-  }
-
-  if(!arquivo){
-    return {
-      ok:true,
-      semAlteracao:true
-    };
-  }
-
-
-  const tiposPermitidos = [
-    "image/png",
-    "image/jpeg",
-    "image/webp"
-  ];
-
-
-  if(
-    !tiposPermitidos.includes(
-      arquivo.type
-    )
-  ){
-
-    throw new Error(
-      "Utilize uma logo PNG, JPG/JPEG ou WebP."
-    );
-
-  }
-
-
-  const limite =
-    2 * 1024 * 1024;
-
-
-  if(arquivo.size > limite){
-
-    throw new Error(
-      "A logo deve possuir no máximo 2 MB."
-    );
-
-  }
-
-
-  return await enviarLogoParceiro(
-    parceiroId,
-    arquivo
-  );
-
-}
-
 async function salvarParceiroServidor(parceiro){
 
   try{
