@@ -7681,55 +7681,72 @@ function renderMateriais(parceiro, biblioteca){
   biblioteca = biblioteca || {};
 
   /* ==========================================
-     MATERIAIS INDIVIDUAIS DO PARCEIRO
-  ========================================== */
+   MATERIAIS INDIVIDUAIS DO PARCEIRO
+========================================== */
 
-  const contrato =
-    parceiro.link_contrato || "";
+const contrato =
+  parceiro.link_contrato ||
+  parceiro.contrato_url ||
+  "";
 
-  const qr =
-    parceiro.qrURL || "";
+const qr =
+  parceiro.link_qr ||
+  parceiro.qrIMG ||
+  parceiro.qrURL ||
+  "";
 
-  const cartaz =
-    parceiro.link_cartaz || "";
+const cartaz =
+  parceiro.link_cartaz ||
+  "";
 
-  const cartazA4 =
-    parceiro.link_cartaz_a4 || "";
+const fichaOperacional =
+  parceiro.link_ficha_operacional ||
+  parceiro.ficha_operacional_url ||
+  "";
 
-
-    /* ==========================================
-     BIBLIOTECA OFICIAL
-
-     O GAS retorna cada arquivo como objeto:
-     {
-       ok,
-       id,
-       nome,
-       url
-     }
-
-     Portanto, para abrir/imprimir,
-     precisamos utilizar especificamente .url.
-  ========================================== */
-
-  const manual =
-    biblioteca.manual_comunicacao?.url ||
-    biblioteca.manual_parceiro?.url ||
-    biblioteca.manual_comunicacao ||
-    biblioteca.manual_parceiro ||
-    "";
-
-  const kit =
-    biblioteca.kit_implantacao?.url ||
-    biblioteca.kit_implantacao ||
-    "";
-
-  const apresentacao =
-    biblioteca.apresentacao?.url ||
-    biblioteca.apresentacao ||
-    "";
+const pastaDrive =
+  parceiro.drive_link ||
+  (
+    parceiro.drive_id
+      ? "https://drive.google.com/drive/folders/" +
+        encodeURIComponent(parceiro.drive_id)
+      : ""
+  );
 
 
+/* ==========================================
+   BIBLIOTECA OFICIAL
+
+   O GAS retorna cada arquivo como objeto:
+   {
+     ok,
+     id,
+     nome,
+     url
+   }
+========================================== */
+
+const manual =
+  biblioteca.manual_comunicacao?.url ||
+  biblioteca.manual_parceiro?.url ||
+  biblioteca.manual_comunicacao ||
+  biblioteca.manual_parceiro ||
+  "";
+
+const kit =
+  biblioteca.kit_implantacao?.url ||
+  biblioteca.kit_implantacao ||
+  "";
+
+const apresentacao =
+  biblioteca.apresentacao?.url ||
+  biblioteca.apresentacao ||
+  "";
+
+const cartazA4 =
+  biblioteca.cartaz_parceiro_a4?.url ||
+  biblioteca.cartaz_parceiro_a4 ||
+  "";
   /* ==========================================
      LINKS DO SISTEMA
   ========================================== */
@@ -7970,6 +7987,29 @@ function renderMateriais(parceiro, biblioteca){
 
     </div>
 
+<!-- PASTA DO PARCEIRO -->
+
+<div class="materialCard">
+
+  <h4>📁 Pasta do Parceiro</h4>
+
+  <p>
+    Acesso à estrutura completa deste parceiro no Drive.
+  </p>
+
+  <div class="acoesMaterial">
+
+    <button
+      class="btn"
+      onclick="abrirDocumento('${pastaDrive}')"
+      ${!pastaDrive ? "disabled" : ""}
+    >
+      📁 Abrir Pasta
+    </button>
+
+  </div>
+
+</div>
 
     <!-- =====================================
          BIBLIOTECA OFICIAL
