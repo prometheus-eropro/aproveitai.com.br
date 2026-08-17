@@ -9364,48 +9364,85 @@ async function concluirImplantacao(
     }
 
 
-    alert(
-      "✅ Implantação concluída com sucesso."
+/*
+ * Identifica exatamente o parceiro
+ * que acabou de ser concluído.
+ */
+const parceiroConcluido =
+  (state.cache.parceiros || [])
+    .find(
+      p =>
+        String(
+          p.parceiro_id || ""
+        )
+        .trim()
+        .toUpperCase()
+        ===
+        String(
+          resp.parceiro_id || parceiroId
+        )
+        .trim()
+        .toUpperCase()
     );
 
 
-    /*
-     * Atualiza a lista de parceiros
-     * sem depender da antiga loadAll().
-     */
-    if(typeof loadParceiros === "function"){
-
-      await loadParceiros(true);
-
-    }
+const nomeParceiro =
+  parceiroConcluido?.nomeFantasia ||
+  parceiroConcluido?.razaoSocial ||
+  parceiroConcluido?.parceiro ||
+  "Nome não localizado";
 
 
-    /*
-     * Mantém o parceiro selecionado
-     * após atualizar a lista.
-     */
-    const select =
-      document.getElementById(
-        "impParceiro"
-      );
+alert(
+  "✅ Implantação concluída com sucesso.\n\n" +
+  "Parceiro: " +
+  (resp.parceiro_id || parceiroId) +
+  " — " +
+  nomeParceiro
+);
+
+/*
+ * Atualiza a lista de parceiros.
+ */
+await loadParceiros(true);
 
 
-    if(select){
+/*
+ * Restaura exatamente o parceiro
+ * que acabou de ser implantado.
+ */
+const select =
+  document.getElementById(
+    "impParceiro"
+  );
 
-      select.value =
-        parceiroId;
 
-    }
+if(select){
+
+  select.value =
+    parceiroId;
+
+}
 
 
-    /*
-     * Reabre somente uma vez a implantação
-     * para atualizar checklist e status.
-     */
-    if(typeof abrirImplantacao === "function"){
+/*
+ * Confere se o select realmente
+ * permaneceu no parceiro correto.
+ */
+console.log(
+  "PARCEIRO APÓS CONCLUSÃO:",
+  {
+    solicitado: parceiroId,
+    selecionado: select?.value || ""
+  }
+);
 
-      await abrirImplantacao();
 
+/*
+ * Reabre SOMENTE o parceiro
+ * que acabou de ser concluído.
+ */
+await abrirImplantacao();
     }
 
 
