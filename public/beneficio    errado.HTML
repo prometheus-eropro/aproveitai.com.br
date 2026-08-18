@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Benefícios | Plataforma AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<script src="js/config.js"></script>
+
+<script src="js/include.js" defer></script>
+</head>
+
+<body>
+
+<!-- CABEÇALHO (INALTERADO) -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+<p class="subtitulo-plataforma">
+Plataforma Inteligente de Divulgação e Relacionamento Comercial
+</p>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        🎁 <strong>Benefícios Disponíveis</strong><br>
+        Válidos para clientes com o cartão AproveitAI ativo
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+
+<!-- TARJA AMARELA CENTRAL -->
+<div style="
+  background:#fff3cd;
+  border:1px solid #ffcc00;
+  padding:12px;
+  margin:20px auto;
+  max-width:900px;
+  text-align:center;
+  border-radius:6px;
+  font-size:14px;">
+  ⚠️ <strong>ATENÇÃO:</strong> Benefícios marcados como <strong>EXCLUSIVO</strong>
+  são destinados a grupos ou clientes específicos, verifique na area do CLIENTE.
+</div>
+
+<!-- LISTA -->
+<div class="container-parceiros" id="lista"></div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+fetch(API + "?aba=beneficios")
+.then(r => r.json())
+.then(d => {
+
+  const lista = document.getElementById("lista");
+
+  lista.innerHTML = "";
+
+  // ORDEM DE EXIBIÇÃO
+  d.dados.sort((a,b)=>{
+
+      return Number(a.ordem || 9999) - Number(b.ordem || 9999);
+
+  });
+
+  d.dados.forEach(b => {
+
+
+    if (String(b.ativo).toLowerCase() !== "sim") return;
+
+    const grupo = String(b.grupo || "").trim().toUpperCase();
+
+const exclusivo =
+(
+    (grupo && grupo !== "GERAL") ||
+
+    (b.idPublico &&
+     String(b.idPublico).trim() !== "") ||
+
+    (b.cpf &&
+     String(b.cpf)
+       .replace(/\D/g,"")
+       .trim() !== "")
+);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    if (exclusivo) {
+      card.style.border = "2px solid #ffcc00";
+      card.style.background = "#fffdf2";
+    }
+
+    card.innerHTML = `
+      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
+      <h3>${b.titulo || ""}</h3>
+
+<div style="
+white-space:pre-line;
+line-height:1.7;
+text-align:left;
+margin-top:10px;
+">
+${b.descricao || ""}
+</div>
+
+${
+b.observacoes
+? `
+<div class="condicoes">
+
+    <div class="condicoes-titulo">
+        ℹ️ IMPORTANTE
+    </div>
+
+    <div class="condicoes-texto">
+        ${b.observacoes}
+    </div>
+
+</div>
+`
+: ""
+}
+
+      <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
+      <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+  ${b.zap ? `
+    <a href="https://wa.me/55${b.zap.replace(/\D/g,'')}"
+       target="_blank"
+       class="btn-link">📲 WhatsApp</a>` : ""}
+
+  ${b.instagram ? `
+    <a href="${b.instagram}"
+       target="_blank"
+       class="btn-link">📸 Instagram</a>` : ""}
+
+  ${b.site ? `
+    <a href="${b.site}"
+       target="_blank"
+       class="btn-link">🌐 Site</a>` : ""}
+
+  ${b.endereco ? `
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
+       target="_blank"
+       class="btn-link">📍 Como chegar</a>` : ""}
+</div>
+
+      ${
+b.dataInicio
+? `
+<p>
+
+<strong>📅 Vigência:</strong>
+
+${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
+
+${
+b.dataFim
+?
+" até "+new Date(b.dataFim).toLocaleDateString("pt-BR")
+:
+""
+
+}
+
+</p>
+`
+:
+""
+}
+
+     
+    `;
+
+    lista.appendChild(card);
+  });
+});
+</script>
+
+<!-- RODAPÉ (INALTERADO) -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Cartão AproveitAI • Plataforma Inteligente de Divulgação e Relacionamento Comercial
+<br>
+PROMETHEUS EROPRO Soluções Inteligentes<br>
+
+  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
+<div
+style="
+font-size:11px;
+color:#777;
+text-align:center;
+margin-top:8px;">
+Versão
+<span id="versaoSistema"></span>
+</div>
+</footer>
+<button class="btn-voltar-flutuante" onclick="voltarPagina()">
+  ⬅️ Voltar
+</button>
+<script>
+function voltarPagina() {
+  history.back();
+}
+</script>
+
+</body>
+</html>
