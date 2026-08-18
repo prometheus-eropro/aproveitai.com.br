@@ -2907,17 +2907,45 @@ function callAPI(params = {}){
 
     params.callback = callback;
 
-    const script = document.createElement("script");
+    const script =
+      document.createElement("script");
+
+
+    /* =====================================================
+       TEMPO LIMITE POR TIPO DE OPERAÇÃO
+
+       Consultas normais: 15 segundos
+       Criação de parceiro: 90 segundos
+
+       criar_parceiro executa operações mais pesadas no GAS
+       e não pode usar o mesmo timeout das consultas simples.
+    ===================================================== */
+
+    const action =
+      String(params.action || "")
+        .trim()
+        .toLowerCase();
+
+    let tempoLimite = 15000;
+
+    if(action === "criar_parceiro"){
+      tempoLimite = 90000;
+    }
+
 
     const timer = setTimeout(()=>{
 
       cleanup();
 
       reject(
-        new Error("Tempo limite de comunicação com a API.")
+        new Error(
+          action === "criar_parceiro"
+            ? "O cadastro está demorando mais que o esperado. Antes de tentar novamente, verifique se o parceiro foi criado."
+            : "Tempo limite de comunicação com a API."
+        )
       );
 
-    },15000);
+    },tempoLimite);
 
 
     function cleanup(){
@@ -2949,7 +2977,9 @@ function callAPI(params = {}){
       cleanup();
 
       reject(
-        new Error("Erro ao acessar o Google Apps Script.")
+        new Error(
+          "Erro ao acessar o Google Apps Script."
+        )
       );
 
     };
@@ -2958,7 +2988,8 @@ function callAPI(params = {}){
     script.src =
       API_URL +
       "?" +
-      new URLSearchParams(params).toString();
+      new URLSearchParams(params)
+        .toString();
 
 
     document.head.appendChild(script);
@@ -10797,10 +10828,12 @@ quantidade_veiculos:
     ========================================== */
 
     toast(
-      "✅ Parceiro " +
-      parceiroId +
-      " cadastrado como INATIVO."
-    );
+  "✅ Parceiro " +
+  (parceiro.nomeFantasia || parceiro.razaoSocial || "") +
+  " — " +
+  parceiroId +
+  " cadastrado como INATIVO."
+);
 
 
     await loadParceiros(true);
