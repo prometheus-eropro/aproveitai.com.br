@@ -163,9 +163,6 @@ object-fit:contain;
   }
 }
 
-/* =========================
-   CARDS DE PARCEIROS
-========================= */
 .container-parceiros {
   display: flex;
   flex-wrap: wrap;
@@ -483,8 +480,7 @@ input[type="search"] {
     padding: 0 12px;
   }
 }
-CARDS DE PARCEIROS
-========================= */
+
 .container-parceiros {
   display: flex;
   flex-wrap: wrap;
@@ -515,7 +511,7 @@ CARDS DE PARCEIROS
   object-fit: contain;
 }
 
-* ======== GRID DE PARCEIROS / CARDS ======== */
+/* ======== GRID DE PARCEIROS / CARDS ======== */
 .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -545,15 +541,6 @@ CARDS DE PARCEIROS
   text-align: center;
   max-width: 100%;
 }
-<div class="filtros-container">
-  <input type="text" placeholder="Buscar por nome">
-
-  <div class="filtros-linha">
-    <select>...</select>
-    <select>...</select>
-    <button>Filtrar</button>
-  </div>
-</div>
 /* =====================================================
    INDEX – GRID DE CARDS (TAMANHO COMPACTO)
    ===================================================== */

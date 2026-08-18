@@ -1307,6 +1307,28 @@ ${
             script.remove();
 
         };
+setTimeout(function(){
+
+    if(window[callback]){
+
+        console.error(
+            "TIMEOUT JSONP BENEFÍCIOS"
+        );
+
+        lista.innerHTML = `
+            <div class="mensagem-lista mensagem-erro">
+                Não foi possível carregar os benefícios.
+            </div>
+        `;
+
+        try{
+            delete window[callback];
+        }catch(e){}
+
+        script.remove();
+    }
+
+}, 10000);
 
 
     script.src =
@@ -1319,9 +1341,7 @@ ${
         Date.now();
 
 
-    document.body.appendChild(
-        script
-    );
+    document.head.appendChild(script);
 
 }
 
