@@ -2891,81 +2891,91 @@ function formatarCNPJ(cnpj){
 }
 
 /*** 4) JSONP CALL — SEM CORS ***/
-function callAPI(params = {}){
+
+async function callAPI(params = {}, tempoLimite = 60000){
 
   return new Promise((resolve, reject)=>{
 
-    if(state.key){
-      params.key = state.key;
-    }
-
     const callback =
-      "__apv_cb_" +
+      "_apv_cb_" +
       Date.now() +
       "_" +
-      Math.random().toString(36).slice(2);
+      Math.random()
+        .toString(36)
+        .slice(2);
 
-    params.callback = callback;
 
     const script =
       document.createElement("script");
 
 
-    /* =====================================================
-       TEMPO LIMITE POR TIPO DE OPERAÇÃO
+    let finalizado = false;
 
-       Consultas normais: 15 segundos
-       Criação de parceiro: 90 segundos
 
-       criar_parceiro executa operações mais pesadas no GAS
-       e não pode usar o mesmo timeout das consultas simples.
-    ===================================================== */
+    params = {
+      ...params,
+      callback: callback
+    };
 
-    const action =
-      String(params.action || "")
-        .trim()
-        .toLowerCase();
 
-    let tempoLimite = 15000;
-
-    if(action === "criar_parceiro"){
-      tempoLimite = 90000;
+    if(state.key && !params.key){
+      params.key = state.key;
     }
 
 
-    const timer = setTimeout(()=>{
+    function removerScript(){
 
-      cleanup();
-
-      reject(
-        new Error(
-          action === "criar_parceiro"
-            ? "O cadastro está demorando mais que o esperado. Antes de tentar novamente, verifique se o parceiro foi criado."
-            : "Tempo limite de comunicação com a API."
-        )
-      );
-
-    },tempoLimite);
-
-
-    function cleanup(){
-
-      clearTimeout(timer);
-
-      try{
-        delete window[callback];
-      }catch(e){}
-
-      if(script.parentNode){
+      if(
+        script &&
+        script.parentNode
+      ){
         script.parentNode.removeChild(script);
       }
 
     }
 
 
+    function encerrarCallbackDepois(){
+
+      /*
+       * Não apagamos imediatamente o callback.
+       * Isso evita ReferenceError caso o GAS
+       * responda depois do timeout.
+       */
+
+      setTimeout(()=>{
+
+        try{
+          delete window[callback];
+        }catch(e){
+          window[callback] = undefined;
+        }
+
+      },120000);
+
+    }
+
+
     window[callback] = function(resposta){
 
-      cleanup();
+      /*
+       * Se a chamada já expirou,
+       * apenas absorve a resposta atrasada.
+       */
+
+      if(finalizado){
+        removerScript();
+        return;
+      }
+
+
+      finalizado = true;
+
+      clearTimeout(timer);
+
+      removerScript();
+
+      encerrarCallbackDepois();
 
       resolve(resposta);
 
@@ -2974,7 +2984,18 @@ function callAPI(params = {}){
 
     script.onerror = function(){
 
-      cleanup();
+      if(finalizado){
+        return;
+      }
+
+
+      finalizado = true;
+
+      clearTimeout(timer);
+
+      removerScript();
+
+      encerrarCallbackDepois();
 
       reject(
         new Error(
@@ -2983,6 +3004,38 @@ function callAPI(params = {}){
       );
 
     };
+
+
+    const timer =
+      setTimeout(()=>{
+
+        if(finalizado){
+          return;
+        }
+
+
+        finalizado = true;
+
+        removerScript();
+
+
+        /*
+         * IMPORTANTE:
+         * mantém callback temporariamente
+         * para absorver eventual resposta
+         * atrasada do GAS.
+         */
+
+        encerrarCallbackDepois();
+
+
+        reject(
+          new Error(
+            "Tempo limite de comunicação com a API."
+          )
+        );
+
+      },tempoLimite);
 
 
     script.src =
@@ -2997,7 +3050,6 @@ function callAPI(params = {}){
   });
 
 }
-
 
 
 /*** 5) LOGIN ***/
