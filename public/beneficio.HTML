@@ -95,40 +95,41 @@ const exclusivo =
 
     card.innerHTML = `
 
-  <!-- IDENTIFICAÇÃO DO PARCEIRO -->
-  <div class="oferta-parceiro">
+  <!-- PARCEIRO -->
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+  ">
 
     ${
       b.logoURL
         ? `
-          <div class="oferta-logo-box">
-            <img
-              src="${b.logoURL}"
-              alt="${b.parceiro || "Parceiro"}"
-              class="oferta-logo"
-            >
-          </div>
+          <img
+            src="${b.logoURL}"
+            alt="${b.parceiro || "Parceiro"}"
+            style="
+              max-width:60px;
+              max-height:60px;
+              width:auto;
+              height:auto;
+              object-fit:contain;
+            "
+          >
         `
         : ""
     }
 
-    <div class="oferta-parceiro-info">
+    <div style="text-align:left;">
 
-      <div class="oferta-parceiro-label">
-        🏪 PARCEIRO APROVEITAI
-      </div>
-
-      <div class="oferta-parceiro-nome">
+      <div style="font-weight:bold;">
         ${b.parceiro || ""}
       </div>
 
       ${
         b.ramo
-          ? `
-            <div class="oferta-parceiro-ramo">
-              ${b.ramo}
-            </div>
-          `
+          ? `<div style="font-size:12px;">${b.ramo}</div>`
           : ""
       }
 
@@ -137,67 +138,47 @@ const exclusivo =
   </div>
 
 
-   <!-- QUADRO PRINCIPAL DO BENEFÍCIO -->
-  <div class="oferta-destaque">
+  <!-- EXCLUSIVO -->
+  ${
+    exclusivo
+      ? `
+        <div style="
+          background:#ffcc00;
+          color:#000;
+          font-weight:bold;
+          padding:4px;
+          text-align:center;
+          border-radius:4px;
+          margin-bottom:10px;
+        ">
+          ⭐ EXCLUSIVO
+        </div>
+      `
+      : ""
+  }
 
-    ${
-      exclusivo
-        ? `
-          <div class="oferta-exclusivo">
-            ⭐ EXCLUSIVO
-          </div>
-        `
-        : ""
-    }
 
-    <div class="oferta-tipo">
-      🎁 BENEFÍCIO
-    </div>
+  <!-- BENEFÍCIO -->
 
-    <h3 class="oferta-titulo">
-      ${b.titulo || ""}
-    </h3>
+  <h3>${b.titulo || ""}</h3>
 
-    ${
-      b.descricao
-        ? `
-          <div class="oferta-descricao">
-            ${b.descricao}
-          </div>
-        `
-        : ""
-    }
-
-  </div>
-
-    <div class="oferta-tipo">
-      🎁 BENEFÍCIO
-    </div>
-
-    <h3 class="oferta-titulo">
-      ${b.titulo || ""}
-    </h3>
-
-    ${
-      b.descricao
-        ? `
-          <div class="oferta-descricao">
-            ${b.descricao}
-          </div>
-        `
-        : ""
-    }
-
+  <div style="
+    white-space:pre-line;
+    line-height:1.7;
+    text-align:left;
+    margin-top:10px;
+  ">
+    ${b.descricao || ""}
   </div>
 
 
   <!-- VIGÊNCIA -->
+
   ${
     b.dataInicio
       ? `
-        <div class="oferta-vigencia">
-
-          📅 <strong>Vigência:</strong>
+        <p>
+          <strong>📅 Vigência:</strong>
 
           ${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
 
@@ -206,15 +187,20 @@ const exclusivo =
               ? " até " + new Date(b.dataFim).toLocaleDateString("pt-BR")
               : ""
           }
-
-        </div>
+        </p>
       `
       : ""
   }
 
 
-  <!-- CONTATOS -->
-  <div class="oferta-acoes">
+  <!-- BOTÕES -->
+
+  <div style="
+    margin-top:10px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  ">
 
     ${
       b.zap
@@ -256,41 +242,33 @@ const exclusivo =
     }
 
     ${
-      b.link_maps
+      b.endereco
         ? `
           <a
-            href="${b.link_maps}"
+            href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
             target="_blank"
             class="btn-link">
             📍 Como chegar
           </a>
         `
-        : b.endereco
-          ? `
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
-              target="_blank"
-              class="btn-link">
-              📍 Como chegar
-            </a>
-          `
-          : ""
+        : ""
     }
 
   </div>
 
 
-  <!-- CONDIÇÕES SEMPRE NO FINAL -->
+  <!-- OBSERVAÇÕES — SEMPRE POR ÚLTIMO -->
+
   ${
     b.observacoes
       ? `
-        <div class="oferta-observacoes">
+        <div class="condicoes">
 
-          <div class="oferta-observacoes-titulo">
-            ℹ️ CONDIÇÕES DE UTILIZAÇÃO
+          <div class="condicoes-titulo">
+            ℹ️ IMPORTANTE
           </div>
 
-          <div class="oferta-observacoes-texto">
+          <div class="condicoes-texto">
             ${b.observacoes}
           </div>
 
