@@ -137,20 +137,38 @@ const exclusivo =
   </div>
 
 
-  <!-- EXCLUSIVO -->
-  ${
-    exclusivo
-      ? `
-        <div class="oferta-exclusivo">
-          ⭐ EXCLUSIVO
-        </div>
-      `
-      : ""
-  }
-
-
-  <!-- QUADRO PRINCIPAL DO BENEFÍCIO -->
+   <!-- QUADRO PRINCIPAL DO BENEFÍCIO -->
   <div class="oferta-destaque">
+
+    ${
+      exclusivo
+        ? `
+          <div class="oferta-exclusivo">
+            ⭐ EXCLUSIVO
+          </div>
+        `
+        : ""
+    }
+
+    <div class="oferta-tipo">
+      🎁 BENEFÍCIO
+    </div>
+
+    <h3 class="oferta-titulo">
+      ${b.titulo || ""}
+    </h3>
+
+    ${
+      b.descricao
+        ? `
+          <div class="oferta-descricao">
+            ${b.descricao}
+          </div>
+        `
+        : ""
+    }
+
+  </div>
 
     <div class="oferta-tipo">
       🎁 BENEFÍCIO
