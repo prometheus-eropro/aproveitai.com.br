@@ -93,262 +93,86 @@ const exclusivo =
       card.style.background = "#fffdf2";
     }
 
-card.innerHTML = `
+    card.innerHTML = `
+      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
+      <h3>${b.titulo || ""}</h3>
 
-  <!-- =========================
-       PARCEIRO
-  ========================== -->
-  <div style="
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:12px;
-    padding-bottom:10px;
-    border-bottom:1px solid #e5e7eb;
-  ">
+<div style="
+white-space:pre-line;
+line-height:1.7;
+text-align:left;
+margin-top:10px;
+">
+${b.descricao || ""}
+</div>
 
-    ${
-      b.logoURL
-        ? `
-          <img
-            src="${b.logoURL}"
-            alt="${b.parceiro || "Parceiro"}"
-            style="
-              width:58px;
-              height:58px;
-              object-fit:contain;
-              flex-shrink:0;
-            "
-          >
-        `
-        : ""
-    }
+${
+b.observacoes
+? `
+<div class="condicoes">
 
-    <div style="
-      text-align:left;
-      min-width:0;
-    ">
+    <div class="condicoes-titulo">
+        ℹ️ IMPORTANTE
+    </div>
 
-      <div style="
-        font-size:16px;
-        font-weight:800;
-        color:#0a7a2a;
-        line-height:1.25;
-      ">
-        ${b.parceiro || ""}
-      </div>
+    <div class="condicoes-texto">
+        ${b.observacoes}
+    </div>
+
+</div>
+`
+: ""
+}
+
+      <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
+      <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+  ${b.zap ? `
+    <a href="https://wa.me/55${b.zap.replace(/\D/g,'')}"
+       target="_blank"
+       class="btn-link">📲 WhatsApp</a>` : ""}
+
+  ${b.instagram ? `
+    <a href="${b.instagram}"
+       target="_blank"
+       class="btn-link">📸 Instagram</a>` : ""}
+
+  ${b.site ? `
+    <a href="${b.site}"
+       target="_blank"
+       class="btn-link">🌐 Site</a>` : ""}
+
+  ${b.endereco ? `
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
+       target="_blank"
+       class="btn-link">📍 Como chegar</a>` : ""}
+</div>
 
       ${
-        b.ramo
-          ? `
-            <div style="
-              font-size:12px;
-              color:#666;
-              margin-top:3px;
-            ">
-              ${b.ramo}
-            </div>
-          `
-          : ""
-      }
+b.dataInicio
+? `
+<p>
 
-    </div>
+<strong>📅 Vigência:</strong>
 
-  </div>
+${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
 
+${
+b.dataFim
+?
+" até "+new Date(b.dataFim).toLocaleDateString("pt-BR")
+:
+""
 
-  <!-- =========================
-       EXCLUSIVO
-  ========================== -->
-  ${
-    exclusivo
-      ? `
-        <div style="
-          background:#ffcc00;
-          color:#000;
-          font-weight:800;
-          padding:5px 8px;
-          text-align:center;
-          border-radius:5px;
-          margin-bottom:10px;
-          font-size:13px;
-        ">
-          ⭐ EXCLUSIVO
-        </div>
-      `
-      : ""
-  }
+}
 
+</p>
+`
+:
+""
+}
 
-  <!-- =========================
-       BENEFÍCIO
-  ========================== -->
-  <div style="
-    background:#f4fbf6;
-    border:1px solid #cfe8d5;
-    border-left:4px solid #0a7a2a;
-    border-radius:8px;
-    padding:12px;
-    margin-top:8px;
-  ">
-
-    <h3 style="
-      margin:0 0 8px 0;
-      color:#0a7a2a;
-      font-size:17px;
-      line-height:1.3;
-    ">
-      🎁 ${b.titulo || ""}
-    </h3>
-
-    <div style="
-      white-space:pre-line;
-      line-height:1.55;
-      text-align:left;
-      font-size:14px;
-      color:#333;
-    ">
-      ${b.descricao || ""}
-    </div>
-
-  </div>
-
-
-  <!-- =========================
-       IMPORTANTE
-  ========================== -->
-  ${
-    b.observacoes
-      ? `
-        <div style="
-          background:#fff8e1;
-          border:1px solid #f1d486;
-          border-left:4px solid #e0a800;
-          border-radius:8px;
-          padding:10px 12px;
-          margin-top:10px;
-          text-align:left;
-        ">
-
-          <div style="
-            font-weight:800;
-            color:#856404;
-            font-size:13px;
-            margin-bottom:5px;
-          ">
-            ℹ️ IMPORTANTE
-          </div>
-
-          <div style="
-            white-space:pre-line;
-            line-height:1.45;
-            font-size:13px;
-            color:#555;
-          ">
-            ${b.observacoes}
-          </div>
-
-        </div>
-      `
-      : ""
-  }
-
-
-  <!-- =========================
-       VIGÊNCIA
-  ========================== -->
-  ${
-    b.dataInicio
-      ? `
-        <div style="
-          margin-top:10px;
-          padding:7px 9px;
-          background:#f7f7f7;
-          border-radius:6px;
-          font-size:12px;
-          color:#555;
-          text-align:left;
-        ">
-          <strong>📅 Vigência:</strong>
-
-          ${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
-
-          ${
-            b.dataFim
-              ? " até " + new Date(b.dataFim).toLocaleDateString("pt-BR")
-              : ""
-          }
-        </div>
-      `
-      : ""
-  }
-
-
-  <!-- =========================
-       BOTÕES
-  ========================== -->
-  <div style="
-    margin-top:12px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:7px;
-  ">
-
-    ${
-      b.zap
-        ? `
-          <a
-            href="https://wa.me/55${b.zap.replace(/\D/g,'')}"
-            target="_blank"
-            class="btn-link">
-            📲 WhatsApp
-          </a>
-        `
-        : ""
-    }
-
-    ${
-      b.instagram
-        ? `
-          <a
-            href="${b.instagram}"
-            target="_blank"
-            class="btn-link">
-            📸 Instagram
-          </a>
-        `
-        : ""
-    }
-
-    ${
-      b.site
-        ? `
-          <a
-            href="${b.site}"
-            target="_blank"
-            class="btn-link">
-            🌐 Site
-          </a>
-        `
-        : ""
-    }
-
-    ${
-      b.endereco
-        ? `
-          <a
-            href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
-            target="_blank"
-            class="btn-link">
-            📍 Como chegar
-          </a>
-        `
-        : ""
-    }
-
-  </div>
-
-`;
+     
+    `;
 
     lista.appendChild(card);
   });
