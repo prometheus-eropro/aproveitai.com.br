@@ -2592,230 +2592,254 @@ color:#666;
   font-weight: 700;
 }
 
-/* =====================================================
-   BENEFÍCIOS — CORREÇÃO ISOLADA DO CARD
-   NÃO ALTERA INDEX, CLIENTE OU PARCEIROS
-===================================================== */
+/* =========================================================
+   BENEFÍCIOS E PROMOÇÕES
+   PADRÃO ISOLADO - NÃO ALTERA AS OUTRAS PÁGINAS
+========================================================= */
 
-.pagina-beneficios .container-parceiros {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+/* ---------- FUNDO / ESTRUTURA ---------- */
 
-  max-width: 1200px;
-  margin: 30px auto;
-  padding: 20px;
-
-  align-items: start;
-}
-
-
-/* CARD */
-
-.pagina-beneficios .container-parceiros .card {
-  background: #ffffff;
-
-  width: 100%;
-  max-width: 520px;
-
-  min-height: 0 !important;
-  height: auto !important;
-
-  margin: 0 auto;
-  padding: 20px;
-
-  box-sizing: border-box;
-
-  border-radius: 14px;
-
-  display: block !important;
-
-  text-align: left;
-
-  overflow: visible;
-}
-
-
-/* LOGO DO PARCEIRO */
-
-.pagina-beneficios .card img {
-  width: auto !important;
-  height: auto !important;
-
-  max-width: 90px !important;
-  max-height: 80px !important;
-
-  object-fit: contain;
-
-  margin: 0 !important;
-}
-
-
-/* TÍTULO DO BENEFÍCIO */
-
-.pagina-beneficios .card h3 {
-  margin: 12px 0;
-
-  text-align: center;
-
-  font-size: 18px;
-}
-
-
-/* DESCRIÇÃO */
-
-.pagina-beneficios .card h3 + div {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-
-/* BOTÕES */
-
-.pagina-beneficios .btn-link {
-  display: inline-block;
-
-  background: #0a7f2e;
-  color: #ffffff !important;
-
-  padding: 7px 12px;
-
-  border-radius: 6px;
-
-  font-size: 13px;
-  font-weight: 600;
-
-  text-decoration: none;
-}
-
-
-/* CONDIÇÕES */
-
-.pagina-beneficios .condicoes {
-  width: 100%;
-  height: auto !important;
-  min-height: 0 !important;
-
-  box-sizing: border-box;
-
-  margin-top: 18px;
-}
-
-
-/* VIGÊNCIA */
-
-.pagina-beneficios .card p {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-
-/* CELULAR */
-
-@media (max-width: 600px) {
-
-  .pagina-beneficios .container-parceiros {
-    grid-template-columns: 1fr;
-    padding: 12px;
-  }
-
-  .pagina-beneficios .container-parceiros .card {
-    max-width: 100%;
-  }
-
-}
-
-/* =====================================================
-   CORREÇÃO FINAL - PÁGINA BENEFÍCIOS
-===================================================== */
-
-body.pagina-beneficios {
-    display: block !important;
-    min-height: 100vh;
+body.pagina-beneficios,
+body.pagina-promocoes {
     background: #eaf6ff;
 }
 
-/* Cabeçalho */
-.pagina-beneficios .site-header {
-    width: 100%;
-    height: auto !important;
-    min-height: 0 !important;
-    box-sizing: border-box;
-}
+/* ---------- LISTA ---------- */
 
-/* Impede cards/layouts antigos de criarem espaços gigantes */
-.pagina-beneficios .container-parceiros {
+.pagina-beneficios .container-parceiros,
+.pagina-promocoes .container-parceiros {
     display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-    gap: 20px !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 520px)) !important;
+    justify-content: center !important;
+    align-items: start !important;
+
+    gap: 28px !important;
 
     width: 100% !important;
     max-width: 1200px !important;
 
-    margin: 20px auto 50px !important;
+    margin: 30px auto 60px !important;
     padding: 20px !important;
 
     box-sizing: border-box !important;
-    align-items: start !important;
 }
 
-/* Card de benefício */
-.pagina-beneficios .container-parceiros > .card {
-    display: block !important;
+/* ---------- CARD ---------- */
+
+.pagina-beneficios .container-parceiros > .card,
+.pagina-promocoes .container-parceiros > .card {
 
     width: 100% !important;
     max-width: 520px !important;
 
-    height: auto !important;
+    min-width: 0 !important;
     min-height: 0 !important;
+    height: auto !important;
 
     margin: 0 auto !important;
     padding: 20px !important;
 
     box-sizing: border-box !important;
 
-    background: #fff;
-    border-radius: 14px;
+    background: #ffffff;
+
+    border-radius: 16px !important;
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,.10) !important;
+
+    display: block !important;
 
     text-align: left !important;
+
+    overflow: hidden !important;
+
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
 }
 
-/* Imagem/logo */
-.pagina-beneficios .container-parceiros > .card img {
+/* impede filhos de ultrapassarem o card */
+
+.pagina-beneficios .card *,
+.pagina-promocoes .card * {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+/* ---------- LOGO ---------- */
+
+.pagina-beneficios .card img,
+.pagina-promocoes .card img {
+
     width: auto !important;
     height: auto !important;
 
     max-width: 90px !important;
     max-height: 80px !important;
 
+    object-fit: contain !important;
+
     margin: 0 !important;
-    object-fit: contain;
 }
 
-/* Condições */
-.pagina-beneficios .condicoes {
+/* ---------- TÍTULO ---------- */
+
+.pagina-beneficios .card h3,
+.pagina-promocoes .card h3 {
+
+    margin: 8px 0 !important;
+
+    font-size: 18px !important;
+    line-height: 1.35 !important;
+
+    text-align: center !important;
+
+    overflow-wrap: anywhere;
+}
+
+/* ---------- TEXTOS ---------- */
+
+.pagina-beneficios .card p,
+.pagina-promocoes .card p,
+
+.pagina-beneficios .card div,
+.pagina-promocoes .card div {
+
+    overflow-wrap: anywhere;
+}
+
+/* ---------- BOTÕES ---------- */
+
+.pagina-beneficios .btn-link,
+.pagina-promocoes .btn-link {
+
+    display: inline-flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    width: auto !important;
+
+    min-height: 36px;
+
+    padding: 7px 12px !important;
+
+    background: #0a7f2e !important;
+    color: #ffffff !important;
+
+    border-radius: 7px !important;
+
+    font-size: 13px !important;
+    font-weight: 700 !important;
+
+    text-decoration: none !important;
+
+    white-space: nowrap;
+}
+
+.pagina-beneficios .btn-link:hover,
+.pagina-promocoes .btn-link:hover {
+
+    background: #075c21 !important;
+}
+
+/* ---------- CONDIÇÕES ---------- */
+
+.pagina-beneficios .condicoes,
+.pagina-promocoes .condicoes {
+
     width: 100% !important;
 
     height: auto !important;
     min-height: 0 !important;
 
+    margin: 18px 0 0 !important;
+
+    padding: 18px !important;
+
     box-sizing: border-box !important;
+
+    background: #eefaf0 !important;
+
+    border: 2px solid #0b7a2a !important;
+    border-radius: 12px !important;
+
+    display: block !important;
+
+    overflow: hidden !important;
 }
 
-/* Rodapé */
-.pagina-beneficios footer {
-    width: 100%;
-    box-sizing: border-box;
+/* título condições */
+
+.pagina-beneficios .condicoes-titulo,
+.pagina-promocoes .condicoes-titulo {
+
+    width: 100% !important;
+
+    margin: 0 0 14px !important;
+
+    padding: 0 !important;
+
+    color: #0b7a2a !important;
+
+    font-size: 18px !important;
+    font-weight: 700 !important;
+
+    text-align: center !important;
 }
 
-/* Celular */
+/* texto condições */
+
+.pagina-beneficios .condicoes-texto,
+.pagina-promocoes .condicoes-texto {
+
+    width: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    white-space: pre-line !important;
+
+    line-height: 1.7 !important;
+
+    font-size: 15px !important;
+
+    text-align: left !important;
+
+    overflow-wrap: anywhere !important;
+}
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
 @media (max-width: 600px) {
-    .pagina-beneficios .container-parceiros {
+
+    .pagina-beneficios .container-parceiros,
+    .pagina-promocoes .container-parceiros {
+
         grid-template-columns: 1fr !important;
+
+        width: 100% !important;
+
         padding: 12px !important;
+
+        gap: 18px !important;
     }
 
-    .pagina-beneficios .container-parceiros > .card {
+    .pagina-beneficios .container-parceiros > .card,
+    .pagina-promocoes .container-parceiros > .card {
+
+        width: 100% !important;
         max-width: 100% !important;
+
+        padding: 16px !important;
     }
+
+    .pagina-beneficios .condicoes,
+    .pagina-promocoes .condicoes {
+
+        padding: 14px !important;
+    }
+
 }
