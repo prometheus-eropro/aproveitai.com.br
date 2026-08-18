@@ -915,86 +915,70 @@ function linkMaps(item){
    CARREGA BENEFÍCIOS
 ===================================================== */
 
-async function carregarBeneficios(){
+/* =====================================================
+   CARREGA BENEFÍCIOS — JSONP
+===================================================== */
+
+function carregarBeneficios(){
 
     const lista =
-        document.getElementById(
-            "lista"
-        );
+        document.getElementById("lista");
 
 
-    try{
-
-        const url =
-            API +
-            "?action=listarOfertasPublicas" +
-            "&tipo=beneficios";
+    const callback =
+        "cbBeneficios_" + Date.now();
 
 
-        const resposta =
-            await fetch(
-                url,
-                {
-                    cache:"no-store"
-                }
+    const script =
+        document.createElement("script");
+
+
+    window[callback] = function(retorno){
+
+        try{
+
+            console.log(
+                "BENEFÍCIOS PÚBLICOS:",
+                retorno
             );
 
 
-        if(!resposta.ok){
+            if(
+                !retorno ||
+                !retorno.ok
+            ){
 
-            throw new Error(
-                "Falha HTTP " +
-                resposta.status
-            );
+                throw new Error(
+                    retorno?.erro ||
+                    "Não foi possível carregar os benefícios."
+                );
 
-        }
-
-
-        const retorno =
-            await resposta.json();
-
-
-        console.log(
-            "BENEFÍCIOS PÚBLICOS:",
-            retorno
-        );
+            }
 
 
-        if(!retorno.ok){
-
-            throw new Error(
-                retorno.erro ||
-                "Não foi possível carregar os benefícios."
-            );
-
-        }
+            const dados =
+                Array.isArray(retorno.dados)
+                    ? retorno.dados
+                    : [];
 
 
-        const dados =
-            Array.isArray(
-                retorno.dados
-            )
-            ? retorno.dados
-            : [];
+            lista.innerHTML = "";
 
 
-        lista.innerHTML = "";
+            if(!dados.length){
+
+                lista.innerHTML = `
+                    <div class="mensagem-lista">
+                        Nenhum benefício disponível no momento.
+                    </div>
+                `;
+
+                return;
+
+            }
 
 
-        if(!dados.length){
-
-            lista.innerHTML = `
-                <div class="mensagem-lista">
-                    Nenhum benefício disponível no momento.
-                </div>
-            `;
-
-            return;
-        }
-
-
-        dados.forEach(
-            b => {
+            dados.forEach(b => {
 
                 const grupo =
                     String(
@@ -1013,21 +997,14 @@ async function carregarBeneficios(){
                         ||
                         (
                             b.idPublico &&
-                            String(
-                                b.idPublico
-                            ).trim()
+                            String(b.idPublico).trim()
                         )
                         ||
                         (
                             b.cpf &&
-                            String(
-                                b.cpf
-                            )
-                            .replace(
-                                /\D/g,
-                                ""
-                            )
-                            .trim()
+                            String(b.cpf)
+                                .replace(/\D/g,"")
+                                .trim()
                         )
                     );
 
@@ -1081,13 +1058,7 @@ async function carregarBeneficios(){
 
                 card.innerHTML = `
 
-
-<!-- ==============================================
-     PARCEIRO
-============================================== -->
-
 <div class="parceiro-cabecalho">
-
 
     ${
         logo
@@ -1104,18 +1075,15 @@ async function carregarBeneficios(){
         : ""
     }
 
-
     <div class="parceiro-identificacao">
 
         <div class="parceiro-label">
             🏪 PARCEIRO APROVEITAI
         </div>
 
-
         <div class="parceiro-nome-beneficio">
             ${nomeParceiro}
         </div>
-
 
         ${
             b.ramo
@@ -1132,10 +1100,6 @@ async function carregarBeneficios(){
 </div>
 
 
-<!-- ==============================================
-     EXCLUSIVO
-============================================== -->
-
 ${
     exclusivo
     ? `
@@ -1147,22 +1111,15 @@ ${
 }
 
 
-<!-- ==============================================
-     BENEFÍCIO
-============================================== -->
-
 <div class="quadro-beneficio">
-
 
     <div class="quadro-beneficio-label">
         🎁 BENEFÍCIO
     </div>
 
-
     <h3>
         ${b.titulo || ""}
     </h3>
-
 
     ${
         b.descricao
@@ -1177,10 +1134,6 @@ ${
 </div>
 
 
-<!-- ==============================================
-     VIGÊNCIA
-============================================== -->
-
 ${
     b.dataInicio || b.dataFim
     ? `
@@ -1192,9 +1145,7 @@ ${
 
             ${
                 b.dataInicio
-                ? formatarData(
-                    b.dataInicio
-                  )
+                ? formatarData(b.dataInicio)
                 : ""
             }
 
@@ -1207,9 +1158,7 @@ ${
 
             ${
                 b.dataFim
-                ? formatarData(
-                    b.dataFim
-                  )
+                ? formatarData(b.dataFim)
                 : ""
             }
 
@@ -1219,19 +1168,13 @@ ${
 }
 
 
-<!-- ==============================================
-     CONTATOS
-============================================== -->
-
 ${
     whatsapp ||
     instagram ||
     maps
 
     ? `
-
         <div class="beneficio-contatos">
-
 
             ${
                 whatsapp
@@ -1248,7 +1191,6 @@ ${
                 : ""
             }
 
-
             ${
                 instagram
                 ? `
@@ -1263,7 +1205,6 @@ ${
                 `
                 : ""
             }
-
 
             ${
                 maps
@@ -1280,37 +1221,26 @@ ${
                 : ""
             }
 
-
         </div>
-
     `
     : ""
 }
 
 
-<!-- ==============================================
-     CONDIÇÕES
-============================================== -->
-
 ${
     b.observacoes
     ? `
-
         <div class="condicoes">
-
 
             <div class="condicoes-titulo">
                 ℹ️ CONDIÇÕES DE UTILIZAÇÃO
             </div>
 
-
             <div class="condicoes-texto">
                 ${b.observacoes}
             </div>
 
-
         </div>
-
     `
     : ""
 }
@@ -1318,47 +1248,84 @@ ${
 `;
 
 
-                lista.appendChild(
-                    card
-                );
+                lista.appendChild(card);
 
-            }
-        );
+            });
 
 
-    }catch(err){
+        }catch(err){
 
-        console.error(
-            "ERRO BENEFÍCIOS:",
-            err
-        );
+            console.error(
+                "ERRO BENEFÍCIOS:",
+                err
+            );
 
 
-        lista.innerHTML = `
+            lista.innerHTML = `
+                <div class="mensagem-lista mensagem-erro">
+                    Não foi possível carregar os benefícios neste momento.
+                    <br><br>
+                    Tente novamente em alguns instantes.
+                </div>
+            `;
 
-            <div class="
-                mensagem-lista
-                mensagem-erro
-            ">
+        }finally{
 
-                Não foi possível carregar
-                os benefícios neste momento.
+            try{
+                delete window[callback];
+            }catch(e){}
 
-                <br><br>
+            script.remove();
 
-                Tente novamente em alguns instantes.
+        }
 
-            </div>
+    };
 
-        `;
 
-    }
+    script.onerror =
+        function(){
+
+            console.error(
+                "ERRO JSONP BENEFÍCIOS"
+            );
+
+
+            lista.innerHTML = `
+                <div class="mensagem-lista mensagem-erro">
+                    Não foi possível carregar os benefícios neste momento.
+                    <br><br>
+                    Tente novamente em alguns instantes.
+                </div>
+            `;
+
+
+            try{
+                delete window[callback];
+            }catch(e){}
+
+
+            script.remove();
+
+        };
+
+
+    script.src =
+        API +
+        "?action=listarOfertasPublicas" +
+        "&tipo=beneficios" +
+        "&callback=" +
+        encodeURIComponent(callback) +
+        "&_=" +
+        Date.now();
+
+
+    document.body.appendChild(
+        script
+    );
 
 }
 
-
 carregarBeneficios();
-
 
 /* =====================================================
    VOLTAR
