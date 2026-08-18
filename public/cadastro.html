@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro | Plataforma AproveitAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .card-info {
+      background: #f1fbff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 0 8px rgba(0,0,0,0.08);
+    }
+    .form-wrap {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    form label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    form input[type="text"],
+    form input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+    form button {
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+    }
+    .checkbox-termo {
+      margin-top: 20px;
+    }
+    .checkbox-termo label {
+      display: inline;
+      font-weight: normal;
+    }
+.aceite-termos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 0.95rem;
+}
+
+.aceite-termos input {
+  width: 16px;
+  height: 16px;
+}
+.btn-voltar-flutuante {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  background: #198754;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.btn-voltar-flutuante:hover {
+  background: #146c43;
+}
+body {
+  margin: 0;
+  padding: 0;
+  background: #eaf6ff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+  </style>
+<script src="js/config.js"></script>
+
+<script src="js/include.js" defer></script>
+</head>
+
+<body>
+<!-- ✅ CABEÇALHO PADRÃO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Cartão AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        📝 <strong>Quero ser Cliente</strong><br>
+        Preencha o formulário para solicitar seu cartão.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+</header>
+<div style="
+  background:#fff3cd;
+  color:#856404;
+  padding:8px;
+  text-align:center;
+  font-size:13px;
+">
+  ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
+</div>
+
+<!-- ✅ BLOCO EXPLICAÇÃO -->
+<div class="card-info">
+  <h2 style="color:#007f30; text-align:center;">📋 Como funciona o Cartão AproveitAI</h2>
+  <p>A <strong>Plataforma AproveitAI</strong> conecta você a comércios e serviços parceiros, divulgando descontos reais e vantagens exclusivas.</p>
+  <ol style="margin-top:10px;">
+    <li>Preencha o cadastro e aceite os Termos de Adesão.</li>
+    <li>Nossa equipe entrará em contato para confirmar o pagamento.</li>
+    <li>Após a confirmação, você receberá seu <strong>Cartão Digital AproveitAI</strong> com QR Code.</li>
+    <li>Apresente o QR Code aos parceiros para obter descontos.</li>
+  </ol>
+  <p style="margin-top:10px;">📙 <strong>Valor individual:</strong> R$ 25,00/mês.</p>
+  <p>👥 <strong>Grupos</strong> (empresas, associações, sindicatos, condomínios) têm condições especiais.</p>
+</div>
+<div
+  id="mensagemCadastro"
+  style="
+    display:none;
+    background:#e8f8ee;
+    border:1px solid #b6e2c2;
+    padding:16px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-size:15px;
+    line-height:1.4;
+  "
+></div>
+
+<!-- ✅ FORMULÁRIO -->
+<div class="form-wrap">
+<form
+  id="formCadastro"
+  
+>
+<!-- rastreio básico -->
+<input type="hidden" name="origemAceite" value="cadastro_site">
+<input type="hidden" name="ipAceite" value="NAO_DISPONIVEL">
+<input type="hidden" name="observacoes" value="Cadastro via site">
+<!-- 🔐 RASTREAMENTO JURÍDICO DO TERMO -->
+<input type="hidden" name="aceiteTermo" value="Aceito cadastro online">
+<input type="hidden" name="dataAceite" id="dataAceite">
+
+  <label>Nome completo:</label>
+  <input type="text" name="nome" required>
+
+<label>CPF:</label>
+<input
+  type="text"
+  name="cpf"
+  placeholder="Somente números"
+  maxlength="11"
+  pattern="\d{11}"
+  inputmode="numeric"
+  required
+>
+
+<label>Celular (WhatsApp):</label>
+<input
+  type="text"
+  name="celular"
+  placeholder="DDD + número (ex: 28999990000)"
+  maxlength="11"
+  pattern="\d{10,11}"
+  inputmode="numeric"
+  required
+>
+
+<label>Cidade - Estado:</label>
+<input
+  type="text"
+  name="cidade"
+  placeholder="Ex: Município - UF"
+  required
+>
+
+  <label>Grupo (empresa, sindicato ou particular):</label>
+  <input type="text" name="grupo">
+
+  <label>Data de nascimento:</label>
+<input
+  type="text"
+  id="nascimento"
+  name="nascimento"
+  placeholder="DD/MM/AAAA"
+  maxlength="10"
+  required
+>
+<h3>🚗 Dados do Veículo (opcional no cadastro)</h3>
+
+<label>Tipo de veículo</label>
+<select id="tipoVeiculo" name="tipoVeiculo">
+  <option value="">Não informar agora</option>
+  <option value="carro">Carro</option>
+  <option value="moto">Moto</option>
+</select>
+
+<label>Placa</label>
+<input type="text" name="placa_1" placeholder="ABC-1234">
+
+<label>Modelo</label>
+<input type="text" name="modelo_1" placeholder="Ex: Onix, CG 160">
+
+<p style="font-weight:bold;color:#0a7a3b">
+⚠️ Ao informar os dados do veículo, autorizo expressamente o
+compartilhamento dessas informações com parceiros da Plataforma
+AproveitAI exclusivamente para validação de benefícios e prevenção
+a fraudes.
+</p>
+
+
+  <!-- CAMPOS OCULTOS PARA BLINDAGEM -->
+  <input type="hidden" name="origem" value="cadastro_site">
+
+  <label class="aceite-termos">
+  <input type="checkbox" name="aceite" value="SIM" required>
+
+  <span>
+    Li, compreendi e concordo com os
+    <a href="termos.html" target="_blank">Termos de Uso</a>,
+    a <a href="privacidade.html" target="_blank">Política de Privacidade</a>
+    e o
+    <a href="consentimento.html" target="_blank">Termo de Consentimento LGPD</a>,
+    autorizando o tratamento dos meus dados pessoais para cadastro,
+    validação de benefícios, prevenção a fraudes, comunicações,
+    promoções, pesquisas de satisfação e demais funcionalidades da
+    Plataforma AproveitAI, conforme a LGPD.
+  </span>
+</label>
+ <div class="info-box">
+<h3>📋 Requisitos para utilização da Plataforma AproveitAI</h3>
+
+<p>Para utilizar os benefícios oferecidos pelos parceiros da Plataforma AproveitAI, o cliente deverá:</p>
+
+<ul>
+<li>✅ Possuir cadastro ativo na Plataforma AproveitAI;</li>
+<li>✅ Possuir smartphone com câmera funcional;</li>
+<li>✅ Possuir acesso à internet no momento da utilização do benefício;</li>
+<li>✅ Apresentar o código de validação quando solicitado pelo parceiro;</li>
+<li>✅ Manter seus dados cadastrais atualizados.</li>
+</ul>
+
+<p><strong>Importante:</strong></p>
+
+<p>Alguns parceiros, especialmente estabelecimentos do ramo automotivo, poderão exigir que o cliente possua veículo previamente cadastrado na Plataforma AproveitAI.</p>
+
+<p>Caso essa condição seja exigida pelo parceiro e não exista veículo cadastrado, o benefício poderá não ser concedido.</p>
+
+<p>Ao concluir o cadastro, o cliente declara estar ciente dessas condições.</p>
+
+</div>
+  <button type="submit" class="btn-aproveitai">✅ Enviar cadastro</button>
+<input type="hidden" name="userAgent" id="userAgent">
+
+</form>
+  <div style="text-align:center; margin-top: 20px;">
+    <a href="index.html" class="btn-aproveitai">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Cartão AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> O Cartão AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
+<div
+style="
+font-size:11px;
+color:#777;
+text-align:center;
+margin-top:8px;">
+Versão
+<span id="versaoSistema"></span>
+</div>
+</footer>
+
+<script>
+  document.getElementById("userAgent").value = navigator.userAgent;
+
+  // data e hora do aceite (Brasil)
+  const agora = new Date();
+  const dataFormatada = agora.toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo"
+  });
+  document.getElementById("dataAceite").value = dataFormatada;
+</script>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const form = document.getElementById("formCadastro");
+const box = document.getElementById("mensagemCadastro");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  box.style.display = "block";
+  box.innerHTML = "⏳ Enviando cadastro...";
+
+  const dados = new FormData(form);
+  dados.set("userAgent", navigator.userAgent);
+  dados.set("dataAceite", new Date().toLocaleString("pt-BR", {timeZone:"America/Sao_Paulo"}));
+
+  const callback = "retornoCadastro_" + Date.now();
+
+  window[callback] = function(r) {
+
+  console.log("RETORNO DO GAS:", r);
+
+  if (r.ok && r.status === "CADASTRO_RECEBIDO") {
+
+    localStorage.setItem("ultimoCadastroNome", r.nome || "");
+    localStorage.setItem("ultimoCadastroCPF", dados.get("cpf") || "");
+
+    window.location.href =
+      "cadastro-sucesso.html?nome=" +
+      encodeURIComponent(r.nome || "") +
+      "&id=" +
+      encodeURIComponent(r.idPublico || "") +
+      "&testeAte=" +
+      encodeURIComponent(r.testeAte || "");
+
+    return;
+
+  } else if (r.status === "JA_ATIVO") {
+
+    window.location.href =
+      "cadastro-status.html?status=ativo&nome=" +
+      encodeURIComponent(r.nome);
+
+    return;
+
+  } else if (r.status === "JA_INATIVO") {
+
+    window.location.href =
+      "cadastro-status.html?status=inativo&nome=" +
+      encodeURIComponent(r.nome);
+
+    return;
+
+  } else {
+
+    box.style.display = "block";
+    box.style.background = "#fdecea";
+    box.style.border = "2px solid #dc3545";
+    box.style.color = "#721c24";
+    box.style.padding = "20px";
+    box.style.borderRadius = "10px";
+
+    box.innerHTML = `
+      <h3>❌ Cadastro não realizado</h3>
+
+      <p><strong>Motivo:</strong> ${r.mensagem || "Ocorreu um erro inesperado."}</p>
+
+      <p>Verifique os dados informados e tente novamente.</p>
+
+      <ul style="text-align:left;">
+        <li>✔ Confira se o CPF está correto.</li>
+        <li>✔ Confira o número do WhatsApp.</li>
+        <li>✔ Confira a data de nascimento.</li>
+        <li>✔ Caso o problema continue, entre em contato com o suporte.</li>
+      </ul>
+
+      <a href="https://wa.me/5528999692303"
+         class="btn-aproveitai">
+         💬 Falar com o Suporte
+      </a>
+    `;
+
+  }
+
+  document.getElementById(callback)?.remove();
+  delete window[callback];
+
+};
+  const params = new URLSearchParams(dados);
+  params.set("acao", "cadastrarCliente");
+  params.set("callback", callback);
+
+  const script = document.createElement("script");
+  script.id = callback;
+  script.src = GAS_URL + "?" + params.toString();
+  document.body.appendChild(script);
+});
+
+const nascimento = document.getElementById("nascimento");
+
+nascimento.addEventListener("input", function () {
+
+    let v = this.value.replace(/\D/g,"");
+
+    if(v.length > 2)
+        v = v.substring(0,2)+"/"+v.substring(2);
+
+    if(v.length > 5)
+        v = v.substring(0,5)+"/"+v.substring(5);
+
+    this.value = v.substring(0,10);
+
+});
+
+
+</script>
+</body>
+</html>

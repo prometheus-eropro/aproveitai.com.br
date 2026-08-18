@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Relatório de Consultas</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  th { background: #2e7d32; color: #fff; }
+body {
+  margin: 0;
+  padding: 0;
+  background: #eaf6ff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+<!-- ✅ CABEÇALHO PADRONIZADO -->
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Plataforma AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+
+      <!-- Tarja -->
+      <p class="boas-vindas">
+        🏪 <strong>Área do Parceiro</strong><br>
+        Valide clientes e acompanhe seus relatórios.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
+  </div>
+<link rel="stylesheet" href="style.css">
+
+</header>
+
+<h2 id="tituloRelatorio">Relatório de Consultas</h2>
+<div id="periodoRelatorio" style="
+  margin:8px 0 15px 0;
+  font-size:14px;
+  font-weight:bold;
+  color:#2e7d32;
+"></div>
+
+<div id="dadosParceiro" class="dados-parceiro"></div>
+
+<div class="status-box" style="margin:15px 0">
+
+<b>Parceiro:</b>
+<span id="cabParceiro"></span><br>
+
+<b>Período:</b>
+<span id="cabPeriodo"></span><br>
+
+<b>Total de Atendimentos:</b>
+<span id="cabTotal">0</span><br>
+
+<b>Emitido em:</b>
+<span id="cabData"></span>
+
+</div>
+
+<div style="
+  margin:10px auto;
+  text-align:center;
+  max-width:420px;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+">
+
+  <label>
+    📅 Início:
+    <input type="date" id="dataInicio">
+  </label>
+
+  <label style="margin-left:10px">
+    📅 Fim:
+    <input type="date" id="dataFim">
+  </label>
+
+  <button onclick="carregarRelatorio()" style="margin-left:10px">
+    🔍 Filtrar
+  </button>
+</div>
+
+<button class="relatorio-botao" onclick="window.print()">
+  🖨️ Imprimir / PDF
+</button>
+<div style="text-align:center;margin:15px 0;">
+
+  </a>
+</div>
+
+
+<table>
+<thead>
+<tr>
+  <th>Data/Hora</th>
+<th>Grupo</th>
+<th>Tipo</th>
+<th>Benefício Utilizado</th>
+<th>Código</th></tr>
+</thead>
+<tbody id="dados"></tbody>
+</table>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+const parceiroNome = sessionStorage.getItem("parceiroNome");
+const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
+
+if (!parceiroNome || !parceiroCNPJ) {
+  document.body.innerHTML = `
+    <div style="padding:40px;text-align:center">
+      <h2>⚠️ Sessão não encontrada</h2>
+      <p>Volte ao painel do parceiro para acessar o relatório.</p>
+      <button onclick="window.location.href='painelparceiro.html'">
+        🔐 Ir para Login
+      </button>
+    </div>
+  `;
+  throw new Error("Sessão ausente");
+}
+
+// 🔹 Exibe parceiro (NOME + CNPJ)
+document.getElementById("dadosParceiro").innerHTML = `
+  <strong>Parceiro:</strong> ${parceiroNome}<br>
+  <strong>CNPJ:</strong> ${parceiroCNPJ}
+`;
+
+function carregarRelatorio() {
+  const inicio = document.getElementById("dataInicio").value;
+  const fim = document.getElementById("dataFim").value;
+
+  let url = API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome);
+  if (inicio) url += "&inicio=" + inicio;
+  if (fim) url += "&fim=" + fim;
+
+  fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) {
+        alert("Erro ao carregar relatório");
+        return;
+      }
+
+      const tbody = document.getElementById("dados");
+      tbody.innerHTML = "";
+
+      if (!d.dados || d.dados.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="5">Nenhum registro encontrado</td></tr>
+        `;
+        return;
+      }
+
+
+document.getElementById("cabParceiro").innerHTML = parceiroNome;
+
+document.getElementById("cabPeriodo").innerHTML =
+  (inicio || "Início") + " até " + (fim || "Hoje");
+
+document.getElementById("cabTotal").innerHTML =
+  d.dados.length;
+
+document.getElementById("cabData").innerHTML =
+  new Date().toLocaleString("pt-BR");
+
+      d.dados.forEach(r => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${r.dataFormatada || new Date(r.data).toLocaleString("pt-BR")}</td>
+            <td>${r.grupo || "-"}</td>
+            <td>${r.tipo || "-"}</td>
+<td>
+    <strong>${r.beneficio || "-"}</strong><br>
+    <small>${r.descricao || ""}</small>
+</td>
+<td>${r.codigo || "-"}</td>
+          </tr>
+        `;
+      });
+    })
+
+    .catch(err => {
+      console.error(err);
+      alert("Falha ao buscar relatório");
+    });
+}
+
+// 🔥 carrega automático ao abrir
+carregarRelatorio();
+</script>
+<div style="margin:20px;text-align:center">
+  <button onclick="history.back()">
+    ⬅️ Voltar
+  </button>
+</div>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+<footer style="
+  background:#dfffe0;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+">
+  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
+
+  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
+</footer>
+
+</body>
+</html>

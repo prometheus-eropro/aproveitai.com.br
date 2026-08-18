@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="theme-color" content="#0a7a2a">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-title" content="AproveitAI">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="apple-touch-icon" href="icon.192.png">
+
+<link rel="icon" href="favicon.ico">
+  <meta charset="UTF-8">
+  <title>Cartão AproveitAI | Plataforma Inteligente de Divulgação e Relacionamento Comercial</title>
+<link
+id="cssMain"
+rel="stylesheet"
+href="style.css">
+
+
+<link rel="apple-touch-icon" href="logo-aproveitai.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+
+<meta name="theme-color" content="#0a7a2a">
+<script src="js/config.js"></script>
+
+<script src="js/include.js" defer></script>
+
+<link rel="stylesheet" href="visual2.css?v=2.0.0">
+
+</head>
+
+<body>
+
+<header class="site-header">
+
+<div class="brandline">
+
+<img src="logo-prometheus.png" class="logo logo-prometheus">
+
+<div class="brand-center">
+
+<h1 class="site-title">
+Cartão AproveitAI
+</h1>
+
+<p class="subtitulo-plataforma">
+Plataforma Inteligente de Divulgação e Relacionamento Comercial
+</p>
+
+<p class="slogan-principal">
+
+Economize mais. Aproveite melhor.
+
+</p>
+
+<p class="slogan">
+
+Tecnologia com ConsciêncIA gera Resultado.
+
+</p>
+
+<p class="subtitulo">
+
+Conectando empresas, consumidores e oportunidades através da tecnologia.
+
+</p>
+
+</div>
+
+<img src="logo-aproveitai.png" class="logo logo-aproveitai">
+
+</div>
+
+</header>
+
+<div class="top-alerta">
+
+⚠️ Descontos reais, benefícios exclusivos e promoções especiais oferecidos pelos parceiros participantes. Consulte sempre as condições vigentes antes da compra.
+
+</div>
+
+<!-- BOTÕES PRINCIPAIS -->
+<div class="botoes-centrais">
+
+<a href="comoutilizar.html" class="btn-aproveitai">
+📖 Como Utilizar
+</a>
+
+<a href="cadastro.html" class="btn-aproveitai">
+👤 Quero ser Cliente
+</a>
+
+<a
+href="https://api.whatsapp.com/send?phone=5527996618679&text=Olá! Tenho interesse em conhecer a Plataforma AproveitAI e desejo receber informações para me tornar um parceiro.%0A%0A🏪 Nome do estabelecimento:%0A📍 Cidade:%0A🛒 Ramo:%0A📞 Telefone:%0A📷 Instagram:%0A%0AObrigado!"
+target="_blank"
+class="btn-aproveitai">
+
+🏪 Quero ser Parceiro
+
+</a>
+
+<a href="beneficios.html" class="btn-aproveitai">
+
+🎁 Benefícios
+
+</a>
+
+<a href="promocoes.html" class="btn-aproveitai">
+
+🔥 Promoções
+
+</a>
+
+<a href="painelcliente.html" class="btn-aproveitai">
+
+👤 Área do Cliente
+
+</a>
+
+<a href="painelparceiro.html" class="btn-aproveitai">
+
+🏪 Área do Parceiro
+
+</a>
+
+</div>
+
+<section class="titulo-pesquisa">
+
+<h2>
+
+🔎 Encontre um Parceiro
+
+</h2>
+
+<p>
+
+Conheça empresas parceiras, seus benefícios, promoções e oportunidades exclusivas.
+
+</p>
+
+</section>
+
+<div class="filtros">
+  <input type="text" id="buscaNome" placeholder="Buscar por nome">
+  <select id="buscaCidade"><option value="">Todas as cidades</option></select>
+  <select id="buscaRamo"><option value="">Todos os ramos</option></select>
+  <button onclick="filtrar()">
+
+🔎 Pesquisar
+
+</button>
+</div>
+
+<section class="titulo-cards">
+
+<h2>
+
+🏪 Parceiros Participantes
+
+</h2>
+
+<p>
+
+Conheça empresas parceiras da Plataforma Inteligente Cartão AproveitAI e descubra benefícios, promoções e vantagens exclusivas.
+
+</p>
+
+</section>
+
+<div class="cards-wrapper">
+  <div id="parceiros" class="container-parceiros">
+
+  </div>
+</div>
+
+<div class="separador-footer"></div>
+
+<!-- ✅ RODAPÉ PADRÃO -->
+
+<div id="footer"></div>
+
+
+<script>
+/* =====================================================
+   Plataforma APROVEITAI – SCRIPT ÚNICO OFICIAL (INDEX)
+===================================================== */
+
+ const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+const parceirosDiv = document.getElementById("parceiros");
+const buscaNome = document.getElementById("buscaNome");
+const buscaCidade = document.getElementById("buscaCidade");
+const buscaRamo = document.getElementById("buscaRamo");
+
+let parceiros = [];
+
+/* =========================
+   UTIL
+========================= */
+function normalizar(txt) {
+  return (txt || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+/* =========================
+   PREENCHER FILTROS
+========================= */
+function preencherFiltros() {
+  buscaCidade.innerHTML = `<option value="">Todas as cidades</option>`;
+  buscaRamo.innerHTML = `<option value="">Todos os ramos</option>`;
+
+  [...new Set(parceiros.map(p => normalizar(p.cidade)).filter(Boolean))]
+    .sort()
+    .forEach(c => {
+      buscaCidade.innerHTML += `<option value="${c}">${c}</option>`;
+    });
+
+  [...new Set(parceiros.map(p => normalizar(p.ramo)).filter(Boolean))]
+    .sort()
+    .forEach(r => {
+      buscaRamo.innerHTML += `<option value="${r}">${r}</option>`;
+    });
+}
+
+/* =========================
+   RENDERIZAR CARDS
+========================= */
+/* =========================
+   RENDERIZAR CARDS
+========================= */
+function renderizar(lista) {
+
+  parceirosDiv.innerHTML = "";
+
+  if (!lista.length) {
+    parceirosDiv.innerHTML =
+      "<p>Nenhum parceiro encontrado com os filtros informados.</p>";
+    return;
+  }
+
+  lista.forEach(p => {
+
+    if (String(p.ativo || "").toLowerCase() !== "sim") return;
+
+    const parceiroId =
+      String(p.parceiro_id || "").trim();
+
+    const nomeFantasia =
+      String(
+        p.nomeFantasia ||
+        p.nome_fantasia ||
+        p.nome ||
+        p.razaoSocial ||
+        "Parceiro"
+      ).trim();
+
+    const cidade =
+      String(p.cidade || "-").trim();
+
+    const uf =
+      String(p.uf || "").trim();
+
+    const ramo =
+      String(p.ramo || p.categoria || "-").trim();
+
+    const whatsapp =
+      String(p.whatsapp || "").replace(/\D/g, "");
+
+    const instagram =
+      String(p.instagram || "").trim();
+
+    const site =
+      String(p.site || "").trim();
+
+    const email =
+      String(p.email || "").trim();
+
+    const maps =
+      String(p.link_maps || p.maps || "").trim();
+
+    const logoURL =
+      String(p.logoURL || p.logo || "").trim();
+
+
+    /* =========================
+       IDENTIDADE VISUAL
+    ========================= */
+
+    const identidade = logoURL
+  ? `
+    <div class="parceiro-logo-box">
+      <img
+        src="${logoURL}"
+        alt="${nomeFantasia}"
+        class="parceiro-logo"
+        onerror="this.parentElement.style.display='none'"
+      >
+    </div>
+  `
+  : "";
+
+
+    /* =========================
+       CONTATOS
+    ========================= */
+
+    const contatos = `
+
+      <div class="parceiro-contatos">
+
+        ${whatsapp ? `
+          <a
+            class="tag-contato"
+            target="_blank"
+            href="https://wa.me/55${whatsapp}">
+            WhatsApp
+          </a>
+        ` : ""}
+
+        ${instagram ? `
+          <a
+            class="tag-contato"
+            target="_blank"
+            href="${
+              instagram.startsWith("http")
+                ? instagram
+                : "https://instagram.com/" +
+                  instagram.replace("@","")
+            }">
+            Instagram
+          </a>
+        ` : ""}
+
+        ${site ? `
+          <a
+            class="tag-contato"
+            target="_blank"
+            href="${site}">
+            Site
+          </a>
+        ` : ""}
+
+        ${email ? `
+          <a
+            class="tag-contato"
+            href="mailto:${email}">
+            E-mail
+          </a>
+        ` : ""}
+
+      </div>
+    `;
+
+
+    /* =========================
+       CARD
+    ========================= */
+
+    parceirosDiv.innerHTML += `
+
+      <div
+        class="card card-parceiro"
+        id="card-${parceiroId}"
+      >
+
+        ${identidade}
+
+        <h3 class="parceiro-nome">
+          ${nomeFantasia}
+        </h3>
+
+        <div class="parceiro-info">
+
+          <p>
+            📍 <b>${cidade}${uf ? " - " + uf : ""}</b>
+          </p>
+
+          <p>
+  <span class="parceiro-ramo">
+    🏷️ ${ramo}
+  </span>
+</p>
+
+        </div>
+
+
+        <div
+          id="acoes-${parceiroId}"
+          class="parceiro-acoes"
+        ></div>
+
+
+        ${contatos}
+
+
+        ${maps ? `
+          <a
+            href="${maps}"
+            target="_blank"
+            class="btn-como-chegar">
+            📍 Como chegar
+          </a>
+        ` : ""}
+
+
+        <div
+          id="detalhes-${parceiroId}"
+          class="parceiro-detalhes"
+          style="display:none">
+        </div>
+
+      </div>
+
+    `;
+
+
+    /* verifica se possui benefício/promoção */
+
+    verificarConteudoParceiro(parceiroId);
+
+  });
+
+}
+
+/* =====================================================
+   VERIFICAR BENEFÍCIOS E PROMOÇÕES DO PARCEIRO
+===================================================== */
+
+async function verificarConteudoParceiro(parceiroId) {
+
+  if (!parceiroId) return;
+
+  const area = document.getElementById("acoes-" + parceiroId);
+
+  if (!area) return;
+
+  try {
+
+    const [resBeneficios, resPromocoes] = await Promise.all([
+
+      fetch(
+        API_URL +
+        "?acao=listarBeneficiosParceiro&parceiro_id=" +
+        encodeURIComponent(parceiroId)
+      ),
+
+      fetch(
+        API_URL +
+        "?acao=listarPromocoesParceiro&parceiro_id=" +
+        encodeURIComponent(parceiroId)
+      )
+
+    ]);
+
+    const respostaBeneficios = await resBeneficios.json();
+    const respostaPromocoes = await resPromocoes.json();
+
+
+    /* ==========================================
+       NORMALIZA RESPOSTA DA API
+    ========================================== */
+
+    const listaBeneficios =
+      Array.isArray(respostaBeneficios)
+        ? respostaBeneficios
+        : Array.isArray(respostaBeneficios.dados)
+          ? respostaBeneficios.dados
+          : Array.isArray(respostaBeneficios.beneficios)
+            ? respostaBeneficios.beneficios
+            : [];
+
+
+    const listaPromocoes =
+      Array.isArray(respostaPromocoes)
+        ? respostaPromocoes
+        : Array.isArray(respostaPromocoes.dados)
+          ? respostaPromocoes.dados
+          : Array.isArray(respostaPromocoes.promocoes)
+            ? respostaPromocoes.promocoes
+            : [];
+
+
+    const beneficiosAtivos = listaBeneficios.filter(item => {
+
+      const ativo = String(item.ativo ?? "sim")
+        .trim()
+        .toLowerCase();
+
+      return ativo !== "nao" && ativo !== "não";
+
+    });
+
+
+    const promocoesAtivas = listaPromocoes.filter(item => {
+
+      const ativo = String(item.ativo ?? "sim")
+        .trim()
+        .toLowerCase();
+
+      return ativo !== "nao" && ativo !== "não";
+
+    });
+
+
+    console.log(
+      "CONTEÚDO PARCEIRO:",
+      parceiroId,
+      {
+        beneficios: beneficiosAtivos,
+        promocoes: promocoesAtivas
+      }
+    );
+
+
+    /* ==========================================
+       GUARDA CONTEÚDO
+    ========================================== */
+
+    window["beneficios_" + parceiroId] = beneficiosAtivos;
+    window["promocoes_" + parceiroId] = promocoesAtivas;
+
+
+    /* ==========================================
+       CRIA SOMENTE BOTÕES NECESSÁRIOS
+    ========================================== */
+
+    let html = "";
+
+
+    if (beneficiosAtivos.length > 0) {
+
+      html += `
+        <button
+          type="button"
+          class="btn-conteudo-parceiro"
+          onclick="abrirBeneficiosParceiro('${parceiroId}')">
+          🎁 Benefícios
+        </button>
+      `;
+
+    }
+
+
+    if (promocoesAtivas.length > 0) {
+
+      html += `
+        <button
+          type="button"
+          class="btn-conteudo-parceiro btn-promocao"
+          onclick="abrirPromocoesParceiro('${parceiroId}')">
+          🔥 Promoções
+        </button>
+      `;
+
+    }
+
+
+    area.innerHTML = html;
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar conteúdo do parceiro:",
+      parceiroId,
+      erro
+    );
+
+    area.innerHTML = "";
+
+  }
+
+}
+
+/* =====================================================
+   ABRIR BENEFÍCIOS DO PARCEIRO
+===================================================== */
+
+function abrirBeneficiosParceiro(parceiroId) {
+
+  const lista =
+    window["beneficios_" + parceiroId] || [];
+
+  const area =
+    document.getElementById(
+      "detalhes-" + parceiroId
+    );
+
+  if (!area) return;
+
+if (
+  area.style.display === "block" &&
+  area.dataset.tipo === "beneficios"
+) {
+  area.style.display = "none";
+  area.innerHTML = "";
+  area.dataset.tipo = "";
+  return;
+}
+
+area.dataset.tipo = "beneficios";
+
+
+  if (!lista.length) {
+
+    area.style.display = "none";
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <div class="conteudo-parceiro">
+
+      <h4>🎁 Benefícios</h4>
+
+  `;
+
+
+  lista.forEach(b => {
+
+    html += `
+
+      <div class="mini-beneficio">
+
+        <strong>
+          ${b.titulo || "Benefício"}
+        </strong>
+
+        ${
+          b.descricao
+            ? `<p>${b.descricao}</p>`
+            : ""
+        }
+
+        ${
+          b.observacoes
+            ? `
+              <small>
+                <b>Condições:</b>
+                ${b.observacoes}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  });
+
+
+  html += `
+
+      <button
+        class="btn-fechar-detalhes"
+        onclick="fecharDetalhesParceiro('${parceiroId}')">
+
+        Fechar
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  area.innerHTML = html;
+
+  area.style.display = "block";
+
+}
+
+/* =====================================================
+   ABRIR PROMOÇÕES DO PARCEIRO
+===================================================== */
+
+function abrirPromocoesParceiro(parceiroId) {
+
+  const lista =
+    window["promocoes_" + parceiroId] || [];
+
+  const area =
+    document.getElementById(
+      "detalhes-" + parceiroId
+    );
+
+  if (!area) return;
+
+if (
+  area.style.display === "block" &&
+  area.dataset.tipo === "promocoes"
+) {
+  area.style.display = "none";
+  area.innerHTML = "";
+  area.dataset.tipo = "";
+  return;
+}
+
+area.dataset.tipo = "promocoes";
+
+  if (!lista.length) {
+
+    area.style.display = "none";
+
+    return;
+
+  }
+
+
+  let html = `
+
+    <div class="conteudo-parceiro">
+
+      <h4>🔥 Promoções</h4>
+
+  `;
+
+
+  lista.forEach(p => {
+
+    html += `
+
+      <div class="mini-promocao">
+
+        <strong>
+          ${p.titulo || "Promoção"}
+        </strong>
+
+        ${
+          p.descricao
+            ? `<p>${p.descricao}</p>`
+            : ""
+        }
+
+        ${
+          p.dataFim
+            ? `
+              <small>
+                Válida até:
+                ${new Date(
+                  p.dataFim
+                ).toLocaleDateString("pt-BR")}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  });
+
+
+  html += `
+
+      <button
+        class="btn-fechar-detalhes"
+        onclick="fecharDetalhesParceiro('${parceiroId}')">
+
+        Fechar
+
+      </button>
+
+    </div>
+
+  `;
+
+
+  area.innerHTML = html;
+
+  area.style.display = "block";
+
+}
+
+function fecharDetalhesParceiro(parceiroId) {
+
+  const area =
+    document.getElementById(
+      "detalhes-" + parceiroId
+    );
+
+  if (area) {
+
+    area.style.display = "none";
+
+    area.innerHTML = "";
+
+  }
+
+}
+/* =========================
+   FILTRAR
+========================= */
+function filtrar() {
+  const nome = normalizar(buscaNome.value);
+  const cidade = normalizar(buscaCidade.value);
+  const ramo = normalizar(buscaRamo.value);
+
+  const filtrados = parceiros.filter(p =>
+    (!nome || normalizar(p.nomeFantasia || p.nome).includes(nome)) &&
+    (!cidade || normalizar(p.cidade).includes(cidade)) &&
+    (!ramo || normalizar(p.ramo).includes(ramo))
+  );
+
+  renderizar(filtrados);
+}
+
+/* =========================
+   CARREGAR PARCEIROS
+========================= */
+
+
+function carregarParceiros() {
+
+parceirosDiv.innerHTML = `
+<div class="loading">
+⏳ Carregando parceiros...
+</div>
+`;
+
+  fetch(API_URL + "?aba=parceiros")
+    .then(r => r.json())
+    .then(res => {
+      
+
+      parceiros = res.dados || res;
+
+      if (!Array.isArray(parceiros)) {
+        throw new Error("Formato inesperado da API");
+      }
+
+      preencherFiltros();
+      renderizar(parceiros);
+    })
+    .catch(err => {
+      console.error("Erro ao carregar parceiros:", err);
+      parceirosDiv.innerHTML = "<p>Erro ao carregar parceiros.</p>";
+    });
+}
+
+function distanciaKm(lat1, lon1, lat2, lon2){
+  const R = 6371;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLon = (lon2-lon1)*Math.PI/180;
+  const a =
+    Math.sin(dLat/2)**2 +
+    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+    Math.sin(dLon/2)**2;
+  return (R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)))).toFixed(1);
+}
+
+
+document.addEventListener("DOMContentLoaded", carregarParceiros);
+
+</script>
+
+
+<script>
+
+if ('serviceWorker' in navigator){
+
+window.addEventListener('load',()=>{
+
+navigator.serviceWorker.register('/sw.js');
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

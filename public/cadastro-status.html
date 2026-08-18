@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Status do Cadastro | Plataforma AproveitAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  padding:0;
+  background:#eaf6ff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.container{
+  max-width:420px;
+  margin:0 auto;
+  padding:20px;
+}
+
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:26px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+}
+
+.card h2{
+  margin-top:0;
+  font-size:22px;
+}
+
+.card p{
+  font-size:15px;
+  line-height:1.5;
+}
+
+.ativo{
+border-top:12px solid #ffc107;
+background:#fff8dc;
+}
+
+.inativo{
+  border-top:10px solid #c0392b;
+}
+
+.btn{
+  display:block;
+  margin-top:18px;
+  padding:14px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
+  color:#fff;
+}
+
+.btn-green{ background:#0a7a3c; }
+.btn-green:hover{ background:#08662f; }
+
+.btn-red{ background:#c0392b; }
+.btn-red:hover{ background:#992d22; }
+
+.footer{
+  margin-top:18px;
+  font-size:12px;
+  color:#666;
+}
+</style>
+<script src="js/config.js"></script>
+
+<script src="js/include.js" defer></script>
+</head>
+
+<body>
+
+<div class="container">
+  <div id="card" class="card">
+
+    <h2 id="titulo"></h2>
+
+    <p id="mensagem"></p>
+
+    <a id="botao" class="btn"></a>
+
+    <div class="footer">
+      Plataforma AproveitAI<br>
+      Tecnologia com ConsciêncIA gera Resultado
+    </div>
+
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const status = params.get("status");
+const nome   = params.get("nome") || "Cliente";
+
+const card     = document.getElementById("card");
+const titulo   = document.getElementById("titulo");
+const mensagem = document.getElementById("mensagem");
+const botao    = document.getElementById("botao");
+
+if (status === "ativo") {
+
+  card.classList.add("ativo");
+
+  titulo.innerHTML = `⚠️ CPF JÁ CADASTRADO`;
+  mensagem.innerHTML = `
+Olá, <strong>${nome}</strong> 👋<br><br>
+Seu cpf ja esta cadastrado e já está <strong>ATIVO</strong> na Plataforma AproveitAI.<br><br>
+Você já pode utilizar seu cartão normalmente nos parceiros.<br><br>
+👉 Basta informar ao parceiro que você possui o cartão AproveitAI e lê o QR Code do parceiro.
+  `;
+
+  botao.innerHTML = "Voltar ao site";
+  botao.href = "https://www.aproveitai.com.br";
+  botao.classList.add("btn-green");
+
+}
+else if (status === "inativo") {
+
+  card.classList.add("inativo");
+
+  titulo.innerHTML = `⚠️ Cadastro encontrado`;
+
+  mensagem.innerHTML = `
+Olá, <strong>${nome}</strong> 👋<br><br>
+
+Identificamos que seu CPF já está cadastrado, porém ele ainda está
+<strong>INATIVO</strong>.<br><br>
+
+Para concluir sua ativação, entre em contato com nossa equipe.<br><br>
+
+<a
+href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20meu%20cadastro%20na%20Plataforma%20AproveitAI."
+style="
+display:block;
+background:#0a7a3c;
+color:white;
+padding:14px;
+border-radius:10px;
+text-decoration:none;
+font-weight:bold;
+margin-top:12px;
+"
+>
+📲 Solicitar ativação pelo WhatsApp
+</a>
+`;
+
+  botao.innerHTML = "Voltar ao site";
+  botao.href = "https://www.aproveitai.com.br";
+  botao.classList.add("btn-red");
+}
+
+else {
+
+  titulo.innerHTML = "ℹ️ Status não identificado";
+  mensagem.innerHTML = `
+Não foi possível identificar o status do cadastro.<br>
+Tente novamente ou volte ao site.
+  `;
+
+  botao.innerHTML = "Voltar ao site";
+  botao.href = "https://www.aproveitai.com.br";
+  botao.classList.add("btn-green");
+}
+</script>
+
+</body>
+</html>
