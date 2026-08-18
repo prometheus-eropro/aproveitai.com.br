@@ -87,92 +87,198 @@ const exclusivo =
 );
 
     const card = document.createElement("div");
-    card.className = "card";
-    if (exclusivo) {
-      card.style.border = "2px solid #ffcc00";
-      card.style.background = "#fffdf2";
+
+card.className = "card-oferta";
+
+
+const inicio =
+  b.dataInicio
+    ? new Date(b.dataInicio)
+        .toLocaleDateString("pt-BR")
+    : "-";
+
+
+const fim =
+  b.dataFim
+    ? new Date(b.dataFim)
+        .toLocaleDateString("pt-BR")
+    : "-";
+
+
+const observacoes =
+  String(
+    b.observacoes ||
+    b.condicoes ||
+    ""
+  ).trim();
+
+
+card.innerHTML = `
+
+  <!-- PARCEIRO -->
+
+  <div class="card-parceiro">
+
+    <div class="card-parceiro-label">
+      🏪 PARCEIRO APROVEITAI
+    </div>
+
+    <div class="card-parceiro-nome">
+      ${b.parceiro || "Parceiro"}
+    </div>
+
+  </div>
+
+
+  <div class="card-conteudo">
+
+
+    ${
+      exclusivo
+        ? `
+          <div class="card-exclusivo">
+            ⭐ EXCLUSIVO
+          </div>
+        `
+        : ""
     }
 
-    card.innerHTML = `
-      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
-      <h3>${b.titulo || ""}</h3>
 
-<div style="
-white-space:pre-line;
-line-height:1.7;
-text-align:left;
-margin-top:10px;
-">
-${b.descricao || ""}
-</div>
+    <!-- BENEFÍCIO -->
 
-${
-b.observacoes
-? `
-<div class="condicoes">
+    <div class="card-oferta-box">
 
-    <div class="condicoes-titulo">
-        ℹ️ IMPORTANTE
-    </div>
+      <div class="card-oferta-tipo">
+        🎁 BENEFÍCIO
+      </div>
 
-    <div class="condicoes-texto">
-        ${b.observacoes}
-    </div>
-
-</div>
-`
-: ""
-}
-
-      <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
-      <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
-  ${b.zap ? `
-    <a href="https://wa.me/55${b.zap.replace(/\D/g,'')}"
-       target="_blank"
-       class="btn-link">📲 WhatsApp</a>` : ""}
-
-  ${b.instagram ? `
-    <a href="${b.instagram}"
-       target="_blank"
-       class="btn-link">📸 Instagram</a>` : ""}
-
-  ${b.site ? `
-    <a href="${b.site}"
-       target="_blank"
-       class="btn-link">🌐 Site</a>` : ""}
-
-  ${b.endereco ? `
-    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
-       target="_blank"
-       class="btn-link">📍 Como chegar</a>` : ""}
-</div>
+      <h3 class="card-oferta-titulo">
+        ${b.titulo || ""}
+      </h3>
 
       ${
-b.dataInicio
-? `
-<p>
+        b.descricao
+          ? `
+            <div class="card-oferta-descricao">
+              ${b.descricao}
+            </div>
+          `
+          : ""
+      }
 
-<strong>📅 Vigência:</strong>
+    </div>
 
-${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
 
-${
-b.dataFim
-?
-" até "+new Date(b.dataFim).toLocaleDateString("pt-BR")
-:
-""
+    <!-- VIGÊNCIA -->
 
-}
+    <div class="card-vigencia">
 
-</p>
-`
-:
-""
-}
+      📅 <strong>Vigência:</strong>
 
-     
-    `;
+      ${inicio}
+
+      ${fim !== "-" ? " até " + fim : ""}
+
+    </div>
+
+
+    <!-- BOTÕES -->
+
+    <div class="card-acoes">
+
+      ${
+        b.zap
+          ? `
+            <a
+              href="https://wa.me/55${b.zap.replace(/\D/g,'')}"
+              target="_blank"
+              class="btn-link"
+            >
+              📲 WhatsApp
+            </a>
+          `
+          : ""
+      }
+
+
+      ${
+        b.instagram
+          ? `
+            <a
+              href="${b.instagram}"
+              target="_blank"
+              class="btn-link"
+            >
+              📸 Instagram
+            </a>
+          `
+          : ""
+      }
+
+
+      ${
+        b.site
+          ? `
+            <a
+              href="${b.site}"
+              target="_blank"
+              class="btn-link"
+            >
+              🌐 Site
+            </a>
+          `
+          : ""
+      }
+
+
+      ${
+        b.link_maps
+          ? `
+            <a
+              href="${b.link_maps}"
+              target="_blank"
+              class="btn-link"
+            >
+              📍 Como chegar
+            </a>
+          `
+          : b.endereco
+            ? `
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
+                target="_blank"
+                class="btn-link"
+              >
+                📍 Como chegar
+              </a>
+            `
+            : ""
+      }
+
+    </div>
+
+
+    <!-- OBSERVAÇÕES NO FINAL -->
+
+    ${
+      observacoes
+        ? `
+          <div class="card-observacoes">
+
+            <span class="card-observacoes-titulo">
+              ℹ️ CONDIÇÕES DE UTILIZAÇÃO
+            </span>
+
+            ${observacoes}
+
+          </div>
+        `
+        : ""
+    }
+
+
+  </div>
+`;
 
     lista.appendChild(card);
   });
