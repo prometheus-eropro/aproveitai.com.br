@@ -89,198 +89,84 @@ const exclusivo =
 );
 
     const card = document.createElement("div");
-
-card.className = "card-oferta";
-
-
-const inicio =
-  p.dataInicio
-    ? new Date(p.dataInicio)
-        .toLocaleDateString("pt-BR")
-    : "-";
-
-
-const fim =
-  p.dataFim
-    ? new Date(p.dataFim)
-        .toLocaleDateString("pt-BR")
-    : "-";
-
-
-const observacoes =
-  String(
-    p.observacoes ||
-    p.condicoes ||
-    ""
-  ).trim();
-
-
-card.innerHTML = `
-
-  <!-- PARCEIRO -->
-
-  <div class="card-parceiro">
-
-    <div class="card-parceiro-label">
-      🏪 PARCEIRO APROVEITAI
-    </div>
-
-    <div class="card-parceiro-nome">
-      ${p.parceiro || "Parceiro"}
-    </div>
-
-  </div>
-
-
-  <div class="card-conteudo">
-
-
-    ${
-      exclusivo
-        ? `
-          <div class="card-exclusivo">
-            ⭐ EXCLUSIVO
-          </div>
-        `
-        : ""
+    card.className = "card";
+    if (exclusivo) {
+      card.style.border = "2px solid #ffcc00";
+      card.style.background = "#fffdf2";
     }
 
+    card.innerHTML = `
+      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
+      <h3>${p.titulo || ""}</h3>
 
-    <!-- PROMOÇÃO -->
+<div style="
+white-space:pre-line;
+line-height:1.7;
+text-align:left;
+margin-top:10px;
+">
+${p.descricao || ""}
+</div>
 
-    <div class="card-oferta-box">
+${
+p.observacoes
+? `
+<div class="condicoes">
 
-      <div class="card-oferta-tipo">
-        🔥 PROMOÇÃO
-      </div>
-
-      <h3 class="card-oferta-titulo">
-        ${p.titulo || ""}
-      </h3>
-
-      ${
-        p.descricao
-          ? `
-            <div class="card-oferta-descricao">
-              ${p.descricao}
-            </div>
-          `
-          : ""
-      }
-
+    <div class="condicoes-titulo">
+        ℹ️ IMPORTANTE
     </div>
 
-
-    <!-- VIGÊNCIA -->
-
-    <div class="card-vigencia">
-
-      📅 <strong>Vigência:</strong>
-
-      ${inicio}
-
-      ${fim !== "-" ? " até " + fim : ""}
-
+    <div class="condicoes-texto">
+        ${p.observacoes}
     </div>
 
+</div>
+`
+: ""
+}
 
-    <!-- BOTÕES -->
+      <p><strong>PARCEIRO:</strong> ${p.parceiro || ""}</p>
+      <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+  ${p.zap ? `
+    <a href="https://wa.me/55${p.zap.replace(/\D/g,'')}"
+       target="_blank"
+       class="btn-link">📲 WhatsApp</a>` : ""}
 
-    <div class="card-acoes">
+  ${p.instagram ? `
+    <a href="${p.instagram}"
+       target="_blank"
+       class="btn-link">📸 Instagram</a>` : ""}
 
-      ${
-        p.zap
-          ? `
-            <a
-              href="https://wa.me/55${p.zap.replace(/\D/g,'')}"
-              target="_blank"
-              class="btn-link"
-            >
-              📲 WhatsApp
-            </a>
-          `
-          : ""
-      }
+  ${p.site ? `
+    <a href="${p.site}"
+       target="_blank"
+       class="btn-link">🌐 Site</a>` : ""}
 
+  ${p.endereco ? `
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.endereco)}"
+       target="_blank"
+       class="btn-link">📍 Como chegar</a>` : ""}
+</div>
 
-      ${
-        p.instagram
-          ? `
-            <a
-              href="${p.instagram}"
-              target="_blank"
-              class="btn-link"
-            >
-              📸 Instagram
-            </a>
-          `
-          : ""
-      }
+     <p>
+<strong>Início:</strong>
+${
+p.dataInicio
+? new Date(p.dataInicio).toLocaleDateString("pt-BR")
+: "-"
+}
+</p>
 
-
-      ${
-        p.site
-          ? `
-            <a
-              href="${p.site}"
-              target="_blank"
-              class="btn-link"
-            >
-              🌐 Site
-            </a>
-          `
-          : ""
-      }
-
-
-      ${
-        p.link_maps
-          ? `
-            <a
-              href="${p.link_maps}"
-              target="_blank"
-              class="btn-link"
-            >
-              📍 Como chegar
-            </a>
-          `
-          : p.endereco
-            ? `
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.endereco)}"
-                target="_blank"
-                class="btn-link"
-              >
-                📍 Como chegar
-              </a>
-            `
-            : ""
-      }
-
-    </div>
-
-
-    <!-- OBSERVAÇÕES NO FINAL -->
-
-    ${
-      observacoes
-        ? `
-          <div class="card-observacoes">
-
-            <span class="card-observacoes-titulo">
-              ℹ️ CONDIÇÕES DA PROMOÇÃO
-            </span>
-
-            ${observacoes}
-
-          </div>
-        `
-        : ""
-    }
-
-
-  </div>
-`;
+<p>
+<strong>Fim:</strong>
+${
+p.dataFim
+? new Date(p.dataFim).toLocaleDateString("pt-BR")
+: "-"
+}
+</p>
+    `;
 
     lista.appendChild(card);
   });
@@ -313,7 +199,7 @@ Versão
 <span id="versaoSistema"></span>
 </div>
 </footer>
-
+</script>
 <button class="btn-voltar-flutuante" onclick="voltarPagina()">
   ⬅️ Voltar
 </button>

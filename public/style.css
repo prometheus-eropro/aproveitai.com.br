@@ -2768,5 +2768,217 @@ color:#666;
   }
 
 }
+/* =====================================================
+   APROVEITAI
+   ORGANIZAÇÃO INTERNA — BENEFÍCIOS E PROMOÇÕES
+   NÃO ALTERA TAMANHO DO CARD
+===================================================== */
 
+
+/* IDENTIFICAÇÃO DO PARCEIRO */
+
+.oferta-parceiro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+
+  border-bottom: 2px solid #e3f0e7;
+
+  text-align: left;
+}
+
+
+/* LOGO */
+
+.oferta-logo-box {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oferta-logo {
+  max-width: 65px !important;
+  max-height: 65px !important;
+
+  width: auto !important;
+  height: auto !important;
+
+  margin: 0 !important;
+
+  object-fit: contain;
+}
+
+
+/* DADOS DO PARCEIRO */
+
+.oferta-parceiro-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.oferta-parceiro-label {
+  font-size: 10px;
+  font-weight: 800;
+
+  color: #0b7a2a;
+
+  letter-spacing: .5px;
+}
+
+.oferta-parceiro-nome {
+  margin-top: 3px;
+
+  font-size: 18px;
+  line-height: 1.2;
+
+  font-weight: 800;
+  color: #183523;
+}
+
+.oferta-parceiro-ramo {
+  margin-top: 3px;
+
+  font-size: 12px;
+  color: #666;
+}
+
+
+/* EXCLUSIVO */
+
+.oferta-exclusivo {
+  display: inline-block;
+
+  margin: 0 auto 10px;
+
+  padding: 5px 10px;
+
+  background: #ffd400;
+  color: #222;
+
+  border-radius: 15px;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+/* QUADRO DO BENEFÍCIO / PROMOÇÃO */
+
+.oferta-destaque {
+  padding: 13px;
+
+  background: #f1faf4;
+
+  border: 2px solid #0b7a2a;
+  border-radius: 10px;
+
+  text-align: center;
+}
+
+.oferta-tipo {
+  margin-bottom: 6px;
+
+  color: #0b7a2a;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.oferta-titulo {
+  margin: 0;
+
+  color: #17351f;
+
+  font-size: 17px;
+  line-height: 1.25;
+
+  font-weight: 800;
+}
+
+.oferta-descricao {
+  margin-top: 8px;
+
+  color: #333;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  white-space: pre-line;
+
+  text-align: left;
+}
+
+
+/* VIGÊNCIA */
+
+.oferta-vigencia {
+  margin-top: 12px;
+
+  padding: 8px;
+
+  background: #f7f7f7;
+
+  border-radius: 7px;
+
+  font-size: 12px;
+  color: #444;
+
+  text-align: center;
+}
+
+
+/* BOTÕES */
+
+.oferta-acoes {
+  display: flex;
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 12px;
+}
+
+
+/* CONDIÇÕES — SEMPRE POR ÚLTIMO */
+
+.oferta-observacoes {
+  margin-top: 14px;
+
+  padding: 11px;
+
+  background: #fff8df;
+
+  border-left: 4px solid #e5ad00;
+  border-radius: 7px;
+
+  text-align: left;
+
+  color: #4d4300;
+}
+
+.oferta-observacoes-titulo {
+  margin-bottom: 6px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  color: #5d4b00;
+}
+
+.oferta-observacoes-texto {
+  white-space: pre-line;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
 </style>
