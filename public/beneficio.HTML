@@ -10,7 +10,7 @@
 <script src="js/include.js" defer></script>
 </head>
 
-<body class="pagina-beneficios">
+<body>
 
 <!-- CABEÇALHO (INALTERADO) -->
 <header class="site-header">
@@ -94,295 +94,85 @@ const exclusivo =
     }
 
     card.innerHTML = `
+      ${exclusivo ? `<div style="background:#ffcc00;color:#000;font-weight:bold;padding:4px;text-align:center;border-radius:4px;">EXCLUSIVO</div>` : ""}
+      <h3>${b.titulo || ""}</h3>
 
-  <!-- ==========================================
-       1. PARCEIRO
-  =========================================== -->
+<div style="
+white-space:pre-line;
+line-height:1.7;
+text-align:left;
+margin-top:10px;
+">
+${b.descricao || ""}
+</div>
 
-  <div style="
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding-bottom:10px;
-    margin-bottom:10px;
-    border-bottom:1px solid #ddd;
-  ">
+${
+b.observacoes
+? `
+<div class="condicoes">
 
-    ${
-      (b.logoURL || b.logo_url || b.logo)
-        ? `
-          <div style="
-            width:58px;
-            height:58px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-shrink:0;
-          ">
-            <img
-              src="${b.logoURL || b.logo_url || b.logo}"
-              alt="${b.parceiro || "Parceiro"}"
-              style="
-                max-width:58px;
-                max-height:58px;
-                width:auto;
-                height:auto;
-                object-fit:contain;
-              "
-            >
-          </div>
-        `
-        : ""
-    }
+    <div class="condicoes-titulo">
+        ℹ️ IMPORTANTE
+    </div>
 
-    <div style="
-      flex:1;
-      text-align:left;
-    ">
+    <div class="condicoes-texto">
+        ${b.observacoes}
+    </div>
 
-      <div style="
-        font-size:10px;
-        font-weight:bold;
-        color:#0b7a2a;
-        margin-bottom:2px;
-      ">
-        🏪 PARCEIRO APROVEITAI
-      </div>
+</div>
+`
+: ""
+}
 
-      <div style="
-        font-size:17px;
-        font-weight:bold;
-      ">
-        ${b.parceiro || b.nomeFantasia || ""}
-      </div>
+      <p><strong>PARCEIRO:</strong> ${b.parceiro || ""}</p>
+      <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+  ${b.zap ? `
+    <a href="https://wa.me/55${b.zap.replace(/\D/g,'')}"
+       target="_blank"
+       class="btn-link">📲 WhatsApp</a>` : ""}
+
+  ${b.instagram ? `
+    <a href="${b.instagram}"
+       target="_blank"
+       class="btn-link">📸 Instagram</a>` : ""}
+
+  ${b.site ? `
+    <a href="${b.site}"
+       target="_blank"
+       class="btn-link">🌐 Site</a>` : ""}
+
+  ${b.endereco ? `
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
+       target="_blank"
+       class="btn-link">📍 Como chegar</a>` : ""}
+</div>
 
       ${
-        b.ramo
-          ? `
-            <div style="
-              font-size:12px;
-              color:#666;
-              margin-top:2px;
-            ">
-              ${b.ramo}
-            </div>
-          `
-          : ""
-      }
+b.dataInicio
+? `
+<p>
 
-    </div>
+<strong>📅 Vigência:</strong>
 
-  </div>
+${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
 
+${
+b.dataFim
+?
+" até "+new Date(b.dataFim).toLocaleDateString("pt-BR")
+:
+""
 
-  <!-- ==========================================
-       2. EXCLUSIVO
-       SOMENTE QUANDO FOR EXCLUSIVO
-  =========================================== -->
+}
 
-  ${
-    exclusivo
-      ? `
-        <div style="
-          background:#ffcc00;
-          color:#000;
-          font-weight:bold;
-          padding:5px 8px;
-          text-align:center;
-          border-radius:5px;
-          margin-bottom:10px;
-        ">
-          ⭐ EXCLUSIVO
-        </div>
-      `
-      : ""
-  }
+</p>
+`
+:
+""
+}
 
-
-  <!-- ==========================================
-       3. QUADRO PRINCIPAL DO BENEFÍCIO
-  =========================================== -->
-
-  <div style="
-    border:2px solid #0b7a2a;
-    border-radius:8px;
-    padding:12px;
-    background:#f1faf4;
-    margin-bottom:10px;
-  ">
-
-    <div style="
-      text-align:center;
-      color:#0b7a2a;
-      font-size:11px;
-      font-weight:bold;
-      margin-bottom:6px;
-    ">
-      🎁 BENEFÍCIO
-    </div>
-
-    <h3 style="
-      margin:0;
-      text-align:center;
-    ">
-      ${b.titulo || ""}
-    </h3>
-
-    ${
-      b.descricao
-        ? `
-          <div style="
-            white-space:pre-line;
-            line-height:1.6;
-            text-align:left;
-            margin-top:8px;
-          ">
-            ${b.descricao}
-          </div>
-        `
-        : ""
-    }
-
-  </div>
-
-
-  <!-- ==========================================
-       4. VIGÊNCIA
-  =========================================== -->
-
-  ${
-    b.dataInicio
-      ? `
-        <div style="
-          margin-top:10px;
-          margin-bottom:10px;
-        ">
-
-          <strong>📅 Vigência:</strong>
-
-          ${new Date(b.dataInicio).toLocaleDateString("pt-BR")}
-
-          ${
-            b.dataFim
-              ? " até " +
-                new Date(b.dataFim).toLocaleDateString("pt-BR")
-              : ""
-          }
-
-        </div>
-      `
-      : ""
-  }
-
-
-  <!-- ==========================================
-       5. BOTÕES DO PARCEIRO
-  =========================================== -->
-
-  <div style="
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:10px;
-    margin-bottom:10px;
-  ">
-
-    ${
-      (b.zap || b.whatsapp || b.telefone)
-        ? `
-          <a
-            href="https://wa.me/55${String(
-              b.zap ||
-              b.whatsapp ||
-              b.telefone
-            ).replace(/\D/g,'')}"
-            target="_blank"
-            class="btn-link">
-            📲 WhatsApp
-          </a>
-        `
-        : ""
-    }
-
-
-    ${
-      b.instagram
-        ? `
-          <a
-            href="${b.instagram}"
-            target="_blank"
-            class="btn-link">
-            📸 Instagram
-          </a>
-        `
-        : ""
-    }
-
-
-    ${
-      b.site
-        ? `
-          <a
-            href="${b.site}"
-            target="_blank"
-            class="btn-link">
-            🌐 Site
-          </a>
-        `
-        : ""
-    }
-
-
-    ${
-      b.link_maps
-        ? `
-          <a
-            href="${b.link_maps}"
-            target="_blank"
-            class="btn-link">
-            📍 Como chegar
-          </a>
-        `
-        :
-        b.endereco
-          ? `
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.endereco)}"
-              target="_blank"
-              class="btn-link">
-              📍 Como chegar
-            </a>
-          `
-          : ""
-    }
-
-  </div>
-
-
-  <!-- ==========================================
-       6. CONDIÇÕES DE UTILIZAÇÃO
-       SEMPRE POR ÚLTIMO
-  =========================================== -->
-
-  ${
-    b.observacoes
-      ? `
-        <div class="condicoes">
-
-          <div class="condicoes-titulo">
-            ℹ️ CONDIÇÕES DE UTILIZAÇÃO
-          </div>
-
-          <div class="condicoes-texto">
-            ${b.observacoes}
-          </div>
-
-        </div>
-      `
-      : ""
-  }
-
-`;
+     
+    `;
 
     lista.appendChild(card);
   });
