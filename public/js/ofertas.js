@@ -353,11 +353,11 @@ window.AproveitAIOfertas = (() => {
       return "";
     }
 
-    return `
-      <div class="oferta-exclusivo">
-        ⭐ EXCLUSIVO
-      </div>
-    `;
+   return `
+  <div class="oferta-exclusivo">
+    ★ EXCLUSIVO
+  </div>
+`;
   }
 
 
