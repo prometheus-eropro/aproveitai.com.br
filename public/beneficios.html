@@ -1057,50 +1057,7 @@ function carregarBeneficios(){
                     "";
 
 
-                card.innerHTML = `
-
-<div class="parceiro-cabecalho">
-
-    ${
-        logo
-        ? `
-            <div class="parceiro-logo-box">
-
-                <img
-                    src="${logo}"
-                    alt="${nomeParceiro}"
-                >
-
-            </div>
-        `
-        : ""
-    }
-
-    <div class="parceiro-identificacao">
-
-        <div class="parceiro-label">
-            🏪 PARCEIRO APROVEITAI
-        </div>
-
-        <div class="parceiro-nome-beneficio">
-            ${nomeParceiro}
-        </div>
-
-        ${
-            b.ramo
-            ? `
-                <div class="parceiro-ramo-beneficio">
-                    ${b.ramo}
-                </div>
-            `
-            : ""
-        }
-
-    </div>
-
-</div>
-
-
+                
 card.innerHTML = `
 
 <div class="parceiro-cabecalho">
