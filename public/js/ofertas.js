@@ -922,3 +922,397 @@ window.AproveitAIOfertas = (() => {
   };
 
 })();
+
+/* =========================================================
+   APROVEITAI
+   ESTILO OFICIAL DOS CARDS DE OFERTAS
+========================================================= */
+
+(function(){
+
+  if(document.getElementById("aproveitai-ofertas-css")){
+    return;
+  }
+
+  const style =
+    document.createElement("style");
+
+  style.id =
+    "aproveitai-ofertas-css";
+
+  style.textContent = `
+
+/* CARD */
+
+.oferta-card{
+    width:100%;
+    max-width:520px;
+    margin:0 auto 20px;
+    padding:20px;
+
+    box-sizing:border-box;
+
+    background:#ffffff;
+
+    border:1px solid #e3e3e3;
+    border-radius:16px;
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,.08);
+
+    color:#222;
+    text-align:left;
+
+    overflow:hidden;
+}
+
+
+/* ==========================================
+   PARCEIRO
+========================================== */
+
+.oferta-parceiro{
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+
+    padding-bottom:14px;
+    margin-bottom:14px;
+
+    border-bottom:1px solid #dddddd;
+}
+
+
+.oferta-parceiro-logo{
+    width:68px;
+    height:68px;
+    min-width:68px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+
+    border-radius:10px;
+}
+
+
+.oferta-parceiro-logo img{
+    display:block !important;
+
+    width:auto !important;
+    height:auto !important;
+
+    max-width:68px !important;
+    max-height:68px !important;
+
+    object-fit:contain !important;
+
+    margin:0 !important;
+}
+
+
+.oferta-parceiro-info{
+    flex:1;
+    min-width:0;
+}
+
+
+.oferta-parceiro-label{
+    margin-bottom:3px;
+
+    color:#087c2b;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+
+.oferta-parceiro-nome{
+    color:#222;
+
+    font-size:18px;
+    font-weight:800;
+    line-height:1.25;
+
+    overflow-wrap:anywhere;
+}
+
+
+.oferta-parceiro-ramo{
+    margin-top:4px;
+
+    color:#666;
+
+    font-size:13px;
+}
+
+
+/* ==========================================
+   EXCLUSIVO
+========================================== */
+
+.oferta-exclusivo{
+    width:100%;
+
+    margin:0 0 12px;
+    padding:7px 10px;
+
+    box-sizing:border-box;
+
+    background:#ffcc00;
+    color:#222;
+
+    border-radius:7px;
+
+    text-align:center;
+
+    font-size:13px;
+    font-weight:800;
+}
+
+
+/* ==========================================
+   CONTEÚDO PRINCIPAL
+========================================== */
+
+.oferta-principal{
+    width:100%;
+
+    box-sizing:border-box;
+
+    padding:15px;
+
+    margin-bottom:14px;
+
+    background:#f1faf4;
+
+    border:2px solid #0b8a35;
+    border-radius:10px;
+
+    text-align:center;
+}
+
+
+.oferta-tipo{
+    margin-bottom:8px;
+
+    color:#087c2b;
+
+    font-size:12px;
+    font-weight:800;
+}
+
+
+.oferta-titulo{
+    margin:0 0 10px !important;
+
+    color:#222 !important;
+
+    font-size:19px !important;
+    font-weight:800 !important;
+    line-height:1.3 !important;
+
+    text-align:center !important;
+}
+
+
+.oferta-categoria{
+    margin:5px 0;
+
+    color:#555;
+
+    font-size:12px;
+    font-weight:700;
+
+    text-align:center;
+}
+
+
+.oferta-descricao{
+    margin-top:10px;
+
+    color:#222;
+
+    font-size:14px;
+    line-height:1.55;
+
+    text-align:left;
+
+    white-space:pre-line;
+    overflow-wrap:anywhere;
+}
+
+
+/* ==========================================
+   VIGÊNCIA / PAGAMENTO
+========================================== */
+
+.oferta-vigencia,
+.oferta-pagamento{
+    margin:10px 0;
+
+    color:#222;
+
+    font-size:14px;
+    line-height:1.5;
+}
+
+
+/* ==========================================
+   CONTATOS
+========================================== */
+
+.oferta-contatos{
+    display:flex;
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    margin:14px 0;
+}
+
+
+.oferta-btn{
+    display:inline-flex !important;
+
+    align-items:center;
+    justify-content:center;
+
+    width:auto !important;
+
+    min-height:36px;
+
+    padding:8px 12px !important;
+    margin:0 !important;
+
+    box-sizing:border-box;
+
+    background:#087c2b !important;
+    color:#ffffff !important;
+
+    border:none !important;
+    border-radius:7px !important;
+
+    text-decoration:none !important;
+
+    font-size:13px !important;
+    font-weight:700 !important;
+
+    line-height:1.2;
+}
+
+
+.oferta-btn:hover{
+    background:#065e20 !important;
+}
+
+
+/* ==========================================
+   CONDIÇÕES
+========================================== */
+
+.oferta-condicoes{
+    width:100%;
+
+    margin-top:16px;
+    padding:16px;
+
+    box-sizing:border-box;
+
+    background:#eefaf0;
+
+    border:2px solid #0b8a35;
+    border-radius:10px;
+}
+
+
+.oferta-condicoes-titulo{
+    margin-bottom:14px;
+
+    color:#087c2b;
+
+    text-align:center;
+
+    font-size:16px;
+    font-weight:800;
+}
+
+
+.oferta-condicoes-texto{
+    color:#333;
+
+    font-size:14px;
+    line-height:1.65;
+
+    text-align:left;
+
+    white-space:pre-line;
+    overflow-wrap:anywhere;
+}
+
+
+.oferta-validacao{
+    margin-top:14px;
+    padding-top:14px;
+
+    border-top:1px solid #c9dfce;
+
+    color:#333;
+
+    font-size:14px;
+    line-height:1.6;
+
+    text-align:left;
+}
+
+
+/* ==========================================
+   CELULAR
+========================================== */
+
+@media(max-width:600px){
+
+    .oferta-card{
+        max-width:100%;
+        padding:15px;
+        border-radius:12px;
+    }
+
+
+    .oferta-parceiro-logo{
+        width:58px;
+        height:58px;
+        min-width:58px;
+    }
+
+
+    .oferta-parceiro-logo img{
+        max-width:58px !important;
+        max-height:58px !important;
+    }
+
+
+    .oferta-parceiro-nome{
+        font-size:16px;
+    }
+
+
+    .oferta-titulo{
+        font-size:17px !important;
+    }
+
+
+    .oferta-contatos{
+        justify-content:center;
+    }
+
+}
+
+  `;
+
+  document.head.appendChild(style);
+
+})();
