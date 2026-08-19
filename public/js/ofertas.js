@@ -5,8 +5,23 @@
 
 window.AproveitAIOfertas = (() => {
 
+  /* =====================================================
+     UTILITÁRIOS
+  ===================================================== */
+
   function texto(v) {
     return String(v ?? "").trim();
+  }
+
+
+  function escaparHTML(v) {
+
+    return texto(v)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
 
@@ -16,7 +31,6 @@ window.AproveitAIOfertas = (() => {
 
     const s = texto(valor);
 
-    // já está DD/MM/AAAA
     if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
       return s;
     }
@@ -40,6 +54,7 @@ window.AproveitAIOfertas = (() => {
     if (!valor) return [];
 
     if (Array.isArray(valor)) {
+
       return valor
         .map(texto)
         .filter(Boolean);
@@ -67,7 +82,8 @@ window.AproveitAIOfertas = (() => {
 
   function htmlPagamento(oferta) {
 
-    const formas = formasPagamento(oferta);
+    const formas =
+      formasPagamento(oferta);
 
     if (!formas.length) {
       return "";
@@ -80,8 +96,13 @@ window.AproveitAIOfertas = (() => {
 
     return `
       <div class="oferta-pagamento">
-        <strong>💳 ${titulo}:</strong>
-        ${formas.join(" • ")}
+
+        <strong>
+          💳 ${titulo}:
+        </strong>
+
+        ${formas.map(escaparHTML).join(" • ")}
+
       </div>
     `;
   }
@@ -104,35 +125,192 @@ window.AproveitAIOfertas = (() => {
       "";
 
     if (inicio && fim) {
+
       return `
         <div class="oferta-vigencia">
+
           📅 <strong>Vigência:</strong>
-          ${dataBR(inicio)} até ${dataBR(fim)}
+
+          ${escaparHTML(dataBR(inicio))}
+          até
+          ${escaparHTML(dataBR(fim))}
+
         </div>
       `;
     }
+
 
     if (inicio) {
+
       return `
         <div class="oferta-vigencia">
+
           📅 <strong>Válido a partir de:</strong>
-          ${dataBR(inicio)}
+
+          ${escaparHTML(dataBR(inicio))}
+
         </div>
       `;
     }
 
+
     if (fim) {
+
       return `
         <div class="oferta-vigencia">
+
           📅 <strong>Válido até:</strong>
-          ${dataBR(fim)}
+
+          ${escaparHTML(dataBR(fim))}
+
         </div>
       `;
     }
+
 
     return "";
   }
 
+  /* =====================================================
+     SITUAÇÃO / VIGÊNCIA DA PROMOÇÃO
+  ===================================================== */
+
+  function converterData(valor) {
+
+    if (!valor) {
+      return null;
+    }
+
+    if (valor instanceof Date) {
+
+      const d =
+        new Date(valor.getTime());
+
+      return isNaN(d.getTime())
+        ? null
+        : d;
+    }
+
+
+    const s =
+      texto(valor);
+
+
+    /*
+     * DD/MM/AAAA
+     */
+
+    const br =
+      s.match(
+        /^(\d{2})\/(\d{2})\/(\d{4})$/
+      );
+
+
+    if (br) {
+
+      const d =
+        new Date(
+          Number(br[3]),
+          Number(br[2]) - 1,
+          Number(br[1])
+        );
+
+      return isNaN(d.getTime())
+        ? null
+        : d;
+    }
+
+
+    /*
+     * Demais formatos recebidos do GAS
+     */
+
+    const d =
+      new Date(valor);
+
+
+    return isNaN(d.getTime())
+      ? null
+      : d;
+  }
+
+
+  function promocaoEncerrada(oferta) {
+
+    const fim =
+      oferta.dataFim ??
+      oferta.data_fim ??
+      "";
+
+    if (!fim) {
+      return false;
+    }
+
+
+    const dataFim =
+      converterData(fim);
+
+
+    if (!dataFim) {
+      return false;
+    }
+
+
+    dataFim.setHours(
+      23,
+      59,
+      59,
+      999
+    );
+
+
+    return new Date() > dataFim;
+  }
+
+
+  function promocaoFutura(oferta) {
+
+    const inicio =
+      oferta.dataInicio ??
+      oferta.data_inicio ??
+      "";
+
+    if (!inicio) {
+      return false;
+    }
+
+
+    const dataInicio =
+      converterData(inicio);
+
+
+    if (!dataInicio) {
+      return false;
+    }
+
+
+    dataInicio.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const hoje =
+      new Date();
+
+
+    hoje.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    return hoje < dataInicio;
+  }
 
   /* =====================================================
      EXCLUSIVIDADE
@@ -140,11 +318,31 @@ window.AproveitAIOfertas = (() => {
 
   function ehExclusivo(oferta) {
 
-    return Boolean(
-      texto(oferta.grupo) ||
-      texto(oferta.idPublico) ||
-      texto(oferta.id_publico) ||
-      texto(oferta.cpf)
+    const grupo =
+      texto(oferta.grupo)
+        .toUpperCase();
+
+
+    const possuiGrupoExclusivo =
+      grupo !== "" &&
+      grupo !== "GERAL";
+
+
+    const possuiClienteEspecifico =
+      Boolean(
+
+        texto(oferta.idPublico) ||
+
+        texto(oferta.id_publico) ||
+
+        texto(oferta.cpf)
+
+      );
+
+
+    return (
+      possuiGrupoExclusivo ||
+      possuiClienteEspecifico
     );
   }
 
@@ -157,14 +355,290 @@ window.AproveitAIOfertas = (() => {
 
     return `
       <div class="oferta-exclusivo">
-        ☆ EXCLUSIVO
+        ⭐ EXCLUSIVO
       </div>
     `;
   }
 
 
   /* =====================================================
-     CONDIÇÕES CADASTRADAS PELO PARCEIRO
+     PARCEIRO
+  ===================================================== */
+
+  function htmlParceiro(oferta) {
+
+    const nome =
+      texto(
+        oferta.parceiro ||
+        oferta.nomeFantasia
+      );
+
+
+    const ramo =
+      texto(oferta.ramo);
+
+
+    const logo =
+      texto(
+        oferta.logoURL ||
+        oferta.logo_url ||
+        oferta.logo
+      );
+
+
+    if (!nome && !logo) {
+      return "";
+    }
+
+
+    return `
+      <div class="oferta-parceiro">
+
+        ${
+          logo
+            ? `
+              <div class="oferta-parceiro-logo">
+
+                <img
+                  src="${escaparHTML(logo)}"
+                  alt="${escaparHTML(nome || "Parceiro AproveitAI")}"
+                  loading="lazy"
+                >
+
+              </div>
+            `
+            : ""
+        }
+
+
+        <div class="oferta-parceiro-info">
+
+          <div class="oferta-parceiro-label">
+            🏪 PARCEIRO APROVEITAI
+          </div>
+
+          ${
+            nome
+              ? `
+                <div class="oferta-parceiro-nome">
+                  ${escaparHTML(nome)}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            ramo
+              ? `
+                <div class="oferta-parceiro-ramo">
+                  ${escaparHTML(ramo)}
+                </div>
+              `
+              : ""
+          }
+
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  /* =====================================================
+     LINKS DO PARCEIRO
+  ===================================================== */
+
+  function somenteNumeros(v) {
+    return texto(v).replace(/\D/g, "");
+  }
+
+
+  function linkWhatsApp(oferta) {
+
+    let numero =
+      somenteNumeros(
+        oferta.whatsapp ||
+        oferta.telefone
+      );
+
+
+    if (!numero) {
+      return "";
+    }
+
+
+    /*
+     * Se o telefone possuir DDD + número,
+     * acrescenta o código do Brasil.
+     */
+
+    if (
+      numero.length >= 10 &&
+      numero.length <= 11
+    ) {
+      numero = "55" + numero;
+    }
+
+
+    return (
+      "https://wa.me/" +
+      encodeURIComponent(numero)
+    );
+  }
+
+
+  function linkInstagram(oferta) {
+
+    let instagram =
+      texto(oferta.instagram);
+
+    if (!instagram) {
+      return "";
+    }
+
+
+    if (
+      /^https?:\/\//i.test(instagram)
+    ) {
+      return instagram;
+    }
+
+
+    instagram =
+      instagram
+        .replace(/^@/, "")
+        .replace(/^instagram\.com\//i, "")
+        .replace(/^www\.instagram\.com\//i, "")
+        .replace(/\/+$/, "");
+
+
+    return (
+      "https://www.instagram.com/" +
+      encodeURIComponent(instagram)
+    );
+  }
+
+
+  function linkMaps(oferta) {
+
+    const link =
+      texto(
+        oferta.link_maps ||
+        oferta.linkMaps
+      );
+
+
+    if (link) {
+      return link;
+    }
+
+
+    const partes = [
+
+      oferta.endereco,
+      oferta.numero,
+      oferta.complemento,
+      oferta.bairro,
+      oferta.cidade,
+      oferta.uf
+
+    ]
+      .map(texto)
+      .filter(Boolean);
+
+
+    if (!partes.length) {
+      return "";
+    }
+
+
+    return (
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent(
+        partes.join(", ")
+      )
+    );
+  }
+
+
+  function htmlContatos(oferta) {
+
+    const whatsapp =
+      linkWhatsApp(oferta);
+
+    const instagram =
+      linkInstagram(oferta);
+
+    const maps =
+      linkMaps(oferta);
+
+
+    if (
+      !whatsapp &&
+      !instagram &&
+      !maps
+    ) {
+      return "";
+    }
+
+
+    return `
+      <div class="oferta-contatos">
+
+        ${
+          whatsapp
+            ? `
+              <a
+                href="${escaparHTML(whatsapp)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="oferta-btn oferta-btn-whatsapp"
+              >
+                📲 WhatsApp
+              </a>
+            `
+            : ""
+        }
+
+
+        ${
+          instagram
+            ? `
+              <a
+                href="${escaparHTML(instagram)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="oferta-btn oferta-btn-instagram"
+              >
+                📸 Instagram
+              </a>
+            `
+            : ""
+        }
+
+
+        ${
+          maps
+            ? `
+              <a
+                href="${escaparHTML(maps)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="oferta-btn oferta-btn-maps"
+              >
+                📍 Como chegar
+              </a>
+            `
+            : ""
+        }
+
+      </div>
+    `;
+  }
+
+
+  /* =====================================================
+     CONDIÇÕES
   ===================================================== */
 
   function condicoes(oferta) {
@@ -178,14 +652,30 @@ window.AproveitAIOfertas = (() => {
   }
 
 
-  function htmlCondicoes(oferta, tipo) {
+  function htmlCondicoes(
+    oferta,
+    tipo
+  ) {
 
-    const c = condicoes(oferta);
+    const c =
+      condicoes(oferta);
+
+
+    const ehPromocao =
+      tipo === "promocao";
+
 
     const titulo =
-      tipo === "promocao"
+      ehPromocao
         ? "CONDIÇÕES DA PROMOÇÃO"
         : "CONDIÇÕES DE UTILIZAÇÃO";
+
+
+    const nomeOferta =
+      ehPromocao
+        ? "A promoção"
+        : "O benefício";
+
 
     return `
       <div class="oferta-condicoes">
@@ -194,17 +684,32 @@ window.AproveitAIOfertas = (() => {
           ℹ️ ${titulo}
         </div>
 
+
         ${
           c
-            ? `<div class="oferta-condicoes-texto">${c}</div>`
+            ? `
+              <div class="oferta-condicoes-texto">
+                ${escaparHTML(c)}
+              </div>
+            `
             : ""
         }
 
+
         <div class="oferta-validacao">
-          🛡️ <strong>Validação obrigatória:</strong>
-          apresente e valide seu Cartão AproveitAI antes da
-          conclusão da compra. O benefício ou promoção está
-          sujeito às condições definidas pelo parceiro.
+
+          🛡️
+          <strong>
+            Validação obrigatória:
+          </strong>
+
+          apresente e valide seu
+          Cartão AproveitAI antes da
+          conclusão da compra.
+
+          ${nomeOferta} está sujeito às
+          condições definidas pelo parceiro.
+
         </div>
 
       </div>
@@ -213,28 +718,58 @@ window.AproveitAIOfertas = (() => {
 
 
   /* =====================================================
-     CARD OFICIAL
+     RENDERIZAÇÃO
   ===================================================== */
 
-  function render(oferta, opcoes = {}) {
+  function render(
+    oferta,
+    opcoes = {}
+  ) {
+
+    oferta =
+      oferta || {};
+
 
     const tipo =
       opcoes.tipo === "promocao"
         ? "promocao"
         : "beneficio";
 
+
     const compacto =
       opcoes.compacto === true;
 
+
+    /*
+     * Permite ocultar cabeçalho e contatos
+     * em telas onde o parceiro já está
+     * identificado externamente.
+     */
+
+    const mostrarParceiro =
+      opcoes.mostrarParceiro !== false;
+
+
+    const mostrarContatos =
+      opcoes.mostrarContatos !== false;
+
+
     const titulo =
       texto(oferta.titulo) ||
-      (tipo === "promocao" ? "Promoção" : "Benefício");
+      (
+        tipo === "promocao"
+          ? "Promoção"
+          : "Benefício"
+      );
+
 
     const descricao =
       texto(oferta.descricao);
 
+
     const categoria =
       texto(oferta.categoria);
+
 
     const rotulo =
       tipo === "promocao"
@@ -244,9 +779,22 @@ window.AproveitAIOfertas = (() => {
 
     return `
 
-      <div class="oferta-card ${compacto ? "oferta-compacta" : ""}">
+      <div
+        class="
+          oferta-card
+          ${compacto ? "oferta-compacta" : ""}
+        "
+      >
+
+        ${
+          mostrarParceiro
+            ? htmlParceiro(oferta)
+            : ""
+        }
+
 
         ${htmlExclusivo(oferta)}
+
 
         <div class="oferta-principal">
 
@@ -254,27 +802,48 @@ window.AproveitAIOfertas = (() => {
             ${rotulo}
           </div>
 
+
           <h3 class="oferta-titulo">
-            ${titulo}
+            ${escaparHTML(titulo)}
           </h3>
+
 
           ${
             categoria
-              ? `<div class="oferta-categoria">${categoria}</div>`
+              ? `
+                <div class="oferta-categoria">
+                  ${escaparHTML(categoria)}
+                </div>
+              `
               : ""
           }
 
+
           ${
             descricao
-              ? `<div class="oferta-descricao">${descricao}</div>`
+              ? `
+                <div class="oferta-descricao">
+                  ${escaparHTML(descricao)}
+                </div>
+              `
               : ""
           }
 
         </div>
 
+
         ${htmlVigencia(oferta)}
 
+
         ${htmlPagamento(oferta)}
+
+
+        ${
+          mostrarContatos
+            ? htmlContatos(oferta)
+            : ""
+        }
+
 
         ${htmlCondicoes(oferta, tipo)}
 
@@ -284,7 +853,14 @@ window.AproveitAIOfertas = (() => {
   }
 
 
-  function beneficio(oferta, opcoes = {}) {
+  /* =====================================================
+     BENEFÍCIO
+  ===================================================== */
+
+  function beneficio(
+    oferta,
+    opcoes = {}
+  ) {
 
     return render(
       oferta,
@@ -296,7 +872,14 @@ window.AproveitAIOfertas = (() => {
   }
 
 
-  function promocao(oferta, opcoes = {}) {
+  /* =====================================================
+     PROMOÇÃO
+  ===================================================== */
+
+  function promocao(
+    oferta,
+    opcoes = {}
+  ) {
 
     return render(
       oferta,
@@ -308,12 +891,34 @@ window.AproveitAIOfertas = (() => {
   }
 
 
-  return {
+  /* =====================================================
+     API PÚBLICA DO COMPONENTE
+  ===================================================== */
+
+    return {
+
     render,
+
     beneficio,
+
     promocao,
+
     dataBR,
-    formasPagamento
+
+    formasPagamento,
+
+    ehExclusivo,
+
+    promocaoEncerrada,
+
+    promocaoFutura,
+
+    linkWhatsApp,
+
+    linkInstagram,
+
+    linkMaps
+
   };
 
 })();

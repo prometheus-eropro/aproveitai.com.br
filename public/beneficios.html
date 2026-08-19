@@ -911,11 +911,6 @@ function linkMaps(item){
 
 }
 
-
-/* =====================================================
-   CARREGA BENEFÍCIOS
-===================================================== */
-
 /* =====================================================
    CARREGA BENEFÍCIOS — JSONP
 ===================================================== */
@@ -981,192 +976,8 @@ function carregarBeneficios(){
 
             dados.forEach(b => {
 
-                const grupo =
-                    String(
-                        b.grupo || ""
-                    )
-                    .trim()
-                    .toUpperCase();
-
-
-                const exclusivo =
-                    (
-                        (
-                            grupo &&
-                            grupo !== "GERAL"
-                        )
-                        ||
-                        (
-                            b.idPublico &&
-                            String(b.idPublico).trim()
-                        )
-                        ||
-                        (
-                            b.cpf &&
-                            String(b.cpf)
-                                .replace(/\D/g,"")
-                                .trim()
-                        )
-                    );
-
-
-                const whatsapp =
-                    linkWhatsApp(b);
-
-
-                const instagram =
-                    linkInstagram(
-                        b.instagram
-                    );
-
-
-                const maps =
-                    linkMaps(b);
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "card";
-
-
-                if(exclusivo){
-
-                    card.style.border =
-                        "2px solid #ffcc00";
-
-                    card.style.background =
-                        "#fffdf2";
-
-                }
-
-
-                const logo =
-                    String(
-                        b.logoURL || ""
-                    ).trim();
-
-
-                const nomeParceiro =
-                    b.parceiro ||
-                    b.nomeFantasia ||
-                    "";
-
-
-                
-card.innerHTML = `
-
-<div class="parceiro-cabecalho">
-
-    ${
-        logo
-        ? `
-            <div class="parceiro-logo-box">
-
-                <img
-                    src="${logo}"
-                    alt="${nomeParceiro}"
-                >
-
-            </div>
-        `
-        : ""
-    }
-
-    <div class="parceiro-identificacao">
-
-        <div class="parceiro-label">
-            🏪 PARCEIRO APROVEITAI
-        </div>
-
-        <div class="parceiro-nome-beneficio">
-            ${nomeParceiro}
-        </div>
-
-        ${
-            b.ramo
-            ? `
-                <div class="parceiro-ramo-beneficio">
-                    ${b.ramo}
-                </div>
-            `
-            : ""
-        }
-
-    </div>
-
-</div>
-
-
-${AproveitAIOfertas.beneficio(b)}
-
-
-${
-    whatsapp ||
-    instagram ||
-    maps
-
-    ? `
-        <div class="beneficio-contatos">
-
-            ${
-                whatsapp
-                ? `
-                    <a
-                        href="${whatsapp}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn-link"
-                    >
-                        📲 WhatsApp
-                    </a>
-                `
-                : ""
-            }
-
-            ${
-                instagram
-                ? `
-                    <a
-                        href="${instagram}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn-link"
-                    >
-                        📸 Instagram
-                    </a>
-                `
-                : ""
-            }
-
-            ${
-                maps
-                ? `
-                    <a
-                        href="${maps}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn-link"
-                    >
-                        📍 Como chegar
-                    </a>
-                `
-                : ""
-            }
-
-        </div>
-    `
-    : ""
-}
-
-`;
-
-
-                lista.appendChild(card);
+                lista.innerHTML +=
+                    AproveitAIOfertas.beneficio(b);
 
             });
 
@@ -1202,50 +1013,58 @@ ${
 
     script.onerror = function(event){
 
-    console.error(
-        "ERRO AO CARREGAR JSONP BENEFÍCIOS:",
-        script.src,
-        event
-    );
-
-    lista.innerHTML = `
-        <div class="mensagem-lista mensagem-erro">
-            Não foi possível carregar os benefícios neste momento.
-            <br><br>
-            Tente novamente em alguns instantes.
-        </div>
-    `;
-
-    try{
-        delete window[callback];
-    }catch(e){}
-
-    script.remove();
-
-};
-
-setTimeout(function(){
-
-    if(window[callback]){
-
         console.error(
-            "TIMEOUT JSONP BENEFÍCIOS"
+            "ERRO JSONP BENEFÍCIOS:",
+            script.src,
+            event
         );
+
 
         lista.innerHTML = `
             <div class="mensagem-lista mensagem-erro">
-                Não foi possível carregar os benefícios.
+                Não foi possível carregar os benefícios neste momento.
+                <br><br>
+                Tente novamente em alguns instantes.
             </div>
         `;
+
 
         try{
             delete window[callback];
         }catch(e){}
 
-        script.remove();
-    }
 
-}, 10000);
+        script.remove();
+
+    };
+
+
+    setTimeout(function(){
+
+        if(window[callback]){
+
+            console.error(
+                "TIMEOUT JSONP BENEFÍCIOS"
+            );
+
+
+            lista.innerHTML = `
+                <div class="mensagem-lista mensagem-erro">
+                    Não foi possível carregar os benefícios.
+                </div>
+            `;
+
+
+            try{
+                delete window[callback];
+            }catch(e){}
+
+
+            script.remove();
+
+        }
+
+    },10000);
 
 
     script.src =
@@ -1257,14 +1076,17 @@ setTimeout(function(){
         "&_=" +
         Date.now();
 
-console.log(
-    "URL JSONP BENEFÍCIOS:",
-    script.src
-);
+
+    console.log(
+        "URL JSONP BENEFÍCIOS:",
+        script.src
+    );
+
 
     document.head.appendChild(script);
 
 }
+
 
 carregarBeneficios();
 

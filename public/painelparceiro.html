@@ -691,7 +691,13 @@ let html="";
 
 d.dados.forEach(b => {
 
-  html += AproveitAIOfertas.beneficio(b);
+  html += AproveitAIOfertas.beneficio(
+  b,
+  {
+    mostrarParceiro: false,
+    mostrarContatos: false
+  }
+);
 
   html += `
     <div class="oferta-controle-parceiro">
@@ -773,86 +779,177 @@ Obrigado.`;
 
 async function carregarPromocoes(){
 
-const id=sessionStorage.getItem("parceiroId");
+    const id =
+        sessionStorage.getItem("parceiroId");
 
-const r=await fetch(
 
-API_URL+
+    const r =
+        await fetch(
 
-"?acao=listarPromocoesParceiro&parceiro_id="+id
+            API_URL +
 
-);
+            "?acao=listarPromocoesParceiro&parceiro_id=" +
 
-const d=await r.json();
+            encodeURIComponent(id)
 
-if(!d.ok){
+        );
 
-document.getElementById("listaPromocoes").innerHTML=
 
-"<div class='status-box'>Nenhuma promoção encontrada.</div>";
+    const d =
+        await r.json();
 
-return;
 
+    if(
+        !d.ok ||
+        !Array.isArray(d.dados) ||
+        !d.dados.length
+    ){
+
+        document
+            .getElementById("listaPromocoes")
+            .innerHTML =
+
+            "<div class='status-box'>Nenhuma promoção encontrada.</div>";
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    d.dados.forEach(p => {
+
+
+        const encerrada =
+            AproveitAIOfertas
+                .promocaoEncerrada(p);
+
+
+        const futura =
+            AproveitAIOfertas
+                .promocaoFutura(p);
+
+
+        html += `
+            <div class="oferta-painel-parceiro">
+
+                ${
+                    encerrada
+                        ? `
+                            <div class="status-promocao-encerrada">
+                                🔴 PROMOÇÃO ENCERRADA
+                            </div>
+                        `
+                        : futura
+                            ? `
+                                <div class="status-promocao-futura">
+                                    🟡 PROMOÇÃO PROGRAMADA
+                                </div>
+                            `
+                            : ""
+                }
+        `;
+
+        html +=
+            AproveitAIOfertas.promocao(
+                p,
+                {
+                    mostrarParceiro:false,
+                    mostrarContatos:false
+                }
+            );
+
+
+        html += `
+
+            <div class="oferta-controle-parceiro">
+
+                <strong>
+                    ⚙️ Controle da oferta
+                </strong>
+
+                <br><br>
+
+                <strong>Grupo:</strong>
+                ${p.grupo || "GERAL"}
+
+                <br>
+
+                <strong>Categoria:</strong>
+                ${p.categoria || "-"}
+
+                <br>
+
+                <strong>Ordem:</strong>
+                ${p.ordem || "-"}
+
+                <br>
+
+                <strong>Situação:</strong>
+
+${
+    String(p.ativo || "")
+        .trim()
+        .toUpperCase() !== "SIM"
+
+    ? "⚫ INATIVA"
+
+    : encerrada
+
+        ? "🔴 ENCERRADA"
+
+        : futura
+
+            ? "🟡 PROGRAMADA"
+
+            : "🟢 ATIVA"
 }
 
-let html="";
+            </div>
 
-d.dados.forEach(p => {
+            </div>
+        `;
 
-  html += AproveitAIOfertas.promocao(p);
+    });
 
-  html += `
-    <div class="oferta-controle-parceiro">
 
-      <strong>⚙️ Controle da oferta</strong><br>
+    html += `
 
-      Grupo:
-      ${p.grupo || "GERAL"}<br>
+        <br>
 
-      Categoria:
-      ${p.categoria || "-"}<br>
+        <button
+            id="btnNovaPromocao"
+            class="btn-aproveitai"
+        >
 
-      Ordem:
-      ${p.ordem || "-"}<br>
+            ➕ Cadastrar Promoção
 
-      Status:
-      ${
-        String(p.ativo || "")
-          .trim()
-          .toUpperCase() === "SIM"
-          ? "ATIVO"
-          : "INATIVO"
-      }
+        </button>
 
-    </div>
-  `;
+    `;
 
-});
 
-html+=`
+    document
+        .getElementById("listaPromocoes")
+        .innerHTML = html;
 
-<br>
 
-<button
+    document
+        .getElementById("btnNovaPromocao")
+        .onclick = () => {
 
-id="btnNovaPromocao"
 
-class="btn-aproveitai">
+        const parceiro =
+            sessionStorage.getItem("parceiroNome") || "";
 
-➕ Cadastrar Promoção
 
-</button>
+        const cnpj =
+            sessionStorage.getItem("parceiroCNPJ") || "";
 
-`;
 
-document.getElementById("listaPromocoes").innerHTML=html;
-
-document.getElementById("btnNovaPromocao").onclick = () => {
-
-    const parceiro = sessionStorage.getItem("parceiroNome") || "";
-    const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
-
-    const mensagem =
+        const mensagem =
 `Olá!
 
 Solicito o cadastro de uma NOVA PROMOÇÃO na Plataforma AproveitAI.
@@ -870,11 +967,14 @@ Descreva abaixo a promoção:
 
 Obrigado.`;
 
-    location.href =
-    "https://wa.me/5528999692303?text=" +
-    encodeURIComponent(mensagem);
 
-};
+        location.href =
+
+            "https://wa.me/5528999692303?text=" +
+
+            encodeURIComponent(mensagem);
+
+    };
 
 }
 

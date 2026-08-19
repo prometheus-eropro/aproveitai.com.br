@@ -953,206 +953,10 @@ function carregarPromocoes(){
             }
 
 
-            dados.sort((a,b) => {
-
-                return (
-                    Number(a.ordem || 9999) -
-                    Number(b.ordem || 9999)
-                );
-
-            });
-
-
             dados.forEach(p => {
 
-
-                const grupo =
-                    String(
-                        p.grupo || ""
-                    )
-                    .trim()
-                    .toUpperCase();
-
-
-                const exclusivo =
-                    (
-                        (
-                            grupo &&
-                            grupo !== "GERAL"
-                        )
-                        ||
-                        (
-                            p.idPublico &&
-                            String(
-                                p.idPublico
-                            ).trim()
-                        )
-                        ||
-                        (
-                            p.cpf &&
-                            String(p.cpf)
-                                .replace(/\D/g,"")
-                                .trim()
-                        )
-                    );
-
-
-                const whatsapp =
-                    linkWhatsApp(p);
-
-
-                const instagram =
-                    linkInstagram(
-                        p.instagram
-                    );
-
-
-                const maps =
-                    linkMaps(p);
-
-
-                const logo =
-                    String(
-                        p.logoURL || ""
-                    ).trim();
-
-
-                const nomeParceiro =
-                    p.parceiro ||
-                    p.nomeFantasia ||
-                    "";
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "card";
-
-
-                if(exclusivo){
-
-                    card.style.border =
-                        "2px solid #ffcc00";
-
-                    card.style.background =
-                        "#fffdf2";
-
-                }
-
-
-                card.innerHTML = `
-
-<div class="parceiro-cabecalho">
-
-    ${
-        logo
-        ? `
-            <div class="parceiro-logo-box">
-
-                <img
-                    src="${logo}"
-                    alt="${nomeParceiro}"
-                >
-
-            </div>
-        `
-        : ""
-    }
-
-    <div class="parceiro-identificacao">
-
-        <div class="parceiro-label">
-            🏪 PARCEIRO APROVEITAI
-        </div>
-
-        <div class="parceiro-nome-promocao">
-            ${nomeParceiro}
-        </div>
-
-        ${
-            p.ramo
-            ? `
-                <div class="parceiro-ramo-promocao">
-                    ${p.ramo}
-                </div>
-            `
-            : ""
-        }
-
-    </div>
-
-</div>
-
-
-${AproveitAIOfertas.promocao(p)}
-
-
-${
-    whatsapp ||
-    instagram ||
-    maps
-
-    ? `
-        <div class="promocao-contatos">
-
-            ${
-                whatsapp
-                ? `
-                    <a
-                        href="${whatsapp}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn-link"
-                    >
-                        📲 WhatsApp
-                    </a>
-                `
-                : ""
-            }
-
-            ${
-                instagram
-                ? `
-                    <a
-                        href="${instagram}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn-link"
-                    >
-                        📸 Instagram
-                    </a>
-                `
-                : ""
-            }
-
-            ${
-                maps
-                ? `
-                    <a
-                        href="${maps}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn-link"
-                    >
-                        📍 Como chegar
-                    </a>
-                `
-                : ""
-            }
-
-        </div>
-    `
-    : ""
-}
-
-`;
-
-
-                lista.appendChild(card);
+                lista.innerHTML +=
+                    AproveitAIOfertas.promocao(p);
 
             });
 
@@ -1189,7 +993,7 @@ ${
     script.onerror = function(event){
 
         console.error(
-            "ERRO AO CARREGAR JSONP PROMOÇÕES:",
+            "ERRO JSONP PROMOÇÕES:",
             script.src,
             event
         );
@@ -1239,7 +1043,7 @@ ${
 
         }
 
-    }, 10000);
+    },10000);
 
 
     script.src =

@@ -637,9 +637,13 @@ area.dataset.tipo = "beneficios";
   lista.forEach(b => {
 
   html += AproveitAIOfertas.beneficio(
-    b,
-    { compacto: true }
-  );
+  b,
+  {
+    compacto: true,
+    mostrarParceiro: false,
+    mostrarContatos: false
+  }
+);
 
 });
 
@@ -714,9 +718,13 @@ area.dataset.tipo = "promocoes";
   lista.forEach(p => {
 
   html += AproveitAIOfertas.promocao(
-    p,
-    { compacto: true }
-  );
+  p,
+  {
+    compacto: true,
+    mostrarParceiro: false,
+    mostrarContatos: false
+  }
+);
 
 });
 
