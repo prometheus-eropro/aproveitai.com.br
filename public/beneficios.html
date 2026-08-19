@@ -1290,29 +1290,22 @@ ${
         event
     );
 
+    lista.innerHTML = `
+        <div class="mensagem-lista mensagem-erro">
+            Não foi possível carregar os benefícios neste momento.
+            <br><br>
+            Tente novamente em alguns instantes.
+        </div>
+    `;
+
+    try{
+        delete window[callback];
+    }catch(e){}
+
+    script.remove();
+
 };
-            console.error(
-                "ERRO JSONP BENEFÍCIOS"
-            );
 
-
-            lista.innerHTML = `
-                <div class="mensagem-lista mensagem-erro">
-                    Não foi possível carregar os benefícios neste momento.
-                    <br><br>
-                    Tente novamente em alguns instantes.
-                </div>
-            `;
-
-
-            try{
-                delete window[callback];
-            }catch(e){}
-
-
-            script.remove();
-
-        };
 setTimeout(function(){
 
     if(window[callback]){
