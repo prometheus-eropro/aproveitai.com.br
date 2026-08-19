@@ -383,6 +383,69 @@ resp.statusCliente;
 document.getElementById("validadeCliente").textContent =
 resp.validade;
 
+/* ==========================================
+   BLOQUEIO VISUAL — CLIENTE INATIVO
+========================================== */
+
+const statusCliente =
+  String(
+    resp.statusCliente ||
+    resp.ativo ||
+    ""
+  )
+  .trim()
+  .toUpperCase();
+
+const campoStatus =
+  document.getElementById("statusCliente");
+
+if (statusCliente !== "SIM") {
+
+  campoStatus.innerHTML =
+    "🔴 CLIENTE INATIVO";
+
+  campoStatus.style.color = "#b91c1c";
+  campoStatus.style.fontWeight = "900";
+  campoStatus.style.fontSize = "18px";
+
+  document.getElementById("blocoBeneficio").style.display = "none";
+  document.getElementById("blocoVeiculo").style.display = "none";
+  document.getElementById("blocoGerarERO").style.display = "none";
+  document.getElementById("blocoCodigo").style.display = "none";
+
+  document.getElementById("btnGerarERO").style.display = "none";
+  document.getElementById("btnConfirmar").style.display = "none";
+
+  document.getElementById("timer").innerHTML = "";
+
+  mostrarMsg(
+    '<div style="' +
+      'background:#fee2e2;' +
+      'border:2px solid #dc2626;' +
+      'color:#991b1b;' +
+      'padding:15px;' +
+      'border-radius:8px;' +
+      'font-size:16px;' +
+      'line-height:1.5;' +
+      'text-align:center;' +
+    '">' +
+      '⛔ <strong>CLIENTE INATIVO</strong><br><br>' +
+      'Este cliente não está autorizado a utilizar os benefícios da Plataforma AproveitAI.<br><br>' +
+      'Oriente o cliente a regularizar o cadastro.' +
+    '</div>'
+  );
+
+  return;
+}
+
+/* CLIENTE ATIVO */
+
+campoStatus.innerHTML =
+  "🟢 CLIENTE ATIVO";
+
+campoStatus.style.color = "#0a7a3c";
+campoStatus.style.fontWeight = "900";
+
   // ===== VEÍCULO =====
 if (resp.exige_placa) {
 
@@ -430,19 +493,35 @@ op1.text = `${resp.placa1} - ${resp.modelo1}`;
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
 
-const img = document.getElementById("logoParceiro");
+const img =
+  document.getElementById("logoParceiro");
 
-img.src = "/logos/" + parceiroId + ".png";
+const logoParceiro =
+  String(resp.logoURL || "").trim();
 
-img.onload = function () {
+if (logoParceiro) {
+
+  img.src = logoParceiro;
+
+  img.onload = function () {
     this.style.display = "block";
-};
+  };
 
-img.onerror = function () {
+  img.onerror = function () {
+
     this.onerror = null;
+
     this.src = "/logo-aproveitai.png";
+
     this.style.display = "block";
-};
+  };
+
+} else {
+
+  img.src = "/logo-aproveitai.png";
+  img.style.display = "block";
+
+}
 
 document.getElementById("nomeCliente").innerText =
 resp.nomeCliente || "";
@@ -878,13 +957,21 @@ function abrirCamera(){
 
             html5QrCode.stop()
 .then(() => {
-    document.getElementById("reader").style.display = "none";
+
+    document.getElementById("reader")
+      .style.display = "none";
+
     processarQRCode(texto);
+
+})
+.catch(function(){
+
+    document.getElementById("reader")
+      .style.display = "none";
+
+    processarQRCode(texto);
+
 });
-
-            document.getElementById("reader").style.display="none";
-
-            processarQRCode(texto);
 
         }
 
