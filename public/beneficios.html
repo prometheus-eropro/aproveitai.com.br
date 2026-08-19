@@ -1282,9 +1282,15 @@ ${
     };
 
 
-    script.onerror =
-        function(){
+    script.onerror = function(event){
 
+    console.error(
+        "ERRO AO CARREGAR JSONP BENEFÍCIOS:",
+        script.src,
+        event
+    );
+
+};
             console.error(
                 "ERRO JSONP BENEFÍCIOS"
             );
@@ -1340,6 +1346,10 @@ setTimeout(function(){
         "&_=" +
         Date.now();
 
+console.log(
+    "URL JSONP BENEFÍCIOS:",
+    script.src
+);
 
     document.head.appendChild(script);
 
