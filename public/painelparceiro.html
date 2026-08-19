@@ -23,6 +23,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0a7f2e">
 <script src="js/config.js"></script>
+<script src="js/ofertas.js"></script>
 
 <script src="js/include.js" defer></script>
 </head>
@@ -688,29 +689,35 @@ return;
 
 let html="";
 
-d.dados.forEach(b=>{
+d.dados.forEach(b => {
 
-html+=`
+  html += AproveitAIOfertas.beneficio(b);
 
-<div class="status-box">
+  html += `
+    <div class="oferta-controle-parceiro">
 
-<h3>🎁 ${b.titulo}</h3>
+      <strong>⚙️ Controle da oferta</strong><br>
 
-<p>${b.descricao}</p>
+      Grupo:
+      ${b.grupo || "GERAL"}<br>
 
-<hr>
+      Categoria:
+      ${b.categoria || "-"}<br>
 
-<p><b>Grupo:</b> ${b.grupo||"-"}</p>
+      Ordem:
+      ${b.ordem || "-"}<br>
 
-<p><b>Início:</b> ${b.dataInicio ? new Date(b.dataInicio).toLocaleDateString("pt-BR") : "-"}</p>
+      Status:
+      ${
+        String(b.ativo || "")
+          .trim()
+          .toUpperCase() === "SIM"
+          ? "ATIVO"
+          : "INATIVO"
+      }
 
-<p><b>Fim:</b> ${b.dataFim ? new Date(b.dataFim).toLocaleDateString("pt-BR") : "-"}</p>
-
-<p><b>Status:</b> ${String(b.ativo).toUpperCase()=="SIM"?"ATIVA":"INATIVA"}</p>
-
-</div>
-
-`;
+    </div>
+  `;
 
 });
 
@@ -790,35 +797,35 @@ return;
 
 let html="";
 
-d.dados.forEach(p=>{
+d.dados.forEach(p => {
 
-html+=`
+  html += AproveitAIOfertas.promocao(p);
 
-<div class="status-box">
+  html += `
+    <div class="oferta-controle-parceiro">
 
-<h3>🔥 ${p.titulo}</h3>
+      <strong>⚙️ Controle da oferta</strong><br>
 
-<p>${p.descricao}</p>
+      Grupo:
+      ${p.grupo || "GERAL"}<br>
 
-<hr>
+      Categoria:
+      ${p.categoria || "-"}<br>
 
-<p><b>Grupo:</b> ${p.grupo||"-"}</p>
+      Ordem:
+      ${p.ordem || "-"}<br>
 
-<p><b>Início:</b>
-${p.dataInicio
-? new Date(p.dataInicio).toLocaleDateString("pt-BR")
-: "-"}
-</p>
+      Status:
+      ${
+        String(p.ativo || "")
+          .trim()
+          .toUpperCase() === "SIM"
+          ? "ATIVO"
+          : "INATIVO"
+      }
 
-<p><b>Fim:</b>
-${p.dataFim
-? new Date(p.dataFim).toLocaleDateString("pt-BR")
-: "-"}
-</p>
-<p><b>Status:</b> ${String(p.ativo).toUpperCase()=="SIM"?"ATIVA":"INATIVA"}</p>
-</div>
-
-`;
+    </div>
+  `;
 
 });
 

@@ -20,6 +20,7 @@ href="style.css"
 >
 
 <script src="js/config.js"></script>
+<script src="js/ofertas.js"></script>
 <script src="js/include.js" defer></script>
 
 
@@ -1087,72 +1088,7 @@ function carregarPromocoes(){
 </div>
 
 
-${
-    exclusivo
-    ? `
-        <div class="badge-promocao-exclusiva">
-            ⭐ EXCLUSIVA
-        </div>
-    `
-    : ""
-}
-
-
-<div class="quadro-promocao">
-
-    <div class="quadro-promocao-label">
-        🎯 PROMOÇÃO
-    </div>
-
-    <h3>
-        ${p.titulo || ""}
-    </h3>
-
-    ${
-        p.descricao
-        ? `
-            <div class="promocao-descricao">
-                ${p.descricao}
-            </div>
-        `
-        : ""
-    }
-
-</div>
-
-
-${
-    p.dataInicio || p.dataFim
-    ? `
-        <div class="promocao-vigencia">
-
-            <strong>
-                📅 Vigência:
-            </strong>
-
-            ${
-                p.dataInicio
-                ? formatarData(p.dataInicio)
-                : ""
-            }
-
-            ${
-                p.dataInicio &&
-                p.dataFim
-                ? " até "
-                : ""
-            }
-
-            ${
-                p.dataFim
-                ? formatarData(p.dataFim)
-                : ""
-            }
-
-        </div>
-    `
-    : ""
-}
+${AproveitAIOfertas.promocao(p)}
 
 
 ${
@@ -1384,15 +1320,13 @@ PROMETHEUS EROPRO Soluções Inteligentes
 <br>
 
 
-<strong>
-Aviso legal:
-</strong>
+<strong>Aviso legal:</strong>
 
 A Plataforma AproveitAI não garante descontos.
 Benefícios e promoções são definidos e concedidos
-exclusivamente pelos parceiros, válidos, em regra,
-para pagamentos à vista em moeda corrente,
-salvo autorização expressa do estabelecimento.
+exclusivamente pelos parceiros participantes e estão
+sujeitos às condições, formas de pagamento, vigência
+e demais regras informadas em cada oferta.
 
 
 <div style="

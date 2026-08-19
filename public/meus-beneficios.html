@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <title>Meus Benefícios | Plataforma AproveitAI</title>
   <link rel="stylesheet" href="style.css">
+
+<script src="js/config.js"></script>
+<script src="js/ofertas.js"></script>
+<script src="js/include.js" defer></script>
+
+</head>
 </head>
 <body>
 <!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
@@ -162,65 +168,41 @@ console.log(itens);
 
     itens.forEach(item => {
 
-      const grupoItem =
-  String(item.grupo || "")
+  const tipo =
+    String(
+      item.tipo ||
+      item.tipo_oferta ||
+      ""
+    )
     .trim()
-    .toUpperCase();
+    .toLowerCase();
 
-const exclusivo =
-(
-  (grupoItem !== "" && grupoItem !== "GERAL")
-  ||
-  (String(item.idPublico || "").trim() !== "")
-);
-      lista.innerHTML += `
-        <div class="card ${exclusivo ? "exclusivo" : ""}">
+  if (
+    tipo === "promocao" ||
+    tipo === "promoção" ||
+    tipo === "promocoes"
+  ) {
 
-          ${exclusivo ? "<div class='tarja'>EXCLUSIVO</div>" : ""}
+    lista.innerHTML +=
+      AproveitAIOfertas.promocao(item);
 
-          <h3>${item.titulo || ""}</h3>
+  } else {
 
-          <p>${item.descricao || ""}</p>
+    lista.innerHTML +=
+      AproveitAIOfertas.beneficio(item);
 
-          ${item.parceiro ? `<div><b>PARCEIRO:</b> ${item.parceiro}</div>` : ""}
+  }
 
-          <div class="contatos">
-
-            ${item.zap ?
-              `<a href="https://wa.me/55${item.zap.replace(/\D/g,"")}"
-              target="_blank"
-              class="link zap">📱 WhatsApp</a>` : ""}
-
-            ${item.instagram ?
-              `<a href="https://instagram.com/${item.instagram.replace("@","")}"
-              target="_blank"
-              class="link insta">📸 Instagram</a>` : ""}
-
-            ${item.site ?
-              `<a href="${item.site}"
-              target="_blank"
-              class="link site">🌐 Site</a>` : ""}
-
-          </div>
-
-          ${item.dataInicio ?
-          `<div style="margin-top:8px;color:#0a7f2e;font-weight:600">
-          📅 Início: ${formatarDataBR(item.dataInicio)}
-          </div>` : ""}
-
-          ${item.dataFim ?
-          `<div style="color:#c62828;font-weight:600">
-          📅 Término: ${formatarDataBR(item.dataFim)}
-          </div>` : ""}
-
-        </div>
-      `;
-
-    });
+});
 
     if (itens.length === 0) {
       lista.innerHTML =
-        "<p style='text-align:center'>Nenhum benefício disponível.</p>";
+        "<p style='text-align:center'>if (itens.length === 0) {
+
+  lista.innerHTML =
+    "<p style='text-align:center'>Nenhum benefício ou promoção disponível no momento.</p>";
+
+}.</p>";
     }
 
   } catch (erro) {
@@ -246,9 +228,13 @@ const exclusivo =
 ">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
 
-  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
-  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
+<strong>Aviso legal:</strong>
+
+A Plataforma AproveitAI não garante descontos.
+Benefícios e promoções são definidos e concedidos
+exclusivamente pelos parceiros participantes e estão
+sujeitos às condições, formas de pagamento, vigência
+e demais regras informadas em cada oferta.
 </footer>
 
 
