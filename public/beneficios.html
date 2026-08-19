@@ -1133,39 +1133,7 @@ ${
 
 </div>
 
-
-${
-    b.dataInicio || b.dataFim
-    ? `
-        <div class="beneficio-vigencia">
-
-            <strong>
-                📅 Vigência:
-            </strong>
-
-            ${
-                b.dataInicio
-                ? formatarData(b.dataInicio)
-                : ""
-            }
-
-            ${
-                b.dataInicio &&
-                b.dataFim
-                ? " até "
-                : ""
-            }
-
-            ${
-                b.dataFim
-                ? formatarData(b.dataFim)
-                : ""
-            }
-
-        </div>
-    `
-    : ""
-}
+ b.dataInicio || b.dataFim
 
 
 ${
