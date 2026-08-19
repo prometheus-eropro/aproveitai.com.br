@@ -318,17 +318,38 @@ if(old) old.remove();
 const script = document.createElement("script");
 script.id = "jsonpReq";
 
-const valor = String(clienteId).trim();
+let valor =
+String(clienteId || "").trim();
 
-const acao =
-/^\d{11}$/.test(valor)
-    ? "buscarClienteCPF"
-    : "buscarClienteId";
+const somenteDigitos =
+valor.replace(/\D/g, "");
 
-const parametro =
-acao === "buscarClienteCPF"
-    ? "&cpf="
-    : "&id=";
+let acao;
+let parametro;
+
+if (/^\d{11}$/.test(somenteDigitos)) {
+
+    valor = somenteDigitos;
+
+    acao = "buscarClienteCPF";
+    parametro = "&cpf=";
+
+} else {
+
+    valor = valor.toUpperCase();
+
+    if (!valor.startsWith("APV-")) {
+
+        mostrarMsg(
+          "❌ ID Público inválido. Informe um código no formato APV-XXXXXXXX."
+        );
+
+        return;
+    }
+
+    acao = "buscarClienteId";
+    parametro = "&idPublico=";
+}
 
 script.src =
 GAS_URL +
@@ -947,54 +968,114 @@ function retornoGeracaoERO(resp){
 
 function abrirCamera(){
 
-    document.getElementById("reader").style.display="block";
+    const reader =
+      document.getElementById("reader");
 
-    const html5QrCode = new Html5Qrcode("reader");
+    reader.style.display = "block";
+
+    const html5QrCode =
+      new Html5Qrcode("reader");
+
+    let processado = false;
 
     html5QrCode.start(
+
         { facingMode:"environment" },
-        { fps:10, qrbox:250 },
+
+        {
+          fps:10,
+          qrbox:250
+        },
 
         function(texto){
 
+            if(processado) return;
+
+            processado = true;
+
             html5QrCode.stop()
-.then(() => {
+            .then(() => {
 
-    document.getElementById("reader")
-      .style.display = "none";
+                reader.style.display = "none";
 
-    processarQRCode(texto);
+                processarQRCode(texto);
 
-})
-.catch(function(){
+            })
+            .catch(() => {
 
-    document.getElementById("reader")
-      .style.display = "none";
+                reader.style.display = "none";
 
-    processarQRCode(texto);
+                processarQRCode(texto);
 
-});
+            });
 
+        },
+
+        function(){
+            // erros temporários de leitura são ignorados
         }
 
-    );
+    )
+    .catch(function(err){
+
+        console.error(
+          "ERRO CÂMERA:",
+          err
+        );
+
+        reader.style.display = "none";
+
+        mostrarMsg(
+          "❌ Não foi possível acessar a câmera. Verifique a permissão do navegador."
+        );
+
+    });
 
 }
 
 function processarQRCode(texto){
 
-        try{
+    try{
 
-        const url = new URL(texto);
+        console.log(
+          "QR LIDO:",
+          texto
+        );
+
+        const url =
+          new URL(texto);
+
+        const idLido =
+          url.searchParams.get("idPublico") ||
+          url.searchParams.get("id") ||
+          url.searchParams.get("cliente");
+
+        if(!idLido){
+
+            mostrarMsg(
+              "❌ QR Code não pertence a um cliente AproveitAI."
+            );
+
+            return;
+
+        }
 
         clienteId =
-    url.searchParams.get("idPublico") ||
-    url.searchParams.get("id") ||
-    url.searchParams.get("cliente");
+          String(idLido)
+          .trim()
+          .toUpperCase();
 
-            if(!clienteId){
+        console.log(
+          "CLIENTE DO QR:",
+          clienteId
+        );
 
-            mostrarMsg("QR inválido");
+        if(!parceiroId){
+
+            mostrarMsg(
+              "❌ Parceiro não identificado. Faça login novamente."
+            );
+
             return;
 
         }
@@ -1003,7 +1084,14 @@ function processarQRCode(texto){
 
     }catch(e){
 
-       mostrarMsg("QR inválido");
+        console.error(
+          "ERRO QR:",
+          e
+        );
+
+        mostrarMsg(
+          "❌ QR Code inválido."
+        );
 
     }
 
