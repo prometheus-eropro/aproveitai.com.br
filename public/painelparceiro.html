@@ -377,13 +377,33 @@ document.getElementById("painelBox").style.display="block";
 
 document.getElementById("nomeParceiro").innerHTML=d.nome;
 
-const img = document.getElementById("logoParceiro");
+const img =
+document.getElementById("logoParceiro");
 
-img.src = "/logos/" + d.parceiro_id + ".png";
+const logoParceiro =
+String(
+  d.logo ||
+  d.logoURL ||
+  sessionStorage.getItem("parceiroLogo") ||
+  ""
+).trim();
 
-img.onerror = function () {
-    this.src = "logo-aproveitai.png";
-};
+if(logoParceiro){
+
+    img.src = logoParceiro;
+
+    img.onerror = function(){
+
+        this.onerror = null;
+        this.src = "logo-aproveitai.png";
+
+    };
+
+}else{
+
+    img.src = "logo-aproveitai.png";
+
+}
 
 document.getElementById("cidadeParceiro").innerHTML=
 
@@ -561,8 +581,8 @@ document.getElementById("dadosEmpresa").innerHTML=`
 <div class="status-box" style="text-align:center">
 
 <img
-src="/logos/${d.parceiro_id}.png"
-onerror="this.src='logo-aproveitai.png'"
+src="${d.logo || d.logoURL || sessionStorage.getItem('parceiroLogo') || 'logo-aproveitai.png'}"
+onerror="this.onerror=null;this.src='logo-aproveitai.png'"
 style="max-width:170px;max-height:100px;margin-bottom:15px;">
 
 <h2>${d.nome}</h2>
