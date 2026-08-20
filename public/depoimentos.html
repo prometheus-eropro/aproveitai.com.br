@@ -202,9 +202,9 @@ function carregarDepoimentos() {
     callback;
 
 
-  script.src =
-    ENDPOINT +
-    "?acao=listarDepoimentos" +
+ script.src =
+    CONFIG.api +
+    "?action=listarDepoimentos" +
     "&callback=" +
     encodeURIComponent(callback) +
     "&_=" +
