@@ -739,8 +739,29 @@ document.getElementById("timer").innerHTML =
   mostrarMsg("🎉 Obrigado por utilizar a Plataforma AproveitAI.");
 
   setTimeout(() => {
-    location.reload();
-  }, 30000);
+
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const parceiroId =
+    params.get("parceiro_id") ||
+    params.get("p") ||
+    "";
+
+  if (parceiroId) {
+
+    window.location.href =
+      "validar.html?parceiro_id=" +
+      encodeURIComponent(parceiroId);
+
+  } else {
+
+    window.location.href =
+      "validar.html";
+
+  }
+
+}, 30000);
 
 }
 
@@ -764,11 +785,30 @@ function iniciarCronometro(validoAteISO) {
       document.getElementById("btnConfirmar")
         .style.display = "none";
 
-      setTimeout(() => {
+setTimeout(() => {
 
-        location.reload();
+  const params =
+    new URLSearchParams(window.location.search);
 
-      }, 10000);
+  const parceiroId =
+    params.get("parceiro_id") ||
+    params.get("p") ||
+    "";
+
+  if (parceiroId) {
+
+    window.location.href =
+      "validar.html?parceiro_id=" +
+      encodeURIComponent(parceiroId);
+
+  } else {
+
+    window.location.href =
+      "validar.html";
+
+  }
+
+}, 10000);
 
       return;
 
