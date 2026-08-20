@@ -354,11 +354,30 @@ if (/^\d{11}$/.test(somenteDigitos)) {
 script.src =
 GAS_URL +
 "?callback=retornoValidacao" +
-"&acao=" + acao +
+"&acao=" + encodeURIComponent(acao) +
 parametro +
 encodeURIComponent(valor) +
-"&p=" +
-encodeURIComponent(parceiroId);
+"&p=" + encodeURIComponent(parceiroId) +
+"&parceiro_id=" + encodeURIComponent(parceiroId) +
+"&_=" + Date.now();
+
+console.log("AÇÃO VALIDAÇÃO:", acao);
+console.log("CLIENTE VALIDAÇÃO:", valor);
+console.log("PARCEIRO VALIDAÇÃO:", parceiroId);
+console.log("URL VALIDAÇÃO:", script.src);
+
+script.onerror = function () {
+
+    console.error(
+      "ERRO AO CONSULTAR CORE:",
+      script.src
+    );
+
+    mostrarMsg(
+      "❌ Erro de comunicação com a Plataforma AproveitAI."
+    );
+
+};
 
 document.body.appendChild(script);
 }
