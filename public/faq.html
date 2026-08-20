@@ -84,10 +84,12 @@ Versão
 
 <!-- ✅ FAQ — API OFICIAL -->
 <script>
-(function(){
+
+async function carregarFAQ() {
 
   const faq =
     document.getElementById("faq");
+
 
   if (
     typeof CONFIG === "undefined" ||
@@ -105,131 +107,140 @@ Versão
   }
 
 
-  const callback =
-    "cbFAQ_" + Date.now();
+  try {
+
+    const url =
+      CONFIG.api +
+      "?action=listarFAQ&_=" +
+      Date.now();
 
 
-  const script =
-    document.createElement("script");
+    console.log(
+      "URL FAQ:",
+      url
+    );
 
 
-  window[callback] = function(resp){
-
-    try {
-
-      faq.innerHTML = "";
+    const resposta =
+      await fetch(url);
 
 
-      if (
-        !resp ||
-        resp.ok !== true ||
-        !Array.isArray(resp.dados)
-      ) {
+    if (!resposta.ok) {
 
-        throw new Error(
-          resp?.erro ||
-          "Resposta inválida da API."
-        );
-
-      }
-
-
-      if (!resp.dados.length) {
-
-        faq.innerHTML =
-          "<p>Nenhuma dúvida cadastrada no momento.</p>";
-
-        return;
-
-      }
-
-
-      resp.dados.forEach(function(item){
-
-        const div =
-          document.createElement("div");
-
-        div.className =
-          "faq-item";
-
-
-        div.innerHTML = `
-          <h3>${item.pergunta || ""}</h3>
-          <p>${item.resposta || ""}</p>
-        `;
-
-
-        faq.appendChild(div);
-
-      });
-
-
-    } catch (err) {
-
-      console.error(
-        "ERRO FAQ:",
-        err
+      throw new Error(
+        "HTTP " +
+        resposta.status
       );
-
-      faq.innerHTML =
-        "<p>Não foi possível carregar as dúvidas neste momento.</p>";
-
-
-    } finally {
-
-      try {
-        delete window[callback];
-      } catch(e) {}
-
-      script.remove();
 
     }
 
-  };
+
+    const resp =
+      await resposta.json();
 
 
-  script.onerror = function(){
+    console.log(
+      "RESPOSTA FAQ:",
+      resp
+    );
+
+
+    if (
+      !resp ||
+      resp.ok !== true ||
+      !Array.isArray(resp.dados)
+    ) {
+
+      throw new Error(
+        resp?.erro ||
+        "Resposta inválida da API."
+      );
+
+    }
+
+
+    faq.innerHTML = "";
+
+
+    if (!resp.dados.length) {
+
+      faq.innerHTML =
+        "<p>Nenhuma dúvida cadastrada no momento.</p>";
+
+      return;
+
+    }
+
+
+    resp.dados.forEach(function(item) {
+
+      const pergunta =
+        String(
+          item.pergunta || ""
+        ).trim();
+
+      const resposta =
+        String(
+          item.resposta || ""
+        ).trim();
+
+
+      if (!pergunta) {
+        return;
+      }
+
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "faq-item";
+
+
+      const h3 =
+        document.createElement("h3");
+
+      h3.textContent =
+        pergunta;
+
+
+      const p =
+        document.createElement("p");
+
+      p.textContent =
+        resposta;
+
+
+      div.appendChild(h3);
+
+      div.appendChild(p);
+
+      faq.appendChild(div);
+
+    });
+
+
+  } catch (err) {
 
     console.error(
-      "ERRO JSONP FAQ:",
-      script.src
+      "ERRO FAQ:",
+      err
     );
+
 
     faq.innerHTML =
       "<p>Não foi possível carregar as dúvidas neste momento.</p>";
 
+  }
 
-    try {
-      delete window[callback];
-    } catch(e) {}
-
-    script.remove();
-
-  };
+}
 
 
-  script.src =
-    CONFIG.api +
-    "?action=listarFAQ" +
-    "&callback=" +
-    encodeURIComponent(callback) +
-    "&_=" +
-    Date.now();
-
-
-  console.log(
-    "URL FAQ:",
-    script.src
-  );
-
-
-  document.head.appendChild(
-    script
-  );
-
-})();
+document.addEventListener(
+  "DOMContentLoaded",
+  carregarFAQ
+);
 
 </script>
-
 </body>
 </html>
