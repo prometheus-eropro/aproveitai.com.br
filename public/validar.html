@@ -945,18 +945,18 @@ function gerarERO() {
 function retornoBeneficios(resp){
 
     const select =
-    document.getElementById("beneficioSelecionado");
+        document.getElementById("beneficioSelecionado");
 
     select.innerHTML = "";
 
-    if(!resp.ok){
+    if(!resp || resp.ok !== true){
 
         mostrarMsg("Nenhum benefício encontrado.");
         return;
 
     }
 
-    if(!resp.itens || resp.itens.length===0){
+    if(!Array.isArray(resp.itens) || resp.itens.length === 0){
 
         mostrarMsg("Nenhum benefício disponível.");
         return;
@@ -966,30 +966,76 @@ function retornoBeneficios(resp){
     const op0 =
         document.createElement("option");
 
-    op0.value="";
-
-    op0.text="Selecione o benefício";
+    op0.value = "";
+    op0.text = "Selecione o benefício";
 
     select.appendChild(op0);
+
 
     resp.itens.forEach(function(item){
 
         const op =
             document.createElement("option");
 
+
+        /* ===============================
+           TIPO REAL DO ITEM
+        =============================== */
+
+        const tipo =
+            String(item.tipo || "")
+            .trim()
+            .toUpperCase();
+
+
+        /* ===============================
+           OBJETO COMPLETO DO BENEFÍCIO
+        =============================== */
+
+        const dadosBeneficio = {
+
+            tipo: tipo,
+
+            titulo:
+                String(item.titulo || "").trim(),
+
+            descricao:
+                String(item.descricao || "").trim(),
+
+            parceiro_id:
+                String(
+                    item.parceiro_id ||
+                    parceiroId ||
+                    ""
+                ).trim()
+
+        };
+
+
+        /* ===============================
+           VALUE AGORA É JSON
+        =============================== */
+
         op.value =
-            item.tipo + "|" + item.titulo;
+            JSON.stringify(dadosBeneficio);
+
+
+        /* ===============================
+           TEXTO VISÍVEL
+        =============================== */
 
         op.text =
-            "[" + item.tipo + "] " +
-            item.titulo;
+            "[" + tipo + "] " +
+            dadosBeneficio.titulo;
+
 
         select.appendChild(op);
 
     });
 
+
     document.getElementById("blocoBeneficio")
-        .style.display="block";
+        .style.display = "block";
 
 }
 
