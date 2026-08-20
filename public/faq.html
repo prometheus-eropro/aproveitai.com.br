@@ -85,11 +85,10 @@ Versão
 <!-- ✅ FAQ — API OFICIAL -->
 <script>
 
-async function carregarFAQ() {
+(function(){
 
   const faq =
     document.getElementById("faq");
-
 
   if (
     typeof CONFIG === "undefined" ||
@@ -107,139 +106,142 @@ async function carregarFAQ() {
   }
 
 
-  try {
-
-    const url =
-      CONFIG.api +
-      "?action=listarFAQ&_=" +
-      Date.now();
+  const callback =
+    "faqCallback_" +
+    Date.now();
 
 
-    console.log(
-      "URL FAQ:",
-      url
-    );
+  window[callback] =
+    function(resp){
 
-
-    const resposta =
-      await fetch(url);
-
-
-    if (!resposta.ok) {
-
-      throw new Error(
-        "HTTP " +
-        resposta.status
+      console.log(
+        "RESPOSTA FAQ:",
+        resp
       );
 
-    }
+
+      try {
+
+        if (
+          !resp ||
+          resp.ok !== true ||
+          !Array.isArray(resp.dados)
+        ) {
+
+          throw new Error(
+            "Resposta inválida da API."
+          );
+
+        }
 
 
-    const resp =
-      await resposta.json();
+        faq.innerHTML = "";
 
 
-    console.log(
-      "RESPOSTA FAQ:",
-      resp
-    );
+        if (!resp.dados.length) {
+
+          faq.innerHTML =
+            "<p>Nenhuma dúvida cadastrada no momento.</p>";
+
+          return;
+        }
 
 
-    if (
-      !resp ||
-      resp.ok !== true ||
-      !Array.isArray(resp.dados)
-    ) {
+        resp.dados.forEach(
+          function(item){
 
-      throw new Error(
-        resp?.erro ||
-        "Resposta inválida da API."
-      );
+            const div =
+              document.createElement("div");
 
-    }
+            div.className =
+              "faq-item";
 
 
-    faq.innerHTML = "";
+            const titulo =
+              document.createElement("h3");
+
+            titulo.textContent =
+              item.pergunta || "";
 
 
-    if (!resp.dados.length) {
+            const resposta =
+              document.createElement("p");
 
-      faq.innerHTML =
-        "<p>Nenhuma dúvida cadastrada no momento.</p>";
-
-      return;
-
-    }
+            resposta.textContent =
+              item.resposta || "";
 
 
-    resp.dados.forEach(function(item) {
+            div.appendChild(
+              titulo
+            );
 
-      const pergunta =
-        String(
-          item.pergunta || ""
-        ).trim();
+            div.appendChild(
+              resposta
+            );
 
-      const resposta =
-        String(
-          item.resposta || ""
-        ).trim();
+            faq.appendChild(
+              div
+            );
+
+          }
+        );
 
 
-      if (!pergunta) {
-        return;
+      } catch(err) {
+
+        console.error(
+          "ERRO PROCESSANDO FAQ:",
+          err
+        );
+
+        faq.innerHTML =
+          "<p>Não foi possível carregar as dúvidas neste momento.</p>";
+
       }
 
-
-      const div =
-        document.createElement("div");
-
-      div.className =
-        "faq-item";
+    };
 
 
-      const h3 =
-        document.createElement("h3");
-
-      h3.textContent =
-        pergunta;
-
-
-      const p =
-        document.createElement("p");
-
-      p.textContent =
-        resposta;
-
-
-      div.appendChild(h3);
-
-      div.appendChild(p);
-
-      faq.appendChild(div);
-
-    });
-
-
-  } catch (err) {
-
-    console.error(
-      "ERRO FAQ:",
-      err
+  const script =
+    document.createElement(
+      "script"
     );
 
 
-    faq.innerHTML =
-      "<p>Não foi possível carregar as dúvidas neste momento.</p>";
+  script.onerror =
+    function(){
 
-  }
+      console.error(
+        "ERRO JSONP FAQ:",
+        script.src
+      );
 
-}
+      faq.innerHTML =
+        "<p>Não foi possível carregar as dúvidas neste momento.</p>";
+
+    };
 
 
-document.addEventListener(
-  "DOMContentLoaded",
-  carregarFAQ
-);
+  script.src =
+    CONFIG.api +
+    "?action=listarFAQ" +
+    "&callback=" +
+    encodeURIComponent(callback) +
+    "&_=" +
+    Date.now();
+
+
+  console.log(
+    "URL JSONP FAQ:",
+    script.src
+  );
+
+
+  document.head.appendChild(
+    script
+  );
+
+})();
 
 </script>
 </body>
