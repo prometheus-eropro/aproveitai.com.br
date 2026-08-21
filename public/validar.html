@@ -1160,235 +1160,82 @@ function retornoGeracaoERO(resp){
 
 }
 
-async function abrirCamera(){
+let leitorQR = null;
+let lendoQR = false;
 
-    const reader =
-      document.getElementById("reader");
+async function abrirCamera() {
 
-    const btn =
-      document.getElementById("btnLerQR");
+  if (lendoQR) {
+    return;
+  }
 
-    reader.style.display = "block";
+  const reader =
+    document.getElementById("reader");
 
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = "📷 Abrindo câmera...";
+  reader.style.display = "block";
+
+  mostrarMsg(
+    "📷 Aponte a câmera para o QR Code do cliente."
+  );
+
+  try {
+
+    if (!leitorQR) {
+      leitorQR =
+        new Html5Qrcode("reader");
     }
 
-    mostrarMsg("⏳ Solicitando acesso à câmera...");
+    await leitorQR.start(
 
-    try {
+      {
+        facingMode: "environment"
+      },
 
-        // Confere se o navegador possui suporte à câmera
-        if (
-          !navigator.mediaDevices ||
-          !navigator.mediaDevices.getUserMedia
-        ) {
+      {
+        fps: 10,
+        qrbox: 220
+      },
 
-            throw new Error(
-              "Este navegador não disponibilizou acesso à câmera."
-            );
+      async function(texto) {
 
+        if (lendoQR) {
+          return;
         }
 
-        // Solicita a permissão explicitamente no celular.
-        // Isto é importante principalmente em Android/Chrome/Edge.
-        const stream =
-          await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: {
-                ideal: "environment"
-              }
-            },
-            audio: false
-          });
+        lendoQR = true;
 
-        // Fecha o teste de câmera.
-        // O Html5Qrcode abrirá novamente logo abaixo.
-        stream.getTracks().forEach(function(track){
-          track.stop();
-        });
+        try {
 
-        diagnosticoQR(
-          "CÂMERA",
-          "Permissão concedida"
-        );
+          await leitorQR.stop();
 
-        const html5QrCode =
-          new Html5Qrcode("reader");
-
-        let processado = false;
-
-        // Primeiro tenta localizar as câmeras existentes.
-        const cameras =
-          await Html5Qrcode.getCameras();
-
-        diagnosticoQR(
-          "CÂMERAS ENCONTRADAS",
-          cameras && cameras.length
-            ? cameras.length
-            : "0"
-        );
-
-        if (!cameras || cameras.length === 0) {
-
-            throw new Error(
-              "Nenhuma câmera foi encontrada no aparelho."
-            );
-
-        }
-
-        /*
-        Procura preferencialmente uma câmera traseira.
-        Se não conseguir identificar pelo nome,
-        usa a última câmera encontrada.
-        */
-
-        let cameraEscolhida =
-          cameras.find(function(camera){
-
-            const nome =
-              String(camera.label || "")
-                .toLowerCase();
-
-            return (
-              nome.includes("back") ||
-              nome.includes("rear") ||
-              nome.includes("traseira") ||
-              nome.includes("environment")
-            );
-
-          });
-
-        if (!cameraEscolhida) {
-          cameraEscolhida =
-            cameras[cameras.length - 1];
-        }
-
-        diagnosticoQR(
-          "CÂMERA ESCOLHIDA",
-          cameraEscolhida.label ||
-          cameraEscolhida.id
-        );
-
-        await html5QrCode.start(
-
-          cameraEscolhida.id,
-
-          {
-            fps: 10,
-
-            qrbox: function(
-              viewfinderWidth,
-              viewfinderHeight
-            ){
-
-              const menor =
-                Math.min(
-                  viewfinderWidth,
-                  viewfinderHeight
-                );
-
-              const tamanho =
-                Math.floor(
-                  menor * 0.70
-                );
-
-              return {
-                width: tamanho,
-                height: tamanho
-              };
-
-            }
-          },
-
-          function(texto){
-
-            if (processado) return;
-
-            processado = true;
-
-            diagnosticoQR(
-              "QR DETECTADO",
-              texto
-            );
-
-            html5QrCode.stop()
-
-              .then(function(){
-
-                reader.style.display =
-                  "none";
-
-                processarQRCode(texto);
-
-              })
-
-              .catch(function(){
-
-                reader.style.display =
-                  "none";
-
-                processarQRCode(texto);
-
-              });
-
-          },
-
-          function(){
-            // Tentativas normais de leitura.
-            // Não mostrar como erro.
-          }
-
-        );
-
-        mostrarMsg(
-          "📷 Aponte a câmera para o QR Code do cliente."
-        );
-
-        if (btn) {
-          btn.innerHTML =
-            "📷 Câmera aberta";
-        }
-
-    }
-    catch(err){
-
-        console.error(
-          "ERRO AO ABRIR CÂMERA:",
-          err
-        );
-
-        diagnosticoQR(
-          "ERRO CÂMERA",
-          err && err.message
-            ? err.message
-            : String(err)
-        );
+        } catch (e) {}
 
         reader.style.display =
           "none";
 
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML =
-            "📷 Ler QR Code";
-        }
+        processarQRCode(texto);
 
-        let mensagem =
-          err && err.message
-            ? err.message
-            : String(err);
+      }
 
-        mostrarMsg(
-          "❌ Não foi possível abrir a câmera.<br><br>" +
-          "<strong>Motivo:</strong> " +
-          mensagem +
-          "<br><br>" +
-          "Verifique se o navegador possui permissão para usar a câmera."
-        );
+    );
 
-    }
+  } catch (e) {
+
+    console.error(
+      "ERRO CÂMERA:",
+      e
+    );
+
+    lendoQR = false;
+
+    reader.style.display =
+      "none";
+
+    mostrarMsg(
+      "❌ Não foi possível acessar a câmera."
+    );
+
+  }
 
 }
 
@@ -1465,6 +1312,14 @@ function processarQRCode(texto){
         validar();
 
     }catch(e){
+
+    lendoQR = false;
+
+    mostrarMsg(
+      "❌ QR Code inválido."
+    );
+
+}
 
         diagnosticoQR(
           "ERRO PROCESSAR QR",
