@@ -68,7 +68,7 @@ body {
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         🏪 <strong>VALIDADOR QR CODE CARTÃO</strong><br>
-        Valide o QR CODE do cliente, o cartão estando ativo você receberá o código de autorização do benefício.
+        Valide o QR Code do cliente. Estando o cartão ativo e a utilização autorizada, será gerado o Código ERO para confirmação do benefício..
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai" alt="Aproveitai">
@@ -207,7 +207,7 @@ style="width:100%;padding:10px;margin-top:5px;">
   border-radius:8px;
   text-align:center;
 ">
-🔐 CÓDIGO DE AUTORIZAÇÃO
+🔐 CÓDIGO ERO
 
 <div id="codigoERO"
      style="font-size:38px;
@@ -621,17 +621,19 @@ carregarBeneficios(
     resp.idPublico
 );
 
+/*
+O seletor e o botão ERO somente serão liberados
+depois que os benefícios disponíveis forem carregados.
+*/
 
 document.getElementById("blocoBeneficio")
-.style.display = "block";
-
-
+.style.display = "none";
 
 document.getElementById("blocoGerarERO")
-.style.display = "block";
+.style.display = "none";
 
 document.getElementById("btnGerarERO")
-.style.display = "block";
+.style.display = "none";
 
 window.ultimoCelularCliente = resp.celular || "";
 
@@ -1232,9 +1234,7 @@ color:#777;
 text-align:center;
 margin-top:8px;">
 Versão
-<span id="versaoSistema"></span>
-</div>
-</footer>
+<span id="versaoRodape"></span></footer>
 
 
 <script>
