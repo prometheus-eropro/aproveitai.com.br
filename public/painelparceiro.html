@@ -297,6 +297,12 @@ Promoções somente serão publicadas após aprovação.
 
 const API_URL="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
+const paramsPainel =
+  new URLSearchParams(window.location.search);
+
+const retornoAposLogin =
+  paramsPainel.get("retorno") || "";
+
 function salvarSessao(d){
 
 sessionStorage.setItem("parceiroId",d.parceiro_id||"");
@@ -371,8 +377,23 @@ salvarSessao(d);
 
 sessionStorage.setItem("parceiroToken",token);
 
-document.getElementById("loginBox").style.display="none";
 
+/* ==========================================
+   VEIO DA LEITURA DO QR DE UM CLIENTE?
+   Depois do login volta automaticamente
+   para a validação.
+========================================== */
+
+if (retornoAposLogin) {
+
+  window.location.href = retornoAposLogin;
+
+  return;
+
+}
+
+
+document.getElementById("loginBox").style.display="none";
 document.getElementById("painelBox").style.display="block";
 
 document.getElementById("nomeParceiro").innerHTML=d.nome;

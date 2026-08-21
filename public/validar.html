@@ -244,17 +244,35 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD
 
 let intervaloCronometro = null;
 
-const params = new URLSearchParams(window.location.search);
+const params =
+  new URLSearchParams(window.location.search);
+
+
+/* ==========================================
+   IDENTIFICA O PARCEIRO
+
+   Prioridade:
+   1 - parceiro informado pela URL
+   2 - parceiro já logado na sessão
+========================================== */
+
 const parceiroId =
   params.get("p") ||
   params.get("parceiro_id") ||
-  params.get("parceiro");
+  params.get("parceiro") ||
+  sessionStorage.getItem("parceiroId") ||
+  "";
+
+
+/* ==========================================
+   IDENTIFICA O CLIENTE
+========================================== */
 
 let clienteId =
-    params.get("idPublico") ||
-    params.get("id") ||
-    params.get("cliente");
-
+  params.get("idPublico") ||
+  params.get("id") ||
+  params.get("cliente") ||
+  "";
 
 const elMsg = document.getElementById("msg");
 const elBtn =
@@ -1233,14 +1251,81 @@ navigator.serviceWorker.register('/sw.js');
 
 window.addEventListener("load", function () {
 
-    if (clienteId && parceiroId) {
+  /* ==========================================
+     QR DO CLIENTE FOI ABERTO
+  ========================================== */
 
-        validar();
+  if (clienteId) {
 
+    /* ========================================
+       PARCEIRO JÁ ESTÁ IDENTIFICADO
+    ======================================== */
+
+    if (parceiroId) {
+
+      validar();
+
+      return;
     }
 
-});
 
+    /* ========================================
+       PARCEIRO NÃO ESTÁ LOGADO
+    ======================================== */
+
+    const retorno =
+      "validar.html?idPublico=" +
+      encodeURIComponent(clienteId);
+
+    mostrarMsg(
+      '<div style="' +
+        'background:#fff3cd;' +
+        'border:2px solid #d6a500;' +
+        'padding:18px;' +
+        'border-radius:10px;' +
+        'text-align:center;' +
+        'line-height:1.5;' +
+      '">' +
+
+        '<div style="' +
+          'font-size:21px;' +
+          'font-weight:900;' +
+          'color:#856404;' +
+          'margin-bottom:10px;' +
+        '">' +
+          '🔐 ACESSO DO PARCEIRO NECESSÁRIO' +
+        '</div>' +
+
+        'Para validar este Cartão AproveitAI, ' +
+        'é necessário entrar na Área do Parceiro.' +
+
+        '<br><br>' +
+
+        '<button ' +
+          'onclick="window.location.href=' +
+          '\'painelparceiro.html?retorno=' +
+          encodeURIComponent(retorno) +
+          '\'" ' +
+          'style="' +
+            'background:#0a7a3c;' +
+            'color:white;' +
+            'border:0;' +
+            'padding:13px 20px;' +
+            'border-radius:8px;' +
+            'font-size:17px;' +
+            'font-weight:bold;' +
+            'cursor:pointer;' +
+          '"' +
+        '>' +
+          '🏪 ENTRAR COMO PARCEIRO' +
+        '</button>' +
+
+      '</div>'
+    );
+
+  }
+
+});
 </script>
 
 </body>
