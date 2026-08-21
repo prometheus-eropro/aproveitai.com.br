@@ -285,6 +285,49 @@ function mostrarMsg(msg) {
   elMsg.innerHTML = msg || "";
 }
 
+/* ==========================================
+   DIAGNÓSTICO VISÍVEL PARA CELULAR
+========================================== */
+
+function diagnosticoQR(etapa, valor) {
+
+  let box =
+    document.getElementById("diagnosticoQR");
+
+  if (!box) {
+
+    box = document.createElement("div");
+
+    box.id = "diagnosticoQR";
+
+    box.style.cssText =
+      "margin-top:15px;" +
+      "padding:12px;" +
+      "background:#fff3cd;" +
+      "border:2px solid #d6a500;" +
+      "border-radius:8px;" +
+      "font-size:12px;" +
+      "line-height:1.5;" +
+      "word-break:break-all;" +
+      "text-align:left;";
+
+    document
+      .querySelector(".container")
+      .appendChild(box);
+  }
+
+  const linha =
+    document.createElement("div");
+
+  linha.innerHTML =
+    "<strong>" +
+    etapa +
+    ":</strong> " +
+    String(valor ?? "");
+
+  box.appendChild(linha);
+}
+
 function somenteNumeros(v) {
   return String(v || "").replace(/\D/g, "");
 }
@@ -384,6 +427,16 @@ console.log("CLIENTE VALIDAÇÃO:", valor);
 console.log("PARCEIRO VALIDAÇÃO:", parceiroId);
 console.log("URL VALIDAÇÃO:", script.src);
 
+diagnosticoQR(
+  "8 - AÇÃO",
+  acao
+);
+
+diagnosticoQR(
+  "9 - URL API",
+  script.src
+);
+
 script.onerror = function () {
 
     console.error(
@@ -405,6 +458,10 @@ document.body.appendChild(script);
 
 function retornoValidacao(resp) {
 
+diagnosticoQR(
+  "10 - RETORNO CORE",
+  JSON.stringify(resp)
+);
   document.getElementById("blocoCodigo")
 .style.display = "none";
 
@@ -876,10 +933,22 @@ function pararCronometro() {
     document.body.appendChild(script);
 
 script.onerror = function () {
-    console.error("Erro ao carregar benefícios.");
-};
 
-}
+    diagnosticoQR(
+      "ERRO API",
+      "Falha ao carregar JSONP"
+    );
+
+    console.error(
+      "ERRO AO CONSULTAR CORE:",
+      script.src
+    );
+
+    mostrarMsg(
+      "❌ Erro de comunicação com a Plataforma AproveitAI."
+    );
+
+};
 
 function beneficioSelecionado(){
 
@@ -1162,18 +1231,28 @@ function processarQRCode(texto){
 
     try{
 
-        console.log(
-          "QR LIDO:",
+        diagnosticoQR(
+          "1 - QR LIDO",
           texto
         );
 
         const url =
           new URL(texto);
 
+        diagnosticoQR(
+          "2 - URL RECONHECIDA",
+          url.href
+        );
+
         const idLido =
           url.searchParams.get("idPublico") ||
           url.searchParams.get("id") ||
           url.searchParams.get("cliente");
+
+        diagnosticoQR(
+          "3 - ID ENCONTRADO",
+          idLido || "NÃO ENCONTRADO"
+        );
 
         if(!idLido){
 
@@ -1182,7 +1261,6 @@ function processarQRCode(texto){
             );
 
             return;
-
         }
 
         clienteId =
@@ -1190,9 +1268,19 @@ function processarQRCode(texto){
           .trim()
           .toUpperCase();
 
-        console.log(
-          "CLIENTE DO QR:",
+        diagnosticoQR(
+          "4 - CLIENTE",
           clienteId
+        );
+
+        diagnosticoQR(
+          "5 - PARCEIRO",
+          parceiroId || "NÃO IDENTIFICADO"
+        );
+
+        diagnosticoQR(
+          "6 - SESSION parceiroId",
+          sessionStorage.getItem("parceiroId") || "VAZIA"
         );
 
         if(!parceiroId){
@@ -1202,16 +1290,22 @@ function processarQRCode(texto){
             );
 
             return;
-
         }
+
+        diagnosticoQR(
+          "7 - INICIANDO VALIDAÇÃO",
+          "OK"
+        );
 
         validar();
 
     }catch(e){
 
-        console.error(
-          "ERRO QR:",
-          e
+        diagnosticoQR(
+          "ERRO PROCESSAR QR",
+          e && e.message
+            ? e.message
+            : String(e)
         );
 
         mostrarMsg(
