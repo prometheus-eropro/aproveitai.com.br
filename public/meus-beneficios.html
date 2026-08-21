@@ -59,162 +59,427 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-// pegar ID do cliente pela URL
-const params = new URLSearchParams(window.location.search);
-const idCliente = params.get("id");
-const nascimento = params.get("nascimento") || sessionStorage.getItem("clienteNascimento");
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+
+// ==================================================
+// DADOS RECEBIDOS PELA URL
+// ==================================================
+
+const params =
+  new URLSearchParams(window.location.search);
+
+const idCliente =
+  String(params.get("id") || "")
+    .trim()
+    .toUpperCase();
+
+const nascimento =
+  params.get("nascimento") ||
+  sessionStorage.getItem("clienteNascimento") ||
+  "";
+
+
+// ==================================================
+// BOTÃO VER MEU CARTÃO
+// ==================================================
 
 document.getElementById("btnVerCartao").href =
-  `cartao.html?id=${encodeURIComponent(idCliente)}&nascimento=${encodeURIComponent(nascimento || "")}`;
+  `cartao.html?id=${encodeURIComponent(idCliente)}` +
+  `&nascimento=${encodeURIComponent(nascimento)}`;
 
-// ===========================
-// REGRA DE VISUALIZAÇÃO
-// ===========================
-function clientePodeVer(item, grupoCliente) {
-  if (!item.grupo && !item.idPublico) return true;
-  if (item.grupo && item.grupo === grupoCliente) return true;
-  if (item.idPublico && item.idPublico === idCliente) return true;
-  return false;
-}
 
-function formatarDataBR(valor){
+// ==================================================
+// JSONP
+// Evita bloqueio CORS do Google Apps Script
+// ==================================================
 
-  if(!valor) return "-";
+function chamarJSONP(parametros) {
 
-  if(typeof valor === "string"){
+  return new Promise(function(resolve, reject) {
 
-    if(valor.includes("/"))
-      return valor;
+    const callback =
+      "jsonp_" +
+      Date.now() +
+      "_" +
+      Math.floor(Math.random() * 1000000);
 
-    if(valor.includes("T"))
-      valor = valor.substring(0,10);
+    const script =
+      document.createElement("script");
 
-  }
+    let timeout;
 
-  const d = new Date(valor);
 
-  if(isNaN(d))
-    return "-";
+    // ----------------------------------------------
+    // LIMPEZA
+    // ----------------------------------------------
 
-  return d.toLocaleDateString(
-    "pt-BR",
-    {
-      timeZone:"America/Sao_Paulo"
+    function limpar() {
+
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+      try {
+        delete window[callback];
+      } catch (e) {
+        window[callback] = undefined;
+      }
+
     }
-  );
+
+
+    // ----------------------------------------------
+    // CALLBACK JSONP
+    // ----------------------------------------------
+
+    window[callback] = function(resposta) {
+
+      limpar();
+
+      resolve(resposta);
+
+    };
+
+
+    // ----------------------------------------------
+    // MONTA PARÂMETROS
+    // ----------------------------------------------
+
+    const query =
+      Object.keys(parametros)
+        .map(function(chave) {
+
+          return (
+            encodeURIComponent(chave) +
+            "=" +
+            encodeURIComponent(
+              parametros[chave] == null
+                ? ""
+                : parametros[chave]
+            )
+          );
+
+        })
+        .join("&");
+
+
+    script.src =
+      API_URL +
+      "?" +
+      query +
+      "&callback=" +
+      encodeURIComponent(callback) +
+      "&_=" +
+      Date.now();
+
+
+    // ----------------------------------------------
+    // ERRO
+    // ----------------------------------------------
+
+    script.onerror = function() {
+
+      limpar();
+
+      reject(
+        new Error(
+          "Falha na comunicação com a Plataforma AproveitAI."
+        )
+      );
+
+    };
+
+
+    // ----------------------------------------------
+    // TIMEOUT
+    // ----------------------------------------------
+
+    timeout =
+      setTimeout(function() {
+
+        limpar();
+
+        reject(
+          new Error(
+            "Tempo limite excedido ao consultar a plataforma."
+          )
+        );
+
+      }, 15000);
+
+
+    document.body.appendChild(script);
+
+  });
 
 }
+
+
+// ==================================================
+// CARREGAR CLIENTE + BENEFÍCIOS/PROMOÇÕES
+// ==================================================
 
 async function carregarTudo() {
 
-  const lista = document.getElementById("lista");
+  const lista =
+    document.getElementById("lista");
+
+
+  // ----------------------------------------------
+  // VALIDAÇÃO INICIAL
+  // ----------------------------------------------
 
   if (!idCliente) {
-    lista.innerHTML = "Acesso inválido.";
+
+    lista.innerHTML =
+      "<p style='text-align:center;color:red'>" +
+      "Acesso inválido." +
+      "</p>";
+
     return;
+
   }
+
+
+  if (!nascimento) {
+
+    lista.innerHTML =
+      "<p style='text-align:center;color:red'>" +
+      "Data de nascimento não informada." +
+      "</p>";
+
+    return;
+
+  }
+
+
+  lista.innerHTML =
+    "<p style='text-align:center'>" +
+    "Carregando seus benefícios..." +
+    "</p>";
+
 
   try {
 
-    // ============================
-    // CONSULTA CLIENTE
-    // ============================
-    const resCliente = await fetch(
-      `${API_URL}?acao=consultarClientePorIdSeguro` +
-      `&idPublico=${encodeURIComponent(idCliente)}` +
-      `&nascimento=${encodeURIComponent(nascimento)}`
+    // ==================================================
+    // 1. CONSULTA CLIENTE
+    // ==================================================
+
+    const cliente =
+      await chamarJSONP({
+
+        acao:
+          "consultarClientePorIdSeguro",
+
+        idPublico:
+          idCliente,
+
+        nascimento:
+          nascimento
+
+      });
+
+
+    console.log(
+      "CLIENTE:",
+      cliente
     );
 
-    const cliente = await resCliente.json();
 
-    console.log("CLIENTE:", cliente);
+    // ----------------------------------------------
+    // CLIENTE NÃO LOCALIZADO
+    // ----------------------------------------------
 
-    if (String(cliente.ativo).toLowerCase() !== "sim") {
+    if (
+      !cliente ||
+      cliente.ok === false
+    ) {
+
       lista.innerHTML =
-        "<p style='text-align:center;color:red'>Cliente inativo ou inexistente.</p>";
+        "<p style='text-align:center;color:red'>" +
+        "Cliente não encontrado." +
+        "</p>";
+
       return;
+
     }
 
-    // ============================
-    // CONSULTA BENEFÍCIOS
-    // ============================
-    const url =
-  `${API_URL}?acao=listarBeneficiosCliente` +
-  `&grupo=${encodeURIComponent(cliente.grupo)}` +
-  `&cpf=${encodeURIComponent(cliente.cpf)}` +
-  `&idPublico=${encodeURIComponent(cliente.idPublico)}`;
 
-console.log("URL BENEFÍCIOS:", url);
+    // ----------------------------------------------
+    // CLIENTE INATIVO
+    // ----------------------------------------------
 
-const resposta = await fetch(url);
+    if (
+      String(cliente.ativo || "")
+        .trim()
+        .toLowerCase() !== "sim"
+    ) {
 
-const texto = await resposta.text();
+      lista.innerHTML =
+        "<p style='text-align:center;color:red'>" +
+        "Cliente inativo ou inexistente." +
+        "</p>";
 
-console.log("RESPOSTA BRUTA:");
-console.log(texto);
+      return;
 
-const retorno = JSON.parse(texto);
+    }
 
-console.log("RETORNO:", retorno);
+
+    // ==================================================
+    // 2. CONSULTA BENEFÍCIOS E PROMOÇÕES
+    // ==================================================
+
+    const retorno =
+      await chamarJSONP({
+
+        acao:
+          "listarBeneficiosCliente",
+
+        grupo:
+          cliente.grupo || "",
+
+        cpf:
+          cliente.cpf || "",
+
+        idPublico:
+          cliente.idPublico || idCliente
+
+      });
+
+
+    console.log(
+      "RETORNO BENEFÍCIOS:",
+      retorno
+    );
+
+
+    // ----------------------------------------------
+    // ERRO DA API
+    // ----------------------------------------------
+
+    if (
+      !retorno ||
+      retorno.ok === false
+    ) {
+
+      lista.innerHTML =
+        "<p style='text-align:center;color:red'>" +
+        "Não foi possível carregar os benefícios." +
+        "</p>";
+
+      return;
+
+    }
+
+
+    // ==================================================
+    // 3. ITENS AUTORIZADOS PELO GAS
+    // ==================================================
+
+    const itens =
+      Array.isArray(retorno.itens)
+        ? retorno.itens
+        : [];
+
+
+    console.log(
+      "QUANTIDADE:",
+      itens.length
+    );
+
+    console.log(
+      "ITENS:",
+      itens
+    );
+
 
     lista.innerHTML = "";
 
-    const itens = retorno.itens || [];
 
-    console.log("QUANTIDADE:", itens.length);
-console.log(itens);
+    // ==================================================
+    // 4. MONTA OS CARDS
+    // ==================================================
 
-    itens.forEach(item => {
+    itens.forEach(function(item) {
 
-  const tipo =
-    String(
-      item.tipo ||
-      item.tipo_oferta ||
-      ""
-    )
-    .trim()
-    .toLowerCase();
+      const tipo =
+        String(
+          item.tipo ||
+          item.tipo_oferta ||
+          ""
+        )
+        .trim()
+        .toLowerCase();
 
-  if (
-    tipo === "promocao" ||
-    tipo === "promoção" ||
-    tipo === "promocoes"
-  ) {
 
-    lista.innerHTML +=
-      AproveitAIOfertas.promocao(item);
+      if (
+        tipo === "promocao" ||
+        tipo === "promoção" ||
+        tipo === "promocoes"
+      ) {
 
-  } else {
+        lista.innerHTML +=
+          AproveitAIOfertas.promocao(item);
 
-    lista.innerHTML +=
-      AproveitAIOfertas.beneficio(item);
+      } else {
 
-  }
+        lista.innerHTML +=
+          AproveitAIOfertas.beneficio(item);
 
-});
+      }
+
+    });
+
+
+    // ==================================================
+    // 5. NENHUMA OFERTA DISPONÍVEL
+    // ==================================================
 
     if (itens.length === 0) {
 
-  lista.innerHTML =
-    "<p style='text-align:center'>Nenhum benefício ou promoção disponível no momento.</p>";
+      lista.innerHTML =
+        "<p style='text-align:center'>" +
+        "Nenhum benefício ou promoção disponível no momento." +
+        "</p>";
 
-}
+    }
+
 
   } catch (erro) {
 
-    console.error(erro);
+    console.error(
+      "ERRO AO CARREGAR BENEFÍCIOS:",
+      erro
+    );
 
     lista.innerHTML =
-      "<p style='text-align:center;color:red'>Erro ao carregar benefícios.</p>";
+      "<p style='text-align:center;color:red'>" +
+      "Erro ao carregar benefícios. Tente novamente." +
+      "</p>";
 
   }
 
 }
 
-  document.addEventListener("DOMContentLoaded", carregarTudo);
+
+// ==================================================
+// INICIALIZAÇÃO
+// ==================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  carregarTudo
+);
+
 </script>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
