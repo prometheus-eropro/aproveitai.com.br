@@ -519,40 +519,34 @@ async function validar() {
 try {
 
   let textoLimpo =
-  String(texto || "").trim();
+    String(texto || "").trim();
 
+  const inicioJSON =
+    textoLimpo.indexOf("{");
 
-// ==========================================
-// ACEITA JSON PURO, ({JSON}) OU JSONP
-// retornoGeracaoERO({...})
-// ==========================================
+  const fimJSON =
+    textoLimpo.lastIndexOf("}");
 
-const inicioJSON =
-  textoLimpo.indexOf("{");
+  if (
+    inicioJSON === -1 ||
+    fimJSON === -1 ||
+    fimJSON < inicioJSON
+  ) {
+    throw new Error(
+      "Resposta inválida do CORE: " +
+      textoLimpo.substring(0, 200)
+    );
+  }
 
-const fimJSON =
-  textoLimpo.lastIndexOf("}");
+  textoLimpo =
+    textoLimpo.substring(
+      inicioJSON,
+      fimJSON + 1
+    );
 
-if (
-  inicioJSON === -1 ||
-  fimJSON === -1 ||
-  fimJSON < inicioJSON
-) {
-
-  throw new Error(
-    "Resposta inválida do CORE: " +
-    textoLimpo.substring(0, 200)
-  );
-}
-
-textoLimpo =
-  textoLimpo.substring(
-    inicioJSON,
-    fimJSON + 1
-  );
-
-const resp =
-  JSON.parse(textoLimpo);
+  // IMPORTANTE:
+  // não colocar const ou let aqui
+  resp = JSON.parse(textoLimpo);
 
 } catch (erroJSON) {
 
@@ -560,15 +554,9 @@ const resp =
     "Resposta inválida do CORE: " +
     texto.substring(0, 150)
   );
-
 }
 
-
-    // ==========================================
-    // ENTREGA PARA A FUNÇÃO QUE JÁ EXISTE
-    // ==========================================
-
-    retornoValidacao(resp);
+retornoValidacao(resp);
 
 
   } catch (erro) {
