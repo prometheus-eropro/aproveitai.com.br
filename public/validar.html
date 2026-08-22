@@ -1126,43 +1126,130 @@ function pararCronometro() {
 }
 </script>
 <script>
+async function carregarBeneficios(
+  parceiroId,
+  grupo,
+  cpf,
+  idPublico
+) {
 
-  function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
+  const url =
+    GAS_URL +
+    "?acao=listarBeneficiosCliente" +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId || "") +
+    "&grupo=" +
+    encodeURIComponent(grupo || "") +
+    "&cpf=" +
+    encodeURIComponent(cpf || "") +
+    "&idPublico=" +
+    encodeURIComponent(idPublico || "") +
+    "&_=" +
+    Date.now();
 
-    const script = document.createElement("script");
 
-    script.src =
-        GAS_URL +
-        "?callback=retornoBeneficios" +
-        "&acao=listarBeneficiosCliente" +
-        "&parceiro_id=" + encodeURIComponent(parceiroId) +
-        "&grupo=" + encodeURIComponent(grupo) +
-        "&cpf=" + encodeURIComponent(cpf) +
-        "&idPublico=" + encodeURIComponent(idPublico);
+  diagnosticoQR(
+    "13 - BENEFÍCIOS API",
+    url
+  );
 
-    document.body.appendChild(script);
 
-script.onerror = function () {
+  try {
+
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      });
+
+
+    diagnosticoQR(
+      "14 - BENEFÍCIOS HTTP",
+      resposta.status
+    );
+
+
+    if (!resposta.ok) {
+
+      throw new Error(
+        "HTTP " + resposta.status
+      );
+
+    }
+
+
+    const texto =
+      await resposta.text();
+
+
+    diagnosticoQR(
+      "15 - BENEFÍCIOS RETORNO",
+      texto
+    );
+
+
+    // ==========================================
+    // LIMPA OS PARÊNTESES QUE O CORE DEVOLVE
+    // Exemplo: ({...})  ->  {...}
+    // ==========================================
+
+    let textoLimpo =
+      String(texto || "").trim();
+
+
+    if (
+      textoLimpo.startsWith("(") &&
+      textoLimpo.endsWith(")")
+    ) {
+
+      textoLimpo =
+        textoLimpo.substring(
+          1,
+          textoLimpo.length - 1
+        ).trim();
+
+    }
+
+
+    // ==========================================
+    // CONVERTE PARA OBJETO
+    // ==========================================
+
+    const resp =
+      JSON.parse(textoLimpo);
+
+
+    // ==========================================
+    // USA A FUNÇÃO QUE JÁ EXISTE
+    // ==========================================
+
+    retornoBeneficios(resp);
+
+
+  } catch (erro) {
 
     validacaoEmAndamento = false;
 
     console.error(
-      "ERRO AO CONSULTAR CORE:",
-      script.src
+      "ERRO AO CONSULTAR BENEFÍCIOS:",
+      erro
     );
 
-    mostrarMsg(
-      "❌ Erro de comunicação com a Plataforma AproveitAI."
-    );
-};
 
     diagnosticoQR(
-      "ERRO API",
-      "Falha ao carregar JSONP"
+      "16 - ERRO BENEFÍCIOS",
+      String(erro)
     );
 
 
-} // FECHA carregarBeneficios
+    mostrarMsg(
+      "❌ Erro ao carregar os benefícios."
+    );
+
+  }
+
+}
 
 function beneficioSelecionado(){
 
