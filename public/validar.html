@@ -601,19 +601,39 @@ async function validar() {
 
     let resp;
 
-    try {
+try {
 
-      resp =
-        JSON.parse(texto);
+  let textoLimpo =
+    String(texto || "").trim();
 
-    } catch (erroJSON) {
+  // O CORE pode devolver:
+  // ({...})
+  // Remove apenas os parênteses externos.
 
-      throw new Error(
-        "Resposta inválida do CORE: " +
-        texto.substring(0, 150)
-      );
+  if (
+    textoLimpo.startsWith("(") &&
+    textoLimpo.endsWith(")")
+  ) {
 
-    }
+    textoLimpo =
+      textoLimpo.substring(
+        1,
+        textoLimpo.length - 1
+      ).trim();
+
+  }
+
+  resp =
+    JSON.parse(textoLimpo);
+
+} catch (erroJSON) {
+
+  throw new Error(
+    "Resposta inválida do CORE: " +
+    texto.substring(0, 150)
+  );
+
+}
 
 
     // ==========================================
