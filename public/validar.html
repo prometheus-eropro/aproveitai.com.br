@@ -519,27 +519,40 @@ async function validar() {
 try {
 
   let textoLimpo =
-    String(texto || "").trim();
+  String(texto || "").trim();
 
-  // O CORE pode devolver:
-  // ({...})
-  // Remove apenas os parênteses externos.
 
-  if (
-    textoLimpo.startsWith("(") &&
-    textoLimpo.endsWith(")")
-  ) {
+// ==========================================
+// ACEITA JSON PURO, ({JSON}) OU JSONP
+// retornoGeracaoERO({...})
+// ==========================================
 
-    textoLimpo =
-      textoLimpo.substring(
-        1,
-        textoLimpo.length - 1
-      ).trim();
+const inicioJSON =
+  textoLimpo.indexOf("{");
 
-  }
+const fimJSON =
+  textoLimpo.lastIndexOf("}");
 
-  resp =
-    JSON.parse(textoLimpo);
+if (
+  inicioJSON === -1 ||
+  fimJSON === -1 ||
+  fimJSON < inicioJSON
+) {
+
+  throw new Error(
+    "Resposta inválida do CORE: " +
+    textoLimpo.substring(0, 200)
+  );
+}
+
+textoLimpo =
+  textoLimpo.substring(
+    inicioJSON,
+    fimJSON + 1
+  );
+
+const resp =
+  JSON.parse(textoLimpo);
 
 } catch (erroJSON) {
 
