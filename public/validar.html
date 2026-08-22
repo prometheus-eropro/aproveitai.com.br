@@ -1379,11 +1379,7 @@ async function gerarERO() {
     ).value;
 
   if (!beneficioValor) {
-
-    mostrarMsg(
-      "❌ Selecione um benefício."
-    );
-
+    mostrarMsg("❌ Selecione um benefício.");
     return;
   }
 
@@ -1397,13 +1393,8 @@ async function gerarERO() {
       window.cpfCliente || ""
     ).replace(/\D/g, "");
 
-
   if (!cpf) {
-
-    mostrarMsg(
-      "❌ CPF do cliente não identificado."
-    );
-
+    mostrarMsg("❌ CPF do cliente não identificado.");
     return;
   }
 
@@ -1413,11 +1404,7 @@ async function gerarERO() {
   // ==========================================
 
   if (!parceiroId) {
-
-    mostrarMsg(
-      "❌ Parceiro não identificado."
-    );
-
+    mostrarMsg("❌ Parceiro não identificado.");
     return;
   }
 
@@ -1445,11 +1432,7 @@ async function gerarERO() {
       ).trim();
 
     if (!veiculo) {
-
-      mostrarMsg(
-        "❌ Selecione o veículo."
-      );
-
+      mostrarMsg("❌ Selecione o veículo.");
       return;
     }
 
@@ -1477,11 +1460,9 @@ async function gerarERO() {
 
   } catch (e) {
 
-    mostrarMsg(
-      "❌ Benefício inválido."
-    );
-
+    mostrarMsg("❌ Benefício inválido.");
     return;
+
   }
 
 
@@ -1523,7 +1504,7 @@ async function gerarERO() {
 
 
   // ==========================================
-  // BLOQUEIA BOTÃO DURANTE A CONSULTA
+  // BLOQUEIA BOTÃO
   // ==========================================
 
   const btn =
@@ -1532,16 +1513,13 @@ async function gerarERO() {
     );
 
   if (btn) {
-
     btn.disabled = true;
-    btn.innerText =
-      "Gerando Código ERO...";
-
+    btn.innerText = "Gerando Código ERO...";
   }
 
 
   // ==========================================
-  // FETCH
+  // CONSULTA CORE
   // ==========================================
 
   try {
@@ -1561,11 +1539,9 @@ async function gerarERO() {
 
 
     if (!resposta.ok) {
-
       throw new Error(
         "HTTP " + resposta.status
       );
-
     }
 
 
@@ -1581,28 +1557,80 @@ async function gerarERO() {
 
     // ==========================================
     // LIMPA RESPOSTA DO CORE
+    // ACEITA JSON PURO OU JSONP
     // ==========================================
 
     let textoLimpo =
       String(texto || "").trim();
 
 
+    // Caso venha:
+    // retornoGeracaoERO({...})
+
+    const inicioJSON =
+      textoLimpo.indexOf("{");
+
+    const fimJSON =
+      textoLimpo.lastIndexOf("}");
+
+
     if (
-      textoLimpo.startsWith("(") &&
-      textoLimpo.endsWith(")")
+      inicioJSON === -1 ||
+      fimJSON === -1 ||
+      fimJSON < inicioJSON
     ) {
 
-      textoLimpo =
-        textoLimpo.substring(
-          1,
-          textoLimpo.length - 1
-        ).trim();
+      throw new Error(
+        "CORE não retornou objeto JSON válido."
+      );
 
     }
 
 
+    textoLimpo =
+      textoLimpo.substring(
+        inicioJSON,
+        fimJSON + 1
+      );
+
+
+    diagnosticoQR(
+      "20 - JSON ERO LIMPO",
+      textoLimpo
+    );
+
+
+    // ==========================================
+    // CONVERTE PARA OBJETO
+    // ==========================================
+
     const resp =
       JSON.parse(textoLimpo);
+
+
+    diagnosticoQR(
+      "21 - ERO CONVERTIDO",
+      JSON.stringify(resp)
+    );
+
+
+    // ==========================================
+    // CONFERE RETORNO
+    // ==========================================
+
+    if (
+      !resp ||
+      resp.ok !== true ||
+      !resp.codigo
+    ) {
+
+      throw new Error(
+        resp && resp.mensagem
+          ? resp.mensagem
+          : "CORE não retornou Código ERO."
+      );
+
+    }
 
 
     // ==========================================
@@ -1612,10 +1640,20 @@ async function gerarERO() {
     retornoGeracaoERO(resp);
 
 
+    // ==========================================
+    // MANTÉM BOTÃO BLOQUEADO APÓS SUCESSO
+    // ==========================================
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = "Código ERO Gerado";
+    }
+
+
   } catch (erro) {
 
     diagnosticoQR(
-      "20 - ERRO GERAR ERO",
+      "22 - ERRO GERAR ERO",
       String(erro)
     );
 
@@ -1625,11 +1663,8 @@ async function gerarERO() {
 
 
     if (btn) {
-
       btn.disabled = false;
-      btn.innerText =
-        "Gerar Código ERO";
-
+      btn.innerText = "Gerar Código ERO";
     }
 
   }
