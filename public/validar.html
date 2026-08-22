@@ -1167,25 +1167,58 @@ let lendoQR = false;
 
 async function abrirCamera() {
 
-  if (lendoQR) {
+  mostrarMsg("⏳ Abrindo câmera...");
+
+  // Confirma se a biblioteca carregou
+  if (typeof Html5Qrcode === "undefined") {
+
+    mostrarMsg(
+      "❌ O leitor de QR Code não foi carregado.<br>" +
+      "Atualize a página e tente novamente."
+    );
+
+    console.error(
+      "Html5Qrcode não está disponível."
+    );
+
     return;
   }
+
+  // Libera tentativa anterior travada
+  lendoQR = false;
 
   const reader =
     document.getElementById("reader");
 
-  reader.style.display = "block";
+  if (!reader) {
 
-  mostrarMsg(
-    "📷 Aponte a câmera para o QR Code do cliente."
-  );
+    mostrarMsg(
+      "❌ Área da câmera não encontrada."
+    );
+
+    return;
+  }
+
+  reader.style.display = "block";
 
   try {
 
-    if (!leitorQR) {
-      leitorQR =
-        new Html5Qrcode("reader");
+    // Limpa leitor anterior
+    if (leitorQR) {
+
+      try {
+        await leitorQR.stop();
+      } catch (e) {}
+
+      try {
+        leitorQR.clear();
+      } catch (e) {}
+
+      leitorQR = null;
     }
+
+    leitorQR =
+      new Html5Qrcode("reader");
 
     await leitorQR.start(
 
@@ -1195,7 +1228,10 @@ async function abrirCamera() {
 
       {
         fps: 10,
-        qrbox: 220
+        qrbox: {
+          width: 220,
+          height: 220
+        }
       },
 
       async function(texto) {
@@ -1206,25 +1242,44 @@ async function abrirCamera() {
 
         lendoQR = true;
 
+        mostrarMsg(
+          "✅ QR Code lido. Processando..."
+        );
+
         try {
 
           await leitorQR.stop();
 
-        } catch (e) {}
+        } catch (e) {
+
+          console.log(
+            "Erro ao parar câmera:",
+            e
+          );
+
+        }
 
         reader.style.display =
           "none";
 
         processarQRCode(texto);
 
+      },
+
+      function(erroLeitura) {
+        // Ignora enquanto procura QR
       }
 
+    );
+
+    mostrarMsg(
+      "📷 Câmera aberta. Aponte para o QR Code do cliente."
     );
 
   } catch (e) {
 
     console.error(
-      "ERRO CÂMERA:",
+      "ERRO AO ABRIR CÂMERA:",
       e
     );
 
@@ -1234,7 +1289,11 @@ async function abrirCamera() {
       "none";
 
     mostrarMsg(
-      "❌ Não foi possível acessar a câmera."
+      "❌ Não foi possível abrir a câmera.<br><br>" +
+      "Verifique se o navegador tem permissão para usar a câmera.<br><br>" +
+      "<small>" +
+      String(e?.message || e) +
+      "</small>"
     );
 
   }
