@@ -421,10 +421,10 @@ async function testarCoreFetch() {
 /* =============================
    VALIDAÇÃO
 ============================= */
-function validar() {
+async function validar() {
 
   // ==========================================
-  // EVITA DUAS VALIDAÇÕES AO MESMO TEMPO
+  // EVITA DUPLICIDADE
   // ==========================================
 
   if (validacaoEmAndamento) {
@@ -436,7 +436,7 @@ function validar() {
 
 
   // ==========================================
-  // LIMPA BLOCOS DA VALIDAÇÃO ANTERIOR
+  // LIMPA TELA
   // ==========================================
 
   document.getElementById("blocoBeneficio").style.display = "none";
@@ -453,10 +453,10 @@ function validar() {
   // CONFERE CLIENTE
   // ==========================================
 
-  const idPublico =
+  let valor =
     String(clienteId || "").trim();
 
-  if (!idPublico) {
+  if (!valor) {
 
     validacaoEmAndamento = false;
 
@@ -490,11 +490,8 @@ function validar() {
 
 
   // ==========================================
-  // IDENTIFICA SE É CPF OU ID PÚBLICO
+  // DEFINE CPF OU ID PÚBLICO
   // ==========================================
-
-  let valor =
-    String(clienteId || "").trim();
 
   const somenteDigitos =
     valor.replace(/\D/g, "");
@@ -503,10 +500,6 @@ function validar() {
   let parametro;
 
 
-  // ==========================================
-  // CLIENTE POR CPF
-  // ==========================================
-
   if (/^\d{11}$/.test(somenteDigitos)) {
 
     valor = somenteDigitos;
@@ -514,14 +507,7 @@ function validar() {
     acao = "buscarClienteCPF";
     parametro = "&cpf=";
 
-  }
-
-
-  // ==========================================
-  // CLIENTE POR ID PÚBLICO APV
-  // ==========================================
-
-  else {
+  } else {
 
     valor =
       valor.toUpperCase();
@@ -531,7 +517,7 @@ function validar() {
       validacaoEmAndamento = false;
 
       mostrarMsg(
-        "❌ ID Público inválido. Informe um código no formato APV-XXXXXXXX."
+        "❌ ID Público inválido."
       );
 
       return;
@@ -543,39 +529,12 @@ function validar() {
 
 
   // ==========================================
-  // REMOVE JSONP ANTERIOR
+  // MONTA URL
   // ==========================================
 
-  const anterior =
-    document.getElementById("jsonpReq");
-
-  if (anterior) {
-    anterior.remove();
-  }
-
-
-  // ==========================================
-  // CRIA UMA ÚNICA CONSULTA JSONP
-  // ==========================================
-
-  const script =
-    document.createElement("script");
-
-  script.id =
-    "jsonpReq";
-
-  script.async =
-    true;
-
-
-  // ==========================================
-  // MONTA URL DO CORE
-  // ==========================================
-
-  script.src =
+  const url =
     GAS_URL +
-    "?callback=retornoValidacao" +
-    "&acao=" +
+    "?acao=" +
     encodeURIComponent(acao) +
     parametro +
     encodeURIComponent(valor) +
@@ -587,46 +546,97 @@ function validar() {
     Date.now();
 
 
-  // ==========================================
-  // DIAGNÓSTICO
-  // ==========================================
-
   diagnosticoQR(
     "8 - AÇÃO",
     acao
   );
 
   diagnosticoQR(
-    "9 - URL API",
-    script.src
+    "9 - FETCH API",
+    url
   );
 
 
   // ==========================================
-  // ERRO DE CARREGAMENTO
+  // CONSULTA CORE VIA FETCH
   // ==========================================
 
-  script.onerror = function () {
+  try {
+
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      });
+
+
+    diagnosticoQR(
+      "10 - HTTP",
+      resposta.status
+    );
+
+
+    if (!resposta.ok) {
+
+      throw new Error(
+        "HTTP " + resposta.status
+      );
+    }
+
+
+    const texto =
+      await resposta.text();
+
+
+    diagnosticoQR(
+      "11 - RETORNO",
+      texto
+    );
+
+
+    // ==========================================
+    // CONVERTE RESPOSTA PARA JSON
+    // ==========================================
+
+    let resp;
+
+    try {
+
+      resp =
+        JSON.parse(texto);
+
+    } catch (erroJSON) {
+
+      throw new Error(
+        "Resposta inválida do CORE: " +
+        texto.substring(0, 150)
+      );
+
+    }
+
+
+    // ==========================================
+    // ENTREGA PARA A FUNÇÃO QUE JÁ EXISTE
+    // ==========================================
+
+    retornoValidacao(resp);
+
+
+  } catch (erro) {
 
     validacaoEmAndamento = false;
 
     diagnosticoQR(
-      "10 - ERRO",
-      "SCRIPT JSONP NÃO CARREGOU"
+      "12 - ERRO FETCH",
+      String(erro)
     );
 
     mostrarMsg(
       "❌ Não foi possível consultar o cliente."
     );
 
-  };
-
-
-  // ==========================================
-  // ENVIA UMA ÚNICA VEZ PARA O CORE
-  // ==========================================
-
-  document.body.appendChild(script);
+  }
 
 }
 
