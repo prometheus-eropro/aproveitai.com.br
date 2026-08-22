@@ -824,6 +824,10 @@ window.ultimoCelularCliente = resp.celular || "";
 
 async function confirmarDesconto() {
 
+  // ==========================================
+  // BENEFÍCIO
+  // ==========================================
+
   const beneficio =
     document.getElementById(
       "beneficioSelecionado"
@@ -836,21 +840,29 @@ async function confirmarDesconto() {
 
 
   if (!beneficio) {
-
     mostrarMsg(
       "❌ Selecione um benefício."
     );
-
     return;
   }
 
 
   if (!codigoERO) {
-
     mostrarMsg(
       "❌ Código ERO não identificado."
     );
+    return;
+  }
 
+
+  // ==========================================
+  // PARCEIRO
+  // ==========================================
+
+  if (!parceiroId) {
+    mostrarMsg(
+      "❌ Parceiro não identificado."
+    );
     return;
   }
 
@@ -912,6 +924,10 @@ async function confirmarDesconto() {
   );
 
 
+  // ==========================================
+  // BLOQUEIA BOTÃO
+  // ==========================================
+
   const btn =
     document.getElementById(
       "btnConfirmar"
@@ -919,6 +935,8 @@ async function confirmarDesconto() {
 
   if (btn) {
     btn.disabled = true;
+    btn.innerText =
+      "Confirmando...";
   }
 
 
@@ -926,6 +944,10 @@ async function confirmarDesconto() {
     "⏳ Confirmando desconto..."
   );
 
+
+  // ==========================================
+  // CONSULTA CORE
+  // ==========================================
 
   try {
 
@@ -944,7 +966,6 @@ async function confirmarDesconto() {
 
 
     if (!resposta.ok) {
-
       throw new Error(
         "HTTP " + resposta.status
       );
@@ -961,30 +982,69 @@ async function confirmarDesconto() {
     );
 
 
+    // ==========================================
+    // LIMPA JSON / JSONP
+    //
+    // ACEITA:
+    // {"ok":true,...}
+    //
+    // OU:
+    // retornoConfirmacao({"ok":true,...})
+    // ==========================================
+
     let textoLimpo =
       String(texto || "").trim();
 
 
-    // CORE atualmente pode responder:
-    // ({...})
+    const inicioJSON =
+      textoLimpo.indexOf("{");
+
+    const fimJSON =
+      textoLimpo.lastIndexOf("}");
+
 
     if (
-      textoLimpo.startsWith("(") &&
-      textoLimpo.endsWith(")")
+      inicioJSON === -1 ||
+      fimJSON === -1 ||
+      fimJSON < inicioJSON
     ) {
 
-      textoLimpo =
-        textoLimpo.substring(
-          1,
-          textoLimpo.length - 1
-        ).trim();
-
+      throw new Error(
+        "CORE não retornou JSON válido."
+      );
     }
 
+
+    textoLimpo =
+      textoLimpo.substring(
+        inicioJSON,
+        fimJSON + 1
+      );
+
+
+    diagnosticoQR(
+      "24 - CONFIRMAÇÃO JSON LIMPO",
+      textoLimpo
+    );
+
+
+    // ==========================================
+    // CONVERTE JSON
+    // ==========================================
 
     const resp =
       JSON.parse(textoLimpo);
 
+
+    diagnosticoQR(
+      "25 - CONFIRMAÇÃO CONVERTIDA",
+      JSON.stringify(resp)
+    );
+
+
+    // ==========================================
+    // ENTREGA PARA FUNÇÃO DE RETORNO
+    // ==========================================
 
     retornoConfirmacao(resp);
 
@@ -992,134 +1052,269 @@ async function confirmarDesconto() {
   } catch (erro) {
 
     diagnosticoQR(
-      "24 - ERRO CONFIRMAÇÃO",
+      "26 - ERRO CONFIRMAÇÃO",
       String(erro)
     );
 
 
     if (btn) {
       btn.disabled = false;
+      btn.innerText =
+        "☑️ Confirmar desconto concedido";
     }
 
 
     mostrarMsg(
       "❌ Não foi possível confirmar o benefício."
     );
-
   }
-
 }
+
 
 function retornoConfirmacao(resp) {
 
-   
-  document.getElementById("btnConfirmar").style.display = "none";
+  const btn =
+    document.getElementById(
+      "btnConfirmar"
+    );
 
-  document.getElementById("beneficioSelecionado").disabled = true;
+  const beneficioSelect =
+    document.getElementById(
+      "beneficioSelecionado"
+    );
 
-  const sv = document.getElementById("selectVeiculo");
+  const sv =
+    document.getElementById(
+      "selectVeiculo"
+    );
+
+  const timer =
+    document.getElementById(
+      "timer"
+    );
+
+
+  // ==========================================
+  // RESPOSTA INVÁLIDA
+  // ==========================================
+
+  if (!resp) {
+
+    mostrarMsg(
+      "❌ Resposta inválida da Plataforma AproveitAI."
+    );
+
+    if (btn) {
+      btn.style.display = "block";
+      btn.disabled = false;
+      btn.innerText =
+        "☑️ Confirmar desconto concedido";
+    }
+
+    return;
+  }
+
+
+  // ==========================================
+  // CORE RECUSOU A CONFIRMAÇÃO
+  // ==========================================
+
+  if (resp.ok !== true) {
+
+    const mensagem =
+      resp.mensagem ||
+      resp.msg ||
+      "❌ Erro ao confirmar desconto.";
+
+
+    diagnosticoQR(
+      "27 - CONFIRMAÇÃO RECUSADA",
+      mensagem
+    );
+
+
+    mostrarMsg(
+      "❌ " + mensagem
+    );
+
+
+    // libera novamente os campos
+
+    if (btn) {
+      btn.style.display = "block";
+      btn.disabled = false;
+      btn.innerText =
+        "☑️ Confirmar desconto concedido";
+    }
+
+
+    if (beneficioSelect) {
+      beneficioSelect.disabled = false;
+    }
+
+
+    if (sv) {
+      sv.disabled = false;
+    }
+
+
+    if (timer) {
+      timer.innerHTML =
+        "⚠️ Confirmação não realizada.";
+    }
+
+
+    return;
+  }
+
+
+  // ==========================================
+  // CONFIRMAÇÃO REALIZADA COM SUCESSO
+  // ==========================================
+
+  diagnosticoQR(
+    "27 - CONFIRMAÇÃO",
+    "BENEFÍCIO CONFIRMADO"
+  );
+
+
+  // bloqueia botão
+
+  if (btn) {
+    btn.style.display = "none";
+    btn.disabled = true;
+  }
+
+
+  // bloqueia benefício
+
+  if (beneficioSelect) {
+    beneficioSelect.disabled = true;
+  }
+
+
+  // bloqueia veículo
 
   if (sv) {
     sv.disabled = true;
   }
 
-  if (!resp || resp.ok !== true) {
 
-  mostrarMsg(
-    resp?.mensagem ||
-    resp?.msg ||
-    "❌ Erro ao confirmar desconto."
-  );
-
-  const btn =
-    document.getElementById("btnConfirmar");
-
-  if (btn) {
-    btn.style.display = "block";
-    btn.disabled = false;
-  }
-
-  document.getElementById(
-    "beneficioSelecionado"
-  ).disabled = false;
-
-  const sv =
-    document.getElementById("selectVeiculo");
-
-  if (sv) {
-    sv.disabled = false;
-  }
-
-  document.getElementById("timer").innerHTML =
-    "⚠️ Confirmação não realizada.";
-
-  return;
-}
+  // para cronômetro
 
   pararCronometro();
 
-  document.getElementById("blocoCodigo").innerHTML = `
-    <div style="
-      background:#dfffe0;
-      border:3px solid #0a7a3c;
-      padding:20px;
-      border-radius:10px;
-      text-align:center;
-    ">
+
+  // ==========================================
+  // CÓDIGO CONFIRMADO
+  // ==========================================
+
+  const codigoConfirmado =
+    resp.codigo ||
+    resp.codigoERO ||
+    (
+      document.getElementById("codigoERO")
+        ? document.getElementById("codigoERO").innerText.trim()
+        : ""
+    );
+
+
+  // ==========================================
+  // MOSTRA SUCESSO
+  // ==========================================
+
+  const blocoCodigo =
+    document.getElementById(
+      "blocoCodigo"
+    );
+
+
+  if (blocoCodigo) {
+
+    blocoCodigo.innerHTML = `
       <div style="
-        font-size:26px;
-        font-weight:bold;
-        color:#0a7a3c;
-        margin-bottom:10px;
+        background:#dfffe0;
+        border:3px solid #0a7a3c;
+        padding:20px;
+        border-radius:10px;
+        text-align:center;
       ">
-        ✅ BENEFÍCIO CONFIRMADO
+
+        <div style="
+          font-size:26px;
+          font-weight:bold;
+          color:#0a7a3c;
+          margin-bottom:10px;
+        ">
+          ✅ BENEFÍCIO CONFIRMADO
+        </div>
+
+        <div style="
+          font-size:18px;
+        ">
+          O desconto foi registrado com sucesso.
+        </div>
+
+        <br>
+
+        <div style="
+          font-size:20px;
+        ">
+          Código:
+          <b>${codigoConfirmado}</b>
+        </div>
+
+        <br>
+
+        <div style="
+          color:#666;
+        ">
+          Esta tela será encerrada automaticamente
+          em 30 segundos.
+        </div>
+
       </div>
-
-      <div style="font-size:18px">
-        Seu desconto foi registrado com sucesso.
-      </div>
-
-      <br>
-
-      <div>
-        Código: <b>${resp.codigo}</b>
-      </div>
-
-      <br>
-
-      <div style="color:#666">
-        Esta tela será encerrada automaticamente em 30 segundos.
-      </div>
-    </div>
-  `;
-
-  mostrarMsg("🎉 Obrigado por utilizar a Plataforma AproveitAI.");
-
-  setTimeout(() => {
-
-  const params =
-    new URLSearchParams(window.location.search);
-
-  const parceiroId =
-    params.get("parceiro_id") ||
-    params.get("p") ||
-    "";
-
-  if (parceiroId) {
-
-    window.location.href =
-      "validar.html?parceiro_id=" +
-      encodeURIComponent(parceiroId);
-
-  } else {
-
-    window.location.href =
-      "validar.html";
-
+    `;
   }
 
-}, 30000);
 
+  mostrarMsg(
+    "🎉 Benefício confirmado com sucesso."
+  );
+
+
+  // ==========================================
+  // VOLTA PARA NOVA VALIDAÇÃO
+  // ==========================================
+
+  setTimeout(function () {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const idParceiro =
+      params.get("parceiro_id") ||
+      params.get("p") ||
+      parceiroId ||
+      "";
+
+
+    if (idParceiro) {
+
+      window.location.href =
+        "validar.html?parceiro_id=" +
+        encodeURIComponent(idParceiro);
+
+    } else {
+
+      window.location.href =
+        "validar.html";
+    }
+
+  }, 30000);
 }
 
 function iniciarCronometro(validoAteISO) {
