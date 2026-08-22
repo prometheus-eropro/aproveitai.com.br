@@ -950,6 +950,8 @@ script.onerror = function () {
 
 };
 
+} // FECHA carregarBeneficios
+
 function beneficioSelecionado(){
 
    const beneficio =
@@ -1241,77 +1243,119 @@ async function abrirCamera() {
 
 function processarQRCode(texto){
 
-    try{
+  try {
 
-        diagnosticoQR(
-          "1 - QR LIDO",
-          texto
-        );
+    console.log(
+      "QR LIDO:",
+      texto
+    );
 
-        const url =
-          new URL(texto);
+    let idLido = "";
 
-        diagnosticoQR(
-          "2 - URL RECONHECIDA",
-          url.href
-        );
+    // ==========================================
+    // QR CONTÉM UMA URL
+    // ==========================================
 
-        const idLido =
-          url.searchParams.get("idPublico") ||
-          url.searchParams.get("id") ||
-          url.searchParams.get("cliente");
+    if (
+      String(texto || "")
+        .toLowerCase()
+        .includes("http")
+    ) {
 
-        diagnosticoQR(
-          "3 - ID ENCONTRADO",
-          idLido || "NÃO ENCONTRADO"
-        );
+      const url =
+        new URL(texto);
 
-        if(!idLido){
+      idLido =
+        url.searchParams.get("idPublico") ||
+        url.searchParams.get("id") ||
+        url.searchParams.get("cliente") ||
+        "";
 
-            mostrarMsg(
-              "❌ QR Code não pertence a um cliente AproveitAI."
-            );
+    }
 
-            return;
-        }
+    // ==========================================
+    // QR CONTÉM DIRETAMENTE O APV
+    // ==========================================
 
-        clienteId =
-          String(idLido)
-          .trim()
-          .toUpperCase();
+    else {
 
-        diagnosticoQR(
-          "4 - CLIENTE",
-          clienteId
-        );
+      idLido =
+        String(texto || "")
+          .trim();
 
-        diagnosticoQR(
-          "5 - PARCEIRO",
-          parceiroId || "NÃO IDENTIFICADO"
-        );
+    }
 
-        diagnosticoQR(
-          "6 - SESSION parceiroId",
-          sessionStorage.getItem("parceiroId") || "VAZIA"
-        );
 
-        if(!parceiroId){
+    idLido =
+      String(idLido || "")
+        .trim()
+        .toUpperCase();
 
-            mostrarMsg(
-              "❌ Parceiro não identificado. Faça login novamente."
-            );
 
-            return;
-        }
+    console.log(
+      "CLIENTE DO QR:",
+      idLido
+    );
 
-        diagnosticoQR(
-          "7 - INICIANDO VALIDAÇÃO",
-          "OK"
-        );
 
-        validar();
+    // ==========================================
+    // VALIDA QR
+    // ==========================================
 
-    }catch(e){
+    if (
+      !idLido ||
+      !idLido.startsWith("APV-")
+    ) {
+
+      lendoQR = false;
+
+      mostrarMsg(
+        "❌ QR Code não pertence a um cliente AproveitAI."
+      );
+
+      return;
+
+    }
+
+
+    // ==========================================
+    // DEFINE CLIENTE
+    // ==========================================
+
+    clienteId =
+      idLido;
+
+
+    // ==========================================
+    // CONFERE PARCEIRO
+    // ==========================================
+
+    if (!parceiroId) {
+
+      lendoQR = false;
+
+      mostrarMsg(
+        "❌ Parceiro não identificado. Faça login novamente."
+      );
+
+      return;
+
+    }
+
+
+    // ==========================================
+    // VALIDA AUTOMATICAMENTE
+    // ==========================================
+
+    validar();
+
+
+  } catch(e) {
+
+    console.error(
+      "ERRO PROCESSAR QR:",
+      e
+    );
 
     lendoQR = false;
 
@@ -1319,20 +1363,7 @@ function processarQRCode(texto){
       "❌ QR Code inválido."
     );
 
-}
-
-        diagnosticoQR(
-          "ERRO PROCESSAR QR",
-          e && e.message
-            ? e.message
-            : String(e)
-        );
-
-        mostrarMsg(
-          "❌ QR Code inválido."
-        );
-
-    }
+  }
 
 }
 
