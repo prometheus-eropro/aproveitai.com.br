@@ -1456,103 +1456,52 @@ navigator.serviceWorker.register('/sw.js');
 window.addEventListener("load", function () {
 
   /* ==========================================
-     QR DO CLIENTE FOI ABERTO
+     QR DO CLIENTE ABERTO
   ========================================== */
 
-  if (clienteId) {
+  if (!clienteId) {
+    return;
+  }
 
-    // DIAGNÓSTICO TEMPORÁRIO NO PRÓPRIO CELULAR
+  /* ==========================================
+     PARCEIRO JÁ LOGADO
+     → VALIDA AUTOMATICAMENTE
+  ========================================== */
+
+  if (parceiroId) {
+
     mostrarMsg(
-      "<strong>QR recebido:</strong> " +
-      clienteId +
-      "<br><strong>Parceiro:</strong> " +
-      (parceiroId || "NÃO IDENTIFICADO")
+      "⏳ Cliente identificado. Carregando dados..."
     );
 
-
-    /* ========================================
-       PARCEIRO JÁ ESTÁ IDENTIFICADO
-    ======================================== */
-
-    if (parceiroId) {
-
-      // Pequeno atraso apenas para permitir
-      // visualizar o diagnóstico no celular.
-      setTimeout(function () {
-
-        validar();
-
-      }, 800);
-
-      return;
-    }
-
-
-    /* ========================================
-       PARCEIRO NÃO ESTÁ LOGADO
-    ======================================== */
-
-    const retorno =
-      "validar.html?idPublico=" +
-      encodeURIComponent(clienteId);
-
-
     setTimeout(function () {
+      validar();
+    }, 300);
 
-      mostrarMsg(
-        '<div style="' +
-          'background:#fff3cd;' +
-          'border:2px solid #d6a500;' +
-          'padding:18px;' +
-          'border-radius:10px;' +
-          'text-align:center;' +
-          'line-height:1.5;' +
-        '">' +
-
-          '<div style="' +
-            'font-size:21px;' +
-            'font-weight:900;' +
-            'color:#856404;' +
-            'margin-bottom:10px;' +
-          '">' +
-            '🔐 ACESSO DO PARCEIRO NECESSÁRIO' +
-          '</div>' +
-
-          '<strong>Cliente:</strong> ' +
-          clienteId +
-
-          '<br><br>' +
-
-          'Para validar este Cartão AproveitAI, ' +
-          'é necessário entrar na Área do Parceiro.' +
-
-          '<br><br>' +
-
-          '<button ' +
-            'onclick="window.location.href=' +
-            '\'painelparceiro.html?retorno=' +
-            encodeURIComponent(retorno) +
-            '\'" ' +
-            'style="' +
-              'background:#0a7a3c;' +
-              'color:white;' +
-              'border:0;' +
-              'padding:13px 20px;' +
-              'border-radius:8px;' +
-              'font-size:17px;' +
-              'font-weight:bold;' +
-              'cursor:pointer;' +
-            '"' +
-          '>' +
-            '🏪 ENTRAR COMO PARCEIRO' +
-          '</button>' +
-
-        '</div>'
-      );
-
-    }, 1200);
-
+    return;
   }
+
+  /* ==========================================
+     PARCEIRO NÃO LOGADO
+     → GUARDA CLIENTE E MANDA PARA LOGIN
+  ========================================== */
+
+  const retorno =
+    "validar.html?idPublico=" +
+    encodeURIComponent(clienteId);
+
+  mostrarMsg(
+    "🔐 Parceiro não identificado.<br>" +
+    "Redirecionando para login..."
+  );
+
+  setTimeout(function () {
+
+    window.location.href =
+      "painelparceiro.html?retorno=" +
+      encodeURIComponent(retorno);
+
+  }, 500);
 
 });
 </script>
