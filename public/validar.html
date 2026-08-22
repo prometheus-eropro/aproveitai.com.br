@@ -1402,13 +1402,28 @@ window.addEventListener("load", function () {
 
   if (clienteId) {
 
+    // DIAGNÓSTICO TEMPORÁRIO NO PRÓPRIO CELULAR
+    mostrarMsg(
+      "<strong>QR recebido:</strong> " +
+      clienteId +
+      "<br><strong>Parceiro:</strong> " +
+      (parceiroId || "NÃO IDENTIFICADO")
+    );
+
+
     /* ========================================
        PARCEIRO JÁ ESTÁ IDENTIFICADO
     ======================================== */
 
     if (parceiroId) {
 
-      validar();
+      // Pequeno atraso apenas para permitir
+      // visualizar o diagnóstico no celular.
+      setTimeout(function () {
+
+        validar();
+
+      }, 800);
 
       return;
     }
@@ -1422,51 +1437,61 @@ window.addEventListener("load", function () {
       "validar.html?idPublico=" +
       encodeURIComponent(clienteId);
 
-    mostrarMsg(
-      '<div style="' +
-        'background:#fff3cd;' +
-        'border:2px solid #d6a500;' +
-        'padding:18px;' +
-        'border-radius:10px;' +
-        'text-align:center;' +
-        'line-height:1.5;' +
-      '">' +
 
+    setTimeout(function () {
+
+      mostrarMsg(
         '<div style="' +
-          'font-size:21px;' +
-          'font-weight:900;' +
-          'color:#856404;' +
-          'margin-bottom:10px;' +
+          'background:#fff3cd;' +
+          'border:2px solid #d6a500;' +
+          'padding:18px;' +
+          'border-radius:10px;' +
+          'text-align:center;' +
+          'line-height:1.5;' +
         '">' +
-          '🔐 ACESSO DO PARCEIRO NECESSÁRIO' +
-        '</div>' +
 
-        'Para validar este Cartão AproveitAI, ' +
-        'é necessário entrar na Área do Parceiro.' +
+          '<div style="' +
+            'font-size:21px;' +
+            'font-weight:900;' +
+            'color:#856404;' +
+            'margin-bottom:10px;' +
+          '">' +
+            '🔐 ACESSO DO PARCEIRO NECESSÁRIO' +
+          '</div>' +
 
-        '<br><br>' +
+          '<strong>Cliente:</strong> ' +
+          clienteId +
 
-        '<button ' +
-          'onclick="window.location.href=' +
-          '\'painelparceiro.html?retorno=' +
-          encodeURIComponent(retorno) +
-          '\'" ' +
-          'style="' +
-            'background:#0a7a3c;' +
-            'color:white;' +
-            'border:0;' +
-            'padding:13px 20px;' +
-            'border-radius:8px;' +
-            'font-size:17px;' +
-            'font-weight:bold;' +
-            'cursor:pointer;' +
-          '"' +
-        '>' +
-          '🏪 ENTRAR COMO PARCEIRO' +
-        '</button>' +
+          '<br><br>' +
 
-      '</div>'
-    );
+          'Para validar este Cartão AproveitAI, ' +
+          'é necessário entrar na Área do Parceiro.' +
+
+          '<br><br>' +
+
+          '<button ' +
+            'onclick="window.location.href=' +
+            '\'painelparceiro.html?retorno=' +
+            encodeURIComponent(retorno) +
+            '\'" ' +
+            'style="' +
+              'background:#0a7a3c;' +
+              'color:white;' +
+              'border:0;' +
+              'padding:13px 20px;' +
+              'border-radius:8px;' +
+              'font-size:17px;' +
+              'font-weight:bold;' +
+              'cursor:pointer;' +
+            '"' +
+          '>' +
+            '🏪 ENTRAR COMO PARCEIRO' +
+          '</button>' +
+
+        '</div>'
+      );
+
+    }, 1200);
 
   }
 
