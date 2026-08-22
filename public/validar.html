@@ -426,47 +426,12 @@ if (/^\d{11}$/.test(somenteDigitos)) {
 // CALLBACK ÚNICO PARA ESTA CONSULTA
 // ==========================================
 
-const callbackNome =
-  "retornoValidacao_" + Date.now();
-
-
-// ==========================================
-// CRIA CALLBACK GLOBAL
-// ==========================================
-
-window[callbackNome] = function(resp) {
-
-  validacaoEmAndamento = false;
-
-  diagnosticoQR(
-    "10 - RETORNO CORE",
-    JSON.stringify(resp)
-  );
-
-  // Remove o script usado
-  const usado =
-    document.getElementById("jsonpReqAtual");
-
-  if (usado) {
-    usado.remove();
-  }
-
-  // Remove callback temporário
-  try {
-    delete window[callbackNome];
-  } catch (e) {}
-
-  // Entrega para sua função normal
-  retornoValidacao(resp);
-};
-
-
 // ==========================================
 // REMOVE CONSULTA ANTERIOR
 // ==========================================
 
 const anterior =
-  document.getElementById("jsonpReqAtual");
+  document.getElementById("jsonpReq");
 
 if (anterior) {
   anterior.remove();
@@ -474,11 +439,69 @@ if (anterior) {
 
 
 // ==========================================
-// CRIA NOVA CONSULTA
+// CRIA CONSULTA JSONP
 // ==========================================
 
 const script =
   document.createElement("script");
+
+script.id = "jsonpReq";
+
+script.src =
+  GAS_URL +
+  "?callback=retornoValidacao" +
+  "&acao=" +
+  encodeURIComponent(acao) +
+  parametro +
+  encodeURIComponent(valor) +
+  "&p=" +
+  encodeURIComponent(parceiroId) +
+  "&parceiro_id=" +
+  encodeURIComponent(parceiroId) +
+  "&_=" +
+  Date.now();
+
+
+// ==========================================
+// DIAGNÓSTICO
+// ==========================================
+
+diagnosticoQR(
+  "8 - AÇÃO",
+  acao
+);
+
+diagnosticoQR(
+  "9 - URL API",
+  script.src
+);
+
+
+// ==========================================
+// ERRO
+// ==========================================
+
+script.onerror = function () {
+
+  validacaoEmAndamento = false;
+
+  diagnosticoQR(
+    "10 - ERRO",
+    "SCRIPT JSONP NÃO CARREGOU"
+  );
+
+  mostrarMsg(
+    "❌ Não foi possível consultar o cliente."
+  );
+
+};
+
+
+// ==========================================
+// ENVIA PARA O CORE
+// ==========================================
+
+document.body.appendChild(script);
 
 script.id =
   "jsonpReqAtual";
