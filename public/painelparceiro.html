@@ -386,10 +386,40 @@ sessionStorage.setItem("parceiroToken",token);
 
 if (retornoAposLogin) {
 
-  window.location.href = retornoAposLogin;
+  const parceiroIdLogado =
+    String(d.parceiro_id || "").trim();
+
+  let destino;
+
+  try {
+
+    destino = new URL(
+      retornoAposLogin,
+      window.location.href
+    );
+
+    destino.searchParams.set(
+      "parceiro_id",
+      parceiroIdLogado
+    );
+
+    window.location.href =
+      destino.href;
+
+  } catch (e) {
+
+    console.error(
+      "Erro ao montar retorno:",
+      e
+    );
+
+    window.location.href =
+      "validar.html?parceiro_id=" +
+      encodeURIComponent(parceiroIdLogado);
+
+  }
 
   return;
-
 }
 
 
