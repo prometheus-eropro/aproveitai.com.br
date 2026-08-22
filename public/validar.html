@@ -338,6 +338,10 @@ function somenteNumeros(v) {
 ============================= */
 function validar() {
 
+  // ==========================================
+  // EVITA DUAS VALIDAÇÕES AO MESMO TEMPO
+  // ==========================================
+
   if (validacaoEmAndamento) {
     console.log("Validação já está em andamento.");
     return;
@@ -346,15 +350,9 @@ function validar() {
   validacaoEmAndamento = true;
 
 
-if (clienteId) {
-
-   // fluxo QR Cliente
-
-} else {
-
-   // fluxo atual (CPF + nascimento)
-
-}
+  // ==========================================
+  // LIMPA BLOCOS DA VALIDAÇÃO ANTERIOR
+  // ==========================================
 
   document.getElementById("blocoBeneficio").style.display = "none";
   document.getElementById("blocoVeiculo").style.display = "none";
@@ -365,243 +363,188 @@ if (clienteId) {
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("btnGerarERO").style.display = "none";
 
-  const idPublico = clienteId;
 
-if (!idPublico) {
+  // ==========================================
+  // CONFERE CLIENTE
+  // ==========================================
 
-   mostrarMsg("QR do cliente inválido.");
+  const idPublico =
+    String(clienteId || "").trim();
 
-   return;
-
-}
-
-  if (!parceiroId) {
-    mostrarMsg("❌ QR Code inválido");
-    return;
-  }
-
-  mostrarMsg("⏳ Validando benefício...");
-
-// ==========================================
-// MONTA A CONSULTA DO CLIENTE
-// ==========================================
-
-let valor =
-  String(clienteId || "").trim();
-
-const somenteDigitos =
-  valor.replace(/\D/g, "");
-
-let acao;
-let parametro;
-
-if (/^\d{11}$/.test(somenteDigitos)) {
-
-  valor = somenteDigitos;
-
-  acao = "buscarClienteCPF";
-  parametro = "&cpf=";
-
-} else {
-
-  valor = valor.toUpperCase();
-
-  if (!valor.startsWith("APV-")) {
+  if (!idPublico) {
 
     validacaoEmAndamento = false;
 
     mostrarMsg(
-      "❌ ID Público inválido. Informe um código no formato APV-XXXXXXXX."
+      "❌ QR do cliente inválido."
     );
 
     return;
   }
 
-  acao = "buscarClienteId";
-  parametro = "&idPublico=";
-}
 
+  // ==========================================
+  // CONFERE PARCEIRO
+  // ==========================================
 
-// ==========================================
-// CALLBACK ÚNICO PARA ESTA CONSULTA
-// ==========================================
-
-// ==========================================
-// REMOVE CONSULTA ANTERIOR
-// ==========================================
-
-const anterior =
-  document.getElementById("jsonpReq");
-
-if (anterior) {
-  anterior.remove();
-}
-
-
-// ==========================================
-// CRIA CONSULTA JSONP
-// ==========================================
-
-const script =
-  document.createElement("script");
-
-script.id = "jsonpReq";
-
-script.src =
-  GAS_URL +
-  "?callback=retornoValidacao" +
-  "&acao=" +
-  encodeURIComponent(acao) +
-  parametro +
-  encodeURIComponent(valor) +
-  "&p=" +
-  encodeURIComponent(parceiroId) +
-  "&parceiro_id=" +
-  encodeURIComponent(parceiroId) +
-  "&_=" +
-  Date.now();
-
-
-// ==========================================
-// DIAGNÓSTICO
-// ==========================================
-
-diagnosticoQR(
-  "8 - AÇÃO",
-  acao
-);
-
-diagnosticoQR(
-  "9 - URL API",
-  script.src
-);
-
-
-// ==========================================
-// ERRO
-// ==========================================
-
-script.onerror = function () {
-
-  validacaoEmAndamento = false;
-
-  diagnosticoQR(
-    "10 - ERRO",
-    "SCRIPT JSONP NÃO CARREGOU"
-  );
-
-  mostrarMsg(
-    "❌ Não foi possível consultar o cliente."
-  );
-
-};
-
-
-// ==========================================
-// ENVIA PARA O CORE
-// ==========================================
-
-document.body.appendChild(script);
-
-script.id =
-  "jsonpReqAtual";
-
-script.async = true;
-
-script.src =
-  GAS_URL +
-  "?callback=" +
-  encodeURIComponent(callbackNome) +
-  "&acao=" +
-  encodeURIComponent(acao) +
-  parametro +
-  encodeURIComponent(valor) +
-  "&p=" +
-  encodeURIComponent(parceiroId) +
-  "&parceiro_id=" +
-  encodeURIComponent(parceiroId) +
-  "&_=" +
-  Date.now();
-
-
-// ==========================================
-// DIAGNÓSTICO
-// ==========================================
-
-diagnosticoQR(
-  "8 - AÇÃO",
-  acao
-);
-
-diagnosticoQR(
-  "9 - URL API",
-  script.src
-);
-
-
-// ==========================================
-// ERRO DE CARREGAMENTO
-// ==========================================
-
-script.onerror = function() {
-
-  validacaoEmAndamento = false;
-
-  diagnosticoQR(
-    "10 - ERRO",
-    "SCRIPT JSONP NÃO CARREGOU"
-  );
-
-  try {
-    delete window[callbackNome];
-  } catch (e) {}
-
-  mostrarMsg(
-    "❌ Não foi possível consultar o cliente."
-  );
-};
-
-
-// ==========================================
-// ENVIA CONSULTA
-// ==========================================
-
-document.body.appendChild(script);
-
-
-// ==========================================
-// TIMEOUT DE DIAGNÓSTICO
-// ==========================================
-
-setTimeout(function() {
-
-  if (validacaoEmAndamento) {
-
-    diagnosticoQR(
-      "11 - STATUS",
-      "CORE NÃO RETORNOU EM 8 SEGUNDOS"
-    );
-
-    validacaoEmAndamento = false;
-  }
-
-}, 8000);
-
-setTimeout(function () {
-
-  if (validacaoEmAndamento) {
-
-    diagnosticoQR(
-      "11 - STATUS",
-      "CORE NÃO RETORNOU EM 8 SEGUNDOS"
-    );
+  if (!parceiroId) {
 
     validacaoEmAndamento = false;
 
+    mostrarMsg(
+      "❌ Parceiro não identificado. Faça login novamente."
+    );
+
+    return;
   }
 
-}, 8000);
+
+  mostrarMsg(
+    "⏳ Validando benefício..."
+  );
+
+
+  // ==========================================
+  // IDENTIFICA SE É CPF OU ID PÚBLICO
+  // ==========================================
+
+  let valor =
+    String(clienteId || "").trim();
+
+  const somenteDigitos =
+    valor.replace(/\D/g, "");
+
+  let acao;
+  let parametro;
+
+
+  // ==========================================
+  // CLIENTE POR CPF
+  // ==========================================
+
+  if (/^\d{11}$/.test(somenteDigitos)) {
+
+    valor = somenteDigitos;
+
+    acao = "buscarClienteCPF";
+    parametro = "&cpf=";
+
+  }
+
+
+  // ==========================================
+  // CLIENTE POR ID PÚBLICO APV
+  // ==========================================
+
+  else {
+
+    valor =
+      valor.toUpperCase();
+
+    if (!valor.startsWith("APV-")) {
+
+      validacaoEmAndamento = false;
+
+      mostrarMsg(
+        "❌ ID Público inválido. Informe um código no formato APV-XXXXXXXX."
+      );
+
+      return;
+    }
+
+    acao = "buscarClienteId";
+    parametro = "&idPublico=";
+  }
+
+
+  // ==========================================
+  // REMOVE JSONP ANTERIOR
+  // ==========================================
+
+  const anterior =
+    document.getElementById("jsonpReq");
+
+  if (anterior) {
+    anterior.remove();
+  }
+
+
+  // ==========================================
+  // CRIA UMA ÚNICA CONSULTA JSONP
+  // ==========================================
+
+  const script =
+    document.createElement("script");
+
+  script.id =
+    "jsonpReq";
+
+  script.async =
+    true;
+
+
+  // ==========================================
+  // MONTA URL DO CORE
+  // ==========================================
+
+  script.src =
+    GAS_URL +
+    "?callback=retornoValidacao" +
+    "&acao=" +
+    encodeURIComponent(acao) +
+    parametro +
+    encodeURIComponent(valor) +
+    "&p=" +
+    encodeURIComponent(parceiroId) +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId) +
+    "&_=" +
+    Date.now();
+
+
+  // ==========================================
+  // DIAGNÓSTICO
+  // ==========================================
+
+  diagnosticoQR(
+    "8 - AÇÃO",
+    acao
+  );
+
+  diagnosticoQR(
+    "9 - URL API",
+    script.src
+  );
+
+
+  // ==========================================
+  // ERRO DE CARREGAMENTO
+  // ==========================================
+
+  script.onerror = function () {
+
+    validacaoEmAndamento = false;
+
+    diagnosticoQR(
+      "10 - ERRO",
+      "SCRIPT JSONP NÃO CARREGOU"
+    );
+
+    mostrarMsg(
+      "❌ Não foi possível consultar o cliente."
+    );
+
+  };
+
+
+  // ==========================================
+  // ENVIA UMA ÚNICA VEZ PARA O CORE
+  // ==========================================
+
+  document.body.appendChild(script);
+
 }
+
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
