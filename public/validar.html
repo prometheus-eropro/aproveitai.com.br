@@ -1636,100 +1636,157 @@ async function gerarERO() {
 
 }
 
-function retornoBeneficios(resp){
+function retornoBeneficios(resp) {
 
-    const select =
-        document.getElementById("beneficioSelecionado");
+  const select =
+    document.getElementById("beneficioSelecionado");
 
-    select.innerHTML = "";
+  select.innerHTML = "";
 
-    if(!resp || resp.ok !== true){
+  if (!resp || resp.ok !== true) {
 
-        mostrarMsg("Nenhum benefício encontrado.");
-        return;
+    mostrarMsg("Nenhum benefício encontrado.");
+    return;
+  }
 
-    }
+  if (
+    !Array.isArray(resp.itens) ||
+    resp.itens.length === 0
+  ) {
 
-    if(!Array.isArray(resp.itens) || resp.itens.length === 0){
-
-        mostrarMsg("Nenhum benefício disponível.");
-        return;
-
-    }
-
-    const op0 =
-        document.createElement("option");
-
-    op0.value = "";
-    op0.text = "Selecione o benefício";
-
-    select.appendChild(op0);
+    mostrarMsg("Nenhum benefício disponível.");
+    return;
+  }
 
 
-    resp.itens.forEach(function(item){
+  // ==========================================
+  // OPÇÃO INICIAL
+  // ==========================================
 
-        const op =
-            document.createElement("option");
+  const op0 =
+    document.createElement("option");
 
+  op0.value = "";
+  op0.text = "Selecione o benefício";
 
-        /* ===============================
-           TIPO REAL DO ITEM
-        =============================== */
-
-        const tipo =
-            String(item.tipo || "")
-            .trim()
-            .toUpperCase();
+  select.appendChild(op0);
 
 
-        /* ===============================
-           OBJETO COMPLETO DO BENEFÍCIO
-        =============================== */
+  // ==========================================
+  // CARREGA BENEFÍCIOS
+  // ==========================================
 
-        const dadosBeneficio = {
+  resp.itens.forEach(function(item) {
 
-            tipo: tipo,
+    const tipo =
+      String(item.tipo || "")
+        .trim()
+        .toUpperCase();
 
-            titulo:
-                String(item.titulo || "").trim(),
+    const dadosBeneficio = {
 
-            descricao:
-                String(item.descricao || "").trim(),
+      tipo: tipo,
 
-            parceiro_id:
-                String(
-                    item.parceiro_id ||
-                    parceiroId ||
-                    ""
-                ).trim()
+      titulo:
+        String(item.titulo || "")
+          .trim(),
 
-        };
+      descricao:
+        String(item.descricao || "")
+          .trim(),
+
+      parceiro_id:
+        String(
+          item.parceiro_id ||
+          parceiroId ||
+          ""
+        ).trim()
+
+    };
+
+    const op =
+      document.createElement("option");
+
+    op.value =
+      JSON.stringify(dadosBeneficio);
+
+    op.text =
+      "[" +
+      tipo +
+      "] " +
+      dadosBeneficio.titulo;
+
+    select.appendChild(op);
+
+  });
 
 
-        /* ===============================
-           VALUE AGORA É JSON
-        =============================== */
+  // ==========================================
+  // MOSTRA BENEFÍCIOS
+  // ==========================================
 
-        op.value =
-            JSON.stringify(dadosBeneficio);
-
-
-        /* ===============================
-           TEXTO VISÍVEL
-        =============================== */
-
-        op.text =
-            "[" + tipo + "] " +
-            dadosBeneficio.titulo;
+  document.getElementById(
+    "blocoBeneficio"
+  ).style.display = "block";
 
 
-        select.appendChild(op);
+  // ==========================================
+  // SELECIONA AUTOMATICAMENTE O PRIMEIRO
+  // BENEFÍCIO DISPONÍVEL
+  // ==========================================
 
-    });
+  if (select.options.length > 1) {
+
+    select.selectedIndex = 1;
+
+  }
 
 
-    document.getElementById("blocoBeneficio")
-        .style.display = "block";
+  // ==========================================
+  // VEÍCULO
+  // ==========================================
+
+  if (window.exigePlaca) {
+
+    document.getElementById(
+      "blocoVeiculo"
+    ).style.display = "block";
+
+  } else {
+
+    document.getElementById(
+      "blocoVeiculo"
+    ).style.display = "none";
+
+  }
+
+
+  // ==========================================
+  // LIBERA GERAR ERO
+  // ==========================================
+
+  document.getElementById(
+    "blocoGerarERO"
+  ).style.display = "block";
+
+
+  const btn =
+    document.getElementById(
+      "btnGerarERO"
+    );
+
+  if (btn) {
+
+    btn.style.display = "block";
+    btn.disabled = false;
+    btn.innerText = "Gerar Código ERO";
+
+  }
+
+
+  mostrarMsg(
+    "✅ Cliente validado. Selecione o benefício e gere o Código ERO."
+  );
 
 }
 
