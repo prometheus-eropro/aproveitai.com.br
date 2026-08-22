@@ -96,6 +96,23 @@ body {
 📷 Ler QR Code
 </button>
 
+<button
+  type="button"
+  onclick="testarCoreFetch()"
+  style="
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    background:#1565c0;
+    color:white;
+    border:0;
+    border-radius:8px;
+    font-size:17px;
+    font-weight:bold;
+  ">
+  TESTAR CORE FETCH
+</button>
+
 <div id="reader"
      style="display:none;width:100%;margin-top:15px;">
 </div>
@@ -331,6 +348,74 @@ function diagnosticoQR(etapa, valor) {
 
 function somenteNumeros(v) {
   return String(v || "").replace(/\D/g, "");
+}
+
+async function testarCoreFetch() {
+
+  const valor =
+    String(clienteId || "").trim().toUpperCase();
+
+  if (!valor) {
+    mostrarMsg("❌ Cliente não identificado.");
+    return;
+  }
+
+  if (!parceiroId) {
+    mostrarMsg("❌ Parceiro não identificado.");
+    return;
+  }
+
+  const url =
+    GAS_URL +
+    "?acao=buscarClienteId" +
+    "&idPublico=" +
+    encodeURIComponent(valor) +
+    "&p=" +
+    encodeURIComponent(parceiroId) +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId) +
+    "&_=" +
+    Date.now();
+
+  diagnosticoQR(
+    "FETCH - URL",
+    url
+  );
+
+  try {
+
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      });
+
+    diagnosticoQR(
+      "FETCH - HTTP",
+      resposta.status
+    );
+
+    const texto =
+      await resposta.text();
+
+    diagnosticoQR(
+      "FETCH - RESPOSTA",
+      texto
+    );
+
+  } catch (erro) {
+
+    diagnosticoQR(
+      "FETCH - ERRO",
+      String(erro)
+    );
+
+    mostrarMsg(
+      "❌ Teste FETCH falhou."
+    );
+
+  }
 }
 
 /* =============================
