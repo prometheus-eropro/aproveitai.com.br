@@ -460,6 +460,21 @@ script.onerror = function () {
 };
 
 document.body.appendChild(script);
+
+setTimeout(function () {
+
+  if (validacaoEmAndamento) {
+
+    diagnosticoQR(
+      "11 - STATUS",
+      "CORE NÃO RETORNOU EM 8 SEGUNDOS"
+    );
+
+    validacaoEmAndamento = false;
+
+  }
+
+}, 8000);
 }
 // =============================
 // CONTROLE DO CRONÔMETRO
@@ -1416,10 +1431,21 @@ function processarQRCode(texto){
 
 
     // ==========================================
-    // VALIDA AUTOMATICAMENTE
-    // ==========================================
+// VALIDA AUTOMATICAMENTE
+// Aguarda a câmera encerrar completamente
+// ==========================================
 
-    validar();
+mostrarMsg(
+  "⏳ QR identificado. Consultando cliente..."
+);
+
+setTimeout(function () {
+
+  validacaoEmAndamento = false;
+
+  validar();
+
+}, 800);
 
 
   } catch(e) {
