@@ -284,6 +284,205 @@ params.get("cliente");
 const elMsg = document.getElementById("msg");
 const elBtn = document.getElementById("btnValidar");
 
+/* ==========================================
+   CARREGA DADOS DO PARCEIRO DO QR
+========================================== */
+
+async function carregarParceiroQR() {
+
+  if (!parceiroId) {
+
+    mostrarMsg(
+      "❌ Parceiro não identificado no QR Code."
+    );
+
+    return;
+  }
+
+  console.log(
+    "CARREGANDO PARCEIRO DO QR:",
+    parceiroId
+  );
+
+  const url =
+    GAS_URL +
+    "?acao=dadosEmpresa" +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId) +
+    "&_=" +
+    Date.now();
+
+  try {
+
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      });
+
+    const texto =
+      await resposta.text();
+
+    console.log(
+      "RETORNO PARCEIRO QR:",
+      texto
+    );
+
+    let textoLimpo =
+      String(texto || "").trim();
+
+    const inicio =
+      textoLimpo.indexOf("{");
+
+    const fim =
+      textoLimpo.lastIndexOf("}");
+
+    if (
+      inicio === -1 ||
+      fim === -1
+    ) {
+
+      throw new Error(
+        "Resposta inválida do CORE"
+      );
+    }
+
+    textoLimpo =
+      textoLimpo.substring(
+        inicio,
+        fim + 1
+      );
+
+    const resp =
+      JSON.parse(textoLimpo);
+
+    if (!resp || resp.ok !== true) {
+
+      throw new Error(
+        "Parceiro não encontrado"
+      );
+    }
+
+    /* =========================
+       NOME DO PARCEIRO
+    ========================= */
+
+    document
+      .getElementById("nomeParceiro")
+      .innerText =
+        resp.nomeFantasia ||
+        resp.nome ||
+        parceiroId;
+
+
+    /* =========================
+       LOGO DO PARCEIRO
+    ========================= */
+
+    const img =
+      document.getElementById(
+        "logoParceiro"
+      );
+
+    const logo =
+      String(
+        resp.logoURL ||
+        resp.logo ||
+        ""
+      ).trim();
+
+    if (logo) {
+
+      let urlLogo = logo;
+
+      let fileId = "";
+
+      const match =
+        urlLogo.match(
+          /\/d\/([a-zA-Z0-9_-]+)/
+        );
+
+      if (
+        match &&
+        match[1]
+      ) {
+
+        fileId =
+          match[1];
+
+      }
+
+      if (!fileId) {
+
+        try {
+
+          const u =
+            new URL(urlLogo);
+
+          fileId =
+            u.searchParams.get("id") ||
+            "";
+
+        } catch(e) {}
+
+      }
+
+      if (fileId) {
+
+        urlLogo =
+          "https://drive.google.com/thumbnail?id=" +
+          encodeURIComponent(fileId) +
+          "&sz=w500";
+
+      }
+
+      img.onload =
+        function() {
+
+          this.style.display =
+            "block";
+
+        };
+
+      img.onerror =
+        function() {
+
+          console.log(
+            "ERRO LOGO PARCEIRO:",
+            urlLogo
+          );
+
+          this.style.display =
+            "none";
+
+        };
+
+      img.src =
+        urlLogo;
+
+    }
+
+    console.log(
+      "PARCEIRO QR CARREGADO:",
+      resp
+    );
+
+  } catch(erro) {
+
+    console.error(
+      "ERRO CARREGAR PARCEIRO QR:",
+      erro
+    );
+
+    mostrarMsg(
+      "❌ Não foi possível identificar o parceiro deste QR Code."
+    );
+
+  }
+
+}
+
 /* =============================
    UTILIDADES
 ============================= */
@@ -1026,6 +1225,19 @@ document.addEventListener("DOMContentLoaded",function(){
     console.log("Página pronta");
 
 });
+
+</script>
+
+<script>
+
+window.addEventListener(
+  "load",
+  function() {
+
+    carregarParceiroQR();
+
+  }
+);
 
 </script>
 
