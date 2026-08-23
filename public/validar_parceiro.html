@@ -730,9 +730,39 @@ function validar() {
      URL DA VALIDAÇÃO
   ========================================== */
 
+    /* ==========================================
+     URL DA VALIDAÇÃO
+  ========================================== */
+
   const url =
     GAS_URL +
-    "?acao=validarParceiro" +
+    "?acao=buscarClienteCPF" +
+
+    "&cpf=" +
+    encodeURIComponent(cpf) +
+
+    "&nascimento=" +
+    encodeURIComponent(
+      nascimento
+    ) +
+
+    "&p=" +
+    encodeURIComponent(
+      parceiroId
+    ) +
+
+    "&parceiro_id=" +
+    encodeURIComponent(
+      parceiroId
+    ) +
+
+    "&callback=" +
+    encodeURIComponent(
+      callback
+    ) +
+
+    "&_=" +
+    Date.now();
 
     "&cpf=" +
     encodeURIComponent(cpf) +
