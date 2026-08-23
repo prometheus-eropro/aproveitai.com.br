@@ -641,6 +641,26 @@ async function carregarEmpresa(){
     return texto || "-";
   };
 
+const dataBR = (v) => {
+
+  if (!v) {
+    return "-";
+  }
+
+  const d = new Date(v);
+
+  if (isNaN(d.getTime())) {
+    return valor(v);
+  }
+
+  return d.toLocaleDateString(
+    "pt-BR",
+    {
+      timeZone: "America/Sao_Paulo"
+    }
+  );
+
+};
 
   document.getElementById("dadosEmpresa").innerHTML = `
 
@@ -882,7 +902,7 @@ async function carregarEmpresa(){
 
         <tr>
           <td><b>Parceiro desde</b></td>
-          <td>${valor(d.dataCadastro)}</td>
+          <td>${dataBR(d.dataCadastro)}</td>
         </tr>
 
         <tr>
@@ -902,7 +922,7 @@ async function carregarEmpresa(){
 
         <tr>
           <td><b>Data do Contrato</b></td>
-          <td>${valor(d.data_contrato)}</td>
+          <td>${dataBR(d.data_contrato)}</td>
         </tr>
 
       </table>
