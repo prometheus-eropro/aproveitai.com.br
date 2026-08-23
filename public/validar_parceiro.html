@@ -293,100 +293,187 @@ const elBtn = document.getElementById("btnValidar");
    VIA JSONP
 ========================================== */
 
-async function carregarParceiroQR() {
+function carregarParceiroQR() {
 
   if (!parceiroId) {
-    mostrarMsg("❌ Parceiro não identificado no QR Code.");
+
+    mostrarMsg(
+      "❌ Parceiro não identificado no QR Code."
+    );
+
     return;
   }
 
-  console.log("CARREGANDO PARCEIRO DO QR:", parceiroId);
+  console.log(
+    "CARREGANDO PARCEIRO DO QR:",
+    parceiroId
+  );
 
-  const url =
+
+  /* ==========================================
+     CALLBACK JSONP EXCLUSIVO
+  ========================================== */
+
+  const callback =
+    "cbParceiroQR_" +
+    Date.now();
+
+
+  window[callback] =
+    function(resp) {
+
+      console.log(
+        "RETORNO PARCEIRO QR:",
+        resp
+      );
+
+
+      /* ======================================
+         LIMPEZA
+      ====================================== */
+
+      try {
+
+        delete window[callback];
+
+      } catch(e) {}
+
+
+      if (
+        !resp ||
+        resp.ok !== true
+      ) {
+
+        console.error(
+          "PARCEIRO NÃO ENCONTRADO:",
+          resp
+        );
+
+        mostrarMsg(
+          "❌ Não foi possível identificar o parceiro deste QR Code."
+        );
+
+        return;
+      }
+
+
+      /* ======================================
+         NOME DO PARCEIRO
+      ====================================== */
+
+      const nome =
+        resp.nomeFantasia ||
+        resp.nome ||
+        parceiroId;
+
+
+      const elNome =
+        document.getElementById(
+          "nomeParceiro"
+        );
+
+
+      if (elNome) {
+
+        elNome.innerText =
+          nome;
+
+      }
+
+
+      /* ======================================
+         LOGO DO PARCEIRO
+      ====================================== */
+
+      carregarLogoParceiro(
+
+        resp.logoURL ||
+        resp.logo ||
+        ""
+
+      );
+
+
+      console.log(
+        "PARCEIRO QR CARREGADO COM SUCESSO:",
+        nome
+      );
+
+    };
+
+
+  /* ==========================================
+     CRIA CHAMADA JSONP
+  ========================================== */
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.src =
+
     GAS_URL +
+
     "?acao=dadosEmpresa" +
+
     "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
+    encodeURIComponent(
+      parceiroId
+    ) +
+
+    "&callback=" +
+    encodeURIComponent(
+      callback
+    ) +
+
     "&_=" +
     Date.now();
 
-  console.log("URL DADOS EMPRESA:", url);
 
-  try {
+  console.log(
+    "URL JSONP DADOS EMPRESA:",
+    script.src
+  );
 
-    const resposta = await fetch(url, {
-      method: "GET",
-      cache: "no-store",
-      redirect: "follow"
-    });
 
-    if (!resposta.ok) {
-      throw new Error("HTTP " + resposta.status);
-    }
+  script.onerror =
+    function() {
 
-    const texto = await resposta.text();
-
-    console.log("RETORNO BRUTO PARCEIRO QR:", texto);
-
-    let textoLimpo = String(texto || "").trim();
-
-    const inicioJSON = textoLimpo.indexOf("{");
-    const fimJSON = textoLimpo.lastIndexOf("}");
-
-    if (
-      inicioJSON === -1 ||
-      fimJSON === -1 ||
-      fimJSON < inicioJSON
-    ) {
-      throw new Error("Resposta inválida do CORE.");
-    }
-
-    textoLimpo = textoLimpo.substring(
-      inicioJSON,
-      fimJSON + 1
-    );
-
-    const resp = JSON.parse(textoLimpo);
-
-    console.log("RETORNO PARCEIRO QR:", resp);
-
-    if (!resp || resp.ok !== true) {
-      throw new Error(
-        resp?.mensagem ||
-        resp?.msg ||
-        "Parceiro não encontrado."
+      console.error(
+        "ERRO JSONP DADOS EMPRESA"
       );
-    }
 
-    const nome =
-      resp.nomeFantasia ||
-      resp.nome ||
-      parceiroId;
+      try {
 
-    const elNome =
-      document.getElementById("nomeParceiro");
+        delete window[callback];
 
-    if (elNome) {
-      elNome.innerText = nome;
-    }
+      } catch(e) {}
 
-    carregarLogoParceiro(
-      resp.logoURL ||
-      resp.logo ||
-      ""
-    );
 
-  } catch (erro) {
+      script.remove();
 
-    console.error(
-      "ERRO CARREGAR PARCEIRO QR:",
-      erro
-    );
 
-    mostrarMsg(
-      "❌ Não foi possível identificar o parceiro deste QR Code."
-    );
-  }
+      mostrarMsg(
+        "❌ Não foi possível identificar o parceiro deste QR Code."
+      );
+
+    };
+
+
+  script.onload =
+    function() {
+
+      script.remove();
+
+    };
+
+
+  document.body.appendChild(
+    script
+  );
+
 }
 
 function carregarLogoParceiro(logo) {
