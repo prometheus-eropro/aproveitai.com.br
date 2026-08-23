@@ -68,7 +68,7 @@ body {
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         🏪 <strong>VALIDADOR QR CODE CARTÃO</strong><br>
-        Valide o QR Code do cliente. Estando o cartão ativo e a utilização autorizada, será gerado o Código ERO para confirmação do benefício..
+        Valide o QR CODE do cliente, o cartão estando ativo você receberá o código de autorização do benefício.
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai" alt="Aproveitai">
@@ -89,7 +89,7 @@ body {
        font-weight:bold;
        margin-bottom:10px;
      ">
-  TESTE QR 007
+  
 </div>
   
 <button id="btnLerQR" onclick="abrirCamera()">
@@ -207,7 +207,7 @@ style="width:100%;padding:10px;margin-top:5px;">
   border-radius:8px;
   text-align:center;
 ">
-🔐 CÓDIGO ERO
+🔐 CÓDIGO DE AUTORIZAÇÃO
 
 <div id="codigoERO"
      style="font-size:38px;
@@ -239,41 +239,22 @@ style="width:100%;padding:10px;margin-top:5px;">
    CONFIGURAÇÃO
 ============================= */
 let cronometroERO = null;
-let validacaoEmAndamento = false;
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec";
 
 let intervaloCronometro = null;
 
-const params =
-  new URLSearchParams(window.location.search);
-
-
-/* ==========================================
-   IDENTIFICA O PARCEIRO
-
-   Prioridade:
-   1 - parceiro informado pela URL
-   2 - parceiro já logado na sessão
-========================================== */
-
+const params = new URLSearchParams(window.location.search);
 const parceiroId =
   params.get("p") ||
   params.get("parceiro_id") ||
-  params.get("parceiro") ||
-  sessionStorage.getItem("parceiroId") ||
-  "";
-
-
-/* ==========================================
-   IDENTIFICA O CLIENTE
-========================================== */
+  params.get("parceiro");
 
 let clienteId =
-  params.get("idPublico") ||
-  params.get("id") ||
-  params.get("cliente") ||
-  "";
+    params.get("idPublico") ||
+    params.get("id") ||
+    params.get("cliente");
+
 
 const elMsg = document.getElementById("msg");
 const elBtn =
@@ -286,49 +267,6 @@ function mostrarMsg(msg) {
   elMsg.innerHTML = msg || "";
 }
 
-/* ==========================================
-   DIAGNÓSTICO VISÍVEL PARA CELULAR
-========================================== */
-
-function diagnosticoQR(etapa, valor) {
-
-  let box =
-    document.getElementById("diagnosticoQR");
-
-  if (!box) {
-
-    box = document.createElement("div");
-
-    box.id = "diagnosticoQR";
-
-    box.style.cssText =
-      "margin-top:15px;" +
-      "padding:12px;" +
-      "background:#fff3cd;" +
-      "border:2px solid #d6a500;" +
-      "border-radius:8px;" +
-      "font-size:12px;" +
-      "line-height:1.5;" +
-      "word-break:break-all;" +
-      "text-align:left;";
-
-    document
-      .querySelector(".container")
-      .appendChild(box);
-  }
-
-  const linha =
-    document.createElement("div");
-
-  linha.innerHTML =
-    "<strong>" +
-    etapa +
-    ":</strong> " +
-    String(valor ?? "");
-
-  box.appendChild(linha);
-}
-
 function somenteNumeros(v) {
   return String(v || "").replace(/\D/g, "");
 }
@@ -336,23 +274,17 @@ function somenteNumeros(v) {
 /* =============================
    VALIDAÇÃO
 ============================= */
-async function validar() {
+function validar() {
 
-  // ==========================================
-  // EVITA DUPLICIDADE
-  // ==========================================
+if (clienteId) {
 
-  if (validacaoEmAndamento) {
-    console.log("Validação já está em andamento.");
-    return;
-  }
+   // fluxo QR Cliente
 
-  validacaoEmAndamento = true;
+} else {
 
+   // fluxo atual (CPF + nascimento)
 
-  // ==========================================
-  // LIMPA TELA
-  // ==========================================
+}
 
   document.getElementById("blocoBeneficio").style.display = "none";
   document.getElementById("blocoVeiculo").style.display = "none";
@@ -363,231 +295,58 @@ async function validar() {
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("btnGerarERO").style.display = "none";
 
+  const idPublico = clienteId;
 
-  // ==========================================
-  // CONFERE CLIENTE
-  // ==========================================
+if (!idPublico) {
 
-  let valor =
-    String(clienteId || "").trim();
+   mostrarMsg("QR do cliente inválido.");
 
-  if (!valor) {
+   return;
 
-    validacaoEmAndamento = false;
-
-    mostrarMsg(
-      "❌ QR do cliente inválido."
-    );
-
-    return;
-  }
-
-
-  // ==========================================
-  // CONFERE PARCEIRO
-  // ==========================================
+}
 
   if (!parceiroId) {
-
-    validacaoEmAndamento = false;
-
-    mostrarMsg(
-      "❌ Parceiro não identificado. Faça login novamente."
-    );
-
+    mostrarMsg("❌ QR Code inválido");
     return;
   }
 
+  mostrarMsg("⏳ Validando benefício...");
 
-  mostrarMsg(
-    "⏳ Validando benefício..."
-  );
+const old = document.getElementById("jsonpReq");
+if(old) old.remove();
 
+const script = document.createElement("script");
+script.id = "jsonpReq";
 
-  // ==========================================
-  // DEFINE CPF OU ID PÚBLICO
-  // ==========================================
+const valor = String(clienteId).trim();
 
-  const somenteDigitos =
-    valor.replace(/\D/g, "");
+const acao =
+/^\d{11}$/.test(valor)
+    ? "buscarClienteCPF"
+    : "buscarClienteId";
 
-  let acao;
-  let parametro;
+const parametro =
+acao === "buscarClienteCPF"
+    ? "&cpf="
+    : "&id=";
 
+script.src =
+GAS_URL +
+"?callback=retornoValidacao" +
+"&acao=" + acao +
+parametro +
+encodeURIComponent(valor) +
+"&p=" +
+encodeURIComponent(parceiroId);
 
-  if (/^\d{11}$/.test(somenteDigitos)) {
-
-    valor = somenteDigitos;
-
-    acao = "buscarClienteCPF";
-    parametro = "&cpf=";
-
-  } else {
-
-    valor =
-      valor.toUpperCase();
-
-    if (!valor.startsWith("APV-")) {
-
-      validacaoEmAndamento = false;
-
-      mostrarMsg(
-        "❌ ID Público inválido."
-      );
-
-      return;
-    }
-
-    acao = "buscarClienteId";
-    parametro = "&idPublico=";
-  }
-
-
-  // ==========================================
-  // MONTA URL
-  // ==========================================
-
-  const url =
-    GAS_URL +
-    "?acao=" +
-    encodeURIComponent(acao) +
-    parametro +
-    encodeURIComponent(valor) +
-    "&p=" +
-    encodeURIComponent(parceiroId) +
-    "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
-    "&_=" +
-    Date.now();
-
-
-  diagnosticoQR(
-    "8 - AÇÃO",
-    acao
-  );
-
-  diagnosticoQR(
-    "9 - FETCH API",
-    url
-  );
-
-
-  // ==========================================
-  // CONSULTA CORE VIA FETCH
-  // ==========================================
-
-  try {
-
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      });
-
-
-    diagnosticoQR(
-      "10 - HTTP",
-      resposta.status
-    );
-
-
-    if (!resposta.ok) {
-
-      throw new Error(
-        "HTTP " + resposta.status
-      );
-    }
-
-
-    const texto =
-      await resposta.text();
-
-
-    diagnosticoQR(
-      "11 - RETORNO",
-      texto
-    );
-
-
-    // ==========================================
-    // CONVERTE RESPOSTA PARA JSON
-    // ==========================================
-
-    let resp;
-
-try {
-
-  let textoLimpo =
-    String(texto || "").trim();
-
-  const inicioJSON =
-    textoLimpo.indexOf("{");
-
-  const fimJSON =
-    textoLimpo.lastIndexOf("}");
-
-  if (
-    inicioJSON === -1 ||
-    fimJSON === -1 ||
-    fimJSON < inicioJSON
-  ) {
-    throw new Error(
-      "Resposta inválida do CORE: " +
-      textoLimpo.substring(0, 200)
-    );
-  }
-
-  textoLimpo =
-    textoLimpo.substring(
-      inicioJSON,
-      fimJSON + 1
-    );
-
-  // IMPORTANTE:
-  // não colocar const ou let aqui
-  resp = JSON.parse(textoLimpo);
-
-} catch (erroJSON) {
-
-  throw new Error(
-    "Resposta inválida do CORE: " +
-    texto.substring(0, 150)
-  );
+document.body.appendChild(script);
 }
-
-retornoValidacao(resp);
-
-
-  } catch (erro) {
-
-    validacaoEmAndamento = false;
-
-    diagnosticoQR(
-      "12 - ERRO FETCH",
-      String(erro)
-    );
-
-    mostrarMsg(
-      "❌ Não foi possível consultar o cliente."
-    );
-
-  }
-
-}
-
 // =============================
 // CONTROLE DO CRONÔMETRO
 // =============================
 
 function retornoValidacao(resp) {
 
-  validacaoEmAndamento = false;
-
-diagnosticoQR(
-  "10 - RETORNO CORE",
-  JSON.stringify(resp)
-);
   document.getElementById("blocoCodigo")
 .style.display = "none";
 
@@ -623,74 +382,6 @@ resp.statusCliente;
 
 document.getElementById("validadeCliente").textContent =
 resp.validade;
-
-/* ==========================================
-   BLOQUEIO VISUAL — CLIENTE INATIVO
-========================================== */
-
-const statusCliente =
-  String(
-    resp.statusCliente ||
-    resp.ativo ||
-    ""
-  )
-  .trim()
-  .toUpperCase();
-
-const campoStatus =
-  document.getElementById("statusCliente");
-
-if (statusCliente !== "SIM") {
-
-  campoStatus.innerHTML =
-  "⛔ CLIENTE INATIVO";
-
-campoStatus.style.display = "inline-block";
-campoStatus.style.background = "#dc2626";
-campoStatus.style.color = "#ffffff";
-campoStatus.style.fontWeight = "900";
-campoStatus.style.fontSize = "16px";
-campoStatus.style.padding = "6px 12px";
-campoStatus.style.borderRadius = "6px";
-campoStatus.style.marginTop = "4px";
-
-  document.getElementById("blocoBeneficio").style.display = "none";
-  document.getElementById("blocoVeiculo").style.display = "none";
-  document.getElementById("blocoGerarERO").style.display = "none";
-  document.getElementById("blocoCodigo").style.display = "none";
-
-  document.getElementById("btnGerarERO").style.display = "none";
-  document.getElementById("btnConfirmar").style.display = "none";
-
-  document.getElementById("timer").innerHTML = "";
-
-  mostrarMsg(
-    '<div style="' +
-      'background:#fee2e2;' +
-      'border:2px solid #dc2626;' +
-      'color:#991b1b;' +
-      'padding:15px;' +
-      'border-radius:8px;' +
-      'font-size:16px;' +
-      'line-height:1.5;' +
-      'text-align:center;' +
-    '">' +
-      '⛔ <strong>CLIENTE INATIVO</strong><br><br>' +
-      'Este cliente não está autorizado a utilizar os benefícios da Plataforma AproveitAI.<br><br>' +
-      'Oriente o cliente a regularizar o cadastro.' +
-    '</div>'
-  );
-
-  return;
-}
-
-/* CLIENTE ATIVO */
-
-campoStatus.innerHTML =
-  "🟢 CLIENTE ATIVO";
-
-campoStatus.style.color = "#0a7a3c";
-campoStatus.style.fontWeight = "900";
 
   // ===== VEÍCULO =====
 if (resp.exige_placa) {
@@ -739,35 +430,19 @@ op1.text = `${resp.placa1} - ${resp.modelo1}`;
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
 
-const img =
-  document.getElementById("logoParceiro");
+const img = document.getElementById("logoParceiro");
 
-const logoParceiro =
-  String(resp.logoURL || "").trim();
+img.src = "/logos/" + parceiroId + ".png";
 
-if (logoParceiro) {
-
-  img.src = logoParceiro;
-
-  img.onload = function () {
+img.onload = function () {
     this.style.display = "block";
-  };
+};
 
-  img.onerror = function () {
-
+img.onerror = function () {
     this.onerror = null;
-
     this.src = "/logo-aproveitai.png";
-
     this.style.display = "block";
-  };
-
-} else {
-
-  img.src = "/logo-aproveitai.png";
-  img.style.display = "block";
-
-}
+};
 
 document.getElementById("nomeCliente").innerText =
 resp.nomeCliente || "";
@@ -791,6 +466,9 @@ resp.grupo || "";
 document.getElementById("cidadeCliente").innerText =
 resp.cidade || "";
 
+document.getElementById("statusCliente").innerText =
+resp.statusCliente || "";
+
 document.getElementById("validadeCliente").innerText =
 resp.validade || "";
 
@@ -804,517 +482,145 @@ carregarBeneficios(
     resp.idPublico
 );
 
-/*
-O seletor e o botão ERO somente serão liberados
-depois que os benefícios disponíveis forem carregados.
-*/
 
 document.getElementById("blocoBeneficio")
-.style.display = "none";
+.style.display = "block";
+
+
 
 document.getElementById("blocoGerarERO")
-.style.display = "none";
+.style.display = "block";
 
 document.getElementById("btnGerarERO")
-.style.display = "none";
+.style.display = "block";
 
 window.ultimoCelularCliente = resp.celular || "";
 
 }
 
-async function confirmarDesconto() {
+function confirmarDesconto() {
 
-  // ==========================================
-  // BENEFÍCIO
-  // ==========================================
+const beneficio =
+document.getElementById("beneficioSelecionado").value;
 
-  const beneficio =
-    document.getElementById(
-      "beneficioSelecionado"
-    ).value;
+const codigoERO =
+document.getElementById("codigoERO").innerText;
 
-  const codigoERO =
-    document.getElementById(
-      "codigoERO"
-    ).innerText.trim();
-
-
-  if (!beneficio) {
-    mostrarMsg(
-      "❌ Selecione um benefício."
-    );
-    return;
-  }
-
-
-  if (!codigoERO) {
-    mostrarMsg(
-      "❌ Código ERO não identificado."
-    );
-    return;
-  }
-
-
-  // ==========================================
-  // PARCEIRO
-  // ==========================================
-
-  if (!parceiroId) {
-    mostrarMsg(
-      "❌ Parceiro não identificado."
-    );
-    return;
-  }
-
-
-  // ==========================================
-  // VEÍCULO
-  // ==========================================
-
-  let placa = "";
-  let modelo = "";
-
-  const selectVeiculo =
-    document.getElementById(
-      "selectVeiculo"
-    );
-
-  if (
-    selectVeiculo &&
-    selectVeiculo.value
-  ) {
-
-    const partes =
-      selectVeiculo.value.split("|");
-
-    placa =
-      String(partes[0] || "").trim();
-
-    modelo =
-      String(partes[1] || "").trim();
-  }
-
-
-  // ==========================================
-  // MONTA URL
-  // ==========================================
-
-  const url =
-    GAS_URL +
-    "?acao=confirmarERO" +
-    "&codigoERO=" +
-    encodeURIComponent(codigoERO) +
-    "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
-    "&beneficio=" +
-    encodeURIComponent(beneficio) +
-    "&placa=" +
-    encodeURIComponent(placa) +
-    "&modelo=" +
-    encodeURIComponent(modelo) +
-    "&canal=SITE" +
-    "&origem=validacao_qr_cliente" +
-    "&_=" +
-    Date.now();
-
-
-  diagnosticoQR(
-    "21 - CONFIRMAR ERO API",
-    url
-  );
-
-
-  // ==========================================
-  // BLOQUEIA BOTÃO
-  // ==========================================
-
-  const btn =
-    document.getElementById(
-      "btnConfirmar"
-    );
-
-  if (btn) {
-    btn.disabled = true;
-    btn.innerText =
-      "Confirmando...";
-  }
-
-
-  mostrarMsg(
-    "⏳ Confirmando desconto..."
-  );
-
-
-  // ==========================================
-  // CONSULTA CORE
-  // ==========================================
-
-  try {
-
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      });
-
-
-    diagnosticoQR(
-      "22 - CONFIRMAR HTTP",
-      resposta.status
-    );
-
-
-    if (!resposta.ok) {
-      throw new Error(
-        "HTTP " + resposta.status
-      );
-    }
-
-
-    const texto =
-      await resposta.text();
-
-
-    diagnosticoQR(
-      "23 - CONFIRMAR RETORNO",
-      texto
-    );
-
-
-    // ==========================================
-    // LIMPA JSON / JSONP
-    //
-    // ACEITA:
-    // {"ok":true,...}
-    //
-    // OU:
-    // retornoConfirmacao({"ok":true,...})
-    // ==========================================
-
-    let textoLimpo =
-      String(texto || "").trim();
-
-
-    const inicioJSON =
-      textoLimpo.indexOf("{");
-
-    const fimJSON =
-      textoLimpo.lastIndexOf("}");
-
-
-    if (
-      inicioJSON === -1 ||
-      fimJSON === -1 ||
-      fimJSON < inicioJSON
-    ) {
-
-      throw new Error(
-        "CORE não retornou JSON válido."
-      );
-    }
-
-
-    textoLimpo =
-      textoLimpo.substring(
-        inicioJSON,
-        fimJSON + 1
-      );
-
-
-    diagnosticoQR(
-      "24 - CONFIRMAÇÃO JSON LIMPO",
-      textoLimpo
-    );
-
-
-    // ==========================================
-    // CONVERTE JSON
-    // ==========================================
-
-    const resp =
-      JSON.parse(textoLimpo);
-
-
-    diagnosticoQR(
-      "25 - CONFIRMAÇÃO CONVERTIDA",
-      JSON.stringify(resp)
-    );
-
-
-    // ==========================================
-    // ENTREGA PARA FUNÇÃO DE RETORNO
-    // ==========================================
-
-    retornoConfirmacao(resp);
-
-
-  } catch (erro) {
-
-    diagnosticoQR(
-      "26 - ERRO CONFIRMAÇÃO",
-      String(erro)
-    );
-
-
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText =
-        "☑️ Confirmar desconto concedido";
-    }
-
-
-    mostrarMsg(
-      "❌ Não foi possível confirmar o benefício."
-    );
-  }
+if (!beneficio) {
+mostrarMsg("Selecione um benefício");
+return;
 }
 
+let placa = "";
+let modelo = "";
+
+const selectVeiculo =
+document.getElementById("selectVeiculo");
+
+if (selectVeiculo && selectVeiculo.value) {
+
+  const [p,m] =
+    selectVeiculo.value.split("|");
+
+  placa = p;
+  modelo = m;
+
+}
+
+document.getElementById("btnConfirmar")
+.disabled = true;
+
+mostrarMsg("⏳ Confirmando desconto...");
+
+const script =
+document.createElement("script");
+
+script.src =
+GAS_URL +
+"?callback=retornoConfirmacao" +
+"&acao=confirmarERO" +
+"&codigoERO=" +
+encodeURIComponent(codigoERO) +
+"&parceiro_id=" +
+encodeURIComponent(parceiroId) +
+"&beneficio=" +
+encodeURIComponent(beneficio) +
+"&placa=" +
+encodeURIComponent(placa) +
+"&modelo=" +
+encodeURIComponent(modelo) +
+"&canal=SITE" +
+"&origem=validacao_qr_cliente";
+
+document.body.appendChild(script);
+}
 
 function retornoConfirmacao(resp) {
 
-  const btn =
-    document.getElementById(
-      "btnConfirmar"
-    );
+   
+  document.getElementById("btnConfirmar").style.display = "none";
 
-  const beneficioSelect =
-    document.getElementById(
-      "beneficioSelecionado"
-    );
+  document.getElementById("beneficioSelecionado").disabled = true;
 
-  const sv =
-    document.getElementById(
-      "selectVeiculo"
-    );
-
-  const timer =
-    document.getElementById(
-      "timer"
-    );
-
-
-  // ==========================================
-  // RESPOSTA INVÁLIDA
-  // ==========================================
-
-  if (!resp) {
-
-    mostrarMsg(
-      "❌ Resposta inválida da Plataforma AproveitAI."
-    );
-
-    if (btn) {
-      btn.style.display = "block";
-      btn.disabled = false;
-      btn.innerText =
-        "☑️ Confirmar desconto concedido";
-    }
-
-    return;
-  }
-
-
-  // ==========================================
-  // CORE RECUSOU A CONFIRMAÇÃO
-  // ==========================================
-
-  if (resp.ok !== true) {
-
-    const mensagem =
-      resp.mensagem ||
-      resp.msg ||
-      "❌ Erro ao confirmar desconto.";
-
-
-    diagnosticoQR(
-      "27 - CONFIRMAÇÃO RECUSADA",
-      mensagem
-    );
-
-
-    mostrarMsg(
-      "❌ " + mensagem
-    );
-
-
-    // libera novamente os campos
-
-    if (btn) {
-      btn.style.display = "block";
-      btn.disabled = false;
-      btn.innerText =
-        "☑️ Confirmar desconto concedido";
-    }
-
-
-    if (beneficioSelect) {
-      beneficioSelect.disabled = false;
-    }
-
-
-    if (sv) {
-      sv.disabled = false;
-    }
-
-
-    if (timer) {
-      timer.innerHTML =
-        "⚠️ Confirmação não realizada.";
-    }
-
-
-    return;
-  }
-
-
-  // ==========================================
-  // CONFIRMAÇÃO REALIZADA COM SUCESSO
-  // ==========================================
-
-  diagnosticoQR(
-    "27 - CONFIRMAÇÃO",
-    "BENEFÍCIO CONFIRMADO"
-  );
-
-
-  // bloqueia botão
-
-  if (btn) {
-    btn.style.display = "none";
-    btn.disabled = true;
-  }
-
-
-  // bloqueia benefício
-
-  if (beneficioSelect) {
-    beneficioSelect.disabled = true;
-  }
-
-
-  // bloqueia veículo
+  const sv = document.getElementById("selectVeiculo");
 
   if (sv) {
     sv.disabled = true;
   }
 
+  if (!resp || resp.ok !== true) {
+    mostrarMsg(resp?.msg || "❌ Erro ao confirmar desconto");
+    
+pararCronometro();
 
-  // para cronômetro
+document.getElementById("timer").innerHTML =
+"✅ Benefício confirmado";
+    return;
+  }
 
   pararCronometro();
 
-
-  // ==========================================
-  // CÓDIGO CONFIRMADO
-  // ==========================================
-
-  const codigoConfirmado =
-    resp.codigo ||
-    resp.codigoERO ||
-    (
-      document.getElementById("codigoERO")
-        ? document.getElementById("codigoERO").innerText.trim()
-        : ""
-    );
-
-
-  // ==========================================
-  // MOSTRA SUCESSO
-  // ==========================================
-
-  const blocoCodigo =
-    document.getElementById(
-      "blocoCodigo"
-    );
-
-
-  if (blocoCodigo) {
-
-    blocoCodigo.innerHTML = `
+  document.getElementById("blocoCodigo").innerHTML = `
+    <div style="
+      background:#dfffe0;
+      border:3px solid #0a7a3c;
+      padding:20px;
+      border-radius:10px;
+      text-align:center;
+    ">
       <div style="
-        background:#dfffe0;
-        border:3px solid #0a7a3c;
-        padding:20px;
-        border-radius:10px;
-        text-align:center;
+        font-size:26px;
+        font-weight:bold;
+        color:#0a7a3c;
+        margin-bottom:10px;
       ">
-
-        <div style="
-          font-size:26px;
-          font-weight:bold;
-          color:#0a7a3c;
-          margin-bottom:10px;
-        ">
-          ✅ BENEFÍCIO CONFIRMADO
-        </div>
-
-        <div style="
-          font-size:18px;
-        ">
-          O desconto foi registrado com sucesso.
-        </div>
-
-        <br>
-
-        <div style="
-          font-size:20px;
-        ">
-          Código:
-          <b>${codigoConfirmado}</b>
-        </div>
-
-        <br>
-
-        <div style="
-          color:#666;
-        ">
-          Esta tela será encerrada automaticamente
-          em 30 segundos.
-        </div>
-
+        ✅ BENEFÍCIO CONFIRMADO
       </div>
-    `;
-  }
 
+      <div style="font-size:18px">
+        Seu desconto foi registrado com sucesso.
+      </div>
 
-  mostrarMsg(
-    "🎉 Benefício confirmado com sucesso."
-  );
+      <br>
 
+      <div>
+        Código: <b>${resp.codigo}</b>
+      </div>
 
-  // ==========================================
-  // VOLTA PARA NOVA VALIDAÇÃO
-  // ==========================================
+      <br>
 
-  setTimeout(function () {
+      <div style="color:#666">
+        Esta tela será encerrada automaticamente em 30 segundos.
+      </div>
+    </div>
+  `;
 
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
+  mostrarMsg("🎉 Obrigado por utilizar a Plataforma AproveitAI.");
 
-
-    const idParceiro =
-      params.get("parceiro_id") ||
-      params.get("p") ||
-      parceiroId ||
-      "";
-
-
-    if (idParceiro) {
-
-      window.location.href =
-        "validar.html?parceiro_id=" +
-        encodeURIComponent(idParceiro);
-
-    } else {
-
-      window.location.href =
-        "validar.html";
-    }
-
+  setTimeout(() => {
+    location.reload();
   }, 30000);
+
 }
 
 function iniciarCronometro(validoAteISO) {
@@ -1337,30 +643,11 @@ function iniciarCronometro(validoAteISO) {
       document.getElementById("btnConfirmar")
         .style.display = "none";
 
-setTimeout(() => {
+      setTimeout(() => {
 
-  const params =
-    new URLSearchParams(window.location.search);
+        location.reload();
 
-  const parceiroId =
-    params.get("parceiro_id") ||
-    params.get("p") ||
-    "";
-
-  if (parceiroId) {
-
-    window.location.href =
-      "validar.html?parceiro_id=" +
-      encodeURIComponent(parceiroId);
-
-  } else {
-
-    window.location.href =
-      "validar.html";
-
-  }
-
-}, 10000);
+      }, 10000);
 
       return;
 
@@ -1391,128 +678,25 @@ function pararCronometro() {
 }
 </script>
 <script>
-async function carregarBeneficios(
-  parceiroId,
-  grupo,
-  cpf,
-  idPublico
-) {
 
-  const url =
-    GAS_URL +
-    "?acao=listarBeneficiosCliente" +
-    "&parceiro_id=" +
-    encodeURIComponent(parceiroId || "") +
-    "&grupo=" +
-    encodeURIComponent(grupo || "") +
-    "&cpf=" +
-    encodeURIComponent(cpf || "") +
-    "&idPublico=" +
-    encodeURIComponent(idPublico || "") +
-    "&_=" +
-    Date.now();
+  function carregarBeneficios(parceiroId,grupo,cpf,idPublico){
 
+    const script = document.createElement("script");
 
-  diagnosticoQR(
-    "13 - BENEFÍCIOS API",
-    url
-  );
+    script.src =
+        GAS_URL +
+        "?callback=retornoBeneficios" +
+        "&acao=listarBeneficiosCliente" +
+        "&parceiro_id=" + encodeURIComponent(parceiroId) +
+        "&grupo=" + encodeURIComponent(grupo) +
+        "&cpf=" + encodeURIComponent(cpf) +
+        "&idPublico=" + encodeURIComponent(idPublico);
 
+    document.body.appendChild(script);
 
-  try {
-
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      });
-
-
-    diagnosticoQR(
-      "14 - BENEFÍCIOS HTTP",
-      resposta.status
-    );
-
-
-    if (!resposta.ok) {
-
-      throw new Error(
-        "HTTP " + resposta.status
-      );
-
-    }
-
-
-    const texto =
-      await resposta.text();
-
-
-    diagnosticoQR(
-      "15 - BENEFÍCIOS RETORNO",
-      texto
-    );
-
-
-    // ==========================================
-    // LIMPA OS PARÊNTESES QUE O CORE DEVOLVE
-    // Exemplo: ({...})  ->  {...}
-    // ==========================================
-
-    let textoLimpo =
-      String(texto || "").trim();
-
-
-    if (
-      textoLimpo.startsWith("(") &&
-      textoLimpo.endsWith(")")
-    ) {
-
-      textoLimpo =
-        textoLimpo.substring(
-          1,
-          textoLimpo.length - 1
-        ).trim();
-
-    }
-
-
-    // ==========================================
-    // CONVERTE PARA OBJETO
-    // ==========================================
-
-    const resp =
-      JSON.parse(textoLimpo);
-
-
-    // ==========================================
-    // USA A FUNÇÃO QUE JÁ EXISTE
-    // ==========================================
-
-    retornoBeneficios(resp);
-
-
-  } catch (erro) {
-
-    validacaoEmAndamento = false;
-
-    console.error(
-      "ERRO AO CONSULTAR BENEFÍCIOS:",
-      erro
-    );
-
-
-    diagnosticoQR(
-      "16 - ERRO BENEFÍCIOS",
-      String(erro)
-    );
-
-
-    mostrarMsg(
-      "❌ Erro ao carregar os benefícios."
-    );
-
-  }
+script.onerror = function () {
+    console.error("Erro ao carregar benefícios.");
+};
 
 }
 
@@ -1562,485 +746,101 @@ function veiculoSelecionado(){
    ).style.display = "block";
 }
 
-async function gerarERO() {
+function gerarERO() {
 
-  // ==========================================
-  // BENEFÍCIO
-  // ==========================================
+  const beneficio =
+    document.getElementById("beneficioSelecionado").value;
 
-  const beneficioValor =
-    document.getElementById(
-      "beneficioSelecionado"
-    ).value;
-
-  if (!beneficioValor) {
-    mostrarMsg("❌ Selecione um benefício.");
+  if (!beneficio) {
+    mostrarMsg("Selecione um benefício");
     return;
   }
 
+  const cpf = window.cpfCliente;
 
-  // ==========================================
-  // CPF DO CLIENTE
-  // ==========================================
-
-  const cpf =
-    String(
-      window.cpfCliente || ""
-    ).replace(/\D/g, "");
-
-  if (!cpf) {
-    mostrarMsg("❌ CPF do cliente não identificado.");
-    return;
-  }
-
-
-  // ==========================================
-  // PARCEIRO
-  // ==========================================
-
-  if (!parceiroId) {
-    mostrarMsg("❌ Parceiro não identificado.");
-    return;
-  }
-
-
-  // ==========================================
-  // VEÍCULO
-  // ==========================================
-
-  let placa = "";
-  let modelo = "";
-
-  const selectVeiculo =
-    document.getElementById(
-      "selectVeiculo"
-    );
-
-  if (
-    window.exigePlaca &&
-    selectVeiculo
-  ) {
-
-    const veiculo =
-      String(
-        selectVeiculo.value || ""
-      ).trim();
-
-    if (!veiculo) {
-      mostrarMsg("❌ Selecione o veículo.");
-      return;
-    }
-
-    const partes =
-      veiculo.split("|");
-
-    placa =
-      String(partes[0] || "").trim();
-
-    modelo =
-      String(partes[1] || "").trim();
-  }
-
-
-  // ==========================================
-  // DADOS DO BENEFÍCIO
-  // ==========================================
-
-  let beneficio = {};
-
-  try {
-
-    beneficio =
-      JSON.parse(beneficioValor);
-
-  } catch (e) {
-
-    mostrarMsg("❌ Benefício inválido.");
-    return;
-
-  }
-
-
-  // ==========================================
-  // MONTA URL
-  // ==========================================
-
+  
   const url =
     GAS_URL +
-    "?acao=gerarERO" +
-    "&cpf=" +
-    encodeURIComponent(cpf) +
-    "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
-    "&tipo=" +
-    encodeURIComponent(
-      beneficio.tipo || ""
-    ) +
-    "&titulo=" +
-    encodeURIComponent(
-      beneficio.titulo || ""
-    ) +
-    "&descricao=" +
-    encodeURIComponent(
-      beneficio.descricao || ""
-    ) +
-    "&placa=" +
-    encodeURIComponent(placa) +
-    "&modelo=" +
-    encodeURIComponent(modelo) +
-    "&_=" +
-    Date.now();
+    "?callback=retornoGeracaoERO" +
+    "&acao=gerarERO" +
+    "&cpf=" + encodeURIComponent(cpf) +
+    "&parceiro_id=" + encodeURIComponent(parceiroId);
 
+  console.log("URL GERAR ERO:");
+  console.log(url);
 
-  diagnosticoQR(
-    "17 - GERAR ERO API",
-    url
-  );
+  const script = document.createElement("script");
 
+  script.src = url;
 
-  // ==========================================
-  // BLOQUEIA BOTÃO
-  // ==========================================
+  script.onerror = function(){
+      console.log("ERRO AO CHAMAR O GAS");
+  };
 
-  const btn =
-    document.getElementById(
-      "btnGerarERO"
-    );
-
-  if (btn) {
-    btn.disabled = true;
-    btn.innerText = "Gerando Código ERO...";
-  }
-
-
-  // ==========================================
-  // CONSULTA CORE
-  // ==========================================
-
-  try {
-
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      });
-
-
-    diagnosticoQR(
-      "18 - GERAR ERO HTTP",
-      resposta.status
-    );
-
-
-    if (!resposta.ok) {
-      throw new Error(
-        "HTTP " + resposta.status
-      );
-    }
-
-
-    const texto =
-      await resposta.text();
-
-
-    diagnosticoQR(
-      "19 - GERAR ERO RETORNO",
-      texto
-    );
-
-
-    // ==========================================
-    // LIMPA RESPOSTA DO CORE
-    // ACEITA JSON PURO OU JSONP
-    // ==========================================
-
-    let textoLimpo =
-      String(texto || "").trim();
-
-
-    // Caso venha:
-    // retornoGeracaoERO({...})
-
-    const inicioJSON =
-      textoLimpo.indexOf("{");
-
-    const fimJSON =
-      textoLimpo.lastIndexOf("}");
-
-
-    if (
-      inicioJSON === -1 ||
-      fimJSON === -1 ||
-      fimJSON < inicioJSON
-    ) {
-
-      throw new Error(
-        "CORE não retornou objeto JSON válido."
-      );
-
-    }
-
-
-    textoLimpo =
-      textoLimpo.substring(
-        inicioJSON,
-        fimJSON + 1
-      );
-
-
-    diagnosticoQR(
-      "20 - JSON ERO LIMPO",
-      textoLimpo
-    );
-
-
-    // ==========================================
-    // CONVERTE PARA OBJETO
-    // ==========================================
-
-    const resp =
-      JSON.parse(textoLimpo);
-
-
-    diagnosticoQR(
-      "21 - ERO CONVERTIDO",
-      JSON.stringify(resp)
-    );
-
-
-    // ==========================================
-    // CONFERE RETORNO
-    // ==========================================
-
-    if (
-      !resp ||
-      resp.ok !== true ||
-      !resp.codigo
-    ) {
-
-      throw new Error(
-        resp && resp.mensagem
-          ? resp.mensagem
-          : "CORE não retornou Código ERO."
-      );
-
-    }
-
-
-    // ==========================================
-    // ENTREGA PARA FUNÇÃO EXISTENTE
-    // ==========================================
-
-    retornoGeracaoERO(resp);
-
-
-    // ==========================================
-    // MANTÉM BOTÃO BLOQUEADO APÓS SUCESSO
-    // ==========================================
-
-    if (btn) {
-      btn.disabled = true;
-      btn.innerText = "Código ERO Gerado";
-    }
-
-
-  } catch (erro) {
-
-    diagnosticoQR(
-      "22 - ERRO GERAR ERO",
-      String(erro)
-    );
-
-    mostrarMsg(
-      "❌ Não foi possível gerar o Código ERO."
-    );
-
-
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "Gerar Código ERO";
-    }
-
-  }
+  document.body.appendChild(script);
 
 }
 
-function retornoBeneficios(resp) {
+function retornoBeneficios(resp){
 
-  const select =
+    const select =
     document.getElementById("beneficioSelecionado");
 
-  select.innerHTML = "";
+    select.innerHTML = "";
 
-  if (!resp || resp.ok !== true) {
+    if(!resp.ok){
 
-    mostrarMsg("Nenhum benefício encontrado.");
-    return;
-  }
+        mostrarMsg("Nenhum benefício encontrado.");
+        return;
 
-  if (
-    !Array.isArray(resp.itens) ||
-    resp.itens.length === 0
-  ) {
+    }
 
-    mostrarMsg("Nenhum benefício disponível.");
-    return;
-  }
+    if(!resp.itens || resp.itens.length===0){
 
+        mostrarMsg("Nenhum benefício disponível.");
+        return;
 
-  // ==========================================
-  // OPÇÃO INICIAL
-  // ==========================================
+    }
 
-  const op0 =
-    document.createElement("option");
+    const op0 =
+        document.createElement("option");
 
-  op0.value = "";
-  op0.text = "Selecione o benefício";
+    op0.value="";
 
-  select.appendChild(op0);
+    op0.text="Selecione o benefício";
 
+    select.appendChild(op0);
 
-  // ==========================================
-  // CARREGA BENEFÍCIOS
-  // ==========================================
+    resp.itens.forEach(function(item){
 
-  resp.itens.forEach(function(item) {
+        const op =
+            document.createElement("option");
 
-    const tipo =
-      String(item.tipo || "")
-        .trim()
-        .toUpperCase();
+        op.value =
+            item.tipo + "|" + item.titulo;
 
-    const dadosBeneficio = {
+        op.text =
+            "[" + item.tipo + "] " +
+            item.titulo;
 
-      tipo: tipo,
+        select.appendChild(op);
 
-      titulo:
-        String(item.titulo || "")
-          .trim(),
+    });
 
-      descricao:
-        String(item.descricao || "")
-          .trim(),
-
-      parceiro_id:
-        String(
-          item.parceiro_id ||
-          parceiroId ||
-          ""
-        ).trim()
-
-    };
-
-    const op =
-      document.createElement("option");
-
-    op.value =
-      JSON.stringify(dadosBeneficio);
-
-    op.text =
-      "[" +
-      tipo +
-      "] " +
-      dadosBeneficio.titulo;
-
-    select.appendChild(op);
-
-  });
-
-
-  // ==========================================
-  // MOSTRA BENEFÍCIOS
-  // ==========================================
-
-  document.getElementById(
-    "blocoBeneficio"
-  ).style.display = "block";
-
-
-  // ==========================================
-  // SELECIONA AUTOMATICAMENTE O PRIMEIRO
-  // BENEFÍCIO DISPONÍVEL
-  // ==========================================
-
-  if (select.options.length > 1) {
-
-    select.selectedIndex = 1;
-
-  }
-
-
-  // ==========================================
-  // VEÍCULO
-  // ==========================================
-
-  if (window.exigePlaca) {
-
-    document.getElementById(
-      "blocoVeiculo"
-    ).style.display = "block";
-
-  } else {
-
-    document.getElementById(
-      "blocoVeiculo"
-    ).style.display = "none";
-
-  }
-
-
-  // ==========================================
-  // LIBERA GERAR ERO
-  // ==========================================
-
-  document.getElementById(
-    "blocoGerarERO"
-  ).style.display = "block";
-
-
-  const btn =
-    document.getElementById(
-      "btnGerarERO"
-    );
-
-  if (btn) {
-
-    btn.style.display = "block";
-    btn.disabled = false;
-    btn.innerText = "Gerar Código ERO";
-
-  }
-
-
-  mostrarMsg(
-    "✅ Cliente validado. Selecione o benefício e gere o Código ERO."
-  );
+    document.getElementById("blocoBeneficio")
+        .style.display="block";
 
 }
 
 function retornoGeracaoERO(resp){
 
-  if (!resp || !resp.ok) {
+   
+   if(!resp || !resp.ok){
 
-    const btn =
-      document.getElementById("btnGerarERO");
+      mostrarMsg("Erro ao gerar código");
+      return;
 
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "Gerar Código ERO";
-      btn.style.display = "block";
-    }
-
-    mostrarMsg(
-      resp?.mensagem ||
-      resp?.msg ||
-      "❌ Erro ao gerar código."
-    );
-
-    return;
-  }
+   }
 
  window.codigoERO =
  resp.codigo;
@@ -2064,278 +864,59 @@ function retornoGeracaoERO(resp){
 
 }
 
-let leitorQR = null;
-let lendoQR = false;
+function abrirCamera(){
 
-async function abrirCamera() {
+    document.getElementById("reader").style.display="block";
 
-  mostrarMsg("⏳ Abrindo câmera...");
+    const html5QrCode = new Html5Qrcode("reader");
 
-  // Confirma se a biblioteca carregou
-  if (typeof Html5Qrcode === "undefined") {
+    html5QrCode.start(
+        { facingMode:"environment" },
+        { fps:10, qrbox:250 },
 
-    mostrarMsg(
-      "❌ O leitor de QR Code não foi carregado.<br>" +
-      "Atualize a página e tente novamente."
-    );
+        function(texto){
 
-    console.error(
-      "Html5Qrcode não está disponível."
-    );
+            html5QrCode.stop()
+.then(() => {
+    document.getElementById("reader").style.display = "none";
+    processarQRCode(texto);
+});
 
-    return;
-  }
+            document.getElementById("reader").style.display="none";
 
-  // Libera tentativa anterior travada
-  lendoQR = false;
-
-  const reader =
-    document.getElementById("reader");
-
-  if (!reader) {
-
-    mostrarMsg(
-      "❌ Área da câmera não encontrada."
-    );
-
-    return;
-  }
-
-  reader.style.display = "block";
-
-  try {
-
-    // Limpa leitor anterior
-    if (leitorQR) {
-
-      try {
-        await leitorQR.stop();
-      } catch (e) {}
-
-      try {
-        leitorQR.clear();
-      } catch (e) {}
-
-      leitorQR = null;
-    }
-
-    leitorQR =
-      new Html5Qrcode("reader");
-
-    await leitorQR.start(
-
-      {
-        facingMode: "environment"
-      },
-
-      {
-        fps: 10,
-        qrbox: {
-          width: 220,
-          height: 220
-        }
-      },
-
-      async function(texto) {
-
-        if (lendoQR) {
-          return;
-        }
-
-        lendoQR = true;
-
-        mostrarMsg(
-          "✅ QR Code lido. Processando..."
-        );
-
-        try {
-
-          await leitorQR.stop();
-
-        } catch (e) {
-
-          console.log(
-            "Erro ao parar câmera:",
-            e
-          );
+            processarQRCode(texto);
 
         }
 
-        reader.style.display =
-          "none";
-
-        processarQRCode(texto);
-
-      },
-
-      function(erroLeitura) {
-        // Ignora enquanto procura QR
-      }
-
     );
-
-    mostrarMsg(
-      "📷 Câmera aberta. Aponte para o QR Code do cliente."
-    );
-
-  } catch (e) {
-
-    console.error(
-      "ERRO AO ABRIR CÂMERA:",
-      e
-    );
-
-    lendoQR = false;
-
-    reader.style.display =
-      "none";
-
-    mostrarMsg(
-      "❌ Não foi possível abrir a câmera.<br><br>" +
-      "Verifique se o navegador tem permissão para usar a câmera.<br><br>" +
-      "<small>" +
-      String(e?.message || e) +
-      "</small>"
-    );
-
-  }
 
 }
 
 function processarQRCode(texto){
 
-  try {
+        try{
 
-    console.log(
-      "QR LIDO:",
-      texto
-    );
+        const url = new URL(texto);
 
-    let idLido = "";
+        clienteId =
+    url.searchParams.get("idPublico") ||
+    url.searchParams.get("id") ||
+    url.searchParams.get("cliente");
 
-    // ==========================================
-    // QR CONTÉM UMA URL
-    // ==========================================
+            if(!clienteId){
 
-    if (
-      String(texto || "")
-        .toLowerCase()
-        .includes("http")
-    ) {
+            mostrarMsg("QR inválido");
+            return;
 
-      const url =
-        new URL(texto);
+        }
 
-      idLido =
-        url.searchParams.get("idPublico") ||
-        url.searchParams.get("id") ||
-        url.searchParams.get("cliente") ||
-        "";
+        validar();
+
+    }catch(e){
+
+       mostrarMsg("QR inválido");
 
     }
-
-    // ==========================================
-    // QR CONTÉM DIRETAMENTE O APV
-    // ==========================================
-
-    else {
-
-      idLido =
-        String(texto || "")
-          .trim();
-
-    }
-
-
-    idLido =
-      String(idLido || "")
-        .trim()
-        .toUpperCase();
-
-
-    console.log(
-      "CLIENTE DO QR:",
-      idLido
-    );
-
-
-    // ==========================================
-    // VALIDA QR
-    // ==========================================
-
-    if (
-      !idLido ||
-      !idLido.startsWith("APV-")
-    ) {
-
-      lendoQR = false;
-
-      mostrarMsg(
-        "❌ QR Code não pertence a um cliente AproveitAI."
-      );
-
-      return;
-
-    }
-
-
-    // ==========================================
-    // DEFINE CLIENTE
-    // ==========================================
-
-    clienteId =
-      idLido;
-
-
-    // ==========================================
-    // CONFERE PARCEIRO
-    // ==========================================
-
-    if (!parceiroId) {
-
-      lendoQR = false;
-
-      mostrarMsg(
-        "❌ Parceiro não identificado. Faça login novamente."
-      );
-
-      return;
-
-    }
-
-
-    // ==========================================
-// VALIDA AUTOMATICAMENTE
-// Aguarda a câmera encerrar completamente
-// ==========================================
-
-mostrarMsg(
-  "⏳ QR identificado. Consultando cliente..."
-);
-
-setTimeout(function () {
-
-  validacaoEmAndamento = false;
-
-  validar();
-
-}, 800);
-
-
-  } catch(e) {
-
-    console.error(
-      "ERRO PROCESSAR QR:",
-      e
-    );
-
-    lendoQR = false;
-
-    mostrarMsg(
-      "❌ QR Code inválido."
-    );
-
-  }
 
 }
 
@@ -2351,7 +932,9 @@ color:#777;
 text-align:center;
 margin-top:8px;">
 Versão
-<span id="versaoRodape"></span></footer>
+<span id="versaoSistema"></span>
+</div>
+</footer>
 
 
 <script>
@@ -2368,55 +951,14 @@ navigator.serviceWorker.register('/sw.js');
 
 window.addEventListener("load", function () {
 
-  /* ==========================================
-     QR DO CLIENTE ABERTO
-  ========================================== */
+    if (clienteId && parceiroId) {
 
-  if (!clienteId) {
-    return;
-  }
+        validar();
 
-  /* ==========================================
-     PARCEIRO JÁ LOGADO
-     → VALIDA AUTOMATICAMENTE
-  ========================================== */
-
-  if (parceiroId) {
-
-    mostrarMsg(
-      "⏳ Cliente identificado. Carregando dados..."
-    );
-
-    setTimeout(function () {
-      validar();
-    }, 300);
-
-    return;
-  }
-
-  /* ==========================================
-     PARCEIRO NÃO LOGADO
-     → GUARDA CLIENTE E MANDA PARA LOGIN
-  ========================================== */
-
-  const retorno =
-    "validar.html?idPublico=" +
-    encodeURIComponent(clienteId);
-
-  mostrarMsg(
-    "🔐 Parceiro não identificado.<br>" +
-    "Redirecionando para login..."
-  );
-
-  setTimeout(function () {
-
-    window.location.href =
-      "painelparceiro.html?retorno=" +
-      encodeURIComponent(retorno);
-
-  }, 500);
+    }
 
 });
+
 </script>
 
 </body>

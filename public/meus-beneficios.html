@@ -4,13 +4,7 @@
   <meta charset="UTF-8">
   <title>Meus Benefícios | Plataforma AproveitAI</title>
   <link rel="stylesheet" href="style.css">
-
-<script src="js/config.js"></script>
-<script src="js/ofertas.js"></script>
-<script src="js/include.js" defer></script>
-
 </head>
-
 <body>
 <!-- ✅ CABEÇALHO COM TARJA PADRÃO -->
 <header class="site-header">
@@ -59,427 +53,189 @@
 </div>
 
 <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-
-
-// ==================================================
-// DADOS RECEBIDOS PELA URL
-// ==================================================
-
-const params =
-  new URLSearchParams(window.location.search);
-
-const idCliente =
-  String(params.get("id") || "")
-    .trim()
-    .toUpperCase();
-
-const nascimento =
-  params.get("nascimento") ||
-  sessionStorage.getItem("clienteNascimento") ||
-  "";
-
-
-// ==================================================
-// BOTÃO VER MEU CARTÃO
-// ==================================================
+// pegar ID do cliente pela URL
+const params = new URLSearchParams(window.location.search);
+const idCliente = params.get("id");
+const nascimento = params.get("nascimento") || sessionStorage.getItem("clienteNascimento");
 
 document.getElementById("btnVerCartao").href =
-  `cartao.html?id=${encodeURIComponent(idCliente)}` +
-  `&nascimento=${encodeURIComponent(nascimento)}`;
+  `cartao.html?id=${encodeURIComponent(idCliente)}&nascimento=${encodeURIComponent(nascimento || "")}`;
 
-
-// ==================================================
-// JSONP
-// Evita bloqueio CORS do Google Apps Script
-// ==================================================
-
-function chamarJSONP(parametros) {
-
-  return new Promise(function(resolve, reject) {
-
-    const callback =
-      "jsonp_" +
-      Date.now() +
-      "_" +
-      Math.floor(Math.random() * 1000000);
-
-    const script =
-      document.createElement("script");
-
-    let timeout;
-
-
-    // ----------------------------------------------
-    // LIMPEZA
-    // ----------------------------------------------
-
-    function limpar() {
-
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-
-      try {
-        delete window[callback];
-      } catch (e) {
-        window[callback] = undefined;
-      }
-
-    }
-
-
-    // ----------------------------------------------
-    // CALLBACK JSONP
-    // ----------------------------------------------
-
-    window[callback] = function(resposta) {
-
-      limpar();
-
-      resolve(resposta);
-
-    };
-
-
-    // ----------------------------------------------
-    // MONTA PARÂMETROS
-    // ----------------------------------------------
-
-    const query =
-      Object.keys(parametros)
-        .map(function(chave) {
-
-          return (
-            encodeURIComponent(chave) +
-            "=" +
-            encodeURIComponent(
-              parametros[chave] == null
-                ? ""
-                : parametros[chave]
-            )
-          );
-
-        })
-        .join("&");
-
-
-    script.src =
-      API_URL +
-      "?" +
-      query +
-      "&callback=" +
-      encodeURIComponent(callback) +
-      "&_=" +
-      Date.now();
-
-
-    // ----------------------------------------------
-    // ERRO
-    // ----------------------------------------------
-
-    script.onerror = function() {
-
-      limpar();
-
-      reject(
-        new Error(
-          "Falha na comunicação com a Plataforma AproveitAI."
-        )
-      );
-
-    };
-
-
-    // ----------------------------------------------
-    // TIMEOUT
-    // ----------------------------------------------
-
-    timeout =
-      setTimeout(function() {
-
-        limpar();
-
-        reject(
-          new Error(
-            "Tempo limite excedido ao consultar a plataforma."
-          )
-        );
-
-      }, 15000);
-
-
-    document.body.appendChild(script);
-
-  });
-
+// ===========================
+// REGRA DE VISUALIZAÇÃO
+// ===========================
+function clientePodeVer(item, grupoCliente) {
+  if (!item.grupo && !item.idPublico) return true;
+  if (item.grupo && item.grupo === grupoCliente) return true;
+  if (item.idPublico && item.idPublico === idCliente) return true;
+  return false;
 }
 
+function formatarDataBR(valor){
 
-// ==================================================
-// CARREGAR CLIENTE + BENEFÍCIOS/PROMOÇÕES
-// ==================================================
+  if(!valor) return "-";
+
+  if(typeof valor === "string"){
+
+    if(valor.includes("/"))
+      return valor;
+
+    if(valor.includes("T"))
+      valor = valor.substring(0,10);
+
+  }
+
+  const d = new Date(valor);
+
+  if(isNaN(d))
+    return "-";
+
+  return d.toLocaleDateString(
+    "pt-BR",
+    {
+      timeZone:"America/Sao_Paulo"
+    }
+  );
+
+}
 
 async function carregarTudo() {
 
-  const lista =
-    document.getElementById("lista");
-
-
-  // ----------------------------------------------
-  // VALIDAÇÃO INICIAL
-  // ----------------------------------------------
+  const lista = document.getElementById("lista");
 
   if (!idCliente) {
-
-    lista.innerHTML =
-      "<p style='text-align:center;color:red'>" +
-      "Acesso inválido." +
-      "</p>";
-
+    lista.innerHTML = "Acesso inválido.";
     return;
-
   }
-
-
-  if (!nascimento) {
-
-    lista.innerHTML =
-      "<p style='text-align:center;color:red'>" +
-      "Data de nascimento não informada." +
-      "</p>";
-
-    return;
-
-  }
-
-
-  lista.innerHTML =
-    "<p style='text-align:center'>" +
-    "Carregando seus benefícios..." +
-    "</p>";
-
 
   try {
 
-    // ==================================================
-    // 1. CONSULTA CLIENTE
-    // ==================================================
-
-    const cliente =
-      await chamarJSONP({
-
-        acao:
-          "consultarClientePorIdSeguro",
-
-        idPublico:
-          idCliente,
-
-        nascimento:
-          nascimento
-
-      });
-
-
-    console.log(
-      "CLIENTE:",
-      cliente
+    // ============================
+    // CONSULTA CLIENTE
+    // ============================
+    const resCliente = await fetch(
+      `${API_URL}?acao=consultarClientePorIdSeguro` +
+      `&idPublico=${encodeURIComponent(idCliente)}` +
+      `&nascimento=${encodeURIComponent(nascimento)}`
     );
 
+    const cliente = await resCliente.json();
 
-    // ----------------------------------------------
-    // CLIENTE NÃO LOCALIZADO
-    // ----------------------------------------------
+    console.log("CLIENTE:", cliente);
 
-    if (
-      !cliente ||
-      cliente.ok === false
-    ) {
-
+    if (String(cliente.ativo).toLowerCase() !== "sim") {
       lista.innerHTML =
-        "<p style='text-align:center;color:red'>" +
-        "Cliente não encontrado." +
-        "</p>";
-
+        "<p style='text-align:center;color:red'>Cliente inativo ou inexistente.</p>";
       return;
-
     }
 
+    // ============================
+    // CONSULTA BENEFÍCIOS
+    // ============================
+    const url =
+  `${API_URL}?acao=listarBeneficiosCliente` +
+  `&grupo=${encodeURIComponent(cliente.grupo)}` +
+  `&cpf=${encodeURIComponent(cliente.cpf)}` +
+  `&idPublico=${encodeURIComponent(cliente.idPublico)}`;
 
-    // ----------------------------------------------
-    // CLIENTE INATIVO
-    // ----------------------------------------------
+console.log("URL BENEFÍCIOS:", url);
 
-    if (
-      String(cliente.ativo || "")
-        .trim()
-        .toLowerCase() !== "sim"
-    ) {
+const resposta = await fetch(url);
 
-      lista.innerHTML =
-        "<p style='text-align:center;color:red'>" +
-        "Cliente inativo ou inexistente." +
-        "</p>";
+const texto = await resposta.text();
 
-      return;
+console.log("RESPOSTA BRUTA:");
+console.log(texto);
 
-    }
+const retorno = JSON.parse(texto);
 
-
-    // ==================================================
-    // 2. CONSULTA BENEFÍCIOS E PROMOÇÕES
-    // ==================================================
-
-    const retorno =
-      await chamarJSONP({
-
-        acao:
-          "listarBeneficiosCliente",
-
-        grupo:
-          cliente.grupo || "",
-
-        cpf:
-          cliente.cpf || "",
-
-        idPublico:
-          cliente.idPublico || idCliente
-
-      });
-
-
-    console.log(
-      "RETORNO BENEFÍCIOS:",
-      retorno
-    );
-
-
-    // ----------------------------------------------
-    // ERRO DA API
-    // ----------------------------------------------
-
-    if (
-      !retorno ||
-      retorno.ok === false
-    ) {
-
-      lista.innerHTML =
-        "<p style='text-align:center;color:red'>" +
-        "Não foi possível carregar os benefícios." +
-        "</p>";
-
-      return;
-
-    }
-
-
-    // ==================================================
-    // 3. ITENS AUTORIZADOS PELO GAS
-    // ==================================================
-
-    const itens =
-      Array.isArray(retorno.itens)
-        ? retorno.itens
-        : [];
-
-
-    console.log(
-      "QUANTIDADE:",
-      itens.length
-    );
-
-    console.log(
-      "ITENS:",
-      itens
-    );
-
+console.log("RETORNO:", retorno);
 
     lista.innerHTML = "";
 
+    const itens = retorno.itens || [];
 
-    // ==================================================
-    // 4. MONTA OS CARDS
-    // ==================================================
+    console.log("QUANTIDADE:", itens.length);
+console.log(itens);
 
-    itens.forEach(function(item) {
+    itens.forEach(item => {
 
-      const tipo =
-        String(
-          item.tipo ||
-          item.tipo_oferta ||
-          ""
-        )
-        .trim()
-        .toLowerCase();
+      const grupoItem =
+  String(item.grupo || "")
+    .trim()
+    .toUpperCase();
 
+const exclusivo =
+(
+  (grupoItem !== "" && grupoItem !== "GERAL")
+  ||
+  (String(item.idPublico || "").trim() !== "")
+);
+      lista.innerHTML += `
+        <div class="card ${exclusivo ? "exclusivo" : ""}">
 
-      if (
-        tipo === "promocao" ||
-        tipo === "promoção" ||
-        tipo === "promocoes"
-      ) {
+          ${exclusivo ? "<div class='tarja'>EXCLUSIVO</div>" : ""}
 
-        lista.innerHTML +=
-          AproveitAIOfertas.promocao(item);
+          <h3>${item.titulo || ""}</h3>
 
-      } else {
+          <p>${item.descricao || ""}</p>
 
-        lista.innerHTML +=
-          AproveitAIOfertas.beneficio(item);
+          ${item.parceiro ? `<div><b>PARCEIRO:</b> ${item.parceiro}</div>` : ""}
 
-      }
+          <div class="contatos">
+
+            ${item.zap ?
+              `<a href="https://wa.me/55${item.zap.replace(/\D/g,"")}"
+              target="_blank"
+              class="link zap">📱 WhatsApp</a>` : ""}
+
+            ${item.instagram ?
+              `<a href="https://instagram.com/${item.instagram.replace("@","")}"
+              target="_blank"
+              class="link insta">📸 Instagram</a>` : ""}
+
+            ${item.site ?
+              `<a href="${item.site}"
+              target="_blank"
+              class="link site">🌐 Site</a>` : ""}
+
+          </div>
+
+          ${item.dataInicio ?
+          `<div style="margin-top:8px;color:#0a7f2e;font-weight:600">
+          📅 Início: ${formatarDataBR(item.dataInicio)}
+          </div>` : ""}
+
+          ${item.dataFim ?
+          `<div style="color:#c62828;font-weight:600">
+          📅 Término: ${formatarDataBR(item.dataFim)}
+          </div>` : ""}
+
+        </div>
+      `;
 
     });
 
-
-    // ==================================================
-    // 5. NENHUMA OFERTA DISPONÍVEL
-    // ==================================================
-
     if (itens.length === 0) {
-
       lista.innerHTML =
-        "<p style='text-align:center'>" +
-        "Nenhum benefício ou promoção disponível no momento." +
-        "</p>";
-
+        "<p style='text-align:center'>Nenhum benefício disponível.</p>";
     }
-
 
   } catch (erro) {
 
-    console.error(
-      "ERRO AO CARREGAR BENEFÍCIOS:",
-      erro
-    );
+    console.error(erro);
 
     lista.innerHTML =
-      "<p style='text-align:center;color:red'>" +
-      "Erro ao carregar benefícios. Tente novamente." +
-      "</p>";
+      "<p style='text-align:center;color:red'>Erro ao carregar benefícios.</p>";
 
   }
 
 }
 
-
-// ==================================================
-// INICIALIZAÇÃO
-// ==================================================
-
-document.addEventListener(
-  "DOMContentLoaded",
-  carregarTudo
-);
-
+  document.addEventListener("DOMContentLoaded", carregarTudo);
 </script>
-
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
@@ -490,13 +246,9 @@ document.addEventListener(
 ">
   © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
 
-<strong>Aviso legal:</strong>
-
-A Plataforma AproveitAI não garante descontos.
-Benefícios e promoções são definidos e concedidos
-exclusivamente pelos parceiros participantes e estão
-sujeitos às condições, formas de pagamento, vigência
-e demais regras informadas em cada oferta.
+  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
 </footer>
 
 

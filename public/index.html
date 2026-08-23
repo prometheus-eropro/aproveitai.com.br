@@ -32,7 +32,6 @@ href="style.css">
 
 <meta name="theme-color" content="#0a7a2a">
 <script src="js/config.js"></script>
-<script src="js/ofertas.js"></script>
 
 <script src="js/include.js" defer></script>
 
@@ -636,16 +635,36 @@ area.dataset.tipo = "beneficios";
 
   lista.forEach(b => {
 
-  html += AproveitAIOfertas.beneficio(
-  b,
-  {
-    compacto: true,
-    mostrarParceiro: false,
-    mostrarContatos: false
-  }
-);
+    html += `
 
-});
+      <div class="mini-beneficio">
+
+        <strong>
+          ${b.titulo || "Benefício"}
+        </strong>
+
+        ${
+          b.descricao
+            ? `<p>${b.descricao}</p>`
+            : ""
+        }
+
+        ${
+          b.observacoes
+            ? `
+              <small>
+                <b>Condições:</b>
+                ${b.observacoes}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  });
 
 
   html += `
@@ -717,16 +736,38 @@ area.dataset.tipo = "promocoes";
 
   lista.forEach(p => {
 
-  html += AproveitAIOfertas.promocao(
-  p,
-  {
-    compacto: true,
-    mostrarParceiro: false,
-    mostrarContatos: false
-  }
-);
+    html += `
 
-});
+      <div class="mini-promocao">
+
+        <strong>
+          ${p.titulo || "Promoção"}
+        </strong>
+
+        ${
+          p.descricao
+            ? `<p>${p.descricao}</p>`
+            : ""
+        }
+
+        ${
+          p.dataFim
+            ? `
+              <small>
+                Válida até:
+                ${new Date(
+                  p.dataFim
+                ).toLocaleDateString("pt-BR")}
+              </small>
+            `
+            : ""
+        }
+
+      </div>
+
+    `;
+
+  });
 
 
   html += `

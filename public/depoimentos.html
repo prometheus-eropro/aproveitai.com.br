@@ -14,8 +14,7 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, .08);
     }
   </style>
-<script src="js/config.js"></script>
-<script src="js/include.js" defer></script>
+<script src="config.js"></script>
 </head>
 <body>
 
@@ -69,177 +68,27 @@ Versão
 <span id="versaoSistema"></span>
 </div>
 </footer>
-<!-- CARREGAMENTO DOS DEPOIMENTOS -->
+<!-- ✅ SCRIPT PARA CARREGAR DEPOIMENTOS -->
 <script>
+const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-function carregarDepoimentos() {
-
-  const lista =
-    document.getElementById("lista");
-
-  lista.innerHTML = `
-    <div class="card">
-      Carregando depoimentos...
-    </div>
-  `;
-
-
-  const callback =
-    "cbDepoimentos_" + Date.now();
-
-
-  window[callback] = function(resp) {
-
-    try {
-
-      console.log(
-        "RESPOSTA DEPOIMENTOS:",
-        resp
-      );
-
-
-      if (
-        !resp ||
-        resp.ok !== true ||
-        !Array.isArray(resp.dados)
-      ) {
-
-        lista.innerHTML = `
-          <div class="card">
-            Não foi possível carregar os depoimentos neste momento.
-          </div>
-        `;
-
-        return;
-      }
-
-
-      if (!resp.dados.length) {
-
-        lista.innerHTML = `
-          <div class="card">
-            Em breve, novas experiências por aqui.
-Os depoimentos serão publicados à medida que clientes, parceiros e organizações utilizarem a Plataforma AproveitAI.
-          </div>
-        `;
-
-        return;
-      }
-
-
-      lista.innerHTML =
-        resp.dados.map(x => {
-
-          const texto =
-            String(
-              x.texto ||
-              x.depoimento ||
-              ""
-            ).trim();
-
-
-          const nome =
-            String(
-              x.nome ||
-              x.autor ||
-              x.cliente ||
-              x.usuario ||
-              "Cliente AproveitAI"
-            ).trim();
-
-
-          if (!texto) {
-            return "";
-          }
-
-
-          return `
-            <div class="card">
-
-              <div style="
-                font-size:16px;
-                line-height:1.6;
-                margin-bottom:14px;
-              ">
-                “${texto}”
-              </div>
-
-              <div style="
-                font-weight:700;
-                color:#087c32;
-              ">
-                — ${nome}
-              </div>
-
-            </div>
-          `;
-
-        }).join("");
-
-
-    } finally {
-
-      delete window[callback];
-
-      const script =
-        document.getElementById(
-          callback
-        );
-
-      if (script) {
-        script.remove();
-      }
-
-    }
-
-  };
-
-
-  const script =
-    document.createElement("script");
-
-
-  script.id =
-    callback;
-
-
- script.src =
-    CONFIG.api +
-    "?acao=listarDepoimentos" +
-    "&callback=" +
-    encodeURIComponent(callback) +
-    "&_=" +
-    Date.now();
-
-
-  script.onerror = function() {
-
-    lista.innerHTML = `
+fetch(ENDPOINT + "?aba=depoimentos")
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById("lista").innerHTML = d.map(x => `
       <div class="card">
-        Não foi possível carregar os depoimentos neste momento.
+        "${x.texto}"<br><br>
+        <b>- ${x.nome || x.autor || x.cliente || x.usuario || "Anônimo"}</b>
       </div>
-    `;
-
-
-    delete window[callback];
-
-    script.remove();
-
-  };
-
-
-  document.body.appendChild(
-    script
-  );
-
-}
-
-
-document.addEventListener(
-  "DOMContentLoaded",
-  carregarDepoimentos
-);
-
+    `).join("");
+  });
 </script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+
 </body>
 </html>

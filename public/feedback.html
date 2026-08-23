@@ -8,6 +8,21 @@
 <style>
 
 body{
+  background:#bfefff;
+}
+.container{
+  max-width:500px;
+  margin:30px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+label{
+  font-weight:600;
+}
+
+body{
   margin:0;
   font-family:'Segoe UI', Arial, sans-serif;
   background:#bfefff;
@@ -259,22 +274,9 @@ formData.append("canal", "web");
       const data = await resp.json();
 
       if (data.ok) {
-
   alert("✅ Feedback enviado com sucesso!");
-
-  // LIMPA TODOS OS CAMPOS DO FORMULÁRIO
-  form.reset();
-
-  // VOLTA O FORMULÁRIO PARA O ESTADO INICIAL
-  atualizarCampos();
-
 } else {
-
-  alert(
-    "⚠️ Erro ao salvar: " +
-    (data.erro || "sem detalhes")
-  );
-
+  alert("⚠️ Erro ao salvar: " + (data.erro || "sem detalhes"));
 }
 
     } catch (err) {

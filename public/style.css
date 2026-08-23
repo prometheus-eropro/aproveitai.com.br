@@ -163,6 +163,9 @@ object-fit:contain;
   }
 }
 
+/* =========================
+   CARDS DE PARCEIROS
+========================= */
 .container-parceiros {
   display: flex;
   flex-wrap: wrap;
@@ -480,7 +483,8 @@ input[type="search"] {
     padding: 0 12px;
   }
 }
-
+CARDS DE PARCEIROS
+========================= */
 .container-parceiros {
   display: flex;
   flex-wrap: wrap;
@@ -511,7 +515,7 @@ input[type="search"] {
   object-fit: contain;
 }
 
-/* ======== GRID DE PARCEIROS / CARDS ======== */
+* ======== GRID DE PARCEIROS / CARDS ======== */
 .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -541,6 +545,15 @@ input[type="search"] {
   text-align: center;
   max-width: 100%;
 }
+<div class="filtros-container">
+  <input type="text" placeholder="Buscar por nome">
+
+  <div class="filtros-linha">
+    <select>...</select>
+    <select>...</select>
+    <button>Filtrar</button>
+  </div>
+</div>
 /* =====================================================
    INDEX – GRID DE CARDS (TAMANHO COMPACTO)
    ===================================================== */
@@ -2829,357 +2842,4 @@ body.pagina-promocoes {
         padding: 14px !important;
     }
 
-}
-
-/* =========================================================
-   APROVEITAI
-   COMPONENTE OFICIAL DE OFERTAS
-   Benefícios e Promoções
-========================================================= */
-
-.oferta-card{
-    width:100%;
-    box-sizing:border-box;
-
-    background:#ffffff;
-
-    border:1px solid #dfe5e1;
-    border-radius:16px;
-
-    padding:20px;
-
-    box-shadow:
-        0 8px 22px rgba(0,0,0,.08);
-
-    overflow:hidden;
-}
-
-
-/* =========================================================
-   EXCLUSIVO
-========================================================= */
-
-.oferta-exclusivo{
-    width:100%;
-    box-sizing:border-box;
-
-    background:#ffca05;
-
-    color:#222;
-
-    border-radius:7px;
-
-    padding:7px 12px;
-
-    margin-bottom:12px;
-
-    text-align:center;
-
-    font-weight:800;
-    font-size:14px;
-}
-
-
-/* =========================================================
-   QUADRO PRINCIPAL
-========================================================= */
-
-.oferta-principal{
-    border:2px solid #07852d;
-
-    background:#f1fbf4;
-
-    border-radius:10px;
-
-    padding:16px;
-
-    margin-bottom:14px;
-
-    text-align:center;
-}
-
-
-.oferta-tipo{
-    color:#07852d;
-
-    font-size:13px;
-    font-weight:800;
-
-    margin-bottom:8px;
-}
-
-
-.oferta-titulo{
-    margin:0;
-
-    color:#242424;
-
-    font-size:20px;
-    font-weight:800;
-
-    line-height:1.3;
-}
-
-
-.oferta-categoria{
-    margin-top:10px;
-
-    font-size:12px;
-    font-weight:700;
-
-    color:#666;
-
-    text-transform:uppercase;
-}
-
-
-.oferta-descricao{
-    margin-top:14px;
-
-    color:#333;
-
-    font-size:15px;
-    line-height:1.55;
-
-    text-align:left;
-}
-
-
-/* =========================================================
-   VIGÊNCIA
-========================================================= */
-
-.oferta-vigencia{
-    margin-top:10px;
-
-    color:#333;
-
-    font-size:14px;
-    line-height:1.5;
-}
-
-
-/* =========================================================
-   PAGAMENTO
-========================================================= */
-
-.oferta-pagamento{
-    margin-top:7px;
-
-    color:#333;
-
-    font-size:14px;
-    line-height:1.5;
-}
-
-
-/* =========================================================
-   CONDIÇÕES
-========================================================= */
-
-.oferta-condicoes{
-    margin-top:16px;
-
-    border:2px solid #07852d;
-
-    background:#f1fbf4;
-
-    border-radius:10px;
-
-    padding:16px;
-}
-
-
-.oferta-condicoes-titulo{
-    text-align:center;
-
-    color:#07852d;
-
-    font-size:16px;
-    font-weight:800;
-
-    margin-bottom:14px;
-}
-
-
-.oferta-condicoes-texto{
-    color:#333;
-
-    font-size:14px;
-    line-height:1.6;
-
-    white-space:pre-line;
-}
-
-
-/* =========================================================
-   VALIDAÇÃO
-========================================================= */
-
-.oferta-validacao{
-    margin-top:14px;
-
-    padding-top:13px;
-
-    border-top:1px solid #c9dfd0;
-
-    color:#333;
-
-    font-size:14px;
-    line-height:1.55;
-}
-
-
-/* =========================================================
-   MODO COMPACTO
-   Para painel cliente / parceiro / index
-========================================================= */
-
-.oferta-card.oferta-compacta{
-    padding:15px;
-    border-radius:12px;
-}
-
-
-.oferta-compacta .oferta-principal{
-    padding:13px;
-}
-
-
-.oferta-compacta .oferta-titulo{
-    font-size:17px;
-}
-
-
-.oferta-compacta .oferta-condicoes{
-    padding:13px;
-}
-
-
-.oferta-compacta .oferta-condicoes-titulo{
-    font-size:14px;
-}
-
-
-/* =========================================================
-   CELULAR
-========================================================= */
-
-@media(max-width:600px){
-
-    .oferta-card{
-        padding:14px;
-        border-radius:12px;
-    }
-
-    .oferta-principal{
-        padding:14px;
-    }
-
-    .oferta-titulo{
-        font-size:18px;
-    }
-
-    .oferta-descricao{
-        font-size:14px;
-    }
-
-    .oferta-condicoes{
-        padding:14px;
-    }
-
-    .oferta-condicoes-titulo{
-        font-size:15px;
-    }
-
-    .oferta-vigencia,
-    .oferta-pagamento,
-    .oferta-condicoes-texto,
-    .oferta-validacao{
-        font-size:13px;
-    }
-}
-
-/* =========================================================
-   PAINEL PARCEIRO
-   STATUS DE PROMOÇÃO ENCERRADA
-========================================================= */
-
-.promocao-painel {
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 18px;
-}
-
-.status-promocao-encerrada {
-  background: #c62828;
-  color: #ffffff;
-
-  padding: 9px 14px;
-  margin-bottom: 8px;
-
-  border-radius: 8px;
-
-  text-align: center;
-
-  font-size: 14px;
-  font-weight: 800;
-
-  letter-spacing: .3px;
-}
-
-.promocao-encerrada .oferta-card {
-  opacity: .78;
-  border-color: #c62828;
-}
-
-.promocao-encerrada .oferta-principal {
-  background: #fff5f5;
-  border-color: #c62828;
-}
-
-.promocao-encerrada .oferta-tipo {
-  color: #c62828;
-}
-
-/* =========================================================
-   PAINEL PARCEIRO
-   SITUAÇÃO DAS PROMOÇÕES
-========================================================= */
-
-.status-promocao-encerrada{
-    width:100%;
-    box-sizing:border-box;
-
-    margin-bottom:10px;
-    padding:9px 12px;
-
-    background:#c62828;
-    color:#ffffff;
-
-    border-radius:8px;
-
-    text-align:center;
-
-    font-size:14px;
-    font-weight:800;
-}
-
-
-.status-promocao-futura{
-    width:100%;
-    box-sizing:border-box;
-
-    margin-bottom:10px;
-    padding:9px 12px;
-
-    background:#ffca05;
-    color:#222222;
-
-    border-radius:8px;
-
-    text-align:center;
-
-    font-size:14px;
-    font-weight:800;
 }

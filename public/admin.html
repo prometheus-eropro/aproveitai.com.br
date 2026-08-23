@@ -22,6 +22,9 @@
 <meta name="apple-mobile-web-app-title" content="AproveitAI">
 
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<link rel="manifest" href="manifest.json">
+
 <link rel="apple-touch-icon" href="icon.192.png">
 
 <link rel="icon" href="favicon.ico">
@@ -4895,70 +4898,7 @@ async function toggleBeneficio(beneficioId, ativo){
 
 }
 
-/* ======================================================
-   GRUPOS CADASTRADOS NA PLATAFORMA
-====================================================== */
-
-function obterGruposCadastrados(){
-
-  const grupos = new Set();
-
-  /*
-   * Busca os grupos existentes
-   * nos clientes já carregados
-   */
-  (state.cache.clientes || []).forEach(cliente => {
-
-    const grupo =
-      String(cliente.grupo || "")
-        .trim();
-
-    if(grupo){
-      grupos.add(grupo);
-    }
-
-  });
-
-
-  /*
-   * GERAL é uma regra da plataforma,
-   * portanto fica sempre disponível.
-   */
-  grupos.add("GERAL");
-
-
-  /*
-   * Ordena alfabeticamente
-   */
-  return Array.from(grupos)
-    .sort((a,b)=>
-      a.localeCompare(
-        b,
-        "pt-BR",
-        {sensitivity:"base"}
-      )
-    )
-    .map(grupo => ({
-      value:grupo,
-      label:grupo
-    }));
-
-}
-
-async function editarBeneficio(beneficioId){
-
-  /*
-   * Garante que os clientes estejam carregados
-   * para montar a lista oficial de grupos.
-   */
-  if(
-    !state.cache.clientes ||
-    !state.cache.clientes.length
-  ){
-
-    await loadClientes();
-
-  }
+function editarBeneficio(beneficioId){
 
   const id =
     String(beneficioId || "").trim();
@@ -5021,50 +4961,17 @@ async function editarBeneficio(beneficioId){
         flex:"1 1 720px"
       },
 
-{
-  key:"grupo",
-  label:"Grupo",
-  type:"select",
+      {
+        key:"grupo",
+        label:"Grupo",
+        w:"200px"
+      },
 
-  options:
-    obterGruposCadastrados(),
-
-  w:"260px"
-},
-
-{
-  key:"categoria",
-  label:"Categoria",
-  type:"select",
-  options:[
-    {value:"PRODUTO", label:"PRODUTO"},
-    {value:"SERVICO", label:"SERVIÇO"},
-    {value:"COMBUSTIVEL", label:"COMBUSTÍVEL"},
-    {value:"ALIMENTACAO", label:"ALIMENTAÇÃO"},
-    {value:"SAUDE", label:"SAÚDE"},
-    {value:"AUTOMOTIVO", label:"AUTOMOTIVO"},
-    {value:"OUTROS", label:"OUTROS"}
-  ],
-  w:"220px"
-},
-
-{
-  key:"forma_pagamento",
-  label:"Forma de Pagamento",
-  type:"select",
-  options:[
-    {value:"", label:"Não informado"},
-    {value:"TODAS", label:"Todas"},
-    {value:"DINHEIRO_PIX", label:"Dinheiro ou Pix"},
-    {value:"PIX", label:"Somente Pix"},
-    {value:"DINHEIRO", label:"Somente Dinheiro"},
-    {value:"DEBITO", label:"Débito"},
-    {value:"CREDITO", label:"Crédito"},
-    {value:"A_VISTA", label:"À vista"},
-    {value:"CONFORME_PARCEIRO", label:"Conforme condições do parceiro"}
-  ],
-  w:"260px"
-},
+      {
+        key:"categoria",
+        label:"Categoria",
+        w:"220px"
+      },
 
       {
         key:"ordem",
@@ -5962,17 +5869,7 @@ async function togglePromocao(
    EDITAR PROMOÇÃO
 ====================================================== */
 
-async function editarPromocao(promocaoId){
-
-  /*
-   * Carrega os grupos cadastrados
-   */
-  if(
-    !state.cache.clientes ||
-    !state.cache.clientes.length
-  ){
-    await loadClientes();
-  }
+function editarPromocao(promocaoId){
 
   const p =
     (state.cache.promocoes || [])
@@ -6053,16 +5950,10 @@ async function editarPromocao(promocaoId){
         type:"date"
       },
 
-    {
-  key:"grupo",
-  label:"Grupo",
-  type:"select",
-
-  options:
-    obterGruposCadastrados(),
-
-  w:"260px"
-},
+      {
+        key:"grupo",
+        label:"Grupo"
+      },
 
       {
         key:"categoria",
