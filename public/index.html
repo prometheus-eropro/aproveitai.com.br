@@ -428,10 +428,35 @@ function renderizar(lista) {
 
     `;
 
+ });
 
-    /* verifica se possui benefício/promoção */
+  /* ==========================================
+     APÓS CRIAR TODOS OS CARDS,
+     VERIFICA BENEFÍCIOS E PROMOÇÕES
+  ========================================== */
 
-    verificarConteudoParceiro(parceiroId);
+  lista.forEach(p => {
+
+    if (
+      String(p.ativo || "")
+        .trim()
+        .toLowerCase() !== "sim"
+    ) {
+      return;
+    }
+
+    const parceiroId =
+      String(
+        p.parceiro_id || ""
+      ).trim();
+
+    if (parceiroId) {
+
+      verificarConteudoParceiro(
+        parceiroId
+      );
+
+    }
 
   });
 
