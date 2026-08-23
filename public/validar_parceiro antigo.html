@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta name="theme-color" content="#0a7a2a">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-title" content="AproveitAI">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="apple-touch-icon" href="icon.192.png">
+
+<link rel="icon" href="favicon.ico">
+<meta charset="UTF-8">
+<title>Validação de Benefício | Parceiro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: Arial, sans-serif; background:#eaf6ff; padding:20px; }
+  .container { max-width:420px; margin:auto; background:#fff; padding:20px; border-radius:10px; }
+  h2 { color:#0a7a3c; text-align:center; }
+  label { display:block; margin-top:15px; font-weight:600; }
+  input, button { width:100%; padding:10px; margin-top:5px; box-sizing:border-box; }
+  button { background:#0a7a3c; color:#fff; border:none; border-radius:6px; margin-top:20px; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:not-allowed; }
+  .msg { margin-top:15px; font-weight:bold; text-align:center; min-height:20px; }
+  .site-header { background:white; padding:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  .brandline { display:flex; align-items:center; justify-content:space-between; gap:15px; flex-wrap:wrap; }
+  .logo { max-height:180px; height:auto; width:auto; object-fit:contain; }
+  .brand-center { flex:1; text-align:center; }
+  .site-title { font-size:36px; color:#0a7a2a; text-shadow:1px 1px 3px rgba(0,0,0,0.3); font-weight:bold; margin:0; }
+  .slogan { font-size:16px; font-style:italic; margin:6px 0 5px; color:#555; }
+  .boas-vindas { background:#dfffe0; padding:12px 15px; border-radius:8px; margin-top:10px; font-size:18px; line-height:1.5; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  .footer { background:#dfffe0; color:#222; padding:10px; font-size:13px; border-top:3px solid white; text-align:center; }
+body {
+  margin: 0;
+  padding: 0;
+  background: #eaf6ff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+</style>
+<script src="js/config.js"></script>
+
+<script src="js/include.js" defer></script>
+</head>
+
+<body>
+<header class="site-header">
+  <div class="brandline">
+    <img src="logo-prometheus.png" class="logo logo-prometheus" alt="Prometheus">
+    <div class="brand-center">
+      <h1 class="site-title">Plataforma AproveitAI</h1>
+      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
+      <p class="boas-vindas">
+        🏪 <strong>VALIDADOR QR CODE PARCEIRO</strong><br>
+        Valide o QR CODE do parceiro, seu cartão estando ativo você receberá o código de autorização do benefício.
+      </p>
+    </div>
+    <img src="logo-aproveitai.png" class="logo logo-aproveitai" alt="Aproveitai">
+  </div>
+</header>
+
+<div style="background:#fff3cd;color:#856404;padding:8px;text-align:center;font-size:13px;">
+  ⚠️ Descontos sujeitos à validação no sistema e às regras do parceiro.
+</div>
+
+<div class="container">
+  <h2>Validação de Benefício</h2>
+
+<div id="versaoSistema"
+     style="
+       color:red;
+       font-size:18px;
+       font-weight:bold;
+       margin-bottom:10px;
+     ">
+  VERSÃO 20250624-006
+</div>
+  <label>CPF do Cliente</label>
+  <input id="cpf" placeholder="Somente números" inputmode="numeric">
+  <label>Data de nascimento do Cliente</label>
+  <input
+  id="nascimento"
+  type="text"
+  placeholder="DD/MM/AAAA"
+  maxlength="10"
+>
+
+  
+<button
+ id="btnValidar"
+ onclick="validar()">
+ Validar
+</button>
+
+<div id="msg"
+style="
+display:none;
+margin-top:15px;
+padding:12px;
+background:#fff4f4;
+border:2px solid #d60000;
+border-radius:8px;
+font-weight:bold;
+color:#b00000;
+text-align:center;">
+</div>
+
+<div style="margin-top:12px;font-size:14px;color:#333;text-align:left">
+  <div style="
+  margin-top:12px;
+  background:#f0fdf4;
+  padding:12px;
+  border-left:5px solid #0a7a3c;
+  font-size:16px;
+  text-align:center;
+">
+
+  <div style="
+      font-weight:bold;
+      margin-bottom:10px;
+      font-size:18px;
+  ">
+      🏪 Parceiro
+  </div>
+
+  <img
+      id="logoParceiro"
+      style="
+         max-width:220px;
+         max-height:120px;
+         display:none;
+         margin:auto;
+      ">
+
+  <div id="nomeParceiro"
+       style="
+          margin-top:10px;
+          font-weight:700;
+          font-size:22px;
+       ">
+  </div>
+
+</div>
+
+  
+</div>
+<br>
+  <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
+
+<strong>CPF:</strong> <span id="cpfCliente"></span><br>
+
+<strong>Celular:</strong> <span id="celularCliente"></span><br>
+
+<strong>ID Público:</strong> <span id="idPublicoCliente"></span><br>
+
+<strong>Grupo:</strong> <span id="grupoCliente"></span><br>
+
+<strong>Cidade:</strong> <span id="cidadeCliente"></span><br>
+
+<strong>Status:</strong> <span id="statusCliente"></span><br>
+
+<strong>Validade:</strong> <span id="validadeCliente"></span><br>
+  
+</div>
+
+    <div id="timer" style="
+      margin-top:10px;
+      font-size:16px;
+      color:#b91c1c;
+      font-weight:bold;
+    "></div>
+<div id="blocoBeneficio" style="display:none;margin-top:15px;">
+  <label><strong>Benefício / Promoção Aplicado</strong></label>
+
+  <select id="beneficioSelecionado"
+onchange="beneficioSelecionado()"
+style="width:100%;padding:10px;margin-top:5px;">
+</select>
+</div>
+
+<div id="blocoVeiculo" style="display:none">
+  <label>Selecione o veículo</label>
+  <select id="selectVeiculo"
+onchange="veiculoSelecionado()"
+style="width:100%;padding:10px;margin-top:5px;">
+</select>
+</div>
+
+<div id="blocoGerarERO" style="display:none;">
+
+   <button id="btnGerarERO"
+           onclick="gerarERO()"
+           class="btn-verde">
+      Gerar Código ERO
+   </button>
+</div>
+<div id="blocoCodigo"
+     style="display:none; margin-top:20px;"
+     class="msg">
+  <div style="
+    background:#d4edda;
+    border:2px solid #198754;
+    border-radius:10px;
+    padding:15px;
+  ">
+    <div style="
+  font-size:26px;
+  font-weight:800;
+  color:#0a7a3c;
+  background:#e6fff0;
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+">
+🔐 CÓDIGO DE AUTORIZAÇÃO
+
+<div id="codigoERO"
+     style="font-size:38px;
+            font-weight:900;
+            margin-top:10px;">
+</div>
+
+
+<button
+ id="btnConfirmar"
+ onclick="confirmarDesconto()"
+ style="display:none">
+  ✅ Confirmar desconto concedido
+</button>
+
+    <div style="font-size:13px;margin-top:8px;color:#444">
+      Apresente este código ao parceiro antes do tempo acabar.
+      
+    </div>
+  </div>
+</div>
+
+  
+</div>
+
+
+<script>
+
+/* =============================
+   CONFIGURAÇÃO
+============================= */
+let cronometroERO = null;
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzHJgHVFPc7jM47MenTIxTD3hPiMJUPjIdeknpU_3GOP3WmV1ubCbaJ7m1jrSU2M4Fksg/exec";
+
+let intervaloCronometro = null;
+
+const params = new URLSearchParams(window.location.search);
+const parceiroId =
+  params.get("p") ||
+  params.get("parceiro_id") ||
+  params.get("parceiro");
+
+console.log("URL:", window.location.href);
+console.log("SEARCH:", window.location.search);
+console.log("PARCEIRO:", parceiroId);
+
+if (!parceiroId) {
+    alert("Parceiro não encontrado.\nURL: " + window.location.href);
+}
+
+const clienteId =
+params.get("idPublico") ||
+params.get("id") ||
+params.get("cliente");
+
+const elMsg = document.getElementById("msg");
+const elBtn = document.getElementById("btnValidar");
+
+/* ==========================================
+   CARREGA DADOS DO PARCEIRO DO QR
+========================================== */
+
+/* ==========================================
+   CARREGA PARCEIRO IDENTIFICADO PELO QR
+   VIA JSONP
+========================================== */
+
+function carregarParceiroQR() {
+
+  if (!parceiroId) {
+
+    mostrarMsg(
+      "❌ Parceiro não identificado no QR Code."
+    );
+
+    return;
+  }
+
+  console.log(
+    "CARREGANDO PARCEIRO DO QR:",
+    parceiroId
+  );
+
+
+  const callback =
+    "cbParceiroQR_" +
+    Date.now();
+
+
+  const script =
+    document.createElement("script");
+
+
+  window[callback] =
+    function(resp) {
+
+      console.log(
+        "RETORNO PARCEIRO QR:",
+        resp
+      );
+
+      try {
+
+        if (
+          !resp ||
+          resp.ok !== true
+        ) {
+
+          throw new Error(
+            "Parceiro não encontrado"
+          );
+
+        }
+
+
+        /* =========================
+           NOME DO PARCEIRO
+        ========================= */
+
+        const nome =
+          resp.nomeFantasia ||
+          resp.nome ||
+          parceiroId;
+
+
+        const elNome =
+          document.getElementById(
+            "nomeParceiro"
+          );
+
+
+        if (elNome) {
+
+          elNome.innerText =
+            nome;
+
+        }
+
+
+        /* =========================
+           LOGO DO PARCEIRO
+        ========================= */
+
+        const img =
+          document.getElementById(
+            "logoParceiro"
+          );
+
+
+        const logo =
+          String(
+            resp.logoURL ||
+            resp.logo ||
+            ""
+          ).trim();
+
+
+        if (
+          img &&
+          logo
+        ) {
+
+          let urlLogo =
+            logo;
+
+          let fileId =
+            "";
+
+
+          /* tenta localizar ID do Drive */
+
+          const match =
+            urlLogo.match(
+              /\/d\/([a-zA-Z0-9_-]+)/
+            );
+
+
+          if (
+            match &&
+            match[1]
+          ) {
+
+            fileId =
+              match[1];
+
+          }
+
+
+          if (!fileId) {
+
+            try {
+
+              const u =
+                new URL(
+                  urlLogo
+                );
+
+              fileId =
+                u.searchParams.get("id") ||
+                "";
+
+            } catch(e) {}
+
+          }
+
+
+          /* se for arquivo Drive */
+
+          if (fileId) {
+
+            urlLogo =
+              "https://drive.google.com/thumbnail?id=" +
+              encodeURIComponent(fileId) +
+              "&sz=w500";
+
+          }
+
+
+          img.onload =
+            function() {
+
+              this.style.display =
+                "block";
+
+            };
+
+
+          img.onerror =
+            function() {
+
+              console.log(
+                "ERRO LOGO PARCEIRO:",
+                urlLogo
+              );
+
+              this.style.display =
+                "none";
+
+            };
+
+
+          img.src =
+            urlLogo;
+
+        }
+
+
+        console.log(
+          "PARCEIRO QR IDENTIFICADO:",
+          nome
+        );
+
+
+      } catch(erro) {
+
+        console.error(
+          "ERRO PARCEIRO QR:",
+          erro
+        );
+
+        mostrarMsg(
+          "❌ Não foi possível identificar o parceiro deste QR Code."
+        );
+
+      }
+
+
+      /* =========================
+         LIMPEZA JSONP
+      ========================= */
+
+      delete window[callback];
+
+
+      if (script.parentNode) {
+
+        script.parentNode.removeChild(
+          script
+        );
+
+      }
+
+    };
+
+
+  /* ==========================================
+     ERRO NA CHAMADA JSONP
+  ========================================== */
+
+  script.onerror =
+    function() {
+
+      console.error(
+        "ERRO JSONP PARCEIRO QR"
+      );
+
+      mostrarMsg(
+        "❌ Erro ao consultar o parceiro."
+      );
+
+
+      delete window[callback];
+
+
+      if (script.parentNode) {
+
+        script.parentNode.removeChild(
+          script
+        );
+
+      }
+
+    };
+
+
+  /* ==========================================
+     CONSULTA CORE
+  ========================================== */
+
+script.src =
+  GAS_URL +
+  "?callback=" +
+  encodeURIComponent(callback) +
+  "&acao=dadosEmpresa" +
+  "&parceiro_id=" +
+  encodeURIComponent(parceiroId) +
+  "&_=" +
+  Date.now();
+
+console.log(
+  "URL DADOS EMPRESA:",
+  script.src
+);
+
+
+  document.body.appendChild(
+    script
+  );
+
+}
+
+/* =============================
+   UTILIDADES
+============================= */
+function mostrarMsg(msg){
+
+    const el = document.getElementById("msg");
+
+    if(!el) return;
+
+    el.style.display = "block";
+
+    el.innerHTML = msg;
+
+    el.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+    });
+
+}
+
+function somenteNumeros(v) {
+  return String(v || "").replace(/\D/g, "");
+}
+
+/* =============================
+   VALIDAÇÃO
+============================= */
+function validar() {
+
+if (clienteId) {
+
+   // fluxo QR Cliente
+
+} else {
+
+   // fluxo atual (CPF + nascimento)
+
+}
+
+  document.getElementById("blocoBeneficio").style.display = "none";
+  document.getElementById("blocoVeiculo").style.display = "none";
+  document.getElementById("blocoGerarERO").style.display = "none";
+
+  document.getElementById("beneficioSelecionado").innerHTML = "";
+
+  document.getElementById("btnConfirmar").style.display = "none";
+  document.getElementById("btnGerarERO").style.display = "none";
+
+  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
+const nascimento = document.getElementById("nascimento").value;
+
+if (cpf.length !== 11) {
+  mostrarMsg("⚠️ CPF inválido");
+  return;
+}
+
+if (!nascimento) {
+  mostrarMsg("⚠️ Informe a data de nascimento");
+  return;
+}
+
+  if (!parceiroId) {
+    mostrarMsg("❌ QR Code inválido");
+    return;
+  }
+
+  mostrarMsg("⏳ Validando benefício...");
+
+const old = document.getElementById("jsonpReq");
+if(old) old.remove();
+
+document.getElementById("msg").style.display="none";
+document.getElementById("msg").innerHTML="";
+
+const script = document.createElement("script");
+script.id = "jsonpReq";
+script.src =
+  GAS_URL +
+  "?callback=retornoValidacao" +
+  "&acao=validarParceiro" +
+  "&cpf=" + encodeURIComponent(cpf) +
+"&nascimento=" + encodeURIComponent(nascimento) +
+"&p=" + encodeURIComponent(parceiroId);
+document.body.appendChild(script);
+}
+
+
+// =============================
+// CONTROLE DO CRONÔMETRO
+// =============================
+function retornoValidacao(resp) {
+
+
+  console.log("RETORNO GAS:", resp);
+
+if(!resp){
+
+    mostrarMsg("Sem resposta do servidor.");
+
+    return;
+
+}
+
+if(resp.ok !== true){
+
+    mostrarMsg(resp.mensagem);
+
+    return;
+
+}
+
+  console.log("CELULAR:", resp.celular);
+  console.log("LOGO:", resp.logoURL);
+
+document.getElementById("blocoCodigo")
+.style.display = "none";
+
+  if (!resp || resp.ok !== true) {
+
+    const msg =
+        resp?.mensagem ||
+        "❌ Cliente não encontrado.";
+
+    mostrarMsg(msg);
+
+    document.getElementById("btnValidar").disabled = false;
+
+    return;
+}
+
+document.getElementById("btnValidar").disabled = true;
+
+  // ===== VEÍCULO =====
+if (resp.exige_placa) {
+
+    // Cliente não possui veículo cadastrado
+    if (!resp.placa) {
+
+        mostrarMsg(
+          "⚠️ <b>Este parceiro exige a identificação do veículo.</b><br><br>" +
+          "Nenhum veículo está cadastrado para este cliente.<br><br>" +
+          "Solicite o cadastro do veículo antes de conceder o benefício."
+        );
+
+        document.getElementById("blocoVeiculo").style.display = "none";
+        document.getElementById("blocoGerarERO").style.display = "none";
+
+        return;
+    }
+
+    const select = document.getElementById("selectVeiculo");
+    select.innerHTML = "";
+
+    const op1 = document.createElement("option");
+    op1.value = `${resp.placa}|${resp.modelo}`;
+    op1.text = `${resp.placa} - ${resp.modelo}`;
+    select.appendChild(op1);
+
+    if (resp.placa2) {
+
+        const op2 = document.createElement("option");
+        op2.value = `${resp.placa2}|${resp.modelo2}`;
+        op2.text = `${resp.placa2} - ${resp.modelo2}`;
+        select.appendChild(op2);
+
+    }
+
+    document.getElementById("blocoVeiculo").style.display = "block";
+
+} else {
+
+    document.getElementById("blocoVeiculo").style.display = "none";
+
+}
+  // ===== CÓDIGO ERO =====
+
+  document.getElementById("btnConfirmar").style.display = "none";
+  document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
+
+const img = document.getElementById("logoParceiro");
+
+if (resp.logoURL) {
+
+    let urlLogo = String(resp.logoURL).trim();
+
+    console.log("LOGO RECEBIDA:", urlLogo);
+
+    let fileId = "";
+
+    // Formato:
+    // https://drive.google.com/file/d/ID/view
+    let match = urlLogo.match(/\/d\/([a-zA-Z0-9_-]+)/);
+
+    if (match && match[1]) {
+        fileId = match[1];
+    }
+
+    // Formato:
+    // https://drive.google.com/uc?export=view&id=ID
+    if (!fileId) {
+
+        try {
+
+            const u = new URL(urlLogo);
+
+            fileId = u.searchParams.get("id") || "";
+
+        } catch (e) {
+
+            console.log("Erro lendo URL da logo:", e);
+
+        }
+    }
+
+    // Se encontrou ID do Drive,
+    // usa endpoint de visualização direta
+    if (fileId) {
+
+        urlLogo =
+            "https://drive.google.com/thumbnail?id=" +
+            encodeURIComponent(fileId) +
+            "&sz=w500";
+
+    }
+
+    console.log("LOGO FINAL:", urlLogo);
+
+    img.onload = function () {
+
+        console.log("LOGO DO PARCEIRO CARREGADA");
+
+        this.style.display = "block";
+
+    };
+
+    img.onerror = function () {
+
+        console.log("ERRO AO CARREGAR LOGO:", urlLogo);
+
+        // Não coloca a logo AproveitAI no lugar.
+        // Assim sabemos se realmente houve falha.
+        this.style.display = "none";
+
+    };
+
+    img.src = urlLogo;
+
+} else {
+
+    console.log("PARCEIRO SEM LOGO CADASTRADA");
+
+    img.style.display = "none";
+
+}
+
+document.getElementById("nomeCliente").innerText =
+resp.nomeCliente || "";
+
+document.getElementById("cpfCliente").innerText =
+resp.cpf || "";
+
+window.cpfCliente = resp.cpf;
+window.idPublicoCliente = resp.idPublico;
+window.grupoCliente = resp.grupo;
+
+document.getElementById("celularCliente").innerText =
+resp.celular || "";
+
+document.getElementById("idPublicoCliente").innerText =
+resp.idPublico || "";
+
+document.getElementById("grupoCliente").innerText =
+resp.grupo || "";
+
+document.getElementById("cidadeCliente").innerText =
+resp.cidade || "";
+
+document.getElementById("statusCliente").innerText =
+resp.statusCliente || "";
+
+document.getElementById("validadeCliente").innerText =
+resp.validade || "";
+
+window.dadosValidacao = resp;
+window.exigePlaca = resp.exige_placa === true;
+
+console.log(resp.logoURL);
+
+carregarBeneficios(
+    parceiroId,
+    resp.grupo,
+    resp.cpf,
+    resp.idPublico
+);
+
+document.getElementById("blocoBeneficio")
+.style.display = "block";
+
+
+
+document.getElementById("blocoGerarERO")
+.style.display = "block";
+
+document.getElementById("btnGerarERO")
+.style.display = "block";
+
+window.ultimoCelularCliente = resp.celular || "";
+
+}
+function confirmarDesconto() {
+
+const beneficio =
+document.getElementById("beneficioSelecionado").value;
+
+const codigoERO =
+document.getElementById("codigoERO").innerText;
+
+if (!beneficio) {
+mostrarMsg("Selecione um benefício");
+return;
+}
+
+let placa = "";
+let modelo = "";
+
+const selectVeiculo =
+document.getElementById("selectVeiculo");
+
+if (selectVeiculo && selectVeiculo.value) {
+
+  const [p,m] =
+    selectVeiculo.value.split("|");
+
+  placa = p;
+  modelo = m;
+
+}
+
+document.getElementById("btnConfirmar")
+.disabled = true;
+
+mostrarMsg("⏳ Confirmando desconto...");
+
+const script =
+document.createElement("script");
+
+script.src =
+GAS_URL +
+"?callback=retornoConfirmacao" +
+"&acao=confirmarERO" +
+"&codigoERO=" +
+encodeURIComponent(codigoERO) +
+"&parceiro_id=" +
+encodeURIComponent(parceiroId) +
+"&beneficio=" +
+encodeURIComponent(beneficio) +
+"&placa=" +
+encodeURIComponent(placa) +
+"&modelo=" +
+encodeURIComponent(modelo) +
+"&canal=SITE" +
+"&origem=QR-PARCEIRO";
+
+document.body.appendChild(script);
+}
+
+function retornoConfirmacao(resp) {
+
+   console.log("CONFIRMACAO RECEBIDA");
+  console.log(resp);
+
+  console.log("RETORNO CONFIRMAÇÃO:", resp);
+
+  document.getElementById("btnConfirmar").style.display = "none";
+
+  document.getElementById("beneficioSelecionado").disabled = true;
+
+  const sv = document.getElementById("selectVeiculo");
+
+  if (sv) {
+    sv.disabled = true;
+  }
+
+  if (!resp || resp.ok !== true) {
+    mostrarMsg(resp?.msg || "❌ Erro ao confirmar desconto");
+    
+pararCronometro();
+
+document.getElementById("timer").innerHTML =
+"✅ Benefício confirmado";
+    return;
+  }
+
+  pararCronometro();
+
+  document.getElementById("blocoCodigo").innerHTML = `
+    <div style="
+      background:#dfffe0;
+      border:3px solid #0a7a3c;
+      padding:20px;
+      border-radius:10px;
+      text-align:center;
+    ">
+      <div style="
+        font-size:26px;
+        font-weight:bold;
+        color:#0a7a3c;
+        margin-bottom:10px;
+      ">
+        ✅ BENEFÍCIO CONFIRMADO
+      </div>
+
+      <div style="font-size:18px">
+        Seu desconto foi registrado com sucesso.
+      </div>
+
+      <br>
+
+      <div>
+        Código: <b>${resp.codigo}</b>
+      </div>
+
+      <br>
+
+      <div style="color:#666">
+        Esta tela será encerrada automaticamente em 30 segundos.
+      </div>
+    </div>
+  `;
+
+  mostrarMsg("🎉 Obrigado por utilizar a Plataforma AproveitAI.");
+
+  setTimeout(() => {
+    location.reload();
+  }, 30000);
+
+}
+
+function iniciarCronometro(validoAteISO) {
+
+  const fim = new Date(validoAteISO).getTime();
+
+  cronometroERO = setInterval(() => {
+
+    const agora = Date.now();
+
+    const diff = fim - agora;
+
+    if (diff <= 0) {
+
+      clearInterval(cronometroERO);
+
+      document.getElementById("timer").innerText =
+        "⏰ Código expirado";
+
+      document.getElementById("btnConfirmar")
+        .style.display = "none";
+
+      setTimeout(() => {
+
+        location.reload();
+
+      }, 10000);
+
+      return;
+
+    }
+
+    const min = Math.floor(diff / 60000);
+
+    const seg = Math.floor(
+      (diff % 60000) / 1000
+    );
+
+    document.getElementById("timer").innerText =
+      `⏳ Tempo restante: ${min}m ${seg}s`;
+
+  }, 1000);
+
+}
+function pararCronometro() {
+
+  if (cronometroERO) {
+
+    clearInterval(cronometroERO);
+
+    cronometroERO = null;
+
+  }
+
+}
+</script>
+<script>
+const nasc = document.getElementById("nascimento");
+
+nasc.addEventListener("input", function() {
+
+  let v = this.value.replace(/\D/g,'');
+
+  if(v.length > 2)
+    v = v.substring(0,2) + '/' + v.substring(2);
+
+  if(v.length > 5)
+    v = v.substring(0,5) + '/' + v.substring(5);
+
+  this.value = v.substring(0,10);
+
+});
+
+
+function carregarBeneficios(parceiroId, grupo, cpf, idPublico){
+
+    const antigo =
+        document.getElementById("jsonpBeneficios");
+
+    if(antigo) antigo.remove();
+
+    const script =
+        document.createElement("script");
+
+    script.id = "jsonpBeneficios";
+
+    script.src =
+        GAS_URL +
+        "?callback=retornoBeneficios" +
+        "&acao=listarBeneficiosCliente" +
+        "&parceiro_id=" + encodeURIComponent(parceiroId) +
+        "&grupo=" + encodeURIComponent(grupo) +
+        "&cpf=" + encodeURIComponent(cpf) +
+        "&idPublico=" + encodeURIComponent(idPublico);
+
+    document.body.appendChild(script);
+
+}
+
+function beneficioSelecionado(){
+
+   const beneficio =
+   document.getElementById(
+      "beneficioSelecionado"
+   ).value;
+
+   if(!beneficio) return;
+
+   if(window.exigePlaca){
+
+      document.getElementById(
+         "blocoVeiculo"
+      ).style.display = "block";
+
+      document.getElementById(
+         "blocoGerarERO"
+      ).style.display = "block";
+
+      document.getElementById(
+         "btnGerarERO"
+      ).style.display = "block";
+
+   } else {
+
+      document.getElementById(
+         "blocoGerarERO"
+      ).style.display = "block";
+
+      document.getElementById(
+         "btnGerarERO"
+      ).style.display = "block";
+   }
+}
+
+function veiculoSelecionado(){
+
+   document.getElementById(
+      "blocoGerarERO"
+   ).style.display = "block";
+
+   document.getElementById(
+      "btnGerarERO"
+   ).style.display = "block";
+}
+
+function gerarERO() {
+
+  const beneficio =
+    document.getElementById("beneficioSelecionado").value;
+
+  if (!beneficio) {
+    mostrarMsg("Selecione um benefício");
+    return;
+  }
+
+  const cpf =
+    window.cpfCliente ||
+    document.getElementById("cpf").value.replace(/\D/g,"");
+
+  console.log("CPF:", cpf);
+  console.log("Parceiro:", parceiroId);
+  console.log("Benefício:", beneficio);
+
+  const url =
+    GAS_URL +
+    "?callback=retornoGeracaoERO" +
+    "&acao=gerarERO" +
+    "&cpf=" + encodeURIComponent(cpf) +
+    "&parceiro_id=" + encodeURIComponent(parceiroId);
+
+  console.log("URL GERAR ERO:");
+  console.log(url);
+
+  const script = document.createElement("script");
+
+  script.src = url;
+
+  script.onerror = function(){
+      console.log("ERRO AO CHAMAR O GAS");
+  };
+
+  document.body.appendChild(script);
+
+}
+
+function retornoBeneficios(resp){
+
+    console.log(resp);
+
+    if(!resp || !resp.ok){
+
+        mostrarMsg("Nenhum benefício encontrado.");
+
+        return;
+
+    }
+
+    const select =
+        document.getElementById("beneficioSelecionado");
+
+    select.innerHTML = "";
+
+    const op =
+        document.createElement("option");
+
+    op.value="";
+
+    op.text="Selecione o benefício...";
+
+    select.appendChild(op);
+
+    resp.itens.forEach(function(item){
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+    JSON.stringify({
+        tipo: item.tipo,
+        titulo: item.titulo,
+        descricao: item.descricao,
+        parceiro_id: item.parceiro_id
+    });
+
+        option.text =
+    "[" + item.tipo + "] " +
+    item.titulo +
+    " - " +
+    item.descricao;
+
+        select.appendChild(option);
+
+    });
+
+    document.getElementById("blocoBeneficio").style.display="block";
+
+}
+
+function retornoGeracaoERO(resp){
+
+   console.log("RETORNO GERAR ERO:");
+   console.log(resp);
+
+   if(!resp || !resp.ok){
+
+      mostrarMsg("Erro ao gerar código");
+      return;
+
+   }
+
+ window.codigoERO =
+ resp.codigo;
+
+ document.getElementById("codigoERO")
+ .innerText =
+ resp.codigo;
+
+ document.getElementById("blocoCodigo")
+ .style.display = "block";
+
+ document.getElementById("btnConfirmar")
+ .style.display = "block";
+
+ document.getElementById("btnGerarERO")
+ .style.display = "none";
+
+ iniciarCronometro(
+   resp.validoAte
+ );
+
+}
+
+</script>
+<footer class="footer">
+  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
+  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
+  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
+<div
+style="
+font-size:11px;
+color:#777;
+text-align:center;
+margin-top:8px;">
+Versão
+<span id="versaoRodape"></span>
+</div>
+</footer>
+
+
+<script>
+/*
+if ('serviceWorker' in navigator){
+
+window.addEventListener('load',()=>{
+
+navigator.serviceWorker.register('/sw.js');
+
+});
+
+}
+*/
+document.addEventListener("DOMContentLoaded",function(){
+
+    console.log("Página pronta");
+
+});
+
+</script>
+
+<script>
+
+window.addEventListener(
+  "load",
+  function() {
+
+    carregarParceiroQR();
+
+  }
+);
+
+</script>
+
+</body>
+</html>

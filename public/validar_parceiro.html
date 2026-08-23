@@ -64,7 +64,7 @@ body {
       <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
       <p class="boas-vindas">
         🏪 <strong>VALIDADOR QR CODE PARCEIRO</strong><br>
-        Valide o QR CODE do parceiro, seu cartão estando ativo você receberá o código de autorização do benefício.
+        Informe seus dados para validar seu cartão neste parceiro. Estando ativo e autorizado, será gerado o Código ERO para confirmação do benefício.
       </p>
     </div>
     <img src="logo-aproveitai.png" class="logo logo-aproveitai" alt="Aproveitai">
@@ -85,7 +85,7 @@ body {
        font-weight:bold;
        margin-bottom:10px;
      ">
-  VERSÃO 20250624-006
+  VERSÃO 20260823-004-FETCH
 </div>
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
@@ -224,7 +224,7 @@ style="width:100%;padding:10px;margin-top:5px;">
   border-radius:8px;
   text-align:center;
 ">
-🔐 CÓDIGO DE AUTORIZAÇÃO
+🔐 CÓDIGO ERO
 
 <div id="codigoERO"
      style="font-size:38px;
@@ -293,278 +293,156 @@ const elBtn = document.getElementById("btnValidar");
    VIA JSONP
 ========================================== */
 
-function carregarParceiroQR() {
+async function carregarParceiroQR() {
 
   if (!parceiroId) {
-
-    mostrarMsg(
-      "❌ Parceiro não identificado no QR Code."
-    );
-
+    mostrarMsg("❌ Parceiro não identificado no QR Code.");
     return;
   }
 
-  console.log(
-    "CARREGANDO PARCEIRO DO QR:",
-    parceiroId
-  );
+  console.log("CARREGANDO PARCEIRO DO QR:", parceiroId);
 
-
-  const callback =
-    "cbParceiroQR_" +
+  const url =
+    GAS_URL +
+    "?acao=dadosEmpresa" +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId) +
+    "&_=" +
     Date.now();
 
+  console.log("URL DADOS EMPRESA:", url);
 
-  const script =
-    document.createElement("script");
+  try {
 
+    const resposta = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
 
-  window[callback] =
-    function(resp) {
+    if (!resposta.ok) {
+      throw new Error("HTTP " + resposta.status);
+    }
 
-      console.log(
-        "RETORNO PARCEIRO QR:",
-        resp
+    const texto = await resposta.text();
+
+    console.log("RETORNO BRUTO PARCEIRO QR:", texto);
+
+    let textoLimpo = String(texto || "").trim();
+
+    const inicioJSON = textoLimpo.indexOf("{");
+    const fimJSON = textoLimpo.lastIndexOf("}");
+
+    if (
+      inicioJSON === -1 ||
+      fimJSON === -1 ||
+      fimJSON < inicioJSON
+    ) {
+      throw new Error("Resposta inválida do CORE.");
+    }
+
+    textoLimpo = textoLimpo.substring(
+      inicioJSON,
+      fimJSON + 1
+    );
+
+    const resp = JSON.parse(textoLimpo);
+
+    console.log("RETORNO PARCEIRO QR:", resp);
+
+    if (!resp || resp.ok !== true) {
+      throw new Error(
+        resp?.mensagem ||
+        resp?.msg ||
+        "Parceiro não encontrado."
       );
-
-      try {
-
-        if (
-          !resp ||
-          resp.ok !== true
-        ) {
-
-          throw new Error(
-            "Parceiro não encontrado"
-          );
-
-        }
-
-
-        /* =========================
-           NOME DO PARCEIRO
-        ========================= */
-
-        const nome =
-          resp.nomeFantasia ||
-          resp.nome ||
-          parceiroId;
-
-
-        const elNome =
-          document.getElementById(
-            "nomeParceiro"
-          );
-
-
-        if (elNome) {
-
-          elNome.innerText =
-            nome;
-
-        }
-
-
-        /* =========================
-           LOGO DO PARCEIRO
-        ========================= */
-
-        const img =
-          document.getElementById(
-            "logoParceiro"
-          );
-
-
-        const logo =
-          String(
-            resp.logoURL ||
-            resp.logo ||
-            ""
-          ).trim();
-
-
-        if (
-          img &&
-          logo
-        ) {
-
-          let urlLogo =
-            logo;
-
-          let fileId =
-            "";
-
-
-          /* tenta localizar ID do Drive */
-
-          const match =
-            urlLogo.match(
-              /\/d\/([a-zA-Z0-9_-]+)/
-            );
-
-
-          if (
-            match &&
-            match[1]
-          ) {
-
-            fileId =
-              match[1];
-
-          }
-
-
-          if (!fileId) {
-
-            try {
-
-              const u =
-                new URL(
-                  urlLogo
-                );
-
-              fileId =
-                u.searchParams.get("id") ||
-                "";
-
-            } catch(e) {}
-
-          }
-
-
-          /* se for arquivo Drive */
-
-          if (fileId) {
-
-            urlLogo =
-              "https://drive.google.com/thumbnail?id=" +
-              encodeURIComponent(fileId) +
-              "&sz=w500";
-
-          }
-
-
-          img.onload =
-            function() {
-
-              this.style.display =
-                "block";
-
-            };
-
-
-          img.onerror =
-            function() {
-
-              console.log(
-                "ERRO LOGO PARCEIRO:",
-                urlLogo
-              );
-
-              this.style.display =
-                "none";
-
-            };
-
-
-          img.src =
-            urlLogo;
-
-        }
-
-
-        console.log(
-          "PARCEIRO QR IDENTIFICADO:",
-          nome
-        );
-
-
-      } catch(erro) {
-
-        console.error(
-          "ERRO PARCEIRO QR:",
-          erro
-        );
-
-        mostrarMsg(
-          "❌ Não foi possível identificar o parceiro deste QR Code."
-        );
-
-      }
-
-
-      /* =========================
-         LIMPEZA JSONP
-      ========================= */
-
-      delete window[callback];
-
-
-      if (script.parentNode) {
-
-        script.parentNode.removeChild(
-          script
-        );
-
-      }
-
-    };
-
-
-  /* ==========================================
-     ERRO NA CHAMADA JSONP
-  ========================================== */
-
-  script.onerror =
-    function() {
-
-      console.error(
-        "ERRO JSONP PARCEIRO QR"
-      );
-
-      mostrarMsg(
-        "❌ Erro ao consultar o parceiro."
-      );
-
-
-      delete window[callback];
-
-
-      if (script.parentNode) {
-
-        script.parentNode.removeChild(
-          script
-        );
-
-      }
-
-    };
-
-
-  /* ==========================================
-     CONSULTA CORE
-  ========================================== */
-
-script.src =
-  GAS_URL +
-  "?callback=" +
-  encodeURIComponent(callback) +
-  "&acao=dadosEmpresa" +
-  "&parceiro_id=" +
-  encodeURIComponent(parceiroId) +
-  "&_=" +
-  Date.now();
-
-console.log(
-  "URL DADOS EMPRESA:",
-  script.src
-);
-
-
-  document.body.appendChild(
-    script
-  );
-
+    }
+
+    const nome =
+      resp.nomeFantasia ||
+      resp.nome ||
+      parceiroId;
+
+    const elNome =
+      document.getElementById("nomeParceiro");
+
+    if (elNome) {
+      elNome.innerText = nome;
+    }
+
+    carregarLogoParceiro(
+      resp.logoURL ||
+      resp.logo ||
+      ""
+    );
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO CARREGAR PARCEIRO QR:",
+      erro
+    );
+
+    mostrarMsg(
+      "❌ Não foi possível identificar o parceiro deste QR Code."
+    );
+  }
+}
+
+function carregarLogoParceiro(logo) {
+
+  const img =
+    document.getElementById("logoParceiro");
+
+  if (!img) return;
+
+  let urlLogo =
+    String(logo || "").trim();
+
+  if (!urlLogo) {
+    img.style.display = "none";
+    return;
+  }
+
+  let fileId = "";
+
+  const match =
+    urlLogo.match(/\/d\/([a-zA-Z0-9_-]+)/);
+
+  if (match && match[1]) {
+    fileId = match[1];
+  }
+
+  if (!fileId) {
+    try {
+      const u = new URL(urlLogo);
+      fileId =
+        u.searchParams.get("id") || "";
+    } catch (e) {}
+  }
+
+  if (fileId) {
+    urlLogo =
+      "https://drive.google.com/thumbnail?id=" +
+      encodeURIComponent(fileId) +
+      "&sz=w500";
+  }
+
+  console.log("LOGO FINAL:", urlLogo);
+
+  img.onload = function () {
+    this.style.display = "block";
+  };
+
+  img.onerror = function () {
+    console.error(
+      "ERRO AO CARREGAR LOGO:",
+      urlLogo
+    );
+    this.style.display = "none";
+  };
+
+  img.src = urlLogo;
 }
 
 /* =============================
@@ -594,63 +472,126 @@ function somenteNumeros(v) {
 /* =============================
    VALIDAÇÃO
 ============================= */
-function validar() {
-
-if (clienteId) {
-
-   // fluxo QR Cliente
-
-} else {
-
-   // fluxo atual (CPF + nascimento)
-
-}
+async function validar() {
 
   document.getElementById("blocoBeneficio").style.display = "none";
   document.getElementById("blocoVeiculo").style.display = "none";
   document.getElementById("blocoGerarERO").style.display = "none";
-
   document.getElementById("beneficioSelecionado").innerHTML = "";
-
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("btnGerarERO").style.display = "none";
 
-  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
-const nascimento = document.getElementById("nascimento").value;
+  const cpf =
+    document.getElementById("cpf")
+      .value.replace(/\D/g, "");
 
-if (cpf.length !== 11) {
-  mostrarMsg("⚠️ CPF inválido");
-  return;
-}
+  const nascimento =
+    document.getElementById("nascimento")
+      .value.trim();
 
-if (!nascimento) {
-  mostrarMsg("⚠️ Informe a data de nascimento");
-  return;
-}
+  if (cpf.length !== 11) {
+    mostrarMsg("⚠️ CPF inválido.");
+    return;
+  }
+
+  if (!nascimento) {
+    mostrarMsg("⚠️ Informe a data de nascimento.");
+    return;
+  }
 
   if (!parceiroId) {
-    mostrarMsg("❌ QR Code inválido");
+    mostrarMsg("❌ QR Code inválido.");
     return;
+  }
+
+  const btn =
+    document.getElementById("btnValidar");
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = "Validando...";
   }
 
   mostrarMsg("⏳ Validando benefício...");
 
-const old = document.getElementById("jsonpReq");
-if(old) old.remove();
+  const url =
+    GAS_URL +
+    "?acao=validarParceiro" +
+    "&cpf=" +
+    encodeURIComponent(cpf) +
+    "&nascimento=" +
+    encodeURIComponent(nascimento) +
+    "&p=" +
+    encodeURIComponent(parceiroId) +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId) +
+    "&_=" +
+    Date.now();
 
-document.getElementById("msg").style.display="none";
-document.getElementById("msg").innerHTML="";
+  console.log("URL VALIDAÇÃO:", url);
 
-const script = document.createElement("script");
-script.id = "jsonpReq";
-script.src =
-  GAS_URL +
-  "?callback=retornoValidacao" +
-  "&acao=validarParceiro" +
-  "&cpf=" + encodeURIComponent(cpf) +
-"&nascimento=" + encodeURIComponent(nascimento) +
-"&p=" + encodeURIComponent(parceiroId);
-document.body.appendChild(script);
+  try {
+
+    const resposta = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!resposta.ok) {
+      throw new Error("HTTP " + resposta.status);
+    }
+
+    const texto = await resposta.text();
+
+    console.log("RETORNO BRUTO VALIDAÇÃO:", texto);
+
+    let textoLimpo =
+      String(texto || "").trim();
+
+    const inicioJSON =
+      textoLimpo.indexOf("{");
+
+    const fimJSON =
+      textoLimpo.lastIndexOf("}");
+
+    if (
+      inicioJSON === -1 ||
+      fimJSON === -1 ||
+      fimJSON < inicioJSON
+    ) {
+      throw new Error(
+        "Resposta inválida do CORE."
+      );
+    }
+
+    textoLimpo =
+      textoLimpo.substring(
+        inicioJSON,
+        fimJSON + 1
+      );
+
+    const resp =
+      JSON.parse(textoLimpo);
+
+    retornoValidacao(resp);
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO VALIDAÇÃO:",
+      erro
+    );
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "Validar";
+    }
+
+    mostrarMsg(
+      "❌ Não foi possível consultar o cliente."
+    );
+  }
 }
 
 
@@ -703,7 +644,10 @@ document.getElementById("btnValidar").disabled = true;
 if (resp.exige_placa) {
 
     // Cliente não possui veículo cadastrado
-    if (!resp.placa) {
+    const placaPrincipal = resp.placa1 || resp.placa || "";
+    const modeloPrincipal = resp.modelo1 || resp.modelo || "";
+
+    if (!placaPrincipal) {
 
         mostrarMsg(
           "⚠️ <b>Este parceiro exige a identificação do veículo.</b><br><br>" +
@@ -721,8 +665,8 @@ if (resp.exige_placa) {
     select.innerHTML = "";
 
     const op1 = document.createElement("option");
-    op1.value = `${resp.placa}|${resp.modelo}`;
-    op1.text = `${resp.placa} - ${resp.modelo}`;
+    op1.value = `${placaPrincipal}|${modeloPrincipal}`;
+    op1.text = `${placaPrincipal} - ${modeloPrincipal}`;
     select.appendChild(op1);
 
     if (resp.placa2) {
@@ -746,81 +690,20 @@ if (resp.exige_placa) {
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
 
-const img = document.getElementById("logoParceiro");
+const nomeParceiroRetorno =
+  resp.nomeParceiro ||
+  resp.nomeFantasia ||
+  resp.nome ||
+  parceiroId;
 
-if (resp.logoURL) {
+document.getElementById("nomeParceiro").innerText =
+  nomeParceiroRetorno;
 
-    let urlLogo = String(resp.logoURL).trim();
-
-    console.log("LOGO RECEBIDA:", urlLogo);
-
-    let fileId = "";
-
-    // Formato:
-    // https://drive.google.com/file/d/ID/view
-    let match = urlLogo.match(/\/d\/([a-zA-Z0-9_-]+)/);
-
-    if (match && match[1]) {
-        fileId = match[1];
-    }
-
-    // Formato:
-    // https://drive.google.com/uc?export=view&id=ID
-    if (!fileId) {
-
-        try {
-
-            const u = new URL(urlLogo);
-
-            fileId = u.searchParams.get("id") || "";
-
-        } catch (e) {
-
-            console.log("Erro lendo URL da logo:", e);
-
-        }
-    }
-
-    // Se encontrou ID do Drive,
-    // usa endpoint de visualização direta
-    if (fileId) {
-
-        urlLogo =
-            "https://drive.google.com/thumbnail?id=" +
-            encodeURIComponent(fileId) +
-            "&sz=w500";
-
-    }
-
-    console.log("LOGO FINAL:", urlLogo);
-
-    img.onload = function () {
-
-        console.log("LOGO DO PARCEIRO CARREGADA");
-
-        this.style.display = "block";
-
-    };
-
-    img.onerror = function () {
-
-        console.log("ERRO AO CARREGAR LOGO:", urlLogo);
-
-        // Não coloca a logo AproveitAI no lugar.
-        // Assim sabemos se realmente houve falha.
-        this.style.display = "none";
-
-    };
-
-    img.src = urlLogo;
-
-} else {
-
-    console.log("PARCEIRO SEM LOGO CADASTRADA");
-
-    img.style.display = "none";
-
-}
+carregarLogoParceiro(
+  resp.logoURL ||
+  resp.logo ||
+  ""
+);
 
 document.getElementById("nomeCliente").innerText =
 resp.nomeCliente || "";
@@ -876,61 +759,141 @@ document.getElementById("btnGerarERO")
 window.ultimoCelularCliente = resp.celular || "";
 
 }
-function confirmarDesconto() {
+async function confirmarDesconto() {
 
-const beneficio =
-document.getElementById("beneficioSelecionado").value;
+  const beneficio =
+    document.getElementById(
+      "beneficioSelecionado"
+    ).value;
 
-const codigoERO =
-document.getElementById("codigoERO").innerText;
+  const codigoERO =
+    document.getElementById(
+      "codigoERO"
+    ).innerText.trim();
 
-if (!beneficio) {
-mostrarMsg("Selecione um benefício");
-return;
-}
+  if (!beneficio) {
+    mostrarMsg("❌ Selecione um benefício.");
+    return;
+  }
 
-let placa = "";
-let modelo = "";
+  if (!codigoERO) {
+    mostrarMsg("❌ Código ERO não identificado.");
+    return;
+  }
 
-const selectVeiculo =
-document.getElementById("selectVeiculo");
+  let placa = "";
+  let modelo = "";
 
-if (selectVeiculo && selectVeiculo.value) {
+  const selectVeiculo =
+    document.getElementById("selectVeiculo");
 
-  const [p,m] =
-    selectVeiculo.value.split("|");
+  if (
+    selectVeiculo &&
+    selectVeiculo.value
+  ) {
+    const partes =
+      selectVeiculo.value.split("|");
 
-  placa = p;
-  modelo = m;
+    placa =
+      String(partes[0] || "").trim();
 
-}
+    modelo =
+      String(partes[1] || "").trim();
+  }
 
-document.getElementById("btnConfirmar")
-.disabled = true;
+  const btn =
+    document.getElementById("btnConfirmar");
 
-mostrarMsg("⏳ Confirmando desconto...");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = "Confirmando...";
+  }
 
-const script =
-document.createElement("script");
+  mostrarMsg("⏳ Confirmando desconto...");
 
-script.src =
-GAS_URL +
-"?callback=retornoConfirmacao" +
-"&acao=confirmarERO" +
-"&codigoERO=" +
-encodeURIComponent(codigoERO) +
-"&parceiro_id=" +
-encodeURIComponent(parceiroId) +
-"&beneficio=" +
-encodeURIComponent(beneficio) +
-"&placa=" +
-encodeURIComponent(placa) +
-"&modelo=" +
-encodeURIComponent(modelo) +
-"&canal=SITE" +
-"&origem=QR-PARCEIRO";
+  const url =
+    GAS_URL +
+    "?acao=confirmarERO" +
+    "&codigoERO=" +
+    encodeURIComponent(codigoERO) +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId) +
+    "&beneficio=" +
+    encodeURIComponent(beneficio) +
+    "&placa=" +
+    encodeURIComponent(placa) +
+    "&modelo=" +
+    encodeURIComponent(modelo) +
+    "&canal=SITE" +
+    "&origem=QR-PARCEIRO" +
+    "&_=" +
+    Date.now();
 
-document.body.appendChild(script);
+  try {
+
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      });
+
+    if (!resposta.ok) {
+      throw new Error(
+        "HTTP " + resposta.status
+      );
+    }
+
+    const texto =
+      await resposta.text();
+
+    let textoLimpo =
+      String(texto || "").trim();
+
+    const inicioJSON =
+      textoLimpo.indexOf("{");
+
+    const fimJSON =
+      textoLimpo.lastIndexOf("}");
+
+    if (
+      inicioJSON === -1 ||
+      fimJSON === -1 ||
+      fimJSON < inicioJSON
+    ) {
+      throw new Error(
+        "CORE não retornou JSON válido."
+      );
+    }
+
+    textoLimpo =
+      textoLimpo.substring(
+        inicioJSON,
+        fimJSON + 1
+      );
+
+    const resp =
+      JSON.parse(textoLimpo);
+
+    retornoConfirmacao(resp);
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO CONFIRMAÇÃO:",
+      erro
+    );
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText =
+        "✅ Confirmar desconto concedido";
+    }
+
+    mostrarMsg(
+      "❌ Não foi possível confirmar o benefício."
+    );
+  }
 }
 
 function retornoConfirmacao(resp) {
@@ -1077,29 +1040,86 @@ nasc.addEventListener("input", function() {
 });
 
 
-function carregarBeneficios(parceiroId, grupo, cpf, idPublico){
+async function carregarBeneficios(
+  parceiroId,
+  grupo,
+  cpf,
+  idPublico
+) {
 
-    const antigo =
-        document.getElementById("jsonpBeneficios");
+  const url =
+    GAS_URL +
+    "?acao=listarBeneficiosCliente" +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId || "") +
+    "&grupo=" +
+    encodeURIComponent(grupo || "") +
+    "&cpf=" +
+    encodeURIComponent(cpf || "") +
+    "&idPublico=" +
+    encodeURIComponent(idPublico || "") +
+    "&_=" +
+    Date.now();
 
-    if(antigo) antigo.remove();
+  try {
 
-    const script =
-        document.createElement("script");
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      });
 
-    script.id = "jsonpBeneficios";
+    if (!resposta.ok) {
+      throw new Error(
+        "HTTP " + resposta.status
+      );
+    }
 
-    script.src =
-        GAS_URL +
-        "?callback=retornoBeneficios" +
-        "&acao=listarBeneficiosCliente" +
-        "&parceiro_id=" + encodeURIComponent(parceiroId) +
-        "&grupo=" + encodeURIComponent(grupo) +
-        "&cpf=" + encodeURIComponent(cpf) +
-        "&idPublico=" + encodeURIComponent(idPublico);
+    const texto =
+      await resposta.text();
 
-    document.body.appendChild(script);
+    let textoLimpo =
+      String(texto || "").trim();
 
+    const inicioJSON =
+      textoLimpo.indexOf("{");
+
+    const fimJSON =
+      textoLimpo.lastIndexOf("}");
+
+    if (
+      inicioJSON === -1 ||
+      fimJSON === -1 ||
+      fimJSON < inicioJSON
+    ) {
+      throw new Error(
+        "Resposta inválida do CORE."
+      );
+    }
+
+    textoLimpo =
+      textoLimpo.substring(
+        inicioJSON,
+        fimJSON + 1
+      );
+
+    const resp =
+      JSON.parse(textoLimpo);
+
+    retornoBeneficios(resp);
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO AO CONSULTAR BENEFÍCIOS:",
+      erro
+    );
+
+    mostrarMsg(
+      "❌ Erro ao carregar os benefícios."
+    );
+  }
 }
 
 function beneficioSelecionado(){
@@ -1148,44 +1168,177 @@ function veiculoSelecionado(){
    ).style.display = "block";
 }
 
-function gerarERO() {
+async function gerarERO() {
 
-  const beneficio =
-    document.getElementById("beneficioSelecionado").value;
+  const beneficioValor =
+    document.getElementById(
+      "beneficioSelecionado"
+    ).value;
 
-  if (!beneficio) {
-    mostrarMsg("Selecione um benefício");
+  if (!beneficioValor) {
+    mostrarMsg("❌ Selecione um benefício.");
     return;
   }
 
   const cpf =
-    window.cpfCliente ||
-    document.getElementById("cpf").value.replace(/\D/g,"");
+    String(
+      window.cpfCliente ||
+      document.getElementById("cpf")
+        .value.replace(/\D/g, "")
+    ).replace(/\D/g, "");
 
-  console.log("CPF:", cpf);
-  console.log("Parceiro:", parceiroId);
-  console.log("Benefício:", beneficio);
+  if (!cpf) {
+    mostrarMsg(
+      "❌ CPF do cliente não identificado."
+    );
+    return;
+  }
+
+  let beneficio = {};
+
+  try {
+    beneficio =
+      JSON.parse(beneficioValor);
+  } catch (e) {
+    mostrarMsg("❌ Benefício inválido.");
+    return;
+  }
+
+  let placa = "";
+  let modelo = "";
+
+  const selectVeiculo =
+    document.getElementById("selectVeiculo");
+
+  if (
+    window.exigePlaca &&
+    selectVeiculo
+  ) {
+
+    const veiculo =
+      String(
+        selectVeiculo.value || ""
+      ).trim();
+
+    if (!veiculo) {
+      mostrarMsg(
+        "❌ Selecione o veículo."
+      );
+      return;
+    }
+
+    const partes =
+      veiculo.split("|");
+
+    placa =
+      String(partes[0] || "").trim();
+
+    modelo =
+      String(partes[1] || "").trim();
+  }
 
   const url =
     GAS_URL +
-    "?callback=retornoGeracaoERO" +
-    "&acao=gerarERO" +
-    "&cpf=" + encodeURIComponent(cpf) +
-    "&parceiro_id=" + encodeURIComponent(parceiroId);
+    "?acao=gerarERO" +
+    "&cpf=" +
+    encodeURIComponent(cpf) +
+    "&parceiro_id=" +
+    encodeURIComponent(parceiroId) +
+    "&tipo=" +
+    encodeURIComponent(
+      beneficio.tipo || ""
+    ) +
+    "&titulo=" +
+    encodeURIComponent(
+      beneficio.titulo || ""
+    ) +
+    "&descricao=" +
+    encodeURIComponent(
+      beneficio.descricao || ""
+    ) +
+    "&placa=" +
+    encodeURIComponent(placa) +
+    "&modelo=" +
+    encodeURIComponent(modelo) +
+    "&_=" +
+    Date.now();
 
-  console.log("URL GERAR ERO:");
-  console.log(url);
+  const btn =
+    document.getElementById(
+      "btnGerarERO"
+    );
 
-  const script = document.createElement("script");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText =
+      "Gerando Código ERO...";
+  }
 
-  script.src = url;
+  try {
 
-  script.onerror = function(){
-      console.log("ERRO AO CHAMAR O GAS");
-  };
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      });
 
-  document.body.appendChild(script);
+    if (!resposta.ok) {
+      throw new Error(
+        "HTTP " + resposta.status
+      );
+    }
 
+    const texto =
+      await resposta.text();
+
+    let textoLimpo =
+      String(texto || "").trim();
+
+    const inicioJSON =
+      textoLimpo.indexOf("{");
+
+    const fimJSON =
+      textoLimpo.lastIndexOf("}");
+
+    if (
+      inicioJSON === -1 ||
+      fimJSON === -1 ||
+      fimJSON < inicioJSON
+    ) {
+      throw new Error(
+        "CORE não retornou JSON válido."
+      );
+    }
+
+    textoLimpo =
+      textoLimpo.substring(
+        inicioJSON,
+        fimJSON + 1
+      );
+
+    const resp =
+      JSON.parse(textoLimpo);
+
+    retornoGeracaoERO(resp);
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO GERAR ERO:",
+      erro
+    );
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText =
+        "Gerar Código ERO";
+    }
+
+    mostrarMsg(
+      "❌ Não foi possível gerar o Código ERO."
+    );
+  }
 }
 
 function retornoBeneficios(resp){
@@ -1238,6 +1391,30 @@ function retornoBeneficios(resp){
     });
 
     document.getElementById("blocoBeneficio").style.display="block";
+
+    if (select.options.length > 1) {
+      select.selectedIndex = 1;
+    }
+
+    if (window.exigePlaca) {
+      document.getElementById("blocoVeiculo").style.display = "block";
+    } else {
+      document.getElementById("blocoVeiculo").style.display = "none";
+    }
+
+    document.getElementById("blocoGerarERO").style.display = "block";
+
+    const btn = document.getElementById("btnGerarERO");
+
+    if (btn) {
+      btn.style.display = "block";
+      btn.disabled = false;
+      btn.innerText = "Gerar Código ERO";
+    }
+
+    mostrarMsg(
+      "✅ Cliente validado. Gere o Código ERO para confirmar o benefício."
+    );
 
 }
 
