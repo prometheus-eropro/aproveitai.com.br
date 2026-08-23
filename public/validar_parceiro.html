@@ -559,7 +559,7 @@ function somenteNumeros(v) {
 /* =============================
    VALIDAÇÃO
 ============================= */
-async function validar() {
+function validar() {
 
   document.getElementById("blocoBeneficio").style.display = "none";
   document.getElementById("blocoVeiculo").style.display = "none";
@@ -577,110 +577,278 @@ async function validar() {
       .value.trim();
 
   if (cpf.length !== 11) {
+
     mostrarMsg("⚠️ CPF inválido.");
+
     return;
   }
 
   if (!nascimento) {
-    mostrarMsg("⚠️ Informe a data de nascimento.");
+
+    mostrarMsg(
+      "⚠️ Informe a data de nascimento."
+    );
+
     return;
   }
 
   if (!parceiroId) {
-    mostrarMsg("❌ QR Code inválido.");
+
+    mostrarMsg(
+      "❌ QR Code inválido."
+    );
+
     return;
   }
 
+
   const btn =
-    document.getElementById("btnValidar");
+    document.getElementById(
+      "btnValidar"
+    );
 
   if (btn) {
+
     btn.disabled = true;
-    btn.innerText = "Validando...";
+
+    btn.innerText =
+      "Validando...";
+
   }
 
-  mostrarMsg("⏳ Validando benefício...");
+
+  mostrarMsg(
+    "⏳ Validando benefício..."
+  );
+
+
+  /* ==========================================
+     CALLBACK JSONP EXCLUSIVO DESTA CONSULTA
+  ========================================== */
+
+  const callback =
+    "cbValidacao_" +
+    Date.now() +
+    "_" +
+    Math.floor(
+      Math.random() * 100000
+    );
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  let finalizado = false;
+
+
+  function limparConsulta() {
+
+    if (finalizado) {
+      return;
+    }
+
+    finalizado = true;
+
+    clearTimeout(timeout);
+
+    try {
+
+      if (script.parentNode) {
+
+        script.parentNode
+          .removeChild(script);
+
+      }
+
+    } catch(e) {}
+
+
+    try {
+
+      delete window[callback];
+
+    } catch(e) {
+
+      window[callback] =
+        undefined;
+
+    }
+
+  }
+
+
+  /* ==========================================
+     RECEBE RESPOSTA DO CORE
+  ========================================== */
+
+  window[callback] =
+    function(resp) {
+
+      console.log(
+        "RETORNO VALIDAÇÃO:",
+        resp
+      );
+
+
+      limparConsulta();
+
+
+      if (btn) {
+
+        btn.disabled = false;
+
+        btn.innerText =
+          "Validar";
+
+      }
+
+
+      try {
+
+        retornoValidacao(resp);
+
+      } catch(erro) {
+
+        console.error(
+          "ERRO PROCESSANDO VALIDAÇÃO:",
+          erro
+        );
+
+        mostrarMsg(
+          "❌ Erro ao processar os dados do cliente."
+        );
+
+      }
+
+    };
+
+
+  /* ==========================================
+     URL DA VALIDAÇÃO
+  ========================================== */
 
   const url =
     GAS_URL +
     "?acao=validarParceiro" +
+
     "&cpf=" +
     encodeURIComponent(cpf) +
+
     "&nascimento=" +
-    encodeURIComponent(nascimento) +
+    encodeURIComponent(
+      nascimento
+    ) +
+
     "&p=" +
-    encodeURIComponent(parceiroId) +
+    encodeURIComponent(
+      parceiroId
+    ) +
+
     "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
+    encodeURIComponent(
+      parceiroId
+    ) +
+
+    "&callback=" +
+    encodeURIComponent(
+      callback
+    ) +
+
     "&_=" +
     Date.now();
 
-  console.log("URL VALIDAÇÃO:", url);
 
-  try {
+  console.log(
+    "URL JSONP VALIDAÇÃO:",
+    url
+  );
 
-    const resposta = await fetch(url, {
-      method: "GET",
-      cache: "no-store",
-      redirect: "follow"
-    });
 
-    if (!resposta.ok) {
-      throw new Error("HTTP " + resposta.status);
-    }
+  /* ==========================================
+     ERRO DE CARREGAMENTO
+  ========================================== */
 
-    const texto = await resposta.text();
+  script.onerror =
+    function() {
 
-    console.log("RETORNO BRUTO VALIDAÇÃO:", texto);
-
-    let textoLimpo =
-      String(texto || "").trim();
-
-    const inicioJSON =
-      textoLimpo.indexOf("{");
-
-    const fimJSON =
-      textoLimpo.lastIndexOf("}");
-
-    if (
-      inicioJSON === -1 ||
-      fimJSON === -1 ||
-      fimJSON < inicioJSON
-    ) {
-      throw new Error(
-        "Resposta inválida do CORE."
-      );
-    }
-
-    textoLimpo =
-      textoLimpo.substring(
-        inicioJSON,
-        fimJSON + 1
+      console.error(
+        "ERRO JSONP VALIDAÇÃO"
       );
 
-    const resp =
-      JSON.parse(textoLimpo);
 
-    retornoValidacao(resp);
+      limparConsulta();
 
-  } catch (erro) {
 
-    console.error(
-      "ERRO VALIDAÇÃO:",
-      erro
+      if (btn) {
+
+        btn.disabled = false;
+
+        btn.innerText =
+          "Validar";
+
+      }
+
+
+      mostrarMsg(
+        "❌ Não foi possível consultar o cliente."
+      );
+
+    };
+
+
+  /* ==========================================
+     TIMEOUT DE SEGURANÇA
+  ========================================== */
+
+  const timeout =
+    setTimeout(
+      function() {
+
+        if (finalizado) {
+          return;
+        }
+
+
+        console.error(
+          "TIMEOUT VALIDAÇÃO"
+        );
+
+
+        limparConsulta();
+
+
+        if (btn) {
+
+          btn.disabled = false;
+
+          btn.innerText =
+            "Validar";
+
+        }
+
+
+        mostrarMsg(
+          "❌ A consulta demorou demais. Tente novamente."
+        );
+
+      },
+      15000
     );
 
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "Validar";
-    }
 
-    mostrarMsg(
-      "❌ Não foi possível consultar o cliente."
-    );
-  }
+  /* ==========================================
+     EXECUTA
+  ========================================== */
+
+  script.src = url;
+
+  document.body
+    .appendChild(script);
+
 }
-
 
 // =============================
 // CONTROLE DO CRONÔMETRO
