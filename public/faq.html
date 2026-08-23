@@ -82,49 +82,167 @@ Versão
 </div>
 </footer>
 
-<!-- ✅ SCRIPT GOOGLE SHEETS -->
+<!-- ✅ FAQ — API OFICIAL -->
 <script>
-const sheetURL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
-fetch(sheetURL + "?aba=faq")
-  .then(res => res.json())
-  .then(resp => {
-    const faq = document.getElementById("faq");
-    faq.innerHTML = "";
+(function(){
 
-    if (!resp.ok || !resp.dados || resp.dados.length === 0) {
-      faq.innerHTML = "<p>Nenhuma dúvida cadastrada no momento.</p>";
-      return;
-    }
+  const faq =
+    document.getElementById("faq");
 
-    resp.dados.forEach(item => {
-      faq.innerHTML += `
-        <div class="faq-item">
-          <h3>${item.pergunta}</h3>
-          <p>${item.resposta}</p>
-        </div>
-      `;
-    });
-  })
-  .catch(() => {
-    document.getElementById("faq").innerHTML =
-      "<p>Erro ao carregar as dúvidas.</p>";
-  });
+  if (
+    typeof CONFIG === "undefined" ||
+    !CONFIG.api
+  ) {
+
+    console.error(
+      "API principal não configurada."
+    );
+
+    faq.innerHTML =
+      "<p>Não foi possível carregar as dúvidas neste momento.</p>";
+
+    return;
+  }
+
+
+  const callback =
+    "faqCallback_" +
+    Date.now();
+
+
+  window[callback] =
+    function(resp){
+
+      console.log(
+        "RESPOSTA FAQ:",
+        resp
+      );
+
+
+      try {
+
+        if (
+          !resp ||
+          resp.ok !== true ||
+          !Array.isArray(resp.dados)
+        ) {
+
+          throw new Error(
+            "Resposta inválida da API."
+          );
+
+        }
+
+
+        faq.innerHTML = "";
+
+
+        if (!resp.dados.length) {
+
+          faq.innerHTML =
+            "<p>Nenhuma dúvida cadastrada no momento.</p>";
+
+          return;
+        }
+
+
+        resp.dados.forEach(
+          function(item){
+
+            const div =
+              document.createElement("div");
+
+            div.className =
+              "faq-item";
+
+
+            const titulo =
+              document.createElement("h3");
+
+            titulo.textContent =
+              item.pergunta || "";
+
+
+            const resposta =
+              document.createElement("p");
+
+            resposta.textContent =
+              item.resposta || "";
+
+
+            div.appendChild(
+              titulo
+            );
+
+            div.appendChild(
+              resposta
+            );
+
+            faq.appendChild(
+              div
+            );
+
+          }
+        );
+
+
+      } catch(err) {
+
+        console.error(
+          "ERRO PROCESSANDO FAQ:",
+          err
+        );
+
+        faq.innerHTML =
+          "<p>Não foi possível carregar as dúvidas neste momento.</p>";
+
+      }
+
+    };
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.onerror =
+    function(){
+
+      console.error(
+        "ERRO JSONP FAQ:",
+        script.src
+      );
+
+      faq.innerHTML =
+        "<p>Não foi possível carregar as dúvidas neste momento.</p>";
+
+    };
+
+
+  script.src =
+    CONFIG.api +
+    "?acao=listarFAQ" +
+    "&callback=" +
+    encodeURIComponent(callback) +
+    "&_=" +
+    Date.now();
+
+
+  console.log(
+    "URL JSONP FAQ:",
+    script.src
+  );
+
+
+  document.head.appendChild(
+    script
+  );
+
+})();
+
 </script>
-<script>
-  (function(){
-    const d = new Date();
-    const mm = String(d.getMonth()+1).padStart(2,'0');
-    const yyyy = d.getFullYear();
-    const last = `${mm}/${yyyy}`;
-
-    const elLast = document.getElementById("lastUpdate");
-    if (elLast) elLast.textContent = last;
-
-    const elYear = document.getElementById("yearNow");
-    if (elYear) elYear.textContent = yyyy;
-  })();
-</script>
-
 </body>
 </html>

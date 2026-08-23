@@ -23,6 +23,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0a7f2e">
 <script src="js/config.js"></script>
+<script src="js/ofertas.js"></script>
 
 <script src="js/include.js" defer></script>
 </head>
@@ -296,6 +297,12 @@ Promoções somente serão publicadas após aprovação.
 
 const API_URL="https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
 
+const paramsPainel =
+  new URLSearchParams(window.location.search);
+
+const retornoAposLogin =
+  paramsPainel.get("retorno") || "";
+
 function salvarSessao(d){
 
 sessionStorage.setItem("parceiroId",d.parceiro_id||"");
@@ -370,19 +377,84 @@ salvarSessao(d);
 
 sessionStorage.setItem("parceiroToken",token);
 
-document.getElementById("loginBox").style.display="none";
 
+/* ==========================================
+   VEIO DA LEITURA DO QR DE UM CLIENTE?
+   Depois do login volta automaticamente
+   para a validação.
+========================================== */
+
+if (retornoAposLogin) {
+
+  const parceiroIdLogado =
+    String(d.parceiro_id || "").trim();
+
+  let destino;
+
+  try {
+
+    destino = new URL(
+      retornoAposLogin,
+      window.location.href
+    );
+
+    destino.searchParams.set(
+      "parceiro_id",
+      parceiroIdLogado
+    );
+
+    window.location.href =
+      destino.href;
+
+  } catch (e) {
+
+    console.error(
+      "Erro ao montar retorno:",
+      e
+    );
+
+    window.location.href =
+      "validar.html?parceiro_id=" +
+      encodeURIComponent(parceiroIdLogado);
+
+  }
+
+  return;
+}
+
+
+document.getElementById("loginBox").style.display="none";
 document.getElementById("painelBox").style.display="block";
 
 document.getElementById("nomeParceiro").innerHTML=d.nome;
 
-const img = document.getElementById("logoParceiro");
+const img =
+document.getElementById("logoParceiro");
 
-img.src = "/logos/" + d.parceiro_id + ".png";
+const logoParceiro =
+String(
+  d.logo ||
+  d.logoURL ||
+  sessionStorage.getItem("parceiroLogo") ||
+  ""
+).trim();
 
-img.onerror = function () {
-    this.src = "logo-aproveitai.png";
-};
+if(logoParceiro){
+
+    img.src = logoParceiro;
+
+    img.onerror = function(){
+
+        this.onerror = null;
+        this.src = "logo-aproveitai.png";
+
+    };
+
+}else{
+
+    img.src = "logo-aproveitai.png";
+
+}
 
 document.getElementById("cidadeParceiro").innerHTML=
 
@@ -560,8 +632,8 @@ document.getElementById("dadosEmpresa").innerHTML=`
 <div class="status-box" style="text-align:center">
 
 <img
-src="/logos/${d.parceiro_id}.png"
-onerror="this.src='logo-aproveitai.png'"
+src="${d.logo || d.logoURL || sessionStorage.getItem('parceiroLogo') || 'logo-aproveitai.png'}"
+onerror="this.onerror=null;this.src='logo-aproveitai.png'"
 style="max-width:170px;max-height:100px;margin-bottom:15px;">
 
 <h2>${d.nome}</h2>
@@ -688,29 +760,41 @@ return;
 
 let html="";
 
-d.dados.forEach(b=>{
+d.dados.forEach(b => {
 
-html+=`
+  html += AproveitAIOfertas.beneficio(
+  b,
+  {
+    mostrarParceiro: false,
+    mostrarContatos: false
+  }
+);
 
-<div class="status-box">
+  html += `
+    <div class="oferta-controle-parceiro">
 
-<h3>🎁 ${b.titulo}</h3>
+      <strong>⚙️ Controle da oferta</strong><br>
 
-<p>${b.descricao}</p>
+      Grupo:
+      ${b.grupo || "GERAL"}<br>
 
-<hr>
+      Categoria:
+      ${b.categoria || "-"}<br>
 
-<p><b>Grupo:</b> ${b.grupo||"-"}</p>
+      Ordem:
+      ${b.ordem || "-"}<br>
 
-<p><b>Início:</b> ${b.dataInicio ? new Date(b.dataInicio).toLocaleDateString("pt-BR") : "-"}</p>
+      Status:
+      ${
+        String(b.ativo || "")
+          .trim()
+          .toUpperCase() === "SIM"
+          ? "ATIVO"
+          : "INATIVO"
+      }
 
-<p><b>Fim:</b> ${b.dataFim ? new Date(b.dataFim).toLocaleDateString("pt-BR") : "-"}</p>
-
-<p><b>Status:</b> ${String(b.ativo).toUpperCase()=="SIM"?"ATIVA":"INATIVA"}</p>
-
-</div>
-
-`;
+    </div>
+  `;
 
 });
 
@@ -766,86 +850,177 @@ Obrigado.`;
 
 async function carregarPromocoes(){
 
-const id=sessionStorage.getItem("parceiroId");
+    const id =
+        sessionStorage.getItem("parceiroId");
 
-const r=await fetch(
 
-API_URL+
+    const r =
+        await fetch(
 
-"?acao=listarPromocoesParceiro&parceiro_id="+id
+            API_URL +
 
-);
+            "?acao=listarPromocoesParceiro&parceiro_id=" +
 
-const d=await r.json();
+            encodeURIComponent(id)
 
-if(!d.ok){
+        );
 
-document.getElementById("listaPromocoes").innerHTML=
 
-"<div class='status-box'>Nenhuma promoção encontrada.</div>";
+    const d =
+        await r.json();
 
-return;
 
+    if(
+        !d.ok ||
+        !Array.isArray(d.dados) ||
+        !d.dados.length
+    ){
+
+        document
+            .getElementById("listaPromocoes")
+            .innerHTML =
+
+            "<div class='status-box'>Nenhuma promoção encontrada.</div>";
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    d.dados.forEach(p => {
+
+
+        const encerrada =
+            AproveitAIOfertas
+                .promocaoEncerrada(p);
+
+
+        const futura =
+            AproveitAIOfertas
+                .promocaoFutura(p);
+
+
+        html += `
+            <div class="oferta-painel-parceiro">
+
+                ${
+                    encerrada
+                        ? `
+                            <div class="status-promocao-encerrada">
+                                🔴 PROMOÇÃO ENCERRADA
+                            </div>
+                        `
+                        : futura
+                            ? `
+                                <div class="status-promocao-futura">
+                                    🟡 PROMOÇÃO PROGRAMADA
+                                </div>
+                            `
+                            : ""
+                }
+        `;
+
+        html +=
+            AproveitAIOfertas.promocao(
+                p,
+                {
+                    mostrarParceiro:false,
+                    mostrarContatos:false
+                }
+            );
+
+
+        html += `
+
+            <div class="oferta-controle-parceiro">
+
+                <strong>
+                    ⚙️ Controle da oferta
+                </strong>
+
+                <br><br>
+
+                <strong>Grupo:</strong>
+                ${p.grupo || "GERAL"}
+
+                <br>
+
+                <strong>Categoria:</strong>
+                ${p.categoria || "-"}
+
+                <br>
+
+                <strong>Ordem:</strong>
+                ${p.ordem || "-"}
+
+                <br>
+
+                <strong>Situação:</strong>
+
+${
+    String(p.ativo || "")
+        .trim()
+        .toUpperCase() !== "SIM"
+
+    ? "⚫ INATIVA"
+
+    : encerrada
+
+        ? "🔴 ENCERRADA"
+
+        : futura
+
+            ? "🟡 PROGRAMADA"
+
+            : "🟢 ATIVA"
 }
 
-let html="";
+            </div>
 
-d.dados.forEach(p=>{
+            </div>
+        `;
 
-html+=`
+    });
 
-<div class="status-box">
 
-<h3>🔥 ${p.titulo}</h3>
+    html += `
 
-<p>${p.descricao}</p>
+        <br>
 
-<hr>
+        <button
+            id="btnNovaPromocao"
+            class="btn-aproveitai"
+        >
 
-<p><b>Grupo:</b> ${p.grupo||"-"}</p>
+            ➕ Cadastrar Promoção
 
-<p><b>Início:</b>
-${p.dataInicio
-? new Date(p.dataInicio).toLocaleDateString("pt-BR")
-: "-"}
-</p>
+        </button>
 
-<p><b>Fim:</b>
-${p.dataFim
-? new Date(p.dataFim).toLocaleDateString("pt-BR")
-: "-"}
-</p>
-<p><b>Status:</b> ${String(p.ativo).toUpperCase()=="SIM"?"ATIVA":"INATIVA"}</p>
-</div>
+    `;
 
-`;
 
-});
+    document
+        .getElementById("listaPromocoes")
+        .innerHTML = html;
 
-html+=`
 
-<br>
+    document
+        .getElementById("btnNovaPromocao")
+        .onclick = () => {
 
-<button
 
-id="btnNovaPromocao"
+        const parceiro =
+            sessionStorage.getItem("parceiroNome") || "";
 
-class="btn-aproveitai">
 
-➕ Cadastrar Promoção
+        const cnpj =
+            sessionStorage.getItem("parceiroCNPJ") || "";
 
-</button>
 
-`;
-
-document.getElementById("listaPromocoes").innerHTML=html;
-
-document.getElementById("btnNovaPromocao").onclick = () => {
-
-    const parceiro = sessionStorage.getItem("parceiroNome") || "";
-    const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
-
-    const mensagem =
+        const mensagem =
 `Olá!
 
 Solicito o cadastro de uma NOVA PROMOÇÃO na Plataforma AproveitAI.
@@ -863,11 +1038,14 @@ Descreva abaixo a promoção:
 
 Obrigado.`;
 
-    location.href =
-    "https://wa.me/5528999692303?text=" +
-    encodeURIComponent(mensagem);
 
-};
+        location.href =
+
+            "https://wa.me/5528999692303?text=" +
+
+            encodeURIComponent(mensagem);
+
+    };
 
 }
 

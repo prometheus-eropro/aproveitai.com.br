@@ -31,26 +31,111 @@
   </div>
 </header>
 <div class="conteudo-legal">
-  <h1>Política de Cookies</h1>
 
-  <p>Esta Política de Cookies explica como a <strong>PROMETHEUS ERoPRO Soluções Inteligentes</strong> utiliza cookies e tecnologias semelhantes para reconhecer você quando visita nosso site.</p>
+  <h1>Política de Cookies e Armazenamento Local</h1>
 
-  <h2>O que são cookies?</h2>
-  <p>Cookies são pequenos arquivos de texto armazenados no seu dispositivo quando você visita um site. Eles ajudam a melhorar sua experiência de navegação e permitem que nosso site funcione corretamente.</p>
+  <p>
+    Esta Política explica como a
+    <strong>PROMETHEUS EROPRO SOLUÇÕES INTELIGENTES LTDA,
+    CNPJ 58.584.332/0001-40</strong>,
+    responsável pela Plataforma AproveitAI, poderá utilizar
+    cookies, armazenamento local do navegador e tecnologias
+    semelhantes durante a utilização da Plataforma.
+  </p>
 
-  <h2>Tipos de cookies que usamos</h2>
-  <ul>
-    <li><strong>Cookies essenciais:</strong> Necessários para o funcionamento básico do site.</li>
-    <li><strong>Cookies de desempenho:</strong> Coletam informações sobre como você usa o site para melhorarmos sua experiência.</li>
-    <li><strong>Cookies de funcionalidade:</strong> Memorizam suas preferências e personalizações.</li>
-    <li><strong>Cookies de marketing:</strong> Utilizados para exibir anúncios relevantes e medir a eficácia de campanhas.</li>
-  </ul>
 
-  <h2>Como controlar cookies</h2>
-  <p>Você pode configurar seu navegador para recusar cookies, mas isso pode afetar o funcionamento do site. Também é possível gerenciar suas preferências diretamente no banner de cookies exibido na primeira visita.</p>
+  <h2>1. O que são cookies?</h2>
 
-  <p><strong>Última atualização:</strong> 12/08/2025</p>
+  <p>
+    Cookies são pequenos arquivos ou informações armazenadas
+    no dispositivo ou navegador do usuário e podem ser utilizados
+    para permitir funcionalidades, manter preferências e auxiliar
+    no funcionamento de serviços digitais.
+  </p>
+
+
+  <h2>2. Armazenamento local</h2>
+
+  <p>
+    A Plataforma também poderá utilizar recursos de armazenamento
+    local do navegador, como o localStorage, para registrar
+    determinadas preferências e informações necessárias ao
+    funcionamento de recursos da Plataforma.
+  </p>
+
+  <p>
+    Por exemplo, a Plataforma poderá registrar localmente que
+    determinado aviso ou mensagem já foi apresentado ou aceito,
+    evitando sua exibição repetitiva.
+  </p>
+
+
+  <h2>3. Tecnologias atualmente utilizadas</h2>
+
+  <p>
+    A Plataforma poderá utilizar cookies e armazenamento local
+    estritamente necessários ou funcionais para permitir o
+    funcionamento de recursos, manter preferências e melhorar
+    a experiência de utilização.
+  </p>
+
+  <p>
+    No momento, esta Política não declara a utilização de
+    tecnologias de publicidade comportamental ou rastreamento
+    para anúncios de terceiros.
+  </p>
+
+
+  <h2>4. Ferramentas de análise e publicidade</h2>
+
+  <p>
+    Caso a Plataforma passe futuramente a utilizar ferramentas
+    adicionais de análise, medição ou publicidade, como serviços
+    de análise de audiência, pixels de conversão ou tecnologias
+    semelhantes, esta Política e os mecanismos aplicáveis de
+    informação e consentimento serão atualizados.
+  </p>
+
+
+  <h2>5. Controle pelo usuário</h2>
+
+  <p>
+    O usuário poderá utilizar as configurações do próprio navegador
+    para controlar ou excluir cookies e dados armazenados localmente.
+  </p>
+
+  <p>
+    A desativação ou exclusão de determinadas informações poderá
+    exigir a configuração novamente de preferências e, em alguns
+    casos, afetar funcionalidades que dependam desses recursos.
+  </p>
+
+
+  <h2>6. Relação com a Política de Privacidade</h2>
+
+  <p>
+    Informações adicionais sobre tratamento de dados pessoais,
+    finalidades, compartilhamento, segurança e direitos do titular
+    estão disponíveis na
+    <a href="privacidade.html">Política de Privacidade</a>
+    da Plataforma AproveitAI.
+  </p>
+
+
+  <h2>7. Atualizações</h2>
+
+  <p>
+    Esta Política poderá ser atualizada sempre que houver alteração
+    relevante nas tecnologias utilizadas pela Plataforma.
+  </p>
+
+  <p>
+    <strong>Última atualização:</strong>
+    <span id="lastUpdate"></span>
+  </p>
+
 </div>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
@@ -69,6 +154,29 @@ Versão
 <span id="versaoSistema"></span>
 </div>
 </footer>
+
+<script>
+(function(){
+
+  const d = new Date();
+
+  const mm =
+    String(d.getMonth() + 1)
+      .padStart(2, "0");
+
+  const yyyy =
+    d.getFullYear();
+
+  const el =
+    document.getElementById("lastUpdate");
+
+  if(el){
+    el.textContent =
+      `${mm}/${yyyy}`;
+  }
+
+})();
+</script>
 
 </body>
 </html>
