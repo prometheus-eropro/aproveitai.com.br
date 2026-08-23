@@ -545,19 +545,20 @@ function carregarParceiroQR() {
      CONSULTA CORE
   ========================================== */
 
-  script.src =
-    GAS_URL +
-    "?acao=dadosEmpresa" +
-    "&parceiro_id=" +
-    encodeURIComponent(
-      parceiroId
-    ) +
-    "&callback=" +
-    encodeURIComponent(
-      callback
-    ) +
-    "&_=" +
-    Date.now();
+script.src =
+  GAS_URL +
+  "?callback=" +
+  encodeURIComponent(callback) +
+  "&acao=dadosEmpresa" +
+  "&parceiro_id=" +
+  encodeURIComponent(parceiroId) +
+  "&_=" +
+  Date.now();
+
+console.log(
+  "URL DADOS EMPRESA:",
+  script.src
+);
 
 
   document.body.appendChild(
