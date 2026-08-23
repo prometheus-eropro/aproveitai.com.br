@@ -288,7 +288,12 @@ const elBtn = document.getElementById("btnValidar");
    CARREGA DADOS DO PARCEIRO DO QR
 ========================================== */
 
-async function carregarParceiroQR() {
+/* ==========================================
+   CARREGA PARCEIRO IDENTIFICADO PELO QR
+   VIA JSONP
+========================================== */
+
+function carregarParceiroQR() {
 
   if (!parceiroId) {
 
@@ -304,182 +309,260 @@ async function carregarParceiroQR() {
     parceiroId
   );
 
-  const url =
+
+  const callback =
+    "cbParceiroQR_" +
+    Date.now();
+
+
+  const script =
+    document.createElement("script");
+
+
+  window[callback] =
+    function(resp) {
+
+      console.log(
+        "RETORNO PARCEIRO QR:",
+        resp
+      );
+
+      try {
+
+        if (
+          !resp ||
+          resp.ok !== true
+        ) {
+
+          throw new Error(
+            "Parceiro não encontrado"
+          );
+
+        }
+
+
+        /* =========================
+           NOME DO PARCEIRO
+        ========================= */
+
+        const nome =
+          resp.nomeFantasia ||
+          resp.nome ||
+          parceiroId;
+
+
+        const elNome =
+          document.getElementById(
+            "nomeParceiro"
+          );
+
+
+        if (elNome) {
+
+          elNome.innerText =
+            nome;
+
+        }
+
+
+        /* =========================
+           LOGO DO PARCEIRO
+        ========================= */
+
+        const img =
+          document.getElementById(
+            "logoParceiro"
+          );
+
+
+        const logo =
+          String(
+            resp.logoURL ||
+            resp.logo ||
+            ""
+          ).trim();
+
+
+        if (
+          img &&
+          logo
+        ) {
+
+          let urlLogo =
+            logo;
+
+          let fileId =
+            "";
+
+
+          /* tenta localizar ID do Drive */
+
+          const match =
+            urlLogo.match(
+              /\/d\/([a-zA-Z0-9_-]+)/
+            );
+
+
+          if (
+            match &&
+            match[1]
+          ) {
+
+            fileId =
+              match[1];
+
+          }
+
+
+          if (!fileId) {
+
+            try {
+
+              const u =
+                new URL(
+                  urlLogo
+                );
+
+              fileId =
+                u.searchParams.get("id") ||
+                "";
+
+            } catch(e) {}
+
+          }
+
+
+          /* se for arquivo Drive */
+
+          if (fileId) {
+
+            urlLogo =
+              "https://drive.google.com/thumbnail?id=" +
+              encodeURIComponent(fileId) +
+              "&sz=w500";
+
+          }
+
+
+          img.onload =
+            function() {
+
+              this.style.display =
+                "block";
+
+            };
+
+
+          img.onerror =
+            function() {
+
+              console.log(
+                "ERRO LOGO PARCEIRO:",
+                urlLogo
+              );
+
+              this.style.display =
+                "none";
+
+            };
+
+
+          img.src =
+            urlLogo;
+
+        }
+
+
+        console.log(
+          "PARCEIRO QR IDENTIFICADO:",
+          nome
+        );
+
+
+      } catch(erro) {
+
+        console.error(
+          "ERRO PARCEIRO QR:",
+          erro
+        );
+
+        mostrarMsg(
+          "❌ Não foi possível identificar o parceiro deste QR Code."
+        );
+
+      }
+
+
+      /* =========================
+         LIMPEZA JSONP
+      ========================= */
+
+      delete window[callback];
+
+
+      if (script.parentNode) {
+
+        script.parentNode.removeChild(
+          script
+        );
+
+      }
+
+    };
+
+
+  /* ==========================================
+     ERRO NA CHAMADA JSONP
+  ========================================== */
+
+  script.onerror =
+    function() {
+
+      console.error(
+        "ERRO JSONP PARCEIRO QR"
+      );
+
+      mostrarMsg(
+        "❌ Erro ao consultar o parceiro."
+      );
+
+
+      delete window[callback];
+
+
+      if (script.parentNode) {
+
+        script.parentNode.removeChild(
+          script
+        );
+
+      }
+
+    };
+
+
+  /* ==========================================
+     CONSULTA CORE
+  ========================================== */
+
+  script.src =
     GAS_URL +
     "?acao=dadosEmpresa" +
     "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
+    encodeURIComponent(
+      parceiroId
+    ) +
+    "&callback=" +
+    encodeURIComponent(
+      callback
+    ) +
     "&_=" +
     Date.now();
 
-  try {
 
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      });
-
-    const texto =
-      await resposta.text();
-
-    console.log(
-      "RETORNO PARCEIRO QR:",
-      texto
-    );
-
-    let textoLimpo =
-      String(texto || "").trim();
-
-    const inicio =
-      textoLimpo.indexOf("{");
-
-    const fim =
-      textoLimpo.lastIndexOf("}");
-
-    if (
-      inicio === -1 ||
-      fim === -1
-    ) {
-
-      throw new Error(
-        "Resposta inválida do CORE"
-      );
-    }
-
-    textoLimpo =
-      textoLimpo.substring(
-        inicio,
-        fim + 1
-      );
-
-    const resp =
-      JSON.parse(textoLimpo);
-
-    if (!resp || resp.ok !== true) {
-
-      throw new Error(
-        "Parceiro não encontrado"
-      );
-    }
-
-    /* =========================
-       NOME DO PARCEIRO
-    ========================= */
-
-    document
-      .getElementById("nomeParceiro")
-      .innerText =
-        resp.nomeFantasia ||
-        resp.nome ||
-        parceiroId;
-
-
-    /* =========================
-       LOGO DO PARCEIRO
-    ========================= */
-
-    const img =
-      document.getElementById(
-        "logoParceiro"
-      );
-
-    const logo =
-      String(
-        resp.logoURL ||
-        resp.logo ||
-        ""
-      ).trim();
-
-    if (logo) {
-
-      let urlLogo = logo;
-
-      let fileId = "";
-
-      const match =
-        urlLogo.match(
-          /\/d\/([a-zA-Z0-9_-]+)/
-        );
-
-      if (
-        match &&
-        match[1]
-      ) {
-
-        fileId =
-          match[1];
-
-      }
-
-      if (!fileId) {
-
-        try {
-
-          const u =
-            new URL(urlLogo);
-
-          fileId =
-            u.searchParams.get("id") ||
-            "";
-
-        } catch(e) {}
-
-      }
-
-      if (fileId) {
-
-        urlLogo =
-          "https://drive.google.com/thumbnail?id=" +
-          encodeURIComponent(fileId) +
-          "&sz=w500";
-
-      }
-
-      img.onload =
-        function() {
-
-          this.style.display =
-            "block";
-
-        };
-
-      img.onerror =
-        function() {
-
-          console.log(
-            "ERRO LOGO PARCEIRO:",
-            urlLogo
-          );
-
-          this.style.display =
-            "none";
-
-        };
-
-      img.src =
-        urlLogo;
-
-    }
-
-    console.log(
-      "PARCEIRO QR CARREGADO:",
-      resp
-    );
-
-  } catch(erro) {
-
-    console.error(
-      "ERRO CARREGAR PARCEIRO QR:",
-      erro
-    );
-
-    mostrarMsg(
-      "❌ Não foi possível identificar o parceiro deste QR Code."
-    );
-
-  }
+  document.body.appendChild(
+    script
+  );
 
 }
 
