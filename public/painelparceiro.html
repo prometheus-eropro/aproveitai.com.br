@@ -605,132 +605,366 @@ document.getElementById("resumoParceiro").innerHTML=`
 
 async function carregarEmpresa(){
 
-const id=sessionStorage.getItem("parceiroId");
+  const id =
+    sessionStorage.getItem("parceiroId");
 
-const r=await fetch(
-API_URL+
-"?acao=dadosEmpresa&parceiro_id="+
-encodeURIComponent(id)
-);
+  const r =
+    await fetch(
+      API_URL +
+      "?acao=dadosEmpresa&parceiro_id=" +
+      encodeURIComponent(id)
+    );
 
-const d=await r.json();
+  const d =
+    await r.json();
 
-if(!d.ok){
+  console.log("DADOS MINHA EMPRESA:", d);
 
-console.log("PARCEIRO_ID =", d.parceiro_id);
-console.log(d);
+  if(!d.ok){
 
-document.getElementById("dadosEmpresa").innerHTML=
-"<div class='status-box'>Erro ao carregar dados.</div>";
+    document.getElementById("dadosEmpresa").innerHTML =
+      "<div class='status-box'>Erro ao carregar dados da empresa.</div>";
 
-return;
+    return;
+  }
 
-}
 
-document.getElementById("dadosEmpresa").innerHTML=`
+  /* ==========================================
+     FUNÇÃO PARA NÃO EXIBIR undefined / null
+  ========================================== */
 
-<div class="status-box" style="text-align:center">
+  const valor = (v) => {
 
-<img
-src="${d.logo || d.logoURL || sessionStorage.getItem('parceiroLogo') || 'logo-aproveitai.png'}"
-onerror="this.onerror=null;this.src='logo-aproveitai.png'"
-style="max-width:170px;max-height:100px;margin-bottom:15px;">
+    const texto =
+      String(v ?? "").trim();
 
-<h2>${d.nome}</h2>
+    return texto || "-";
+  };
 
-<p>
 
-<b>Parceiro desde:</b>
+  document.getElementById("dadosEmpresa").innerHTML = `
 
-${d.dataCadastro || "-"}
+    <div class="status-box">
 
-</p>
+      <!-- ================================
+           LOGO / IDENTIFICAÇÃO
+      ================================= -->
 
-<p>Parceiro Oficial da Plataforma AproveitAI</p>
+      <div style="text-align:center">
 
-<hr>
+        <img
+          src="${d.logo || d.logoURL || sessionStorage.getItem('parceiroLogo') || 'logo-aproveitai.png'}"
+          onerror="this.onerror=null;this.src='logo-aproveitai.png'"
+          style="
+            max-width:170px;
+            max-height:100px;
+            object-fit:contain;
+            margin-bottom:15px;
+          "
+        >
 
-<table style="width:100%;font-size:15px">
+        <h2 style="margin:5px 0">
+          ${valor(d.nomeFantasia || d.nome)}
+        </h2>
 
-<tr><td><b>CNPJ</b></td><td>${d.cnpj||""}</td></tr>
+        <p>
+          Parceiro Oficial da Plataforma AproveitAI
+        </p>
 
-<tr><td><b>Ramo</b></td><td>${d.ramo||""}</td></tr>
+      </div>
 
-<tr><td><b>Cidade</b></td><td>${d.cidade||""}</td></tr>
 
-<tr><td><b>WhatsApp</b></td><td>${d.whatsapp||""}</td></tr>
+      <hr>
 
-<tr><td><b>Contato</b></td><td>${d.contato||""}</td></tr>
 
-<tr><td><b>E-mail</b></td><td>${d.email||""}</td></tr>
+      <!-- ================================
+           DADOS DA EMPRESA
+      ================================= -->
 
-<tr><td><b>Instagram</b></td><td>${d.instagram||""}</td></tr>
+      <h3>🏢 Dados da Empresa</h3>
 
-<tr><td><b>Site</b></td><td>${d.site||""}</td></tr>
+      <table style="width:100%;font-size:15px">
 
-<tr>
+        <tr>
+          <td><b>Nome Fantasia</b></td>
+          <td>${valor(d.nomeFantasia || d.nome)}</td>
+        </tr>
 
-<td><b>Google Maps</b></td>
+        <tr>
+          <td><b>Razão Social</b></td>
+          <td>${valor(d.razaoSocial)}</td>
+        </tr>
 
-<td>
+        <tr>
+          <td><b>CNPJ</b></td>
+          <td>${valor(d.cnpj)}</td>
+        </tr>
 
-<a href="${d.maps||'#'}" target="_blank">
+        <tr>
+          <td><b>Inscrição Estadual</b></td>
+          <td>${valor(d.ie)}</td>
+        </tr>
 
-Abrir localização
+        <tr>
+          <td><b>Ramo</b></td>
+          <td>${valor(d.ramo)}</td>
+        </tr>
 
-</a>
+        <tr>
+          <td><b>Categoria</b></td>
+          <td>${valor(d.categoria)}</td>
+        </tr>
 
-</td>
+      </table>
 
-</tr>
 
-</table>
+      <hr>
 
-<br>
 
-<button
-class="btn-aproveitai"
-id="btnAlteracao">
+      <!-- ================================
+           RESPONSÁVEL
+      ================================= -->
 
-✏ Solicitar Alteração Cadastral
+      <h3>👤 Responsável</h3>
 
-</button>
+      <table style="width:100%;font-size:15px">
 
-</div>
+        <tr>
+          <td><b>Representante Legal</b></td>
+          <td>${valor(d.representante_legal)}</td>
+        </tr>
 
-`;
+        <tr>
+          <td><b>CPF do Representante</b></td>
+          <td>${valor(d.cpf_representante)}</td>
+        </tr>
 
-document.getElementById("btnAlteracao").onclick = () => {
+        <tr>
+          <td><b>Cargo</b></td>
+          <td>${valor(d.cargo)}</td>
+        </tr>
 
-    const parceiro = sessionStorage.getItem("parceiroNome") || "";
-    const cnpj = sessionStorage.getItem("parceiroCNPJ") || "";
+        <tr>
+          <td><b>Contato</b></td>
+          <td>${valor(d.contato)}</td>
+        </tr>
+
+      </table>
+
+
+      <hr>
+
+
+      <!-- ================================
+           CONTATOS
+      ================================= -->
+
+      <h3>📞 Contatos</h3>
+
+      <table style="width:100%;font-size:15px">
+
+        <tr>
+          <td><b>WhatsApp</b></td>
+          <td>${valor(d.whatsapp)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Telefone</b></td>
+          <td>${valor(d.telefone)}</td>
+        </tr>
+
+        <tr>
+          <td><b>E-mail</b></td>
+          <td>${valor(d.email)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Instagram</b></td>
+          <td>${valor(d.instagram)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Facebook</b></td>
+          <td>${valor(d.facebook)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Site</b></td>
+          <td>${valor(d.site)}</td>
+        </tr>
+
+      </table>
+
+
+      <hr>
+
+
+      <!-- ================================
+           ENDEREÇO
+      ================================= -->
+
+      <h3>📍 Endereço</h3>
+
+      <table style="width:100%;font-size:15px">
+
+        <tr>
+          <td><b>CEP</b></td>
+          <td>${valor(d.cep)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Endereço</b></td>
+          <td>${valor(d.endereco)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Número</b></td>
+          <td>${valor(d.numero)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Complemento</b></td>
+          <td>${valor(d.complemento)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Bairro</b></td>
+          <td>${valor(d.bairro)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Cidade</b></td>
+          <td>${valor(d.cidade)}</td>
+        </tr>
+
+        <tr>
+          <td><b>UF</b></td>
+          <td>${valor(d.uf)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Horário</b></td>
+          <td>${valor(d.horario)}</td>
+        </tr>
+
+      </table>
+
+
+      ${
+        d.maps
+        ? `
+          <div style="text-align:center;margin:15px 0">
+
+            <a
+              href="${d.maps}"
+              target="_blank"
+              class="btn-aproveitai"
+            >
+              📍 Abrir no Google Maps
+            </a>
+
+          </div>
+        `
+        : ""
+      }
+
+
+      <hr>
+
+
+      <!-- ================================
+           PARCERIA
+      ================================= -->
+
+      <h3>🤝 Dados da Parceria</h3>
+
+      <table style="width:100%;font-size:15px">
+
+        <tr>
+          <td><b>Parceiro desde</b></td>
+          <td>${valor(d.dataCadastro)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Nº do Contrato</b></td>
+          <td>${valor(d.numero_contrato)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Contrato Emitido</b></td>
+          <td>${valor(d.contrato_emitido)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Contrato Assinado</b></td>
+          <td>${valor(d.contrato_assinado)}</td>
+        </tr>
+
+        <tr>
+          <td><b>Data do Contrato</b></td>
+          <td>${valor(d.data_contrato)}</td>
+        </tr>
+
+      </table>
+
+
+      <br>
+
+
+      <div style="text-align:center">
+
+        <button
+          class="btn-aproveitai"
+          id="btnAlteracao"
+        >
+          ✏️ Solicitar Alteração Cadastral
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  /* ==========================================
+     SOLICITAÇÃO DE ALTERAÇÃO
+  ========================================== */
+
+  document.getElementById("btnAlteracao").onclick = () => {
+
+    const parceiro =
+      d.nomeFantasia ||
+      d.nome ||
+      sessionStorage.getItem("parceiroNome") ||
+      "";
+
+    const cnpj =
+      d.cnpj ||
+      sessionStorage.getItem("parceiroCNPJ") ||
+      "";
 
     const mensagem =
 `Olá!
 
-Solicito ALTERAÇÃO CADASTRAL.
+Solicito uma ALTERAÇÃO CADASTRAL na Plataforma AproveitAI.
 
 Parceiro: ${parceiro}
 CNPJ: ${cnpj}
 
-Dados que desejo alterar:
+Dado(s) que desejo alterar:
 
-• Nome:
-• Contato:
-• WhatsApp:
-• Instagram:
-• Site:
-• Endereço:
-• Cidade:
-• Outros:
+• Campo:
+• Informação atual:
+• Nova informação:
 
 Obrigado.`;
 
     location.href =
-    "https://wa.me/5528999692303?text=" +
-    encodeURIComponent(mensagem);
+      "https://wa.me/5528999692303?text=" +
+      encodeURIComponent(mensagem);
 
-};
+  };
 
 }
 
