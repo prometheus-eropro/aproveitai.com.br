@@ -9795,6 +9795,11 @@ function arquivoParaBase64(arquivo){
    TROCAR LOGO DO PARCEIRO
 ====================================================== */
 
+/* ======================================================
+   TROCAR LOGO DO PARCEIRO
+   VIA POST — NÃO USA JSONP
+====================================================== */
+
 async function trocarLogoParceiro(
   parceiroId,
   arquivo
@@ -9807,7 +9812,6 @@ async function trocarLogoParceiro(
     );
 
   }
-
 
   if(!arquivo){
 
@@ -9846,7 +9850,7 @@ async function trocarLogoParceiro(
 
 
   /* ==========================================
-     CONVERTE PARA BASE64
+     CONVERTE ARQUIVO PARA BASE64
   ========================================== */
 
   const base64 =
@@ -9865,28 +9869,130 @@ async function trocarLogoParceiro(
 
 
   /* ==========================================
-     ENVIA PARA O ADMIN GAS
+     MONTA DADOS PARA O GAS
   ========================================== */
 
-  const resp =
-    await callAPI({
+  const dados = {
 
-      action:
-        "salvarLogoParceiro",
+    action:
+      "upload_logo_parceiro",
 
-      identificador:
-        parceiroId,
+    key:
+      state.key || "",
 
-      nomeArquivo:
-        arquivo.name || "logo.png",
+    parceiro_id:
+      parceiroId,
 
-      mimeType:
-        arquivo.type || "image/png",
+    logo_nome:
+      arquivo.name || "logo.png",
 
-      base64:
-        base64
+    logo_base64:
+      base64
 
-    });
+  };
+
+
+  console.log(
+    "ENVIANDO NOVA LOGO:",
+    parceiroId,
+    arquivo.name,
+    arquivo.type,
+    arquivo.size
+  );
+
+
+  /* ==========================================
+     ENVIA VIA POST
+  ========================================== */
+
+  let resposta;
+
+
+  try{
+
+    resposta =
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:
+            JSON.stringify(
+              dados
+            )
+        }
+      );
+
+  }catch(erro){
+
+    console.error(
+      "ERRO FETCH LOGO:",
+      erro
+    );
+
+    throw new Error(
+      "Não foi possível enviar a logo para o servidor."
+    );
+
+  }
+
+
+  /* ==========================================
+     VERIFICA HTTP
+  ========================================== */
+
+  if(!resposta.ok){
+
+    throw new Error(
+      "Erro HTTP " +
+      resposta.status +
+      " ao enviar a logo."
+    );
+
+  }
+
+
+  /* ==========================================
+     LÊ RETORNO
+  ========================================== */
+
+  const texto =
+    await resposta.text();
+
+
+  console.log(
+    "RETORNO BRUTO LOGO:",
+    texto
+  );
+
+
+  let resp;
+
+
+  try{
+
+    resp =
+      JSON.parse(
+        texto
+      );
+
+  }catch(erro){
+
+    console.error(
+      "RETORNO INVÁLIDO LOGO:",
+      texto
+    );
+
+    throw new Error(
+      "O servidor retornou uma resposta inválida."
+    );
+
+  }
 
 
   console.log(
@@ -9894,6 +10000,10 @@ async function trocarLogoParceiro(
     resp
   );
 
+
+  /* ==========================================
+     VALIDA RETORNO DO GAS
+  ========================================== */
 
   if(
     !resp ||
