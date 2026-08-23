@@ -7882,9 +7882,7 @@ const contrato =
   "";
 
 const qr =
-  parceiro.link_qr ||
   parceiro.qrIMG ||
-  parceiro.qrURL ||
   "";
 
 const cartaz =
@@ -9790,6 +9788,129 @@ function arquivoParaBase64(arquivo){
     reader.readAsDataURL(arquivo);
 
   });
+
+}
+
+/* ======================================================
+   TROCAR LOGO DO PARCEIRO
+====================================================== */
+
+async function trocarLogoParceiro(
+  parceiroId,
+  arquivo
+){
+
+  if(!parceiroId){
+
+    throw new Error(
+      "Parceiro não identificado."
+    );
+
+  }
+
+
+  if(!arquivo){
+
+    throw new Error(
+      "Arquivo da logo não informado."
+    );
+
+  }
+
+
+  /* ==========================================
+     VALIDA TIPO
+  ========================================== */
+
+  const tiposPermitidos = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp"
+  ];
+
+
+  if(
+    arquivo.type &&
+    !tiposPermitidos.includes(
+      arquivo.type
+    )
+  ){
+
+    throw new Error(
+      "Formato de imagem não permitido. " +
+      "Utilize PNG, JPG ou WEBP."
+    );
+
+  }
+
+
+  /* ==========================================
+     CONVERTE PARA BASE64
+  ========================================== */
+
+  const base64 =
+    await arquivoParaBase64(
+      arquivo
+    );
+
+
+  if(!base64){
+
+    throw new Error(
+      "Não foi possível ler a imagem."
+    );
+
+  }
+
+
+  /* ==========================================
+     ENVIA PARA O ADMIN GAS
+  ========================================== */
+
+  const resp =
+    await callAPI({
+
+      action:
+        "salvarLogoParceiro",
+
+      identificador:
+        parceiroId,
+
+      nomeArquivo:
+        arquivo.name || "logo.png",
+
+      mimeType:
+        arquivo.type || "image/png",
+
+      base64:
+        base64
+
+    });
+
+
+  console.log(
+    "RETORNO TROCA LOGO:",
+    resp
+  );
+
+
+  if(
+    !resp ||
+    resp.ok !== true
+  ){
+
+    throw new Error(
+      resp?.erro ||
+      resp?.msg ||
+      resp?.mensagem ||
+      "Não foi possível atualizar a logo."
+    );
+
+  }
+
+
+  return resp;
 
 }
 
