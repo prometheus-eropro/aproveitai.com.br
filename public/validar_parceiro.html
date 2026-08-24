@@ -1013,13 +1013,156 @@ document.getElementById("cidadeCliente").innerText =
 resp.cidade || "";
 
 document.getElementById("statusCliente").innerText =
-resp.statusCliente || "";
+resp.statusCliente || resp.ativo || "";
 
 document.getElementById("validadeCliente").innerText =
 resp.validade || "";
 
+
+/* ==========================================
+   BLOQUEIO VISUAL — CLIENTE INATIVO
+========================================== */
+
+const statusCliente =
+  String(
+    resp.statusCliente ||
+    resp.ativo ||
+    ""
+  )
+  .trim()
+  .toUpperCase();
+
+const campoStatus =
+  document.getElementById("statusCliente");
+
+
+if (statusCliente !== "SIM") {
+
+  /* STATUS EM VERMELHO */
+
+  campoStatus.innerHTML =
+    "⛔ CLIENTE INATIVO";
+
+  campoStatus.style.display =
+    "inline-block";
+
+  campoStatus.style.background =
+    "#dc2626";
+
+  campoStatus.style.color =
+    "#ffffff";
+
+  campoStatus.style.fontWeight =
+    "900";
+
+  campoStatus.style.fontSize =
+    "16px";
+
+  campoStatus.style.padding =
+    "6px 12px";
+
+  campoStatus.style.borderRadius =
+    "6px";
+
+  campoStatus.style.marginTop =
+    "4px";
+
+
+  /* BLOQUEIA UTILIZAÇÃO */
+
+  document.getElementById(
+    "blocoBeneficio"
+  ).style.display = "none";
+
+  document.getElementById(
+    "blocoVeiculo"
+  ).style.display = "none";
+
+  document.getElementById(
+    "blocoGerarERO"
+  ).style.display = "none";
+
+  document.getElementById(
+    "blocoCodigo"
+  ).style.display = "none";
+
+  document.getElementById(
+    "btnGerarERO"
+  ).style.display = "none";
+
+  document.getElementById(
+    "btnConfirmar"
+  ).style.display = "none";
+
+
+  /* PARA CRONÔMETRO */
+
+  pararCronometro();
+
+
+  /* AVISO */
+
+  mostrarMsg(
+    '<div style="' +
+      'background:#fee2e2;' +
+      'border:2px solid #dc2626;' +
+      'color:#991b1b;' +
+      'padding:15px;' +
+      'border-radius:8px;' +
+      'font-size:16px;' +
+      'line-height:1.5;' +
+      'text-align:center;' +
+    '">' +
+
+      '⛔ <strong>CLIENTE INATIVO</strong><br><br>' +
+
+      'Este cliente não está autorizado a utilizar os benefícios da Plataforma AproveitAI.<br><br>' +
+
+      'Oriente o cliente a regularizar o cadastro.' +
+
+    '</div>'
+  );
+
+  return;
+}
+
+
+/* ==========================================
+   CLIENTE ATIVO
+========================================== */
+
+campoStatus.innerHTML =
+  "🟢 CLIENTE ATIVO";
+
+campoStatus.style.display =
+  "inline-block";
+
+campoStatus.style.background =
+  "#dcfce7";
+
+campoStatus.style.color =
+  "#0a7a3c";
+
+campoStatus.style.fontWeight =
+  "900";
+
+campoStatus.style.fontSize =
+  "16px";
+
+campoStatus.style.padding =
+  "6px 12px";
+
+campoStatus.style.borderRadius =
+  "6px";
+
+campoStatus.style.marginTop =
+  "4px";
+
+
 window.dadosValidacao = resp;
-window.exigePlaca = resp.exige_placa === true;
+
+window.exigePlaca =
+  resp.exige_placa === true;
 
 console.log(resp.logoURL);
 
