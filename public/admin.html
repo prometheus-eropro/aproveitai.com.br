@@ -8540,16 +8540,16 @@ function novoCliente(){
         label:"Grupo"
       },
 
-      {
-        key:"ativo",
-        label:"Cliente ativo",
-        type:"select",
-        options:[
-          "SIM",
-          "NAO"
-        ]
-      },
-
+{
+  key:"ativo",
+  label:"Cliente ativo",
+  type:"select",
+  options:[
+    {value:"SIM", label:"SIM"},
+    {value:"NAO", label:"NÃO"}
+  ],
+  value:"SIM"
+},
 
       /* =========================
          VEÍCULO 1
@@ -8596,15 +8596,28 @@ function novoCliente(){
         type:"date"
       },
 
-      {
-        key:"statusPagamento",
-        label:"Status do pagamento"
-      },
+{
+  key:"statusPagamento",
+  label:"Status do pagamento",
+  type:"select",
+  options:[
+    {value:"PENDENTE", label:"Pendente"},
+    {value:"PAGO", label:"Pago"}
+  ],
+  value:"PENDENTE"
+},
+
 
       {
-        key:"responsavelPagamento",
-        label:"Responsável pelo pagamento"
-      },
+  key:"responsavelPagamento",
+  label:"Responsável pelo pagamento",
+  type:"select",
+  options:[
+    {value:"CLIENTE", label:"Cliente"},
+    {value:"EMPRESA", label:"Empresa / Associação"}
+  ],
+  value:"CLIENTE"
+},
 
       {
         key:"grupoPagante",
