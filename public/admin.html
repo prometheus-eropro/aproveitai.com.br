@@ -8478,45 +8478,312 @@ console.log(r);
 
 function novoCliente(){
 
-    openEditModal({
+  openEditModal({
 
-        title:"Novo Cliente",
+    title:"Novo Cliente",
 
-        initial:{},
+    initial:{
+      ativo:"SIM",
+      tipoPlano:"TESTE",
+      statusPagamento:"PENDENTE"
+    },
 
-        fields:[
+    fields:[
 
-            {key:"nome",label:"Nome"},
+      /* =========================
+         IDENTIFICAÇÃO
+      ========================= */
 
-            {key:"cpf",label:"CPF"},
+      {
+        key:"nome",
+        label:"Nome completo"
+      },
 
-            {key:"celular",label:"Celular"},
+      {
+        key:"cpf",
+        label:"CPF"
+      },
 
-            {key:"cidade",label:"Cidade"},
+      {
+        key:"nascimento",
+        label:"Data de nascimento",
+        type:"date"
+      },
 
-            {key:"grupo",label:"Grupo"}
+      {
+        key:"celular",
+        label:"Celular / WhatsApp"
+      },
 
-        ],
 
-        onSave:async(dados)=>{
+      /* =========================
+         LOCALIZAÇÃO
+      ========================= */
 
-            await callAPI({
+      {
+        key:"cidade",
+        label:"Cidade"
+      },
 
-                action:"criar_cliente",
+      {
+        key:"uf",
+        label:"UF"
+      },
 
-                ...dados,
 
-                key:state.key
+      /* =========================
+         VÍNCULO
+      ========================= */
 
-            });
+      {
+        key:"grupo",
+        label:"Grupo"
+      },
 
-            toast("Cliente cadastrado.");
+      {
+        key:"ativo",
+        label:"Cliente ativo",
+        type:"select",
+        options:[
+          "SIM",
+          "NAO"
+        ]
+      },
 
-            loadClientes(true);
 
-        }
+      /* =========================
+         VEÍCULO 1
+      ========================= */
 
-    });
+      {
+        key:"placa_1",
+        label:"Placa do veículo 1"
+      },
+
+      {
+        key:"modelo_1",
+        label:"Modelo do veículo 1"
+      },
+
+
+      /* =========================
+         VEÍCULO 2
+      ========================= */
+
+      {
+        key:"placa_2",
+        label:"Placa do veículo 2"
+      },
+
+      {
+        key:"modelo_2",
+        label:"Modelo do veículo 2"
+      },
+
+
+      /* =========================
+         PLANO / PAGAMENTO
+      ========================= */
+
+      {
+        key:"tipoPlano",
+        label:"Tipo de plano"
+      },
+
+      {
+        key:"dataVencimento",
+        label:"Data de vencimento",
+        type:"date"
+      },
+
+      {
+        key:"statusPagamento",
+        label:"Status do pagamento"
+      },
+
+      {
+        key:"responsavelPagamento",
+        label:"Responsável pelo pagamento"
+      },
+
+      {
+        key:"grupoPagante",
+        label:"Grupo pagante"
+      },
+
+      {
+        key:"dataEntradaGrupo",
+        label:"Data de entrada no grupo",
+        type:"date"
+      },
+
+
+      /* =========================
+         OBSERVAÇÕES
+      ========================= */
+
+      {
+        key:"observacoes",
+        label:"Observações",
+        type:"textarea"
+      }
+
+    ],
+
+
+    onSave:async(dados)=>{
+
+      /* =========================
+         CAMPOS OBRIGATÓRIOS
+      ========================= */
+
+      const nome =
+        String(
+          dados.nome || ""
+        ).trim();
+
+      const cpf =
+        String(
+          dados.cpf || ""
+        ).replace(/\D/g,"");
+
+      const nascimento =
+        String(
+          dados.nascimento || ""
+        ).trim();
+
+
+      if(!nome){
+
+        throw new Error(
+          "Informe o nome do cliente."
+        );
+
+      }
+
+
+      if(cpf.length !== 11){
+
+        throw new Error(
+          "Informe um CPF válido."
+        );
+
+      }
+
+
+      /* =========================
+         VALIDA DÍGITOS DO CPF
+      ========================= */
+
+      if(
+        typeof validarCPF === "function" &&
+        !validarCPF(cpf)
+      ){
+
+        throw new Error(
+          "CPF inválido."
+        );
+
+      }
+
+
+      if(!nascimento){
+
+        throw new Error(
+          "Informe a data de nascimento."
+        );
+
+      }
+
+
+      /* =========================
+         VERIFICA CPF EXISTENTE
+         ATIVO OU INATIVO
+      ========================= */
+
+      const existente =
+        (state.cache.clientes || [])
+          .find(c =>
+
+            String(
+              c.cpf || ""
+            )
+            .replace(/\D/g,"")
+
+            ===
+
+            cpf
+
+          );
+
+
+      if(existente){
+
+        throw new Error(
+
+          "Este CPF já está cadastrado.\n\n" +
+
+          "Cliente: " +
+          (existente.nome || "-") +
+
+          "\nAPV: " +
+          (existente.idPublico || "-") +
+
+          "\nStatus: " +
+          (existente.ativo || "-")
+
+        );
+
+      }
+
+
+      /* =========================
+         ENVIA PARA O GAS
+      ========================= */
+
+      const resp =
+        await callAPI({
+
+          action:"criar_cliente",
+
+          ...dados,
+
+          cpf:cpf,
+
+          origemAceite:"ADMIN",
+
+          key:state.key
+
+        });
+
+
+      if(
+        !resp ||
+        resp.ok !== true
+      ){
+
+        throw new Error(
+
+          resp?.erro ||
+          resp?.msg ||
+          resp?.mensagem ||
+          "Não foi possível cadastrar o cliente."
+
+        );
+
+      }
+
+
+      toast(
+        "✅ Cliente cadastrado."
+      );
+
+
+      await loadClientes(true);
+
+    }
+
+  });
 
 }
 
