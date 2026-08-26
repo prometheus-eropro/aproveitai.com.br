@@ -2386,36 +2386,46 @@ color:#666;
 
 }
 
+/* =====================================================
+   BOTÕES BENEFÍCIOS / PROMOÇÕES DO PARCEIRO
+   PADRÃO ÚNICO APROVEITAI
+===================================================== */
+
 .btn-conteudo-parceiro{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  min-height:40px;
+  padding:9px 16px;
 
   border:none;
-
   border-radius:9px;
 
-  padding:9px 13px;
-
   background:#0b7a2a;
+  color:#ffffff;
 
-  color:white;
-
-  font-weight:700;
+  font-size:14px;
+  font-weight:800;
+  line-height:1.2;
 
   cursor:pointer;
-
+  transition:.2s;
 }
 
 .btn-conteudo-parceiro:hover{
-
-  opacity:.88;
-
+  background:#086523;
+  opacity:1;
 }
 
-.btn-promocao{
-
-  background:#e88900;
-
+/* Promoção usa exatamente o mesmo padrão */
+.btn-conteudo-parceiro.btn-promocao{
+  background:#0b7a2a;
 }
 
+.btn-conteudo-parceiro.btn-promocao:hover{
+  background:#086523;
+}
 
 /* CONTATOS */
 
