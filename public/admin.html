@@ -2106,8 +2106,34 @@ Novo Parceiro
 
 </div>
 
-<div class="hr">
+<div class="hr"></div>
+
+<!-- =====================================================
+     FINANCEIRO
+===================================================== -->
+
+<button class="navbtn" id="menuFinanceiro">
+    💰
+    <span class="texto">Financeiro</span>
+</button>
+
+<div class="submenu ativo" id="submenuFinanceiro">
+
+    <button
+        class="navbtn"
+        data-view="pagamentos">
+
+        💵
+        <span class="texto">
+            Recebimentos
+        </span>
+
+    </button>
+
 </div>
+
+<div class="hr"></div>
+
 <button class="navbtn" id="menuAdministracao">
     ⚙️
     <span class="texto">Administração</span>
@@ -2457,6 +2483,155 @@ style="display:none;margin-top:20px;">
 
 </section>
 
+<!-- =====================================================
+     FINANCEIRO — RECEBIMENTOS
+===================================================== -->
+
+<section
+    data-section="pagamentos"
+    style="display:none">
+
+    <div class="row">
+
+        <input
+            class="input"
+            id="filtroPagamentos"
+            placeholder="Buscar por nome, CPF/CNPJ, competência, tipo ou status"
+        />
+
+        <button
+            class="btn"
+            id="btnReloadPagamentos">
+
+            🔄 Recarregar
+
+        </button>
+
+        <button
+            class="btn"
+            id="btnCsvPagamentos">
+
+            📥 Exportar CSV
+
+        </button>
+
+        <button
+            class="btn primary"
+            id="btnNovoPagamento">
+
+            ➕ Novo Recebimento
+
+        </button>
+
+    </div>
+
+
+    <div class="hint">
+
+        Controle de contas a receber do AproveitAI:
+        mensalidades, serviços, implantação,
+        publicidade e outros recebimentos.
+
+    </div>
+
+
+    <div class="hr"></div>
+
+
+    <!-- RESUMO FINANCEIRO -->
+
+    <div class="cards">
+
+        <div class="card">
+
+            <b>Total Recebido</b>
+
+            <div
+                class="big"
+                id="finTotalRecebido">
+
+                R$ 0,00
+
+            </div>
+
+            <div class="hint">
+                Recebimentos confirmados
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <b>A Receber</b>
+
+            <div
+                class="big"
+                id="finAReceber">
+
+                R$ 0,00
+
+            </div>
+
+            <div class="hint">
+                Valores pendentes
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <b>Vencidos</b>
+
+            <div
+                class="big"
+                id="finVencidos">
+
+                R$ 0,00
+
+            </div>
+
+            <div class="hint">
+                Recebimentos em atraso
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <b>Registros</b>
+
+            <div
+                class="big"
+                id="finQuantidade">
+
+                0
+
+            </div>
+
+            <div class="hint">
+                Lançamentos financeiros
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="hr"></div>
+
+
+    <!-- TABELA -->
+
+    <div class="tableWrap">
+
+        <table id="tblPagamentos"></table>
+
+    </div>
+
+</section>
 
           <!-- BENEFICIOS -->
           <section data-section="beneficios" style="display:none">
@@ -3952,6 +4127,30 @@ function abrirEditarCliente(cpf){
         apenasNumeros(cpf)
     ) || {};
 
+/* =========================================
+   FORMATA DATA DE NASCIMENTO PARA EXIBIÇÃO
+   NÃO ALTERA O VALOR SALVO NA PLANILHA
+========================================= */
+
+const nascimentoOriginal = c.nascimento;
+
+if(nascimentoOriginal){
+
+  const data =
+    new Date(nascimentoOriginal);
+
+  if(!isNaN(data.getTime())){
+
+    c.nascimento =
+      String(data.getUTCDate()).padStart(2,"0") +
+      "/" +
+      String(data.getUTCMonth() + 1).padStart(2,"0") +
+      "/" +
+      data.getUTCFullYear();
+
+  }
+
+}
 
   openEditModal({
 
