@@ -518,6 +518,49 @@ window.AproveitAIOfertas = (() => {
     );
   }
 
+/* =====================================================
+   SITE
+===================================================== */
+
+function linkSite(oferta) {
+
+  let site =
+    texto(
+      oferta.site ||
+      oferta.website ||
+      oferta.url_site ||
+      oferta.link_site ||
+      ""
+    );
+
+  if (!site) {
+    return "";
+  }
+
+  /*
+   * Remove espaços
+   */
+  site = site.trim();
+
+  /*
+   * Se já possuir protocolo,
+   * mantém como está.
+   */
+  if (/^https?:\/\//i.test(site)) {
+    return site;
+  }
+
+  /*
+   * Evita endereço relativo.
+   *
+   * Exemplo:
+   * www.aproveitai.com.br
+   *
+   * passa a ser:
+   * https://www.aproveitai.com.br
+   */
+  return "https://" + site;
+}
 
   function linkMaps(oferta) {
 
@@ -569,6 +612,9 @@ window.AproveitAIOfertas = (() => {
     const instagram =
       linkInstagram(oferta);
 
+    const site =
+      linkSite(oferta);
+
     const maps =
       linkMaps(oferta);
 
@@ -576,6 +622,7 @@ window.AproveitAIOfertas = (() => {
     if (
       !whatsapp &&
       !instagram &&
+      !site &&
       !maps
     ) {
       return "";
@@ -618,6 +665,22 @@ window.AproveitAIOfertas = (() => {
 
 
         ${
+          site
+            ? `
+              <a
+                href="${escaparHTML(site)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="oferta-btn oferta-btn-site"
+              >
+                🌐 Site
+              </a>
+            `
+            : ""
+        }
+
+
+        ${
           maps
             ? `
               <a
@@ -634,7 +697,7 @@ window.AproveitAIOfertas = (() => {
 
       </div>
     `;
-  }
+}
 
 
   /* =====================================================
@@ -895,33 +958,37 @@ window.AproveitAIOfertas = (() => {
      API PÚBLICA DO COMPONENTE
   ===================================================== */
 
-    return {
+   return {
 
-    render,
+  render,
 
-    beneficio,
+  beneficio,
 
-    promocao,
+  promocao,
 
-    dataBR,
+  dataBR,
 
-    formasPagamento,
+  formasPagamento,
 
-    ehExclusivo,
+  ehExclusivo,
 
-    promocaoEncerrada,
+  promocaoEncerrada,
 
-    promocaoFutura,
+  promocaoFutura,
 
-    linkWhatsApp,
+  linkWhatsApp,
 
-    linkInstagram,
+  linkInstagram,
 
-    linkMaps
+  linkSite,
 
-  };
+  linkMaps
 
-})();
+};
+
+})
+
+();
 
 /* =========================================================
    APROVEITAI
