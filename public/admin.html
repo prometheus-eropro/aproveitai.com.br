@@ -2879,18 +2879,29 @@ const store = {
 const state = {
   key: store.get("apv_admin_key") || null,
   admin: store.get("apv_admin_name") || null,
-  cache: { clientes:[], parceiros:[], beneficios:[], promocoes:[], logs:[], log_admin:[], admins:[] },
-  loaded:{
+  cache: {
+  clientes:[],
+  parceiros:[],
+  beneficios:[],
+  promocoes:[],
+  pagamentos:[],
+  logs:[],
+  log_admin:[],
+  admins:[]
+},
+
+
+loaded:{
 clientes:false,
 parceiros:false,
 beneficios:false,
 promocoes:false,
+pagamentos:false,
 logs:false,
 log_admin:false,
 admins:false,
 dashboard:false
 },
-
 versao:CONFIG.versao,
 empresa:CONFIG.empresa,
 plataforma:CONFIG.plataforma,
@@ -3310,6 +3321,7 @@ async function loadView(name){
   if(name==="implantacao") return loadImplantacao();
   if(name === "beneficios") return loadBeneficios(true);
   if(name === "promocoes") return loadPromocoes(true);
+  if(name === "pagamentos") return loadPagamentos(true);
   if(name === "logs") return loadLogs(true);
   if(name === "log_admin") return loadLogAdmin(true);
   if(name === "admins") return loadAdmins(true);
@@ -7256,6 +7268,312 @@ cpf:
 
 }
 
+/* ======================================================
+   FINANCEIRO — RECEBIMENTOS
+====================================================== */
+
+async function loadPagamentos(force=false){
+
+  if(
+    state.loaded.pagamentos &&
+    !force
+  ){
+    return;
+  }
+
+  try{
+
+    const r =
+      await callAPI({
+        aba:"pagamentos"
+      });
+
+    if(
+      !r ||
+      r.ok === false
+    ){
+
+      throw new Error(
+        r?.erro ||
+        r?.msg ||
+        "Erro ao carregar recebimentos."
+      );
+
+    }
+
+    state.cache.pagamentos =
+      Array.isArray(r.dados)
+        ? r.dados
+        : [];
+
+    state.loaded.pagamentos = true;
+
+    renderPagamentos();
+
+  }catch(err){
+
+    console.error(
+      "ERRO LOAD PAGAMENTOS:",
+      err
+    );
+
+    toast(
+      "Erro ao carregar recebimentos."
+    );
+
+  }
+
+}
+
+function renderPagamentos(){
+
+  const q =
+    ($("filtroPagamentos")?.value || "")
+      .trim()
+      .toLowerCase();
+
+
+  const todos =
+    Array.isArray(state.cache.pagamentos)
+      ? state.cache.pagamentos
+      : [];
+
+
+  const rows =
+    todos
+      .slice()
+      .reverse()
+      .filter(p => {
+
+        if(!q){
+          return true;
+        }
+
+        return JSON
+          .stringify(p)
+          .toLowerCase()
+          .includes(q);
+
+      });
+
+
+  /* ================================
+     CONVERTE VALOR PARA NÚMERO
+  ================================= */
+
+  function numeroValor(v){
+
+    if(typeof v === "number"){
+      return v;
+    }
+
+    let s =
+      String(v ?? "")
+        .trim()
+        .replace("R$", "")
+        .replace(/\s/g, "");
+
+
+    if(
+      s.includes(".") &&
+      s.includes(",")
+    ){
+
+      s =
+        s
+          .replace(/\./g, "")
+          .replace(",", ".");
+
+    }else if(s.includes(",")){
+
+      s =
+        s.replace(",", ".");
+
+    }
+
+
+    const n = Number(s);
+
+    return Number.isFinite(n)
+      ? n
+      : 0;
+
+  }
+
+
+  /* ================================
+     FORMATA MOEDA
+  ================================= */
+
+  function moeda(v){
+
+    return numeroValor(v)
+      .toLocaleString(
+        "pt-BR",
+        {
+          style:"currency",
+          currency:"BRL"
+        }
+      );
+
+  }
+
+
+  /* ================================
+     RESUMO FINANCEIRO
+  ================================= */
+
+  let totalRecebido = 0;
+  let totalAReceber = 0;
+  let totalVencido = 0;
+
+
+  rows.forEach(p => {
+
+    const valor =
+      numeroValor(p.valor);
+
+    const status =
+      String(p.status || "")
+        .trim()
+        .toUpperCase();
+
+
+    if(status === "PAGO"){
+
+      totalRecebido += valor;
+
+    }
+
+
+    if(status === "PENDENTE"){
+
+      totalAReceber += valor;
+
+    }
+
+
+    if(status === "VENCIDO"){
+
+      totalVencido += valor;
+
+    }
+
+  });
+
+
+  if($("finTotalRecebido")){
+
+    $("finTotalRecebido").textContent =
+      moeda(totalRecebido);
+
+  }
+
+
+  if($("finAReceber")){
+
+    $("finAReceber").textContent =
+      moeda(totalAReceber);
+
+  }
+
+
+  if($("finVencidos")){
+
+    $("finVencidos").textContent =
+      moeda(totalVencido);
+
+  }
+
+
+  if($("finQuantidade")){
+
+    $("finQuantidade").textContent =
+      rows.length;
+
+  }
+
+
+  /* ================================
+     TABELA
+  ================================= */
+
+  renderTable(
+    "tblPagamentos",
+    rows,
+    [
+
+      {
+        key:"pagamento_id",
+        label:"ID"
+      },
+
+      {
+        key:"nome_pagador",
+        label:"Pagador"
+      },
+
+      {
+        key:"tipo_pagador",
+        label:"Tipo"
+      },
+
+      {
+        key:"tipo_receita",
+        label:"Receita"
+      },
+
+      {
+        key:"competencia",
+        label:"Competência"
+      },
+
+      {
+        key:"descricao",
+        label:"Descrição"
+      },
+
+      {
+        key:"valor",
+        label:"Valor",
+        render:(r)=>moeda(r.valor)
+      },
+
+      {
+        key:"data_vencimento",
+        label:"Vencimento",
+        render:(r)=>
+          formatarDataBR(
+            r.data_vencimento
+          )
+      },
+
+      {
+        key:"data_pagamento",
+        label:"Pagamento",
+        render:(r)=>
+          r.data_pagamento
+            ? formatarDataBR(
+                r.data_pagamento
+              )
+            : ""
+      },
+
+      {
+        key:"forma_pagamento",
+        label:"Forma"
+      },
+
+      {
+        key:"status",
+        label:"Status"
+      }
+
+    ]
+  );
+
+}
+
 /* ---------- LOGS / LOG_ADMIN / ADMINS ---------- */
 async function loadLogs(force=false){
   if(state.loaded.logs && !force) return;
@@ -7461,6 +7779,18 @@ $("btnNovoBeneficio")?.addEventListener("click", () => novoBeneficio());
 
 $("btnReloadPromocoes")?.addEventListener("click", () => loadPromocoes(true));
 $("btnNovoPromocao")?.addEventListener("click", () => novoPromocao());
+
+/* ================= FINANCEIRO ================= */
+
+$("btnReloadPagamentos")?.addEventListener(
+  "click",
+  () => loadPagamentos(true)
+);
+
+$("filtroPagamentos")?.addEventListener(
+  "input",
+  () => renderPagamentos()
+);
 
 /* ================= LOGS ================= */
 
