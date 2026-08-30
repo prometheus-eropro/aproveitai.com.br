@@ -5773,19 +5773,22 @@ categoria:
         flex:"1 1 520px"
       },
 
-      {
-        key:"categoria",
-        label:"Categoria",
-        w:"220px"
-      },
+{
+  key:"categoria",
+  label:"Categoria(s) — opcional",
+  placeholder:"Ex.: Combustíveis, Serviços",
+  w:"320px"
+},
 
 {
   key:"itens_beneficio",
   label:"Itens do Benefício — opcional",
   type:"textarea",
-  placeholder:"Ex.: Gasolina Comum, Gasolina Aditivada, Etanol, Diesel S10, Troca de Óleo",
-  w:"520px",
-  flex:"1 1 520px"
+  placeholder:
+    "Digite os itens separados por vírgula.\n" +
+    "Ex.: Gasolina Comum, Gasolina Aditivada, Etanol, Diesel S10, Diesel S500, Troca de Óleo",
+  w:"620px",
+  flex:"1 1 620px"
 },
 
 {
@@ -6772,7 +6775,8 @@ categoria:
       "",
 
     itens_beneficio:
-      dadosIniciais.itens_beneficio || "",
+      dadosIniciais.itens_beneficio ||
+      "",
 
     ordem:
       dadosIniciais.ordem || "",
@@ -6933,10 +6937,51 @@ categoria:
 },
 
       {
-        key:"forma_pagamento",
-        label:"Forma de Pagamento",
-        w:"260px"
-      },
+  key:"forma_pagamento",
+  label:"Forma de Pagamento",
+  type:"select",
+
+  options:[
+    {
+      value:"",
+      label:"Não informado"
+    },
+    {
+      value:"Todas",
+      label:"Todas"
+    },
+    {
+      value:"Dinheiro ou Pix",
+      label:"Dinheiro ou Pix"
+    },
+    {
+      value:"Somente Pix",
+      label:"Somente Pix"
+    },
+    {
+      value:"Somente Dinheiro",
+      label:"Somente Dinheiro"
+    },
+    {
+      value:"Débito",
+      label:"Débito"
+    },
+    {
+      value:"Crédito",
+      label:"Crédito"
+    },
+    {
+      value:"À vista",
+      label:"À vista"
+    },
+    {
+      value:"Conforme condições do parceiro",
+      label:"Conforme condições do parceiro"
+    }
+  ],
+
+  w:"260px"
+},
 
 
       {
