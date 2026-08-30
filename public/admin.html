@@ -5780,6 +5780,15 @@ categoria:
       },
 
 {
+  key:"itens_beneficio",
+  label:"Itens do Benefício — opcional",
+  type:"textarea",
+  placeholder:"Ex.: Gasolina Comum, Gasolina Aditivada, Etanol, Diesel S10, Troca de Óleo",
+  w:"520px",
+  flex:"1 1 520px"
+},
+
+{
   key:"grupo",
   label:"Segmentação",
   type:"select",
@@ -6091,12 +6100,17 @@ cpf:
   cpfFinal,
 
           categoria:
-            String(
-              data.categoria || ""
-            ).trim(),
+  String(
+    data.categoria || ""
+  ).trim(),
 
-          ordem:
-            data.ordem || "",
+itens_beneficio:
+  String(
+    data.itens_beneficio || ""
+  ).trim(),
+
+ordem:
+  data.ordem || "",
 
           forma_pagamento:
             String(
@@ -6756,6 +6770,9 @@ categoria:
       dadosIniciais.categoria ||
       sugestao.categoria ||
       "",
+
+    itens_beneficio:
+      dadosIniciais.itens_beneficio || "",
 
     ordem:
       dadosIniciais.ordem || "",
@@ -12504,32 +12521,38 @@ placeholder="Digite o CNPJ">
 
 <label>Ramo</label>
 
+<label>Ramo</label>
+
 <select id="ramo" required>
   <option value="">Selecione o ramo</option>
 
-  <option value="SUPERMERCADO">Supermercado</option>
-  <option value="FARMACIA">Farmácia</option>
-  <option value="POSTO">Posto de Combustível</option>
-  <option value="AUTOPECAS">Autopeças</option>
-  <option value="OFICINA">Oficina Mecânica</option>
-  <option value="MOTOS">Oficina / Peças para Motos</option>
-  <option value="LAVAJATO">Lava Jato</option>
-  <option value="PADARIA">Padaria</option>
-  <option value="RESTAURANTE">Restaurante</option>
-  <option value="LOJADEROUPAS">Loja de Roupas</option>
-  <option value="CALCADOS">Calçados</option>
-  <option value="MATERIALDECONSTRUCAO">Material de Construção</option>
-  <option value="AGROPECUARIA">Agropecuária</option>
-  <option value="PETSHOP">Pet Shop</option>
   <option value="ACADEMIA">Academia</option>
+  <option value="AGROPECUARIA">Agropecuária</option>
+  <option value="AUTOPECAS">Autopeças</option>
   <option value="BARBEARIA">Barbearia</option>
-  <option value="SALAO">Salão de Beleza</option>
+  <option value="CALCADOS">Calçados</option>
   <option value="CLINICA">Clínica</option>
   <option value="CONTABILIDADE">Contabilidade</option>
+  <option value="FARMACIA">Farmácia</option>
+  <option value="GAS">Revenda de Gás</option>
   <option value="INTERNET">Internet</option>
-  <option value="SERVICOS">Serviços</option>
+  <option value="LANCHONETE">Lanchonete</option>
+  <option value="LAVAJATO">Lava Jato</option>
+  <option value="LOJADEROUPAS">Loja de Roupas</option>
+  <option value="MAQUINASEEQUIPAMENTOS">Máquinas e Equipamentos / Assistência Técnica</option>
+  <option value="MATERIALDECONSTRUCAO">Material de Construção</option>
+  <option value="MOTOS">Oficina / Peças para Motos</option>
+  <option value="OFICINA">Oficina Mecânica</option>
   <option value="OUTROS">Outros</option>
+  <option value="PADARIA">Padaria</option>
+  <option value="PETSHOP">Pet Shop</option>
+  <option value="POSTO">Posto de Combustível</option>
+  <option value="RESTAURANTE">Restaurante</option>
+  <option value="SALAO">Salão de Beleza</option>
+  <option value="SERVICOS">Serviços</option>
+  <option value="SUPERMERCADO">Supermercado</option>
 </select>
+
 </div>
 
 <div>
