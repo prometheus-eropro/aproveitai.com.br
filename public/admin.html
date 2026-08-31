@@ -5784,9 +5784,13 @@ categoria:
   key:"itens_beneficio",
   label:"Itens do Benefício — opcional",
   type:"textarea",
-  placeholder:
-    "Digite os itens separados por vírgula.\n" +
-    "Ex.: Gasolina Comum, Gasolina Aditivada, Etanol, Diesel S10, Diesel S500, Troca de Óleo",
+ placeholder:
+  "Digite um item por linha, usando | entre o item e o benefício.\n" +
+  "Ex.:\n" +
+  "Gasolina Comum|R$ 0,25 de desconto por litro\n" +
+  "Gasolina Aditivada|R$ 0,25 de desconto por litro\n" +
+  "Diesel S10|R$ 0,10 de desconto por litro\n" +
+  "Troca de Óleo|20% de desconto",
   w:"620px",
   flex:"1 1 620px"
 },
@@ -6156,10 +6160,9 @@ ordem:
   data.ordem || "",
 
           forma_pagamento:
-            String(
-              data.forma_pagamento ||
-              pagamentoPadraoAproveitai_()
-            ).trim(),
+  String(
+    data.forma_pagamento || ""
+  ).trim(),
 
           observacoes:
             String(
