@@ -5450,106 +5450,328 @@ async function editarBeneficio(beneficioId){
       },
 
 {
+  key:"categoria",
+  label:"Categoria(s) — opcional",
+  placeholder:"Ex.: Combustíveis, Serviços",
+  w:"320px"
+},
+
+{
+  key:"itens_beneficio",
+  label:"Itens do Benefício — opcional",
+  type:"textarea",
+  placeholder:
+    "Digite um item por linha, usando | entre o item e o benefício.\n" +
+    "Ex.:\n" +
+    "Gasolina Comum|R$ 0,25 de desconto por litro\n" +
+    "Gasolina Aditivada|R$ 0,25 de desconto por litro\n" +
+    "Diesel S10|R$ 0,10 de desconto por litro\n" +
+    "Troca de Óleo|20% de desconto",
+  w:"620px",
+  flex:"1 1 620px"
+},
+
+{
   key:"grupo",
-  label:"Grupo",
+  label:"Segmentação",
   type:"select",
-
-  options:
-    obterGruposCadastrados(),
-
+  options:[
+    {
+      value:"GERAL",
+      label:"GERAL — Todos os clientes"
+    },
+    {
+      value:"GRUPO",
+      label:"GRUPO — Grupo específico"
+    },
+    {
+      value:"ID",
+      label:"ID — Cliente específico"
+    },
+    {
+      value:"CPF",
+      label:"CPF — Cliente específico"
+    }
+  ],
   w:"260px"
 },
 
 {
-  key:"categoria",
-  label:"Categoria",
+  key:"grupo_destino",
+  label:"Grupo específico",
   type:"select",
-  options:[
-    {value:"PRODUTO", label:"PRODUTO"},
-    {value:"SERVICO", label:"SERVIÇO"},
-    {value:"COMBUSTIVEL", label:"COMBUSTÍVEL"},
-    {value:"ALIMENTACAO", label:"ALIMENTAÇÃO"},
-    {value:"SAUDE", label:"SAÚDE"},
-    {value:"AUTOMOTIVO", label:"AUTOMOTIVO"},
-    {value:"OUTROS", label:"OUTROS"}
-  ],
-  w:"220px"
+  options:obterGruposCadastrados(),
+  w:"320px",
+
+  showWhen:{
+    key:"grupo",
+    value:"GRUPO"
+  }
+},
+
+{
+  key:"idPublico",
+  label:"ID Público do Cliente",
+  placeholder:"Ex.: APV-000001",
+  w:"260px",
+
+  showWhen:{
+    key:"grupo",
+    value:"ID"
+  }
+},
+
+{
+  key:"cpf",
+  label:"CPF do Cliente",
+  placeholder:"Somente números",
+  w:"220px",
+
+  showWhen:{
+    key:"grupo",
+    value:"CPF"
+  }
 },
 
 {
   key:"forma_pagamento",
   label:"Forma de Pagamento",
   type:"select",
+
   options:[
-    {value:"", label:"Não informado"},
-    {value:"TODAS", label:"Todas"},
-    {value:"DINHEIRO_PIX", label:"Dinheiro ou Pix"},
-    {value:"PIX", label:"Somente Pix"},
-    {value:"DINHEIRO", label:"Somente Dinheiro"},
-    {value:"DEBITO", label:"Débito"},
-    {value:"CREDITO", label:"Crédito"},
-    {value:"A_VISTA", label:"À vista"},
-    {value:"CONFORME_PARCEIRO", label:"Conforme condições do parceiro"}
+    {
+      value:"",
+      label:"Não informado"
+    },
+    {
+      value:"TODAS",
+      label:"Todas"
+    },
+    {
+      value:"DINHEIRO OU PIX",
+      label:"Dinheiro ou Pix"
+    },
+    {
+      value:"SOMENTE PIX",
+      label:"Somente Pix"
+    },
+    {
+      value:"SOMENTE DINHEIRO",
+      label:"Somente Dinheiro"
+    },
+    {
+      value:"DÉBITO",
+      label:"Débito"
+    },
+    {
+      value:"CRÉDITO",
+      label:"Crédito"
+    },
+    {
+      value:"À VISTA",
+      label:"À vista"
+    },
+    {
+      value:"CONFORME CONDIÇÕES DO PARCEIRO",
+      label:"Conforme condições do parceiro"
+    }
   ],
+
   w:"260px"
 },
 
-      {
-        key:"ordem",
-        label:"Ordem",
-        w:"120px"
-      },
+{
+  key:"ordem",
+  label:"Ordem",
+  type:"number",
+  w:"120px"
+},
 
-      {
-        key:"observacoes",
-        label:"Condições / Observações",
-        type:"textarea",
-        w:"720px",
-        flex:"1 1 720px"
-      },
+{
+  key:"observacoes",
+  label:"Condições / Observações",
+  type:"textarea",
+  w:"720px",
+  flex:"1 1 720px"
+},
 
-      {
-        key:"ativo",
-        label:"Status",
-        type:"select",
-        options:[
-          {value:"SIM", label:"Ativo"},
-          {value:"NAO", label:"Inativo"}
-        ],
-        w:"200px"
-      }
-
-    ],
-
-
-    onSave: async (patch)=>{
-
-      /* CAMPOS PERMANENTES */
-
-      delete patch.beneficio_id;
-      delete patch.titulo;
-      delete patch.parceiro;
-      delete patch.parceiro_id;
-
-
-      await apiAtualizarRegistro(
-        "beneficios",
-        "beneficio_id",
-        id,
-        patch
-      );
-
-
-      toast(
-        patch.ativo === "NAO"
-          ? "Benefício desativado. Histórico preservado."
-          : "Benefício atualizado."
-      );
-
-
-      await loadBeneficios(true);
-
+{
+  key:"ativo",
+  label:"Status",
+  type:"select",
+  options:[
+    {
+      value:"SIM",
+      label:"Ativo"
+    },
+    {
+      value:"NAO",
+      label:"Inativo"
     }
+  ],
+  w:"200px"
+}
+
+],
+
+onSave: async (patch)=>{
+
+  /* ==========================================
+     CAMPOS PERMANENTES
+  ========================================== */
+
+  delete patch.beneficio_id;
+  delete patch.titulo;
+  delete patch.parceiro;
+  delete patch.parceiro_id;
+
+
+  /* ==========================================
+     NORMALIZA SEGMENTAÇÃO
+  ========================================== */
+
+  const segmentacao =
+    normalizarSegmentacaoAproveitai_(
+      patch.grupo
+    );
+
+
+  let grupoFinal = "GERAL";
+  let idPublicoFinal = "";
+  let cpfFinal = "";
+
+
+  if(segmentacao === "GRUPO"){
+
+    if(
+      !String(
+        patch.grupo_destino || ""
+      ).trim()
+    ){
+
+      alert(
+        "Informe qual grupo receberá este benefício."
+      );
+
+      throw new Error(
+        "GRUPO_DESTINO_OBRIGATORIO"
+      );
+    }
+
+    grupoFinal =
+      String(
+        patch.grupo_destino || ""
+      ).trim();
+
+  }
+
+
+  if(segmentacao === "ID"){
+
+    if(
+      !String(
+        patch.idPublico || ""
+      ).trim()
+    ){
+
+      alert(
+        "Informe o ID Público do cliente."
+      );
+
+      throw new Error(
+        "ID_PUBLICO_OBRIGATORIO"
+      );
+    }
+
+    idPublicoFinal =
+      String(
+        patch.idPublico || ""
+      ).trim();
+
+  }
+
+
+  if(segmentacao === "CPF"){
+
+    const cpfDestino =
+      String(
+        patch.cpf || ""
+      ).replace(/\D/g,"");
+
+
+    if(cpfDestino.length !== 11){
+
+      alert(
+        "Informe um CPF válido com 11 números."
+      );
+
+      throw new Error(
+        "CPF_DESTINO_INVALIDO"
+      );
+    }
+
+
+    cpfFinal = cpfDestino;
+
+  }
+
+
+  /* ==========================================
+     MONTA DADOS PARA SALVAR
+  ========================================== */
+
+  patch.grupo = grupoFinal;
+
+  patch.idPublico = idPublicoFinal;
+
+  patch.cpf = cpfFinal;
+
+
+  patch.categoria =
+    String(
+      patch.categoria || ""
+    ).trim();
+
+
+  patch.itens_beneficio =
+    String(
+      patch.itens_beneficio || ""
+    ).trim();
+
+
+  patch.forma_pagamento =
+    String(
+      patch.forma_pagamento || ""
+    ).trim();
+
+
+  /* NÃO SALVA CAMPO AUXILIAR */
+
+  delete patch.grupo_destino;
+
+
+  /* ==========================================
+     ATUALIZA BENEFÍCIO
+  ========================================== */
+
+  await apiAtualizarRegistro(
+    "beneficios",
+    "beneficio_id",
+    id,
+    patch
+  );
+
+
+  toast(
+    patch.ativo === "NAO"
+      ? "Benefício desativado. Histórico preservado."
+      : "Benefício atualizado."
+  );
+
+
+  await loadBeneficios(true);
+
+}
 
   });
 
@@ -5714,9 +5936,10 @@ categoria:
       dadosIniciais.ordem || "",
 
     forma_pagamento:
-      dadosIniciais.forma_pagamento ||
-      sugestao.forma_pagamento ||
-      pagamentoPadraoAproveitai_(),
+  String(
+    dadosIniciais.forma_pagamento ||
+    ""
+  ).trim(),
 
     observacoes:
       dadosIniciais.observacoes ||
@@ -6500,102 +6723,385 @@ async function editarPromocao(promocaoId){
     initial:p,
 
 
-    fields:[
+   fields:[
 
+  {
+    key:"promocao_id",
+    label:"ID da Promoção",
+    readonly:true
+  },
+
+  {
+    key:"parceiro",
+    label:"Parceiro",
+    readonly:true,
+    w:"420px"
+  },
+
+  {
+    key:"titulo",
+    label:"Título",
+    w:"420px"
+  },
+
+  {
+    key:"descricao",
+    label:"Descrição",
+    type:"textarea",
+    w:"520px",
+    flex:"1 1 520px"
+  },
+
+  {
+    key:"itens_beneficio",
+    label:"Itens da Promoção — opcional",
+    type:"textarea",
+    placeholder:
+      "Digite um item por linha, usando | entre o item e o benefício.\n" +
+      "Ex.:\n" +
+      "Gasolina Comum|R$ 0,25 de desconto por litro\n" +
+      "Diesel S10|R$ 0,10 de desconto por litro\n" +
+      "Troca de Óleo|20% de desconto",
+    w:"520px",
+    flex:"1 1 520px"
+  },
+
+  {
+    key:"dataInicio",
+    label:"Data Inicial",
+    type:"date"
+  },
+
+  {
+    key:"dataFim",
+    label:"Data Final",
+    type:"date"
+  },
+
+  {
+    key:"categoria",
+    label:"Categoria — opcional",
+    placeholder:"Ex.: Combustíveis, Serviços",
+    w:"260px"
+  },
+
+  {
+    key:"grupo",
+    label:"Segmentação",
+    type:"select",
+
+    options:[
       {
-        key:"promocao_id",
-        label:"ID da Promoção",
-        readonly:true
+        value:"GERAL",
+        label:"GERAL — Todos os clientes"
       },
-
       {
-        key:"parceiro",
-        label:"Parceiro",
-        readonly:true,
-        w:"420px"
+        value:"GRUPO",
+        label:"GRUPO — Grupo específico"
       },
-
       {
-        key:"titulo",
-        label:"Título",
-        w:"420px"
+        value:"ID",
+        label:"ID — Cliente específico"
       },
-
       {
-        key:"descricao",
-        label:"Descrição",
-        type:"textarea",
-        w:"520px",
-        flex:"1 1 520px"
-      },
-
-      {
-        key:"dataInicio",
-        label:"Data Inicial",
-        type:"date"
-      },
-
-      {
-        key:"dataFim",
-        label:"Data Final",
-        type:"date"
-      },
-
-    {
-  key:"grupo",
-  label:"Grupo",
-  type:"select",
-
-  options:
-    obterGruposCadastrados(),
-
-  w:"260px"
-},
-
-      {
-        key:"categoria",
-        label:"Categoria"
-      },
-
-      {
-        key:"ordem",
-        label:"Ordem",
-        type:"number"
-      },
-
-      {
-        key:"observacoes",
-        label:"Condições / Observações",
-        type:"textarea",
-        w:"520px",
-        flex:"1 1 520px"
-      },
-
-      {
-        key:"ativo",
-        label:"Status",
-        type:"select",
-
-        options:[
-
-          {
-            value:"SIM",
-            label:"Ativa"
-          },
-
-          {
-            value:"NAO",
-            label:"Inativa"
-          }
-
-        ]
-
+        value:"CPF",
+        label:"CPF — Cliente específico"
       }
-
     ],
 
+    w:"260px"
+  },
 
-    onSave:async (patch)=>{
+  {
+    key:"grupo_destino",
+    label:"Grupo específico",
+    type:"select",
+
+    options:
+      obterGruposCadastrados(),
+
+    w:"320px",
+
+    showWhen:{
+      key:"grupo",
+      value:"GRUPO"
+    }
+  },
+
+  {
+    key:"idPublico",
+    label:"ID Público do Cliente",
+    placeholder:"Ex.: APV-000001",
+    w:"260px",
+
+    showWhen:{
+      key:"grupo",
+      value:"ID"
+    }
+  },
+
+  {
+    key:"cpf",
+    label:"CPF do Cliente",
+    placeholder:"Somente números",
+    w:"220px",
+
+    showWhen:{
+      key:"grupo",
+      value:"CPF"
+    }
+  },
+
+  {
+    key:"forma_pagamento",
+    label:"Forma de Pagamento",
+    type:"select",
+
+    options:[
+      {
+        value:"",
+        label:"Não informado"
+      },
+      {
+        value:"Todas",
+        label:"Todas"
+      },
+      {
+        value:"Dinheiro ou Pix",
+        label:"Dinheiro ou Pix"
+      },
+      {
+        value:"Somente Pix",
+        label:"Somente Pix"
+      },
+      {
+        value:"Somente Dinheiro",
+        label:"Somente Dinheiro"
+      },
+      {
+        value:"Débito",
+        label:"Débito"
+      },
+      {
+        value:"Crédito",
+        label:"Crédito"
+      },
+      {
+        value:"À vista",
+        label:"À vista"
+      },
+      {
+        value:"Conforme condições do parceiro",
+        label:"Conforme condições do parceiro"
+      }
+    ],
+
+    w:"260px"
+  },
+
+  {
+    key:"ordem",
+    label:"Ordem",
+    type:"number"
+  },
+
+  {
+    key:"observacoes",
+    label:"Condições / Observações",
+    type:"textarea",
+    w:"520px",
+    flex:"1 1 520px"
+  },
+
+  {
+    key:"ativo",
+    label:"Status",
+    type:"select",
+
+    options:[
+      {
+        value:"SIM",
+        label:"Ativa"
+      },
+      {
+        value:"NAO",
+        label:"Inativa"
+      }
+    ]
+  }
+
+],
+
+
+   onSave: async (patch)=>{
+
+  /* ==========================================
+     CAMPOS PERMANENTES
+  ========================================== */
+
+  delete patch.promocao_id;
+  delete patch.parceiro;
+  delete patch.parceiro_id;
+
+
+  /* ==========================================
+     NORMALIZA SEGMENTAÇÃO
+  ========================================== */
+
+  const segmentacao =
+    normalizarSegmentacaoAproveitai_(
+      patch.grupo
+    );
+
+
+  let grupoFinal = "GERAL";
+  let idPublicoFinal = "";
+  let cpfFinal = "";
+
+
+  /* ==========================================
+     GRUPO ESPECÍFICO
+  ========================================== */
+
+  if(segmentacao === "GRUPO"){
+
+    if(
+      !String(
+        patch.grupo_destino || ""
+      ).trim()
+    ){
+
+      alert(
+        "Informe qual grupo receberá esta promoção."
+      );
+
+      throw new Error(
+        "GRUPO_DESTINO_OBRIGATORIO"
+      );
+    }
+
+    grupoFinal =
+      String(
+        patch.grupo_destino || ""
+      ).trim();
+
+  }
+
+
+  /* ==========================================
+     ID ESPECÍFICO
+  ========================================== */
+
+  if(segmentacao === "ID"){
+
+    if(
+      !String(
+        patch.idPublico || ""
+      ).trim()
+    ){
+
+      alert(
+        "Informe o ID Público do cliente."
+      );
+
+      throw new Error(
+        "ID_PUBLICO_OBRIGATORIO"
+      );
+    }
+
+    idPublicoFinal =
+      String(
+        patch.idPublico || ""
+      ).trim();
+
+  }
+
+
+  /* ==========================================
+     CPF ESPECÍFICO
+  ========================================== */
+
+  if(segmentacao === "CPF"){
+
+    const cpfDestino =
+      String(
+        patch.cpf || ""
+      ).replace(/\D/g,"");
+
+
+    if(cpfDestino.length !== 11){
+
+      alert(
+        "Informe um CPF válido com 11 números."
+      );
+
+      throw new Error(
+        "CPF_DESTINO_INVALIDO"
+      );
+    }
+
+
+    cpfFinal = cpfDestino;
+
+  }
+
+
+  /* ==========================================
+     MONTA DADOS PARA SALVAR
+  ========================================== */
+
+  patch.grupo = grupoFinal;
+
+  patch.idPublico = idPublicoFinal;
+
+  patch.cpf = cpfFinal;
+
+
+  patch.categoria =
+    String(
+      patch.categoria || ""
+    ).trim();
+
+
+  patch.itens_beneficio =
+    String(
+      patch.itens_beneficio || ""
+    ).trim();
+
+
+  patch.forma_pagamento =
+    String(
+      patch.forma_pagamento || ""
+    ).trim();
+
+
+  /* CAMPO AUXILIAR — NÃO SALVAR NA PLANILHA */
+
+  delete patch.grupo_destino;
+
+
+  /* ==========================================
+     ATUALIZA PROMOÇÃO
+  ========================================== */
+
+  await apiAtualizarRegistro(
+    "promocoes",
+    "promocao_id",
+    promocaoId,
+    patch
+  );
+
+
+  toast(
+    patch.ativo === "NAO"
+      ? "Promoção desativada. Histórico preservado."
+      : "Promoção atualizada."
+  );
+
+
+  await loadPromocoes(true);
+
+}
 
       /*
        * NÃO PERMITE TROCAR
@@ -6824,10 +7330,11 @@ categoria:
     ordem:
       dadosIniciais.ordem || "",
 
-    forma_pagamento:
-      dadosIniciais.forma_pagamento ||
-      sugestao.forma_pagamento ||
-      pagamentoPadraoAproveitai_(),
+   forma_pagamento:
+  String(
+    dadosIniciais.forma_pagamento ||
+    ""
+  ).trim(),
 
     observacoes:
       dadosIniciais.observacoes ||
