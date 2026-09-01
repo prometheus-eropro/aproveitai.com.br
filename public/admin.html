@@ -7103,38 +7103,6 @@ async function editarPromocao(promocaoId){
 
 }
 
-      /*
-       * NÃO PERMITE TROCAR
-       * IDENTIFICADORES
-       */
-
-      /* ==========================================
-   CAMPOS DE IDENTIDADE — NÃO ALTERAR
-========================================== */
-
-delete patch.parceiro_id;
-delete patch.parceiro;
-delete patch.titulo;
-
-
-      await apiAtualizarRegistro(
-
-        "promocoes",
-
-        "promocao_id",
-
-        promocaoId,
-
-        patch
-
-      );
-
-
-      toast(
-        "✅ Promoção atualizada."
-      );
-
-
       await loadPromocoes(true);
 
     }
