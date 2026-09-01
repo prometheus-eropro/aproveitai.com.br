@@ -5461,12 +5461,11 @@ async function editarBeneficio(beneficioId){
   label:"Itens do Benefício — opcional",
   type:"textarea",
   placeholder:
-    "Digite um item por linha, usando | entre o item e o benefício.\n" +
-    "Ex.:\n" +
-    "Gasolina Comum|R$ 0,25 de desconto por litro\n" +
-    "Gasolina Aditivada|R$ 0,25 de desconto por litro\n" +
-    "Diesel S10|R$ 0,10 de desconto por litro\n" +
-    "Troca de Óleo|20% de desconto",
+  "Digite um item por linha, usando | entre o item e o benefício.\n" +
+  "Ex.:\n" +
+  "Produto ou Serviço|10% de desconto\n" +
+  "Produto Especial|R$ 5,00 de desconto\n" +
+  "Serviço|Condição especial",
   w:"620px",
   flex:"1 1 620px"
 },
@@ -6010,10 +6009,9 @@ categoria:
  placeholder:
   "Digite um item por linha, usando | entre o item e o benefício.\n" +
   "Ex.:\n" +
-  "Gasolina Comum|R$ 0,25 de desconto por litro\n" +
-  "Gasolina Aditivada|R$ 0,25 de desconto por litro\n" +
-  "Diesel S10|R$ 0,10 de desconto por litro\n" +
-  "Troca de Óleo|20% de desconto",
+  "Produto ou Serviço|10% de desconto\n" +
+  "Produto Especial|R$ 5,00 de desconto\n" +
+  "Serviço|Condição especial",
   w:"620px",
   flex:"1 1 620px"
 },
@@ -6329,7 +6327,11 @@ if(segmentacao === "CPF"){
     ).replace(/\D/g,"");
 
 }
-
+console.log(
+  "TESTE ITENS BENEFÍCIO:",
+  data.itens_beneficio,
+  data
+);
       const resposta =
         await callAPI({
 
@@ -6757,11 +6759,11 @@ async function editarPromocao(promocaoId){
     label:"Itens da Promoção — opcional",
     type:"textarea",
     placeholder:
-      "Digite um item por linha, usando | entre o item e o benefício.\n" +
-      "Ex.:\n" +
-      "Gasolina Comum|R$ 0,25 de desconto por litro\n" +
-      "Diesel S10|R$ 0,10 de desconto por litro\n" +
-      "Troca de Óleo|20% de desconto",
+  "Digite um item por linha, usando | entre o item e o benefício.\n" +
+  "Ex.:\n" +
+  "Produto ou Serviço|10% de desconto\n" +
+  "Produto Especial|R$ 5,00 de desconto\n" +
+  "Serviço|Condição especial",
     w:"520px",
     flex:"1 1 520px"
   },
@@ -7724,6 +7726,8 @@ if(segmentacao === "CPF"){
     ).replace(/\D/g,"");
 
 }
+
+
       const resposta =
         await callAPI({
 
