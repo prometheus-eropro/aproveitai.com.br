@@ -190,6 +190,35 @@ style="width:100%;padding:10px;margin-top:5px;">
 </select>
 </div>
 
+<!-- ==========================================
+     ITEM UTILIZADO
+========================================== -->
+
+<div
+  id="blocoItemUtilizado"
+  style="display:none;margin-top:15px;"
+>
+
+  <label>
+    <strong>Item utilizado</strong>
+  </label>
+
+ <select
+    id="itemUtilizado"
+    onchange="itemUtilizadoSelecionado()"
+    style="
+      width:100%;
+      padding:10px;
+      margin-top:5px;
+    "
+  >
+    <option value="">
+      Selecione o item utilizado
+    </option>
+  </select>
+
+</div>
+
 <div id="blocoVeiculo" style="display:none">
   <label>Selecione o veículo</label>
   <select id="selectVeiculo"
@@ -1552,37 +1581,237 @@ async function carregarBeneficios(
 
 function beneficioSelecionado(){
 
-   const beneficio =
-   document.getElementById(
+  const selectBeneficio =
+    document.getElementById(
       "beneficioSelecionado"
-   ).value;
+    );
 
-   if(!beneficio) return;
+  const blocoItem =
+    document.getElementById(
+      "blocoItemUtilizado"
+    );
 
-   if(window.exigePlaca){
+  const selectItem =
+    document.getElementById(
+      "itemUtilizado"
+    );
 
-      document.getElementById(
-         "blocoVeiculo"
-      ).style.display = "block";
 
-      document.getElementById(
-         "blocoGerarERO"
-      ).style.display = "block";
+  /* ==========================================
+     REINICIA ITEM
+  ========================================== */
 
-      document.getElementById(
-         "btnGerarERO"
-      ).style.display = "block";
+  blocoItem.style.display = "none";
 
-   } else {
+  selectItem.innerHTML =
+    '<option value="">' +
+    'Selecione o item utilizado' +
+    '</option>';
 
-      document.getElementById(
-         "blocoGerarERO"
-      ).style.display = "block";
 
-      document.getElementById(
-         "btnGerarERO"
-      ).style.display = "block";
-   }
+  const valor =
+    String(
+      selectBeneficio.value || ""
+    ).trim();
+
+
+  if(!valor){
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "none";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "none";
+
+    return;
+  }
+
+
+  /* ==========================================
+     LÊ BENEFÍCIO / PROMOÇÃO
+  ========================================== */
+
+  let oferta = {};
+
+  try {
+
+    oferta =
+      JSON.parse(valor);
+
+  } catch(e){
+
+    mostrarMsg(
+      "❌ Benefício ou promoção inválido."
+    );
+
+    return;
+  }
+
+
+  /* ==========================================
+     MONTA ITENS
+  ========================================== */
+
+  const textoItens =
+    String(
+      oferta.itens_beneficio || ""
+    ).trim();
+
+
+  if(textoItens){
+
+    const linhas =
+      textoItens
+        .split(/\r?\n/)
+        .map(linha => linha.trim())
+        .filter(Boolean);
+
+
+    linhas.forEach(function(linha){
+
+      const posicao =
+        linha.indexOf("|");
+
+      let item = linha;
+      let regra = "";
+
+
+      if(posicao >= 0){
+
+        item =
+          linha
+            .substring(0,posicao)
+            .trim();
+
+        regra =
+          linha
+            .substring(posicao + 1)
+            .trim();
+
+      }
+
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        JSON.stringify({
+          item:item,
+          regra:regra
+        });
+
+
+      option.text =
+        regra
+          ? item + " — " + regra
+          : item;
+
+
+      selectItem.appendChild(
+        option
+      );
+
+    });
+
+
+    /* EXISTEM ITENS:
+       OBRIGA ESCOLHER ANTES DO ERO */
+
+    blocoItem.style.display =
+      "block";
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "none";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "none";
+
+  } else {
+
+    /* BENEFÍCIO SEM ITENS:
+       MANTÉM FLUXO ANTIGO */
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "block";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "block";
+
+  }
+
+
+  /* ==========================================
+     VEÍCULO
+  ========================================== */
+
+  if(window.exigePlaca){
+
+    document.getElementById(
+      "blocoVeiculo"
+    ).style.display = "block";
+
+  } else {
+
+    document.getElementById(
+      "blocoVeiculo"
+    ).style.display = "none";
+
+  }
+
+}
+
+function itemUtilizadoSelecionado(){
+
+  const selectItem =
+    document.getElementById(
+      "itemUtilizado"
+    );
+
+  const valor =
+    String(
+      selectItem.value || ""
+    ).trim();
+
+
+  /* ==========================================
+     NENHUM ITEM SELECIONADO
+  ========================================== */
+
+  if(!valor){
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "none";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "none";
+
+    return;
+  }
+
+
+  /* ==========================================
+     ITEM SELECIONADO
+  ========================================== */
+
+  document.getElementById(
+    "blocoGerarERO"
+  ).style.display = "block";
+
+  document.getElementById(
+    "btnGerarERO"
+  ).style.display = "block";
+
 }
 
 function veiculoSelecionado(){
@@ -1800,12 +2029,35 @@ function retornoBeneficios(resp){
         const option =
             document.createElement("option");
 
-        option.value =
+       option.value =
     JSON.stringify({
-        tipo: item.tipo,
-        titulo: item.titulo,
-        descricao: item.descricao,
-        parceiro_id: item.parceiro_id
+
+        tipo:
+          item.tipo || "",
+
+        titulo:
+          item.titulo || "",
+
+        descricao:
+          item.descricao || "",
+
+        parceiro_id:
+          item.parceiro_id || "",
+
+        beneficio_id:
+          item.beneficio_id || "",
+
+        promocao_id:
+          item.promocao_id || "",
+
+        categoria:
+          item.categoria || "",
+
+        itens_beneficio:
+          item.itens_beneficio ||
+          item.itensBeneficio ||
+          ""
+
     });
 
         option.text =
