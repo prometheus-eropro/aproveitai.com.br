@@ -7790,21 +7790,25 @@ idPublico:
 cpf:
   cpfFinal,
 
-          categoria:
-            String(
-              data.categoria || ""
-            ).trim(),
+       categoria:
+  String(
+    data.categoria || ""
+  ).trim(),
 
-          ordem:
-            data.ordem || "",
+itens_beneficio:
+  String(
+    data.itens_beneficio || ""
+  ).trim(),
 
-          forma_pagamento:
-            String(
-              data.forma_pagamento ||
-              pagamentoPadraoAproveitai_()
-            ).trim(),
+ordem:
+  data.ordem || "",
 
-          observacoes:
+forma_pagamento:
+  String(
+    data.forma_pagamento || ""
+  ).trim(),
+
+observacoes:
             String(
               data.observacoes || ""
             ).trim(),
