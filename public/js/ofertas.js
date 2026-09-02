@@ -779,6 +779,80 @@ function linkSite(oferta) {
     `;
   }
 
+/* =====================================================
+   ITENS DO BENEFÍCIO / PROMOÇÃO
+===================================================== */
+
+function htmlItensBeneficio(oferta) {
+
+  const valor =
+    texto(
+      oferta.itens_beneficio ||
+      oferta.itensBeneficio ||
+      ""
+    );
+
+  if (!valor) {
+    return "";
+  }
+
+  const itens =
+    valor
+      .split(/\r?\n/)
+      .map(linha => linha.trim())
+      .filter(Boolean);
+
+  if (!itens.length) {
+    return "";
+  }
+
+  const linhas =
+    itens.map(linha => {
+
+      const partes =
+        linha.split("|");
+
+      const item =
+        texto(partes.shift());
+
+      const beneficio =
+        texto(partes.join("|"));
+
+      return `
+        <div class="oferta-item-beneficio">
+
+          <div class="oferta-item-nome">
+            ${escaparHTML(item)}
+          </div>
+
+          ${
+            beneficio
+              ? `
+                <div class="oferta-item-regra">
+                  ${escaparHTML(beneficio)}
+                </div>
+              `
+              : ""
+          }
+
+        </div>
+      `;
+
+    }).join("");
+
+
+  return `
+    <div class="oferta-itens">
+
+      <div class="oferta-itens-titulo">
+        🛍️ ITENS E BENEFÍCIOS
+      </div>
+
+      ${linhas}
+
+    </div>
+  `;
+}
 
   /* =====================================================
      RENDERIZAÇÃO
@@ -891,6 +965,9 @@ function linkSite(oferta) {
               `
               : ""
           }
+
+
+          ${htmlItensBeneficio(oferta)}
 
         </div>
 
