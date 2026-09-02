@@ -1233,10 +1233,58 @@ async function confirmarDesconto() {
     return;
   }
 
-  if (!codigoERO) {
+    if (!codigoERO) {
     mostrarMsg("❌ Código ERO não identificado.");
     return;
   }
+
+
+  /* ==========================================
+     ITEM EFETIVAMENTE UTILIZADO
+  ========================================== */
+
+  let itemUtilizado = "";
+  let regraItem = "";
+
+  const selectItem =
+    document.getElementById(
+      "itemUtilizado"
+    );
+
+  if (
+    selectItem &&
+    String(selectItem.value || "").trim()
+  ) {
+
+    try {
+
+      const itemSelecionado =
+        JSON.parse(
+          selectItem.value
+        );
+
+      itemUtilizado =
+        String(
+          itemSelecionado.item || ""
+        ).trim();
+
+      regraItem =
+        String(
+          itemSelecionado.regra || ""
+        ).trim();
+
+    } catch(e) {
+
+      mostrarMsg(
+        "❌ Item utilizado inválido."
+      );
+
+      return;
+
+    }
+
+  }
+
 
   let placa = "";
   let modelo = "";
@@ -1279,8 +1327,19 @@ async function confirmarDesconto() {
     encodeURIComponent(beneficio) +
     "&placa=" +
     encodeURIComponent(placa) +
-    "&modelo=" +
+       "&modelo=" +
     encodeURIComponent(modelo) +
+
+    "&item_utilizado=" +
+    encodeURIComponent(
+      itemUtilizado
+    ) +
+
+    "&regra_item=" +
+    encodeURIComponent(
+      regraItem
+    ) +
+
     "&canal=SITE" +
     "&origem=QR-PARCEIRO" +
     "&_=" +
@@ -2096,28 +2155,75 @@ if(resp?.itens){
 
     document.getElementById("blocoBeneficio").style.display="block";
 
-    if (select.options.length > 1) {
-      select.selectedIndex = 1;
-    }
+      /* ==========================================
+       AGUARDA ESCOLHA DO BENEFÍCIO / PROMOÇÃO
+    ========================================== */
+
+    select.selectedIndex = 0;
+
+
+    /* REINICIA ITEM UTILIZADO */
+
+    const blocoItem =
+      document.getElementById(
+        "blocoItemUtilizado"
+      );
+
+    const selectItem =
+      document.getElementById(
+        "itemUtilizado"
+      );
+
+    blocoItem.style.display = "none";
+
+    selectItem.innerHTML =
+      '<option value="">' +
+      'Selecione o item utilizado' +
+      '</option>';
+
+
+    /* VEÍCULO */
 
     if (window.exigePlaca) {
-      document.getElementById("blocoVeiculo").style.display = "block";
+
+      document.getElementById(
+        "blocoVeiculo"
+      ).style.display = "block";
+
     } else {
-      document.getElementById("blocoVeiculo").style.display = "none";
+
+      document.getElementById(
+        "blocoVeiculo"
+      ).style.display = "none";
+
     }
 
-    document.getElementById("blocoGerarERO").style.display = "block";
 
-    const btn = document.getElementById("btnGerarERO");
+    /* NÃO LIBERA ERO AINDA */
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "none";
+
+    const btn =
+      document.getElementById(
+        "btnGerarERO"
+      );
 
     if (btn) {
-      btn.style.display = "block";
+
+      btn.style.display = "none";
+
       btn.disabled = false;
-      btn.innerText = "Gerar Código ERO";
+
+      btn.innerText =
+        "Gerar Código ERO";
+
     }
 
+
     mostrarMsg(
-      "✅ Cliente validado. Gere o Código ERO para confirmar o benefício."
+      "✅ Cliente validado. Selecione o benefício ou promoção utilizado."
     );
 
 }
