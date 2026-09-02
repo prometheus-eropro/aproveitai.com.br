@@ -796,15 +796,18 @@ function htmlItensBeneficio(oferta) {
     return "";
   }
 
+
   const itens =
     valor
       .split(/\r?\n/)
       .map(linha => linha.trim())
       .filter(Boolean);
 
+
   if (!itens.length) {
     return "";
   }
+
 
   const linhas =
     itens.map(linha => {
@@ -813,24 +816,29 @@ function htmlItensBeneficio(oferta) {
         linha.split("|");
 
       const item =
-        texto(partes.shift());
+        texto(
+          partes.shift()
+        );
 
       const beneficio =
-        texto(partes.join("|"));
+        texto(
+          partes.join("|")
+        );
+
 
       return `
         <div class="oferta-item-beneficio">
 
-          <div class="oferta-item-nome">
+          <span class="oferta-item-nome">
             ${escaparHTML(item)}
-          </div>
+          </span>
 
           ${
             beneficio
               ? `
-                <div class="oferta-item-regra">
+                <span class="oferta-item-regra">
                   ${escaparHTML(beneficio)}
-                </div>
+                </span>
               `
               : ""
           }
@@ -848,10 +856,13 @@ function htmlItensBeneficio(oferta) {
         🛍️ ITENS E BENEFÍCIOS
       </div>
 
-      ${linhas}
+      <div class="oferta-itens-lista">
+        ${linhas}
+      </div>
 
     </div>
   `;
+
 }
 
   /* =====================================================
