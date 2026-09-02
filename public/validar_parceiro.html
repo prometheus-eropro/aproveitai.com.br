@@ -647,7 +647,7 @@ function validar() {
 
 
   mostrarMsg(
-    "⏳ Validando benefício..."
+    "⏳ Validando cliente..."
   );
 
 
@@ -759,7 +759,7 @@ function validar() {
      URL DA VALIDAÇÃO
   ========================================== */
 
-    /* ==========================================
+  /* ==========================================
      URL DA VALIDAÇÃO
   ========================================== */
 
@@ -768,33 +768,9 @@ function validar() {
     "?acao=buscarClienteCPF" +
 
     "&cpf=" +
-    encodeURIComponent(cpf) +
-
-    "&nascimento=" +
     encodeURIComponent(
-      nascimento
+      cpf
     ) +
-
-    "&p=" +
-    encodeURIComponent(
-      parceiroId
-    ) +
-
-    "&parceiro_id=" +
-    encodeURIComponent(
-      parceiroId
-    ) +
-
-    "&callback=" +
-    encodeURIComponent(
-      callback
-    ) +
-
-    "&_=" +
-    Date.now();
-
-    "&cpf=" +
-    encodeURIComponent(cpf) +
 
     "&nascimento=" +
     encodeURIComponent(
@@ -914,26 +890,74 @@ function validar() {
 // =============================
 function retornoValidacao(resp) {
 
+  console.log(
+    "RETORNO GAS:",
+    resp
+  );
 
-  console.log("RETORNO GAS:", resp);
 
-if(!resp){
+  /* ==========================================
+     SEM RESPOSTA
+  ========================================== */
 
-    mostrarMsg("Sem resposta do servidor.");
+  if (!resp) {
+
+    mostrarMsg(
+      "❌ Sem resposta do servidor."
+    );
 
     return;
 
-}
+  }
 
-if(resp.ok !== true){
 
-    mostrarMsg(resp.mensagem);
+  /* ==========================================
+     IDENTIFICA CLIENTE INATIVO
+  ========================================== */
+
+  const statusRetorno =
+    String(
+      resp.statusCliente ||
+      resp.ativo ||
+      resp.status ||
+      ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const clienteInativo =
+    statusRetorno === "NAO" ||
+    statusRetorno === "INATIVO" ||
+    statusRetorno === "CLIENTE_INATIVO";
+
+
+  /* ==========================================
+     ERRO REAL / CLIENTE NÃO LOCALIZADO
+     Cliente inativo continua para exibir dados
+  ========================================== */
+
+  if (
+    resp.ok !== true &&
+    !clienteInativo
+  ) {
+
+    mostrarMsg(
+      resp.mensagem ||
+      resp.msg ||
+      "❌ Cliente não encontrado ou dados incorretos."
+    );
 
     return;
 
-}
+  }
 
-  console.log("CELULAR:", resp.celular);
+
+  console.log(
+    "CELULAR:",
+    resp.celular
+  );
+
   console.log("LOGO:", resp.logoURL);
 
 document.getElementById("blocoCodigo")
