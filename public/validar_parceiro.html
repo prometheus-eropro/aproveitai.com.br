@@ -2002,6 +2002,30 @@ function retornoBeneficios(resp){
 
     console.log(resp);
 
+    console.log(
+  "ITENS RECEBIDOS PELO VALIDADOR:",
+  resp?.itens
+);
+
+if(resp?.itens){
+
+  resp.itens.forEach(function(item, indice){
+
+    console.log(
+      "OFERTA " + indice + ":",
+      {
+        tipo: item.tipo,
+        titulo: item.titulo,
+        beneficio_id: item.beneficio_id,
+        promocao_id: item.promocao_id,
+        itens_beneficio: item.itens_beneficio
+      }
+    );
+
+  });
+
+}
+
     if(!resp || !resp.ok){
 
         mostrarMsg("Nenhum benefício encontrado.");
