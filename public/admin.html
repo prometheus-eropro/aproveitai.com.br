@@ -2130,6 +2130,17 @@ Novo Parceiro
 
     </button>
 
+    <button
+        class="navbtn"
+        data-view="solicitacoes">
+
+        🎫
+        <span class="texto">
+            Solicitações
+        </span>
+
+    </button>
+
 </div>
 
 <div class="hr"></div>
@@ -2480,6 +2491,97 @@ style="display:none;margin-top:20px;">
 </div>
 
 </div>
+
+</section>
+
+<!-- =====================================================
+     CENTRAL DE SOLICITAÇÕES
+===================================================== -->
+
+<section
+    data-section="solicitacoes"
+    style="display:none">
+
+  <div class="row">
+    <div>
+      <h2>📋 Central de Solicitações</h2>
+      <div class="muted">
+        Acompanhe e finalize solicitações de clientes e parceiros.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+
+    <div class="row" style="gap:10px; flex-wrap:wrap;">
+
+      <input
+        type="text"
+        id="solBusca"
+        placeholder="Buscar protocolo, CPF, cliente ou telefone"
+        style="min-width:280px; flex:1;">
+
+      <select id="solStatus">
+        <option value="">Todos os status</option>
+        <option value="ABERTA">Aberta</option>
+        <option value="EM_ANALISE">Em análise</option>
+        <option value="NAO_LOCALIZADO">Não localizado</option>
+        <option value="CONCLUIDA">Concluída</option>
+        <option value="CANCELADA">Cancelada</option>
+      </select>
+
+      <select id="solPrioridade">
+        <option value="">Todas as prioridades</option>
+        <option value="ALTA">Alta</option>
+        <option value="NORMAL">Normal</option>
+        <option value="BAIXA">Baixa</option>
+      </select>
+
+      <button
+        class="btn"
+        type="button"
+        onclick="carregarSolicitacoes()">
+        🔄 Atualizar
+      </button>
+
+    </div>
+
+    <div
+      id="solResumo"
+      class="muted"
+      style="margin-top:14px;">
+      Carregando solicitações...
+    </div>
+
+  </div>
+
+
+  <div class="card" style="margin-top:16px; overflow:auto;">
+
+    <table style="width:100%;">
+      <thead>
+        <tr>
+          <th>Protocolo</th>
+          <th>Data</th>
+          <th>Cliente / Parceiro</th>
+          <th>Categoria</th>
+          <th>Prioridade</th>
+          <th>Status</th>
+          <th>Responsável</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+
+      <tbody id="solTabela">
+        <tr>
+          <td colspan="8" class="muted">
+            Nenhuma solicitação carregada.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
 
 </section>
 

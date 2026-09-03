@@ -1155,30 +1155,100 @@ if (statusCliente !== "SIM") {
 
   /* AVISO */
 
+  /* ==========================================
+     RECUPERAÇÃO DE CLIENTE INATIVO
+  ========================================== */
+
+  const nomeClienteInativo =
+    String(
+      resp.nomeCliente ||
+      resp.nome ||
+      ""
+    ).trim();
+
+
+const mensagemAtivacao =
+  "Olá! Tentei utilizar um benefício da Plataforma AproveitAI, " +
+  "mas meu cadastro apareceu como INATIVO. " +
+  "Gostaria de solicitar a ativação ou renovação." +
+
+  (
+    nomeClienteInativo
+      ? "\n\nNome: " + nomeClienteInativo
+      : ""
+  ) +
+
+  (
+    resp.cpf
+      ? "\nCPF: " + resp.cpf
+      : ""
+  ) +
+
+  (
+    resp.idPublico
+      ? "\nID AproveitAI: " + resp.idPublico
+      : ""
+  );
+
+
+const zapEdgar =
+  "https://wa.me/5528999692303?text=" +
+  encodeURIComponent(
+    mensagemAtivacao
+  );
+
+
   mostrarMsg(
     '<div style="' +
       'background:#fee2e2;' +
       'border:2px solid #dc2626;' +
       'color:#991b1b;' +
-      'padding:15px;' +
-      'border-radius:8px;' +
+      'padding:18px;' +
+      'border-radius:10px;' +
       'font-size:16px;' +
       'line-height:1.5;' +
       'text-align:center;' +
     '">' +
 
-      '⛔ <strong>CLIENTE INATIVO</strong><br><br>' +
+      '<div style="' +
+        'font-size:19px;' +
+        'font-weight:900;' +
+        'margin-bottom:10px;' +
+      '">' +
+        '⛔ CLIENTE INATIVO' +
+      '</div>' +
 
-      'Este cliente não está autorizado a utilizar os benefícios da Plataforma AproveitAI.<br><br>' +
+      'Seu cadastro foi localizado, mas está inativo no momento.<br><br>' +
 
-      'Oriente o cliente a regularizar o cadastro.' +
+      '<strong>Para voltar a utilizar os benefícios da Plataforma AproveitAI, solicite sua ativação pelo WhatsApp.</strong><br><br>' +
+
+
+      '<a href="' +
+        zapEdgar +
+      '" target="_blank" rel="noopener noreferrer" style="' +
+        'display:block;' +
+        'background:#128C7E;' +
+        'color:#ffffff;' +
+        'text-decoration:none;' +
+        'font-weight:900;' +
+        'padding:13px;' +
+        'border-radius:8px;' +
+      '">' +
+        '📲 ATIVAR OU RENOVAR MEU CADASTRO' +
+      '</a>' +
+
+      '<div style="' +
+        'font-size:13px;' +
+        'margin-top:10px;' +
+        'color:#7f1d1d;' +
+      '">' +
+        'Você será direcionado ao atendimento para regularizar seu cadastro.' +
+      '</div>' +
 
     '</div>'
   );
 
-  return;
-}
-
+return; }
 
 /* ==========================================
    CLIENTE ATIVO
