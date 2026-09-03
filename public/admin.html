@@ -7969,6 +7969,317 @@ observacoes:
 }
 
 /* ======================================================
+   CENTRAL DE SOLICITAÇÕES
+====================================================== */
+
+async function carregarSolicitacoes(){
+
+  const tabela =
+    document.getElementById("solTabela");
+
+  const resumo =
+    document.getElementById("solResumo");
+
+
+  if(tabela){
+
+    tabela.innerHTML = `
+      <tr>
+        <td colspan="8" class="muted">
+          ⏳ Carregando solicitações...
+        </td>
+      </tr>
+    `;
+
+  }
+
+
+  if(resumo){
+
+    resumo.textContent =
+      "Consultando solicitações...";
+
+  }
+
+
+  try{
+
+    const r =
+      await callAPI({
+
+        action:
+          "listar_solicitacoes",
+
+        key:
+          state.key
+
+      });
+
+
+    console.log(
+      "SOLICITAÇÕES:",
+      r
+    );
+
+
+    if(
+      !r ||
+      r.ok === false
+    ){
+
+      throw new Error(
+        r?.erro ||
+        r?.msg ||
+        "Erro ao carregar solicitações."
+      );
+
+    }
+
+
+    const dados =
+      Array.isArray(r.dados)
+        ? r.dados
+        : [];
+
+
+    window.solicitacoesCache =
+      dados;
+
+
+    renderSolicitacoes();
+
+
+  }catch(err){
+
+    console.error(
+      "ERRO SOLICITAÇÕES:",
+      err
+    );
+
+
+    if(resumo){
+
+      resumo.textContent =
+        "❌ Não foi possível carregar as solicitações.";
+
+    }
+
+
+    if(tabela){
+
+      tabela.innerHTML = `
+        <tr>
+          <td colspan="8" class="muted">
+            Erro ao carregar solicitações.
+          </td>
+        </tr>
+      `;
+
+    }
+
+  }
+
+}
+
+
+function renderSolicitacoes(){
+
+  const tabela =
+    document.getElementById("solTabela");
+
+  const resumo =
+    document.getElementById("solResumo");
+
+
+  if(!tabela){
+    return;
+  }
+
+
+  const busca =
+    String(
+      document.getElementById("solBusca")?.value ||
+      ""
+    )
+    .trim()
+    .toLowerCase();
+
+
+  const status =
+    String(
+      document.getElementById("solStatus")?.value ||
+      ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const prioridade =
+    String(
+      document.getElementById("solPrioridade")?.value ||
+      ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  let dados =
+    Array.isArray(window.solicitacoesCache)
+      ? [...window.solicitacoesCache]
+      : [];
+
+
+  dados =
+    dados.filter(s => {
+
+      const texto =
+        [
+          s.protocolo,
+          s.nomeCliente,
+          s.nomeParceiro,
+          s.cpf,
+          s.telefone,
+          s.categoria,
+          s.titulo
+        ]
+        .join(" ")
+        .toLowerCase();
+
+
+      if(
+        busca &&
+        !texto.includes(busca)
+      ){
+        return false;
+      }
+
+
+      if(
+        status &&
+        String(s.status || "")
+          .toUpperCase() !== status
+      ){
+        return false;
+      }
+
+
+      if(
+        prioridade &&
+        String(s.prioridade || "")
+          .toUpperCase() !== prioridade
+      ){
+        return false;
+      }
+
+
+      return true;
+
+    });
+
+
+  if(resumo){
+
+    resumo.textContent =
+      dados.length +
+      " solicitação(ões) encontrada(s).";
+
+  }
+
+
+  if(!dados.length){
+
+    tabela.innerHTML = `
+      <tr>
+        <td colspan="8" class="muted">
+          Nenhuma solicitação encontrada.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  tabela.innerHTML =
+    dados.map(s => {
+
+      const nome =
+        s.nomeCliente ||
+        s.nomeParceiro ||
+        s.cliente_id ||
+        "-";
+
+
+      const data =
+        s.dataSolicitacao ||
+        s.dataHora ||
+        "-";
+
+
+      return `
+        <tr>
+
+          <td>
+            <strong>
+              ${escapeHtml(s.protocolo || "-")}
+            </strong>
+          </td>
+
+          <td>
+            ${escapeHtml(String(data))}
+          </td>
+
+          <td>
+            ${escapeHtml(nome)}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              s.categoria ||
+              s.titulo ||
+              "-"
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              s.prioridade ||
+              "NORMAL"
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              s.status ||
+              "-"
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              s.adminResponsavel ||
+              "-"
+            )}
+          </td>
+
+          <td>
+            <button
+              class="btn"
+              type="button"
+              disabled>
+              Abrir
+            </button>
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+
+}
+
+/* ======================================================
    FINANCEIRO — RECEBIMENTOS
 ====================================================== */
 
