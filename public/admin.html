@@ -2703,12 +2703,13 @@ style="display:none;margin-top:20px;">
     class="row"
     style="margin-top:16px; gap:10px; flex-wrap:wrap;">
 
-    <button
-      class="btn"
-      type="button"
-      disabled>
-      💾 Salvar andamento
-    </button>
+<button
+  class="btn"
+  type="button"
+  id="btnSalvarSolicitacao"
+  onclick="salvarAndamentoSolicitacao()">
+  💾 Salvar andamento
+</button>
 
     <button
       class="btn primary"
@@ -8684,6 +8685,153 @@ console.log("OBJETO COMPLETO NA ABERTURA:", s);
     "SOLICITAÇÃO EM TRATAMENTO:",
     s
   );
+
+}
+
+async function salvarAndamentoSolicitacao(){
+
+  const s =
+    window.solicitacaoAtual;
+
+  if(
+    !s ||
+    !s.protocolo
+  ){
+
+    alert(
+      "Nenhuma solicitação está aberta."
+    );
+
+    return;
+  }
+
+
+  const status =
+    document.getElementById(
+      "solDetalheStatus"
+    )?.value || "ABERTA";
+
+
+  const responsavel =
+    document.getElementById(
+      "solDetalheResponsavel"
+    )?.value || "";
+
+
+  const resposta =
+    document.getElementById(
+      "solDetalheResposta"
+    )?.value.trim() || "";
+
+
+  if(!responsavel){
+
+    alert(
+      "Informe o responsável pelo atendimento."
+    );
+
+    return;
+  }
+
+
+  const botao =
+    document.getElementById(
+      "btnSalvarSolicitacao"
+    );
+
+
+  if(botao){
+
+    botao.disabled = true;
+
+    botao.textContent =
+      "⏳ Salvando...";
+
+  }
+
+
+  try{
+
+    const r =
+      await callAPI({
+
+        action:
+          "salvar_andamento_solicitacao",
+
+        key:
+          state.key,
+
+        protocolo:
+          s.protocolo,
+
+        status:
+          status,
+
+        adminResponsavel:
+          responsavel,
+
+        resposta:
+          resposta
+
+      });
+
+
+    console.log(
+      "SALVAR ANDAMENTO:",
+      r
+    );
+
+
+    if(
+      !r ||
+      r.ok !== true
+    ){
+
+      throw new Error(
+        r?.erro ||
+        r?.msg ||
+        "Não foi possível salvar o andamento."
+      );
+
+    }
+
+
+    alert(
+      "Andamento da solicitação salvo com sucesso."
+    );
+
+
+    await carregarSolicitacoes();
+
+
+  }catch(err){
+
+    console.error(
+      "ERRO AO SALVAR ANDAMENTO:",
+      err
+    );
+
+
+    alert(
+      "Erro ao salvar andamento: " +
+      (
+        err?.message ||
+        err
+      )
+    );
+
+  }finally{
+
+    if(botao){
+
+      botao.disabled = false;
+
+      botao.textContent =
+        "💾 Salvar andamento";
+
+    }
+
+  }
 
 }
 
