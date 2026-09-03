@@ -2709,23 +2709,15 @@ style="display:none;margin-top:20px;">
   id="btnSalvarSolicitacao"
   onclick="salvarAndamentoSolicitacao()"
   style="
-    background:#1565c0;
-    color:#ffffff;
-    border:none;
+    background:#1565c0 !important;
+    color:#ffffff !important;
+    border:none !important;
     font-weight:700;
   ">
   💾 Salvar andamento
 </button>
 
-   <button
-  class="btn primary"
-  type="button"
-  id="btnConcluirSolicitacao"
-  onclick="concluirSolicitacao()">
-  ✅ Concluir solicitação
-</button>
-
-  </div>
+     </div>
 
 </div>
 
@@ -8726,20 +8718,60 @@ async function salvarAndamentoSolicitacao(){
 
 
   const resposta =
-    document.getElementById(
-      "solDetalheResposta"
-    )?.value.trim() || "";
+  document.getElementById(
+    "solDetalheResposta"
+  )?.value.trim() || "";
 
 
-  if(!responsavel){
+/* ==========================================
+   VALIDA RESPONSÁVEL
+========================================== */
 
-    alert(
-      "Informe o responsável pelo atendimento."
-    );
+if(!responsavel){
 
-    return;
-  }
+  alert(
+    "Informe o responsável pelo atendimento."
+  );
 
+  return;
+}
+
+/* ==========================================
+   CONCLUSÃO / CANCELAMENTO EXIGEM REGISTRO
+========================================== */
+
+if(
+  status === "CONCLUIDA" &&
+  !resposta
+){
+
+  alert(
+    "Para concluir a solicitação, informe a providência / conclusão realizada."
+  );
+
+  document.getElementById(
+    "solDetalheResposta"
+  )?.focus();
+
+  return;
+}
+
+
+if(
+  status === "CANCELADA" &&
+  !resposta
+){
+
+  alert(
+    "Para cancelar a solicitação, informe o motivo do cancelamento."
+  );
+
+  document.getElementById(
+    "solDetalheResposta"
+  )?.focus();
+
+  return;
+}
 
   const botao =
     document.getElementById(
