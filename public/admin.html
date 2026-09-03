@@ -2707,16 +2707,23 @@ style="display:none;margin-top:20px;">
   class="btn"
   type="button"
   id="btnSalvarSolicitacao"
-  onclick="salvarAndamentoSolicitacao()">
+  onclick="salvarAndamentoSolicitacao()"
+  style="
+    background:#1565c0;
+    color:#ffffff;
+    border:none;
+    font-weight:700;
+  ">
   💾 Salvar andamento
 </button>
 
-    <button
-      class="btn primary"
-      type="button"
-      disabled>
-      ✅ Concluir solicitação
-    </button>
+   <button
+  class="btn primary"
+  type="button"
+  id="btnConcluirSolicitacao"
+  onclick="concluirSolicitacao()">
+  ✅ Concluir solicitação
+</button>
 
   </div>
 
@@ -8828,6 +8835,178 @@ async function salvarAndamentoSolicitacao(){
 
       botao.textContent =
         "💾 Salvar andamento";
+
+    }
+
+  }
+
+}
+
+async function concluirSolicitacao(){
+
+  const s =
+    window.solicitacaoAtual;
+
+  if(
+    !s ||
+    !s.protocolo
+  ){
+
+    alert(
+      "Nenhuma solicitação está aberta."
+    );
+
+    return;
+  }
+
+
+  const resposta =
+    document.getElementById(
+      "solDetalheResposta"
+    )?.value.trim() || "";
+
+
+  if(!resposta){
+
+    alert(
+      "Informe a providência / conclusão antes de concluir a solicitação."
+    );
+
+    document.getElementById(
+      "solDetalheResposta"
+    )?.focus();
+
+    return;
+  }
+
+
+  const confirmar =
+    confirm(
+      "Deseja realmente concluir esta solicitação?\n\n" +
+      "Protocolo: " +
+      s.protocolo +
+      "\n\n" +
+      "Após a conclusão, o protocolo ficará registrado no histórico."
+    );
+
+
+  if(!confirmar){
+    return;
+  }
+
+
+  const botao =
+    document.getElementById(
+      "btnConcluirSolicitacao"
+    );
+
+
+  if(botao){
+
+    botao.disabled = true;
+
+    botao.textContent =
+      "⏳ Concluindo...";
+
+  }
+
+
+  try{
+
+    const r =
+      await callAPI({
+
+        action:
+          "salvar_andamento_solicitacao",
+
+        key:
+          state.key,
+
+        protocolo:
+          s.protocolo,
+
+        status:
+          "CONCLUIDA",
+
+        adminResponsavel:
+          document.getElementById(
+            "solDetalheResponsavel"
+          )?.value || "",
+
+        resposta:
+          resposta
+
+      });
+
+
+    console.log(
+      "CONCLUIR SOLICITAÇÃO:",
+      r
+    );
+
+
+    if(
+      !r ||
+      r.ok !== true
+    ){
+
+      throw new Error(
+        r?.erro ||
+        r?.msg ||
+        "Não foi possível concluir a solicitação."
+      );
+
+    }
+
+
+    alert(
+      "Solicitação concluída com sucesso."
+    );
+
+
+    window.solicitacaoAtual =
+      null;
+
+
+    const detalhes =
+      document.getElementById(
+        "solDetalhes"
+      );
+
+    if(detalhes){
+      detalhes.style.display =
+        "none";
+    }
+
+
+    await carregarSolicitacoes();
+
+
+  }catch(err){
+
+    console.error(
+      "ERRO AO CONCLUIR SOLICITAÇÃO:",
+      err
+    );
+
+
+    alert(
+      "Erro ao concluir solicitação: " +
+      (
+        err?.message ||
+        err
+      )
+    );
+
+
+  }finally{
+
+    if(botao){
+
+      botao.disabled = false;
+
+      botao.textContent =
+        "✅ Concluir solicitação";
 
     }
 
