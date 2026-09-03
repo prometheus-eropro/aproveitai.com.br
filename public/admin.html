@@ -2583,6 +2583,144 @@ style="display:none;margin-top:20px;">
 
   </div>
 
+<!-- =====================================================
+     DETALHES DA SOLICITAÇÃO
+===================================================== -->
+
+<div
+  id="solDetalhes"
+  class="card"
+  style="margin-top:16px; display:none;">
+
+  <div class="row">
+    <div>
+      <h3>📄 Tratamento da Solicitação</h3>
+
+      <div
+        id="solDetalheProtocolo"
+        class="muted">
+      </div>
+    </div>
+  </div>
+
+
+  <hr style="margin:16px 0;">
+
+
+  <h4>👤 Solicitante</h4>
+
+  <div
+    id="solDetalheSolicitante"
+    style="line-height:1.8;">
+  </div>
+
+
+  <hr style="margin:16px 0;">
+
+
+  <h4>📋 Solicitação</h4>
+
+  <div
+    id="solDetalhePedido"
+    style="line-height:1.8;">
+  </div>
+
+
+  <hr style="margin:16px 0;">
+
+
+  <h4>⚙️ Tratamento Administrativo</h4>
+
+  <div
+    class="row"
+    style="gap:12px; flex-wrap:wrap;">
+
+    <div style="flex:1; min-width:220px;">
+
+      <label>Status</label>
+
+      <select
+        id="solDetalheStatus"
+        style="width:100%;">
+
+        <option value="ABERTA">
+          Aberta
+        </option>
+
+        <option value="EM_ANALISE">
+          Em análise
+        </option>
+
+        <option value="CONCLUIDA">
+          Concluída
+        </option>
+
+        <option value="CANCELADA">
+          Cancelada
+        </option>
+
+        <option value="NAO_LOCALIZADO">
+          Não localizado
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div style="flex:1; min-width:220px;">
+
+      <label>Responsável</label>
+
+      <input
+        id="solDetalheResponsavel"
+        type="text"
+        readonly
+        style="width:100%;">
+
+    </div>
+
+  </div>
+
+
+  <div style="margin-top:14px;">
+
+    <label>
+      Providência / conclusão
+    </label>
+
+    <textarea
+      id="solDetalheResposta"
+      rows="5"
+      placeholder="Registre o que foi verificado e qual providência foi tomada..."
+      style="width:100%; resize:vertical;">
+    </textarea>
+
+  </div>
+
+
+  <div
+    class="row"
+    style="margin-top:16px; gap:10px; flex-wrap:wrap;">
+
+    <button
+      class="btn"
+      type="button"
+      disabled>
+      💾 Salvar andamento
+    </button>
+
+    <button
+      class="btn primary"
+      type="button"
+      disabled>
+      ✅ Concluir solicitação
+    </button>
+
+  </div>
+
+</div>
+
 </section>
 
 <!-- =====================================================
@@ -8310,15 +8448,225 @@ function abrirSolicitacao(protocolo){
   }
 
 
+  /* ==========================================
+     GUARDA SOLICITAÇÃO ATUAL
+  ========================================== */
+
+  window.solicitacaoAtual = s;
+
+
+  /* ==========================================
+     ABRE ÁREA DE DETALHES
+  ========================================== */
+
+  const box =
+    document.getElementById(
+      "solDetalhes"
+    );
+
+  if(!box){
+    return;
+  }
+
+  box.style.display =
+    "block";
+
+
+  /* ==========================================
+     PROTOCOLO
+  ========================================== */
+
+  document.getElementById(
+    "solDetalheProtocolo"
+  ).innerHTML =
+
+    "<strong>Protocolo:</strong> " +
+    escapeHtml(
+      String(s.protocolo || "-")
+    ) +
+
+    " &nbsp; | &nbsp; " +
+
+    "<strong>Aberto em:</strong> " +
+    escapeHtml(
+      String(
+        s.dataSolicitacao ||
+        s.dataHora ||
+        "-"
+      )
+    );
+
+
+  /* ==========================================
+     SOLICITANTE
+  ========================================== */
+
+  const nome =
+    s.nomeCliente ||
+    s.nomeParceiro ||
+    "-";
+
+
+  const cpf =
+    String(
+      s.cpf || ""
+    );
+
+
+  const cpfExibicao =
+    cpf.length === 11
+
+      ? "***." +
+        cpf.substring(3,6) +
+        "." +
+        cpf.substring(6,9) +
+        "-**"
+
+      : cpf || "-";
+
+
+  document.getElementById(
+    "solDetalheSolicitante"
+  ).innerHTML =
+
+    "<strong>Nome:</strong> " +
+    escapeHtml(nome) +
+    "<br>" +
+
+    "<strong>CPF:</strong> " +
+    escapeHtml(cpfExibicao) +
+    "<br>" +
+
+    "<strong>ID AproveitAI:</strong> " +
+    escapeHtml(
+      String(
+        s.cliente_id ||
+        s.parceiro_id ||
+        "-"
+      )
+    ) +
+    "<br>" +
+
+    "<strong>Telefone:</strong> " +
+    escapeHtml(
+      String(s.telefone || "-")
+    );
+
+
+  /* ==========================================
+     SOLICITAÇÃO
+  ========================================== */
+
+  document.getElementById(
+    "solDetalhePedido"
+  ).innerHTML =
+
+    "<strong>Tipo:</strong> " +
+    escapeHtml(
+      String(s.tipo || "-")
+    ) +
+    "<br>" +
+
+    "<strong>Categoria:</strong> " +
+    escapeHtml(
+      String(s.categoria || "-")
+    ) +
+    "<br>" +
+
+    "<strong>Origem:</strong> " +
+    escapeHtml(
+      String(s.origem || "-")
+    ) +
+    "<br><br>" +
+
+    "<strong>Solicitação:</strong><br>" +
+    escapeHtml(
+      String(
+        s.titulo ||
+        s.descricao ||
+        "-"
+      )
+    ) +
+    "<br><br>" +
+
+    "<strong>Situação encontrada:</strong><br>" +
+    escapeHtml(
+      String(
+        s.descricao ||
+        s.observacoes ||
+        "-"
+      )
+    );
+
+
+  /* ==========================================
+     STATUS
+  ========================================== */
+
+  const selectStatus =
+    document.getElementById(
+      "solDetalheStatus"
+    );
+
+  if(selectStatus){
+
+    selectStatus.value =
+      String(
+        s.status || "ABERTA"
+      ).toUpperCase();
+
+  }
+
+
+  /* ==========================================
+     RESPONSÁVEL
+  ========================================== */
+
+  const responsavel =
+    document.getElementById(
+      "solDetalheResponsavel"
+    );
+
+  if(responsavel){
+
+    responsavel.value =
+      s.adminResponsavel ||
+      state.admin ||
+      "";
+
+  }
+
+
+  /* ==========================================
+     RESPOSTA JÁ REGISTRADA
+  ========================================== */
+
+  const resposta =
+    document.getElementById(
+      "solDetalheResposta"
+    );
+
+  if(resposta){
+
+    resposta.value =
+      s.resposta || "";
+
+  }
+
+
+  /* ==========================================
+     LEVA A TELA ATÉ A FICHA
+  ========================================== */
+
+  box.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+
   console.log(
-    "SOLICITAÇÃO ABERTA:",
+    "SOLICITAÇÃO EM TRATAMENTO:",
     s
-  );
-
-
-  alert(
-    "Protocolo localizado: " +
-    String(s.protocolo || "")
   );
 
 }
