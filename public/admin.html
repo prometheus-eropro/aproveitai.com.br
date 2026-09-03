@@ -8262,19 +8262,64 @@ function renderSolicitacoes(){
             )}
           </td>
 
-          <td>
-            <button
-              class="btn"
-              type="button"
-              disabled>
-              Abrir
-            </button>
-          </td>
+         <td>
+  <button
+    class="btn"
+    type="button"
+    onclick="abrirSolicitacao(
+      '${escapeHtml(String(s.protocolo || ""))}'
+    )">
+    Abrir
+  </button>
+</td>
 
         </tr>
       `;
 
     }).join("");
+
+}
+
+/* ======================================================
+   CENTRAL DE SOLICITAÇÕES — ABRIR PROTOCOLO
+====================================================== */
+
+function abrirSolicitacao(protocolo){
+
+  const lista =
+    Array.isArray(window.solicitacoesCache)
+      ? window.solicitacoesCache
+      : [];
+
+
+  const s =
+    lista.find(x =>
+      String(x.protocolo || "").trim() ===
+      String(protocolo || "").trim()
+    );
+
+
+  if(!s){
+
+    alert(
+      "Solicitação não localizada."
+    );
+
+    return;
+
+  }
+
+
+  console.log(
+    "SOLICITAÇÃO ABERTA:",
+    s
+  );
+
+
+  alert(
+    "Protocolo localizado: " +
+    String(s.protocolo || "")
+  );
 
 }
 
