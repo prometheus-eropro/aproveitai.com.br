@@ -8112,6 +8112,19 @@ observacoes:
 
 async function carregarSolicitacoes(){
 
+  /* ==========================================
+     FECHA SOLICITAÇÃO QUE ESTAVA ABERTA
+  ========================================== */
+
+  window.solicitacaoAtual = null;
+
+  const detalhes =
+    document.getElementById("solDetalhes");
+
+  if(detalhes){
+    detalhes.style.display = "none";
+  }
+
   const tabela =
     document.getElementById("solTabela");
 
