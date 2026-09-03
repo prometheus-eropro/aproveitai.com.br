@@ -8036,11 +8036,10 @@ async function carregarSolicitacoes(){
     }
 
 
-    const dados =
-      Array.isArray(r.dados)
-        ? r.dados
-        : [];
-
+const dados =
+  Array.isArray(r.solicitacoes)
+    ? r.solicitacoes
+    : [];
 
     window.solicitacoesCache =
       dados;
