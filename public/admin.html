@@ -2698,7 +2698,127 @@ style="display:none;margin-top:20px;">
 
   </div>
 
+<!-- ==========================================
+     COMUNICAÇÃO COM O CLIENTE
+=========================================== -->
 
+<div
+  id="solComunicacaoCliente"
+  style="
+    margin-top:18px;
+    padding:16px;
+    border:1px solid #d9e2dc;
+    border-radius:10px;
+    background:#f8fbf9;
+  "
+>
+
+  <div
+    style="
+      font-size:16px;
+      font-weight:800;
+      margin-bottom:12px;
+    "
+  >
+    📲 Comunicação com o Cliente
+  </div>
+
+
+  <label>
+    Mensagem
+  </label>
+
+  <select
+    id="solTipoMensagem"
+    onchange="montarMensagemSolicitacao()"
+    style="width:100%;"
+  >
+
+    <option value="">
+      Selecione uma mensagem
+    </option>
+
+    <option value="ATIVACAO">
+      Acesso ativado
+    </option>
+
+    <option value="RENOVACAO">
+      Renovação concluída
+    </option>
+
+    <option value="PAGAMENTO">
+      Pagamento confirmado
+    </option>
+
+    <option value="BOLETO">
+      Boleto / cobrança encaminhada
+    </option>
+
+    <option value="PENDENCIA">
+      Pendência de informação
+    </option>
+
+    <option value="CONCLUSAO">
+      Solicitação concluída
+    </option>
+
+    <option value="CANCELAMENTO">
+      Solicitação cancelada
+    </option>
+
+    <option value="PERSONALIZADA">
+      Mensagem personalizada
+    </option>
+
+  </select>
+
+
+  <label
+    style="
+      display:block;
+      margin-top:12px;
+    "
+  >
+    Mensagem que será enviada
+  </label>
+
+  <textarea
+    id="solMensagemWhatsApp"
+    rows="7"
+    placeholder="Selecione uma mensagem acima ou escreva uma mensagem personalizada..."
+    style="
+      width:100%;
+      resize:vertical;
+    "
+  ></textarea>
+
+
+  <div
+    class="muted"
+    style="margin-top:8px;"
+  >
+    A mensagem poderá ser conferida e editada antes do envio.
+  </div>
+
+
+  <button
+    type="button"
+    class="btn"
+    id="btnEnviarWhatsAppSolicitacao"
+    disabled
+    style="
+      width:100%;
+      margin-top:12px;
+      background:#128C7E;
+      color:#ffffff;
+      border:none;
+      font-weight:700;
+    "
+  >
+    📲 Enviar WhatsApp
+  </button>
+
+</div>
   <div
     class="row"
     style="margin-top:16px; gap:10px; flex-wrap:wrap;">
@@ -8870,6 +8990,229 @@ if(
 
     }
 
+  }
+
+}
+
+function montarMensagemSolicitacao(){
+
+  const s =
+    window.solicitacaoAtual;
+
+  const tipo =
+    document.getElementById(
+      "solTipoMensagem"
+    )?.value || "";
+
+  const campo =
+    document.getElementById(
+      "solMensagemWhatsApp"
+    );
+
+  const botao =
+    document.getElementById(
+      "btnEnviarWhatsAppSolicitacao"
+    );
+
+  if(!campo){
+    return;
+  }
+
+
+  if(!tipo){
+
+    campo.value = "";
+
+    if(botao){
+      botao.disabled = true;
+    }
+
+    return;
+  }
+
+
+  const nomeCompleto =
+    String(
+      s?.nomeCliente ||
+      s?.nomeParceiro ||
+      "Cliente"
+    ).trim();
+
+  const primeiroNome =
+    nomeCompleto
+      .split(/\s+/)[0] ||
+      "Cliente";
+
+  const protocolo =
+    String(
+      s?.protocolo || "-"
+    ).trim();
+
+  const idCliente =
+    String(
+      s?.cliente_id || ""
+    ).trim();
+
+
+  let mensagem = "";
+
+
+  if(tipo === "ATIVACAO"){
+
+    mensagem =
+`✅ *ACESSO ATIVADO — APROVEITAI*
+
+Olá, ${primeiroNome}! 💚
+
+Seu acesso ao *Cartão AproveitAI* foi ativado com sucesso.
+
+${idCliente ? `🪪 *ID AproveitAI:* ${idCliente}\n` : ""}🎫 *Protocolo:* ${protocolo}
+
+Você já pode utilizar os benefícios disponíveis na Plataforma AproveitAI.
+
+Obrigado por fazer parte do AproveitAI!
+
+*Cartão AproveitAI*
+Economize mais. Aproveite melhor.`;
+
+  }
+
+
+  else if(tipo === "RENOVACAO"){
+
+    mensagem =
+`✅ *RENOVAÇÃO CONCLUÍDA — APROVEITAI*
+
+Olá, ${primeiroNome}! 💚
+
+A renovação do seu *Cartão AproveitAI* foi concluída com sucesso.
+
+🎫 *Protocolo:* ${protocolo}
+
+Seu acesso permanece disponível para utilização dos benefícios da plataforma.
+
+Obrigado por continuar com o AproveitAI!
+
+*Cartão AproveitAI*
+Economize mais. Aproveite melhor.`;
+
+  }
+
+
+  else if(tipo === "PAGAMENTO"){
+
+    mensagem =
+`✅ *PAGAMENTO CONFIRMADO — APROVEITAI*
+
+Olá, ${primeiroNome}!
+
+Confirmamos o recebimento do seu pagamento referente ao *Cartão AproveitAI*.
+
+🎫 *Protocolo:* ${protocolo}
+
+Obrigado!
+
+*Cartão AproveitAI*
+Economize mais. Aproveite melhor.`;
+
+  }
+
+
+  else if(tipo === "BOLETO"){
+
+    mensagem =
+`💳 *COBRANÇA — APROVEITAI*
+
+Olá, ${primeiroNome}!
+
+A cobrança referente ao seu *Cartão AproveitAI* foi preparada.
+
+🎫 *Protocolo:* ${protocolo}
+
+Confira as informações encaminhadas e, caso tenha alguma dúvida, entre em contato conosco.
+
+*Cartão AproveitAI*`;
+
+  }
+
+
+  else if(tipo === "PENDENCIA"){
+
+    mensagem =
+`⚠️ *ATENDIMENTO APROVEITAI*
+
+Olá, ${primeiroNome}!
+
+Identificamos que precisamos de uma informação adicional para continuar seu atendimento.
+
+🎫 *Protocolo:* ${protocolo}
+
+Nossa equipe entrará em contato para orientar você sobre a pendência.
+
+*Cartão AproveitAI*`;
+
+  }
+
+
+  else if(tipo === "CONCLUSAO"){
+
+    mensagem =
+`✅ *SOLICITAÇÃO CONCLUÍDA — APROVEITAI*
+
+Olá, ${primeiroNome}!
+
+Sua solicitação foi atendida e concluída.
+
+🎫 *Protocolo:* ${protocolo}
+
+Agradecemos pelo contato e por utilizar a Plataforma AproveitAI. 💚
+
+*Cartão AproveitAI*
+Economize mais. Aproveite melhor.`;
+
+  }
+
+
+  else if(tipo === "CANCELAMENTO"){
+
+    mensagem =
+`ℹ️ *SOLICITAÇÃO ENCERRADA — APROVEITAI*
+
+Olá, ${primeiroNome}!
+
+Sua solicitação foi encerrada.
+
+🎫 *Protocolo:* ${protocolo}
+
+Caso ainda precise de atendimento, entre novamente em contato conosco.
+
+*Cartão AproveitAI*`;
+
+  }
+
+
+  else if(tipo === "PERSONALIZADA"){
+
+    mensagem =
+`Olá, ${primeiroNome}!
+
+🎫 Protocolo: ${protocolo}
+
+`;
+
+  }
+
+
+  campo.value =
+    mensagem;
+
+
+  /*
+   * O botão continuará desabilitado
+   * até ligarmos o envio à API.
+   */
+  if(botao){
+    botao.disabled = true;
   }
 
 }
