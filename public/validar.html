@@ -163,6 +163,35 @@ style="width:100%;padding:10px;margin-top:5px;">
 </select>
 </div>
 
+<!-- ==========================================
+     ITEM UTILIZADO
+========================================== -->
+
+<div
+  id="blocoItemUtilizado"
+  style="display:none;margin-top:15px;"
+>
+
+  <label>
+    <strong>Item utilizado</strong>
+  </label>
+
+  <select
+    id="itemUtilizado"
+    onchange="itemUtilizadoSelecionado()"
+    style="
+      width:100%;
+      padding:10px;
+      margin-top:5px;
+    "
+  >
+    <option value="">
+      Selecione o item utilizado
+    </option>
+  </select>
+
+</div>
+
 <div id="blocoVeiculo" style="display:none">
   <label>Selecione o veículo</label>
   <select id="selectVeiculo"
@@ -356,14 +385,31 @@ async function validar() {
   // LIMPA TELA
   // ==========================================
 
-  document.getElementById("blocoBeneficio").style.display = "none";
-  document.getElementById("blocoVeiculo").style.display = "none";
-  document.getElementById("blocoGerarERO").style.display = "none";
+document.getElementById("blocoBeneficio").style.display = "none";
+document.getElementById("blocoVeiculo").style.display = "none";
+document.getElementById("blocoGerarERO").style.display = "none";
 
-  document.getElementById("beneficioSelecionado").innerHTML = "";
+document.getElementById("beneficioSelecionado").innerHTML = "";
 
-  document.getElementById("btnConfirmar").style.display = "none";
-  document.getElementById("btnGerarERO").style.display = "none";
+
+// ==========================================
+// LIMPA ITEM UTILIZADO
+// ==========================================
+
+document.getElementById(
+  "blocoItemUtilizado"
+).style.display = "none";
+
+document.getElementById(
+  "itemUtilizado"
+).innerHTML =
+  '<option value="">' +
+  'Selecione o item utilizado' +
+  '</option>';
+
+
+document.getElementById("btnConfirmar").style.display = "none";
+document.getElementById("btnGerarERO").style.display = "none";
 
 
   // ==========================================
@@ -856,6 +902,50 @@ async function confirmarDesconto() {
     return;
   }
 
+ // ==========================================
+// ITEM EFETIVAMENTE UTILIZADO
+// ==========================================
+
+let itemUtilizado = "";
+let regraItem = "";
+
+const selectItem =
+  document.getElementById(
+    "itemUtilizado"
+  );
+
+if (
+  selectItem &&
+  String(selectItem.value || "").trim()
+) {
+
+  try {
+
+    const itemSelecionado =
+      JSON.parse(
+        selectItem.value
+      );
+
+    itemUtilizado =
+      String(
+        itemSelecionado.item || ""
+      ).trim();
+
+    regraItem =
+      String(
+        itemSelecionado.regra || ""
+      ).trim();
+
+  } catch(e) {
+
+    mostrarMsg(
+      "❌ Item utilizado inválido."
+    );
+
+    return;
+  }
+
+}
 
   // ==========================================
   // PARCEIRO
@@ -910,12 +1000,23 @@ async function confirmarDesconto() {
     encodeURIComponent(parceiroId) +
     "&beneficio=" +
     encodeURIComponent(beneficio) +
-    "&placa=" +
-    encodeURIComponent(placa) +
-    "&modelo=" +
-    encodeURIComponent(modelo) +
-    "&canal=SITE" +
-    "&origem=validacao_qr_cliente" +
+"&placa=" +
+encodeURIComponent(placa) +
+"&modelo=" +
+encodeURIComponent(modelo) +
+
+"&item_utilizado=" +
+encodeURIComponent(
+  itemUtilizado
+) +
+
+"&regra_item=" +
+encodeURIComponent(
+  regraItem
+) +
+
+"&canal=SITE" +
+"&origem=validacao_qr_cliente" +
     "&_=" +
     Date.now();
 
@@ -1539,37 +1640,237 @@ async function carregarBeneficios(
 
 function beneficioSelecionado(){
 
-   const beneficio =
-   document.getElementById(
+  const selectBeneficio =
+    document.getElementById(
       "beneficioSelecionado"
-   ).value;
+    );
 
-   if(!beneficio) return;
+  const blocoItem =
+    document.getElementById(
+      "blocoItemUtilizado"
+    );
 
-   if(window.exigePlaca){
+  const selectItem =
+    document.getElementById(
+      "itemUtilizado"
+    );
 
-      document.getElementById(
-         "blocoVeiculo"
-      ).style.display = "block";
 
-      document.getElementById(
-         "blocoGerarERO"
-      ).style.display = "block";
+  /* ==========================================
+     REINICIA ITEM
+  ========================================== */
 
-      document.getElementById(
-         "btnGerarERO"
-      ).style.display = "block";
+  blocoItem.style.display = "none";
 
-   } else {
+  selectItem.innerHTML =
+    '<option value="">' +
+    'Selecione o item utilizado' +
+    '</option>';
 
-      document.getElementById(
-         "blocoGerarERO"
-      ).style.display = "block";
 
-      document.getElementById(
-         "btnGerarERO"
-      ).style.display = "block";
-   }
+  const valor =
+    String(
+      selectBeneficio.value || ""
+    ).trim();
+
+
+  if(!valor){
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "none";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "none";
+
+    return;
+  }
+
+
+  /* ==========================================
+     LÊ BENEFÍCIO / PROMOÇÃO
+  ========================================== */
+
+  let oferta = {};
+
+  try {
+
+    oferta =
+      JSON.parse(valor);
+
+  } catch(e){
+
+    mostrarMsg(
+      "❌ Benefício ou promoção inválido."
+    );
+
+    return;
+  }
+
+
+  /* ==========================================
+     MONTA ITENS
+  ========================================== */
+
+  const textoItens =
+    String(
+      oferta.itens_beneficio || ""
+    ).trim();
+
+
+  if(textoItens){
+
+    const linhas =
+      textoItens
+        .split(/\r?\n/)
+        .map(linha => linha.trim())
+        .filter(Boolean);
+
+
+    linhas.forEach(function(linha){
+
+      const posicao =
+        linha.indexOf("|");
+
+      let item = linha;
+      let regra = "";
+
+
+      if(posicao >= 0){
+
+        item =
+          linha
+            .substring(0,posicao)
+            .trim();
+
+        regra =
+          linha
+            .substring(posicao + 1)
+            .trim();
+
+      }
+
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        JSON.stringify({
+          item:item,
+          regra:regra
+        });
+
+
+      option.text =
+        regra
+          ? item + " — " + regra
+          : item;
+
+
+      selectItem.appendChild(
+        option
+      );
+
+    });
+
+
+    /* TEM ITENS:
+       OBRIGA ESCOLHER O ITEM */
+
+    blocoItem.style.display =
+      "block";
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "none";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "none";
+
+  } else {
+
+    /* SEM ITENS:
+       MANTÉM O FLUXO NORMAL */
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "block";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "block";
+
+  }
+
+
+  /* ==========================================
+     VEÍCULO
+  ========================================== */
+
+  if(window.exigePlaca){
+
+    document.getElementById(
+      "blocoVeiculo"
+    ).style.display = "block";
+
+  } else {
+
+    document.getElementById(
+      "blocoVeiculo"
+    ).style.display = "none";
+
+  }
+
+}
+
+function itemUtilizadoSelecionado(){
+
+  const selectItem =
+    document.getElementById(
+      "itemUtilizado"
+    );
+
+  const valor =
+    String(
+      selectItem.value || ""
+    ).trim();
+
+
+  /* ==========================================
+     NENHUM ITEM SELECIONADO
+  ========================================== */
+
+  if(!valor){
+
+    document.getElementById(
+      "blocoGerarERO"
+    ).style.display = "none";
+
+    document.getElementById(
+      "btnGerarERO"
+    ).style.display = "none";
+
+    return;
+  }
+
+
+  /* ==========================================
+     ITEM SELECIONADO
+  ========================================== */
+
+  document.getElementById(
+    "blocoGerarERO"
+  ).style.display = "block";
+
+  document.getElementById(
+    "btnGerarERO"
+  ).style.display = "block";
+
 }
 
 function veiculoSelecionado(){
@@ -1934,26 +2235,48 @@ function retornoBeneficios(resp) {
         .trim()
         .toUpperCase();
 
-    const dadosBeneficio = {
+const dadosBeneficio = {
 
-      tipo: tipo,
+  tipo: tipo,
 
-      titulo:
-        String(item.titulo || "")
-          .trim(),
+  titulo:
+    String(item.titulo || "")
+      .trim(),
 
-      descricao:
-        String(item.descricao || "")
-          .trim(),
+  descricao:
+    String(item.descricao || "")
+      .trim(),
 
-      parceiro_id:
-        String(
-          item.parceiro_id ||
-          parceiroId ||
-          ""
-        ).trim()
+  parceiro_id:
+    String(
+      item.parceiro_id ||
+      parceiroId ||
+      ""
+    ).trim(),
 
-    };
+  beneficio_id:
+    String(
+      item.beneficio_id || ""
+    ).trim(),
+
+  promocao_id:
+    String(
+      item.promocao_id || ""
+    ).trim(),
+
+  categoria:
+    String(
+      item.categoria || ""
+    ).trim(),
+
+  itens_beneficio:
+    String(
+      item.itens_beneficio ||
+      item.itensBeneficio ||
+      ""
+    ).trim()
+
+};
 
     const op =
       document.createElement("option");
@@ -1981,18 +2304,33 @@ function retornoBeneficios(resp) {
   ).style.display = "block";
 
 
-  // ==========================================
-  // SELECIONA AUTOMATICAMENTE O PRIMEIRO
-  // BENEFÍCIO DISPONÍVEL
-  // ==========================================
+// ==========================================
+// AGUARDA ESCOLHA DO BENEFÍCIO / PROMOÇÃO
+// ==========================================
 
-  if (select.options.length > 1) {
-
-    select.selectedIndex = 1;
-
-  }
+select.selectedIndex = 0;
 
 
+// ==========================================
+// REINICIA ITEM UTILIZADO
+// ==========================================
+
+const blocoItem =
+  document.getElementById(
+    "blocoItemUtilizado"
+  );
+
+const selectItem =
+  document.getElementById(
+    "itemUtilizado"
+  );
+
+blocoItem.style.display = "none";
+
+selectItem.innerHTML =
+  '<option value="">' +
+  'Selecione o item utilizado' +
+  '</option>';
   // ==========================================
   // VEÍCULO
   // ==========================================
@@ -2012,32 +2350,33 @@ function retornoBeneficios(resp) {
   }
 
 
-  // ==========================================
-  // LIBERA GERAR ERO
-  // ==========================================
+ // ==========================================
+// NÃO LIBERA ERO AINDA
+// AGUARDA ESCOLHA DO BENEFÍCIO / ITEM
+// ==========================================
 
+document.getElementById(
+  "blocoGerarERO"
+).style.display = "none";
+
+
+const btn =
   document.getElementById(
-    "blocoGerarERO"
-  ).style.display = "block";
-
-
-  const btn =
-    document.getElementById(
-      "btnGerarERO"
-    );
-
-  if (btn) {
-
-    btn.style.display = "block";
-    btn.disabled = false;
-    btn.innerText = "Gerar Código ERO";
-
-  }
-
-
-  mostrarMsg(
-    "✅ Cliente validado. Selecione o benefício e gere o Código ERO."
+    "btnGerarERO"
   );
+
+if (btn) {
+
+  btn.style.display = "none";
+  btn.disabled = false;
+  btn.innerText = "Gerar Código ERO";
+
+}
+
+
+mostrarMsg(
+  "✅ Cliente validado. Selecione o benefício ou promoção utilizado."
+);
 
 }
 
