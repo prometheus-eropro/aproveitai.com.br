@@ -395,17 +395,39 @@ h1{
 
   display:inline-block;
 
-  margin-top:8px;
+  margin-top:10px;
+
+  padding:7px 12px;
+
+  border-radius:20px;
+
+  font-weight:bold;
+
+  font-size:12px;
+
+}
+
+.status-verificando{
+
+  background:#fff3cd;
+
+  color:#856404;
+
+}
+
+.status-online{
 
   background:#e8f7ec;
 
   color:#08762c;
 
-  padding:6px 10px;
+}
 
-  border-radius:20px;
+.status-offline{
 
-  font-weight:bold;
+  background:#ffeaea;
+
+  color:#b00020;
 
 }
 
@@ -436,6 +458,8 @@ h1{
 }
 
 </style>
+
+<script src="/js/config.js"></script>
 
 </head>
 
@@ -573,9 +597,19 @@ PROMETHEUS EROPRO
 
 <br>
 
-<span class="status">
-● Plataforma Online
-</span>
+<div
+  id="statusSistema"
+  class="status status-verificando"
+>
+🟡 Verificando sistema...
+</div>
+
+<br>
+
+<div style="margin-top:8px">
+Versão
+<span id="versaoSistema">-</span>
+</div>
 
 </footer>
 
@@ -615,6 +649,184 @@ if ("serviceWorker" in navigator){
 
 </script>
 
+<script>
+
+const campoVersao =
+  document.getElementById("versaoSistema");
+
+if (
+  campoVersao &&
+  typeof CONFIG !== "undefined"
+) {
+
+  campoVersao.textContent =
+    CONFIG.versao || "-";
+
+}
+
+</script>
+
+<script>
+
+async function verificarStatusSistema(){
+
+  const status =
+    document.getElementById("statusSistema");
+
+  if (!status) return;
+
+
+  function mostrarVerificando(){
+
+    status.className =
+      "status status-verificando";
+
+    status.innerHTML =
+      "🟡 Verificando sistema...";
+
+  }
+
+
+  function mostrarOnline(){
+
+    status.className =
+      "status status-online";
+
+    status.innerHTML =
+      "🟢 Sistema operacional";
+
+  }
+
+
+  function mostrarOffline(){
+
+    status.className =
+      "status status-offline";
+
+    status.innerHTML =
+      "🔴 Sistema indisponível";
+
+  }
+
+
+  mostrarVerificando();
+
+
+  if (
+    typeof CONFIG === "undefined" ||
+    !CONFIG.api
+  ){
+
+    mostrarOffline();
+
+    return;
+
+  }
+
+
+  /*
+    Usamos JSONP porque a Plataforma
+    já utiliza esse padrão com o GAS.
+
+    Assim evitamos problemas de CORS
+    entre aproveitai.com.br e Apps Script.
+  */
+
+  const callback =
+    "statusAproveitAI_" +
+    Date.now();
+
+
+  const script =
+    document.createElement("script");
+
+
+  const timeout =
+    setTimeout(function(){
+
+      if (window[callback]){
+
+        delete window[callback];
+
+      }
+
+      script.remove();
+
+      mostrarOffline();
+
+    }, 8000);
+
+
+  window[callback] =
+    function(resposta){
+
+      clearTimeout(timeout);
+
+      script.remove();
+
+      delete window[callback];
+
+
+      const operacional =
+
+        resposta &&
+
+        resposta.ok === true &&
+
+        String(
+          resposta.status || ""
+        ).toUpperCase() ===
+        "OPERACIONAL";
+
+
+      if (operacional){
+
+        mostrarOnline();
+
+      }else{
+
+        mostrarOffline();
+
+      }
+
+    };
+
+
+  script.onerror =
+    function(){
+
+      clearTimeout(timeout);
+
+      script.remove();
+
+      delete window[callback];
+
+      mostrarOffline();
+
+    };
+
+
+  script.src =
+
+    CONFIG.api +
+
+    "?acao=status" +
+
+    "&callback=" +
+    encodeURIComponent(callback) +
+
+    "&_=" +
+    Date.now();
+
+
+  document.body.appendChild(script);
+
+}
+
+
+verificarStatusSistema();
+
+</script>
 
 </body>
 
