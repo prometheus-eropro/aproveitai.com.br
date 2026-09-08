@@ -1,218 +1,1476 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
+
 <meta charset="UTF-8">
-<title>Relatório de Consultas</title>
-<style>
-  body { font-family: Arial; padding: 20px; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-  th { background: #2e7d32; color: #fff; }
-body {
-  margin: 0;
-  padding: 0;
-  background: #eaf6ff;
-  font-family: 'Segoe UI', Arial, sans-serif;
-}
 
-.main-container {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 12px;
-}
+<title>Relatório de Utilizações | Plataforma AproveitAI</title>
 
-</style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-</head>
-<body>
-<!-- ✅ CABEÇALHO PADRONIZADO -->
-<header class="site-header">
-  <div class="brandline">
-    <img src="logo-prometheus.png" class="logo logo-prometheus">
-    <div class="brand-center">
-      <h1 class="site-title">Plataforma AproveitAI</h1>
-      <p class="slogan">Tecnologia com ConsciêncIA gera Resultado.</p>
-
-      <!-- Tarja -->
-      <p class="boas-vindas">
-        🏪 <strong>Área do Parceiro</strong><br>
-        Valide clientes e acompanhe seus relatórios.
-      </p>
-    </div>
-    <img src="logo-aproveitai.png" class="logo logo-aproveitai">
-  </div>
 <link rel="stylesheet" href="style.css">
 
-</header>
+<style>
 
-<h2 id="tituloRelatorio">Relatório de Consultas</h2>
-<div id="periodoRelatorio" style="
+body {
+  margin:0;
+  padding:0;
+  background:#eaf6ff;
+  font-family:'Segoe UI', Arial, sans-serif;
+}
+
+.relatorio-container {
+  width:96%;
+  max-width:1100px;
+  margin:20px auto;
+}
+
+/* ==========================================
+   TÍTULO
+========================================== */
+
+#tituloRelatorio {
+  text-align:center;
+  color:#2e7d32;
+  margin-top:20px;
+}
+
+#periodoRelatorio {
   margin:8px 0 15px 0;
   font-size:14px;
   font-weight:bold;
   color:#2e7d32;
-"></div>
+  text-align:center;
+}
 
-<div id="dadosParceiro" class="dados-parceiro"></div>
+/* ==========================================
+   DADOS DO PARCEIRO
+========================================== */
 
-<div class="status-box" style="margin:15px 0">
+.dados-parceiro {
+  max-width:700px;
+  margin:15px auto;
+  padding:12px;
+  background:#ffffff;
+  border-radius:10px;
+  text-align:center;
+  line-height:1.6;
+}
 
-<b>Parceiro:</b>
-<span id="cabParceiro"></span><br>
+/* ==========================================
+   CABEÇALHO DO RELATÓRIO
+========================================== */
 
-<b>Período:</b>
-<span id="cabPeriodo"></span><br>
+.status-box {
+  max-width:700px;
+  margin:15px auto;
+  padding:15px;
+  background:#ffffff;
+  border-radius:10px;
+  line-height:1.7;
+}
 
-<b>Total de Atendimentos:</b>
-<span id="cabTotal">0</span><br>
+/* ==========================================
+   FILTROS
+========================================== */
 
-<b>Emitido em:</b>
-<span id="cabData"></span>
+.filtros-relatorio {
+  margin:15px auto;
+  text-align:center;
+  max-width:700px;
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  align-items:end;
+  flex-wrap:wrap;
+}
+
+.filtros-relatorio label {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  font-weight:600;
+}
+
+.filtros-relatorio input {
+  padding:8px;
+  border:1px solid #aaa;
+  border-radius:6px;
+}
+
+.filtros-relatorio button,
+.relatorio-botao,
+.botao-voltar {
+  padding:10px 16px;
+  border:0;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* ==========================================
+   RESUMO
+========================================== */
+
+#resumoUtilizacoes {
+  max-width:900px;
+  margin:25px auto;
+}
+
+.resumo-cards {
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.resumo-card {
+  background:#ffffff;
+  border:2px solid #2e7d32;
+  border-radius:10px;
+  padding:15px 20px;
+  min-width:160px;
+  text-align:center;
+}
+
+.resumo-card.promocao {
+  border-color:#e67e22;
+}
+
+.resumo-numero {
+  display:block;
+  margin-top:5px;
+  font-size:26px;
+  font-weight:bold;
+}
+
+/* ==========================================
+   BLOCOS BENEFÍCIOS / PROMOÇÕES
+========================================== */
+
+.resumo-bloco {
+  background:#ffffff;
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:15px;
+}
+
+.resumo-bloco h3 {
+  margin-top:0;
+}
+
+.titulo-beneficio {
+  color:#2e7d32;
+}
+
+.titulo-promocao {
+  color:#e67e22;
+}
+
+/* ==========================================
+   LINHAS DO RESUMO
+========================================== */
+
+.resumo-utilizacao {
+  border-bottom:1px solid #ddd;
+  padding:12px 5px;
+}
+
+.resumo-utilizacao:last-child {
+  border-bottom:0;
+}
+
+.resumo-utilizacao-titulo {
+  font-weight:bold;
+  font-size:15px;
+}
+
+.resumo-utilizacao-quantidade {
+  font-weight:bold;
+  color:#2e7d32;
+}
+
+.resumo-item {
+  margin:6px 0 0 15px;
+  font-size:13px;
+  line-height:1.5;
+}
+
+/* ==========================================
+   TABELA
+========================================== */
+
+.tabela-wrapper {
+  width:100%;
+  overflow-x:auto;
+  margin-top:20px;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  background:#ffffff;
+}
+
+th,
+td {
+  border:1px solid #ccc;
+  padding:8px;
+  text-align:center;
+  vertical-align:middle;
+}
+
+th {
+  background:#2e7d32;
+  color:#fff;
+}
+
+td {
+  font-size:14px;
+}
+
+/* ==========================================
+   BOTÕES
+========================================== */
+
+.acoes-relatorio {
+  text-align:center;
+  margin:15px 0;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width:600px) {
+
+  .relatorio-container {
+    width:96%;
+  }
+
+  .resumo-card {
+    min-width:120px;
+    flex:1;
+  }
+
+  th,
+  td {
+    font-size:12px;
+    padding:6px;
+  }
+
+}
+
+/* ==========================================
+   IMPRESSÃO
+========================================== */
+
+@media print {
+
+  .filtros-relatorio,
+  .acoes-relatorio,
+  .botao-voltar {
+    display:none !important;
+  }
+
+  body {
+    background:#fff;
+  }
+
+  .relatorio-container {
+    width:100%;
+    max-width:none;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     CABEÇALHO PADRONIZADO
+========================================== -->
+
+<header class="site-header">
+
+  <div class="brandline">
+
+    <img
+      src="logo-prometheus.png"
+      class="logo logo-prometheus"
+      alt="Prometheus EROPRO"
+    >
+
+    <div class="brand-center">
+
+      <h1 class="site-title">
+        Plataforma AproveitAI
+      </h1>
+
+      <p class="slogan">
+        Tecnologia com ConsciêncIA gera Resultado.
+      </p>
+
+      <p class="boas-vindas">
+        🏪 <strong>Área do Parceiro</strong><br>
+        Valide clientes e acompanhe seus relatórios.
+      </p>
+
+    </div>
+
+    <img
+      src="logo-aproveitai.png"
+      class="logo logo-aproveitai"
+      alt="AproveitAI"
+    >
+
+  </div>
+
+</header>
+
+
+<div class="relatorio-container">
+
+
+<h2 id="tituloRelatorio">
+  📊 Relatório de Utilizações
+</h2>
+
+
+<div id="periodoRelatorio"></div>
+
+
+<!-- ==========================================
+     DADOS DO PARCEIRO
+========================================== -->
+
+<div
+  id="dadosParceiro"
+  class="dados-parceiro">
+</div>
+
+
+<div class="status-box">
+
+  <b>Parceiro:</b>
+  <span id="cabParceiro"></span>
+  <br>
+
+  <b>Período:</b>
+  <span id="cabPeriodo"></span>
+  <br>
+
+  <b>Total de Utilizações:</b>
+  <span id="cabTotal">0</span>
+  <br>
+
+  <b>Emitido em:</b>
+  <span id="cabData"></span>
 
 </div>
 
-<div style="
-  margin:10px auto;
-  text-align:center;
-  max-width:420px;
-  display:flex;
-  gap:8px;
-  justify-content:center;
-  align-items:center;
-  flex-wrap:wrap;
-">
+
+<!-- ==========================================
+     FILTRO
+========================================== -->
+
+<div class="filtros-relatorio">
 
   <label>
-    📅 Início:
-    <input type="date" id="dataInicio">
+    📅 Início
+    <input
+      type="date"
+      id="dataInicio">
   </label>
 
-  <label style="margin-left:10px">
-    📅 Fim:
-    <input type="date" id="dataFim">
+  <label>
+    📅 Fim
+    <input
+      type="date"
+      id="dataFim">
   </label>
 
-  <button onclick="carregarRelatorio()" style="margin-left:10px">
+  <button onclick="carregarRelatorio()">
     🔍 Filtrar
   </button>
+
 </div>
 
-<button class="relatorio-botao" onclick="window.print()">
-  🖨️ Imprimir / PDF
-</button>
-<div style="text-align:center;margin:15px 0;">
 
-  </a>
+<!-- ==========================================
+     BOTÃO PDF
+========================================== -->
+
+<div class="acoes-relatorio">
+
+  <button
+    class="relatorio-botao"
+    onclick="window.print()">
+
+    🖨️ Imprimir / PDF
+
+  </button>
+
 </div>
 
+
+<!-- ==========================================
+     RESUMO DE UTILIZAÇÕES
+========================================== -->
+
+<div id="resumoUtilizacoes">
+
+  <h3 style="
+    text-align:center;
+    color:#2e7d32;
+  ">
+    📈 Resumo de Utilizações
+  </h3>
+
+
+  <div class="resumo-cards">
+
+
+    <div class="resumo-card">
+
+      <strong>
+        Total de Utilizações
+      </strong>
+
+      <span
+        id="resumoTotal"
+        class="resumo-numero">
+        0
+      </span>
+
+    </div>
+
+
+    <div class="resumo-card">
+
+      <strong>
+        🎁 Benefícios
+      </strong>
+
+      <span
+        id="resumoBeneficios"
+        class="resumo-numero">
+        0
+      </span>
+
+    </div>
+
+
+    <div class="resumo-card promocao">
+
+      <strong>
+        🔥 Promoções
+      </strong>
+
+      <span
+        id="resumoPromocoes"
+        class="resumo-numero">
+        0
+      </span>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- BENEFÍCIOS -->
+
+  <div
+    id="blocoResumoBeneficios"
+    class="resumo-bloco">
+
+    <h3 class="titulo-beneficio">
+      🎁 Benefícios utilizados
+    </h3>
+
+    <div id="listaResumoBeneficios">
+      Nenhum benefício utilizado no período.
+    </div>
+
+  </div>
+
+
+  <!-- PROMOÇÕES -->
+
+  <div
+    id="blocoResumoPromocoes"
+    class="resumo-bloco">
+
+    <h3 class="titulo-promocao">
+      🔥 Promoções utilizadas
+    </h3>
+
+    <div id="listaResumoPromocoes">
+      Nenhuma promoção utilizada no período.
+    </div>
+
+  </div>
+
+
+</div>
+
+
+<!-- ==========================================
+     HISTÓRICO
+========================================== -->
+
+<h3 style="
+  text-align:center;
+  color:#2e7d32;
+  margin-top:30px;
+">
+  📋 Histórico de Utilizações
+</h3>
+
+
+<div class="tabela-wrapper">
 
 <table>
+
 <thead>
+
 <tr>
+
   <th>Data/Hora</th>
-<th>Grupo</th>
-<th>Tipo</th>
-<th>Benefício Utilizado</th>
-<th>Código</th></tr>
+
+  <th>Grupo</th>
+
+  <th>Tipo</th>
+
+  <th>Benefício / Promoção</th>
+
+  <th>Item Utilizado</th>
+
+  <th>Regra Aplicada</th>
+
+  <th>Código ERO</th>
+
+</tr>
+
 </thead>
-<tbody id="dados"></tbody>
+
+
+<tbody id="dados">
+
+<tr>
+  <td colspan="7">
+    Carregando relatório...
+  </td>
+</tr>
+
+</tbody>
+
+
 </table>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-const parceiroNome = sessionStorage.getItem("parceiroNome");
-const parceiroCNPJ = sessionStorage.getItem("parceiroCNPJ");
-
-if (!parceiroNome || !parceiroCNPJ) {
-  document.body.innerHTML = `
-    <div style="padding:40px;text-align:center">
-      <h2>⚠️ Sessão não encontrada</h2>
-      <p>Volte ao painel do parceiro para acessar o relatório.</p>
-      <button onclick="window.location.href='painelparceiro.html'">
-        🔐 Ir para Login
-      </button>
-    </div>
-  `;
-  throw new Error("Sessão ausente");
-}
-
-// 🔹 Exibe parceiro (NOME + CNPJ)
-document.getElementById("dadosParceiro").innerHTML = `
-  <strong>Parceiro:</strong> ${parceiroNome}<br>
-  <strong>CNPJ:</strong> ${parceiroCNPJ}
-`;
-
-function carregarRelatorio() {
-  const inicio = document.getElementById("dataInicio").value;
-  const fim = document.getElementById("dataFim").value;
-
-  let url = API_URL + "?relatorio=1&parceiro=" + encodeURIComponent(parceiroNome);
-  if (inicio) url += "&inicio=" + inicio;
-  if (fim) url += "&fim=" + fim;
-
-  fetch(url)
-    .then(r => r.json())
-    .then(d => {
-      if (!d.ok) {
-        alert("Erro ao carregar relatório");
-        return;
-      }
-
-      const tbody = document.getElementById("dados");
-      tbody.innerHTML = "";
-
-      if (!d.dados || d.dados.length === 0) {
-        tbody.innerHTML = `
-          <tr><td colspan="5">Nenhum registro encontrado</td></tr>
-        `;
-        return;
-      }
-
-
-document.getElementById("cabParceiro").innerHTML = parceiroNome;
-
-document.getElementById("cabPeriodo").innerHTML =
-  (inicio || "Início") + " até " + (fim || "Hoje");
-
-document.getElementById("cabTotal").innerHTML =
-  d.dados.length;
-
-document.getElementById("cabData").innerHTML =
-  new Date().toLocaleString("pt-BR");
-
-      d.dados.forEach(r => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${r.dataFormatada || new Date(r.data).toLocaleString("pt-BR")}</td>
-            <td>${r.grupo || "-"}</td>
-            <td>${r.tipo || "-"}</td>
-<td>
-    <strong>${r.beneficio || "-"}</strong><br>
-    <small>${r.descricao || ""}</small>
-</td>
-<td>${r.codigo || "-"}</td>
-          </tr>
-        `;
-      });
-    })
-
-    .catch(err => {
-      console.error(err);
-      alert("Falha ao buscar relatório");
-    });
-}
-
-// 🔥 carrega automático ao abrir
-carregarRelatorio();
-</script>
-<div style="margin:20px;text-align:center">
-  <button onclick="history.back()">
-    ⬅️ Voltar
-  </button>
 </div>
 
-<!-- ✅ RODAPÉ PADRÃO -->
+
+<!-- ==========================================
+     VOLTAR
+========================================== -->
+
+<div style="
+  margin:20px;
+  text-align:center;
+">
+
+  <button
+    class="botao-voltar"
+    onclick="history.back()">
+
+    ⬅️ Voltar
+
+  </button>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* ==========================================
+   CONFIGURAÇÃO
+========================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
+
+
+const parceiroNome =
+  sessionStorage.getItem("parceiroNome");
+
+const parceiroCNPJ =
+  sessionStorage.getItem("parceiroCNPJ");
+
+
+/* ==========================================
+   SEGURANÇA DA SESSÃO
+========================================== */
+
+if (!parceiroNome || !parceiroCNPJ) {
+
+  document.body.innerHTML = `
+
+    <div style="
+      padding:40px;
+      text-align:center;
+    ">
+
+      <h2>
+        ⚠️ Sessão não encontrada
+      </h2>
+
+      <p>
+        Volte ao painel do parceiro para acessar o relatório.
+      </p>
+
+      <button
+        onclick="window.location.href='painelparceiro.html'">
+
+        🔐 Ir para Login
+
+      </button>
+
+    </div>
+
+  `;
+
+  throw new Error(
+    "Sessão do parceiro ausente"
+  );
+
+}
+
+
+/* ==========================================
+   ESCAPE HTML
+========================================== */
+
+function escaparHTML(valor) {
+
+  return String(valor ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==========================================
+   NORMALIZA TEXTO
+========================================== */
+
+function normalizarTexto(valor) {
+
+  return String(valor || "")
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase();
+
+}
+
+
+/* ==========================================
+   IDENTIFICA TIPO
+========================================== */
+
+function obterTipoRegistro(registro) {
+
+  const tipo =
+    normalizarTexto(registro.tipo);
+
+  if (tipo.includes("PROMO")) {
+    return "PROMOCAO";
+  }
+
+  if (tipo.includes("BENEF")) {
+    return "BENEFICIO";
+  }
+
+  return "OUTRO";
+
+}
+
+
+/* ==========================================
+   TEXTO VISUAL DO TIPO
+========================================== */
+
+function textoTipo(registro) {
+
+  const tipo =
+    obterTipoRegistro(registro);
+
+  if (tipo === "PROMOCAO") {
+    return "🔥 Promoção";
+  }
+
+  if (tipo === "BENEFICIO") {
+    return "🎁 Benefício";
+  }
+
+  return registro.tipo || "-";
+
+}
+
+
+/* ==========================================
+   DADOS DO PARCEIRO
+========================================== */
+
+document
+  .getElementById("dadosParceiro")
+  .innerHTML = `
+
+    <strong>Parceiro:</strong>
+    ${escaparHTML(parceiroNome)}
+    <br>
+
+    <strong>CNPJ:</strong>
+    ${escaparHTML(parceiroCNPJ)}
+
+  `;
+
+
+/* ==========================================
+   GERA RESUMO
+========================================== */
+
+function gerarResumo(registros) {
+
+
+  const beneficios = {};
+
+  const promocoes = {};
+
+
+  let totalBeneficios = 0;
+
+  let totalPromocoes = 0;
+
+
+  registros.forEach(r => {
+
+
+    const tipo =
+      obterTipoRegistro(r);
+
+
+    if (tipo !== "BENEFICIO" &&
+        tipo !== "PROMOCAO") {
+
+      return;
+
+    }
+
+
+    const titulo =
+      String(
+        r.beneficio ||
+        "Não informado"
+      ).trim();
+
+
+    const descricao =
+      String(
+        r.descricao ||
+        ""
+      ).trim();
+
+
+    const item =
+      String(
+        r.item ||
+        ""
+      ).trim();
+
+
+    const regra =
+      String(
+        r.regra_item ||
+        ""
+      ).trim();
+
+
+    const chave =
+      titulo +
+      "||" +
+      descricao;
+
+
+    const destino =
+      tipo === "PROMOCAO"
+        ? promocoes
+        : beneficios;
+
+
+    if (!destino[chave]) {
+
+      destino[chave] = {
+
+        titulo: titulo,
+
+        descricao: descricao,
+
+        quantidade: 0,
+
+        itens: {}
+
+      };
+
+    }
+
+
+    destino[chave].quantidade++;
+
+
+    /* ======================================
+       ITEM UTILIZADO
+    ====================================== */
+
+    if (item) {
+
+
+      const chaveItem =
+        item +
+        "||" +
+        regra;
+
+
+      if (!destino[chave].itens[chaveItem]) {
+
+        destino[chave].itens[chaveItem] = {
+
+          item: item,
+
+          regra: regra,
+
+          quantidade: 0
+
+        };
+
+      }
+
+
+      destino[chave]
+        .itens[chaveItem]
+        .quantidade++;
+
+    }
+
+
+    if (tipo === "PROMOCAO") {
+
+      totalPromocoes++;
+
+    } else {
+
+      totalBeneficios++;
+
+    }
+
+
+  });
+
+
+  /* ======================================
+     TOTAIS
+  ====================================== */
+
+  document
+    .getElementById("resumoTotal")
+    .textContent =
+      registros.length;
+
+
+  document
+    .getElementById("resumoBeneficios")
+    .textContent =
+      totalBeneficios;
+
+
+  document
+    .getElementById("resumoPromocoes")
+    .textContent =
+      totalPromocoes;
+
+
+  /* ======================================
+     BENEFÍCIOS
+  ====================================== */
+
+  montarListaResumo(
+    beneficios,
+    "listaResumoBeneficios",
+    "benefício"
+  );
+
+
+  /* ======================================
+     PROMOÇÕES
+  ====================================== */
+
+  montarListaResumo(
+    promocoes,
+    "listaResumoPromocoes",
+    "promoção"
+  );
+
+
+}
+
+
+/* ==========================================
+   MONTA LISTA DO RESUMO
+========================================== */
+
+function montarListaResumo(
+  dados,
+  elementoId,
+  tipoTexto
+) {
+
+
+  const elemento =
+    document.getElementById(elementoId);
+
+
+  const lista =
+    Object.values(dados);
+
+
+  if (!lista.length) {
+
+    elemento.innerHTML =
+      `Nenhuma ${tipoTexto} utilizada no período.`;
+
+    return;
+
+  }
+
+
+  /* MAIS UTILIZADOS PRIMEIRO */
+
+  lista.sort(
+    (a,b) =>
+      b.quantidade -
+      a.quantidade
+  );
+
+
+  elemento.innerHTML =
+    lista.map(registro => {
+
+
+      let html = `
+
+        <div class="resumo-utilizacao">
+
+          <div class="resumo-utilizacao-titulo">
+
+            ${escaparHTML(registro.titulo)}
+
+            —
+
+            <span class="resumo-utilizacao-quantidade">
+
+              ${registro.quantidade}
+              ${registro.quantidade === 1
+                ? "utilização"
+                : "utilizações"}
+
+            </span>
+
+          </div>
+
+      `;
+
+
+      if (
+        registro.descricao &&
+        registro.descricao !== "-"
+      ) {
+
+        html += `
+
+          <div style="
+            font-size:13px;
+            margin-top:3px;
+          ">
+
+            ${escaparHTML(registro.descricao)}
+
+          </div>
+
+        `;
+
+      }
+
+
+      const itens =
+        Object.values(
+          registro.itens
+        );
+
+
+      if (itens.length) {
+
+
+        itens.sort(
+          (a,b) =>
+            b.quantidade -
+            a.quantidade
+        );
+
+
+        html += `
+
+          <div style="
+            margin-top:8px;
+            padding-left:10px;
+          ">
+
+        `;
+
+
+        itens.forEach(item => {
+
+
+          html += `
+
+            <div class="resumo-item">
+
+              • <strong>
+                ${escaparHTML(item.item)}
+              </strong>
+
+          `;
+
+
+          if (item.regra) {
+
+            html += `
+
+              —
+              ${escaparHTML(item.regra)}
+
+            `;
+
+          }
+
+
+          html += `
+
+              :
+              <strong>
+                ${item.quantidade}
+              </strong>
+
+            </div>
+
+          `;
+
+
+        });
+
+
+        html += `</div>`;
+
+      }
+
+
+      html += `</div>`;
+
+
+      return html;
+
+
+    }).join("");
+
+
+}
+
+
+/* ==========================================
+   LIMPA RELATÓRIO
+========================================== */
+
+function limparRelatorio() {
+
+  document
+    .getElementById("cabTotal")
+    .textContent = "0";
+
+  document
+    .getElementById("resumoTotal")
+    .textContent = "0";
+
+  document
+    .getElementById("resumoBeneficios")
+    .textContent = "0";
+
+  document
+    .getElementById("resumoPromocoes")
+    .textContent = "0";
+
+  document
+    .getElementById("listaResumoBeneficios")
+    .innerHTML =
+      "Nenhum benefício utilizado no período.";
+
+  document
+    .getElementById("listaResumoPromocoes")
+    .innerHTML =
+      "Nenhuma promoção utilizada no período.";
+
+}
+
+
+/* ==========================================
+   CARREGA RELATÓRIO
+========================================== */
+
+function carregarRelatorio() {
+
+
+  const inicio =
+    document
+      .getElementById("dataInicio")
+      .value;
+
+
+  const fim =
+    document
+      .getElementById("dataFim")
+      .value;
+
+
+  let url =
+    API_URL +
+    "?relatorio=1&parceiro=" +
+    encodeURIComponent(parceiroNome);
+
+
+  if (inicio) {
+
+    url +=
+      "&inicio=" +
+      encodeURIComponent(inicio);
+
+  }
+
+
+  if (fim) {
+
+    url +=
+      "&fim=" +
+      encodeURIComponent(fim);
+
+  }
+
+
+  const tbody =
+    document.getElementById("dados");
+
+
+  tbody.innerHTML = `
+
+    <tr>
+
+      <td colspan="7">
+        Carregando relatório...
+      </td>
+
+    </tr>
+
+  `;
+
+
+  fetch(url)
+
+    .then(r => r.json())
+
+    .then(d => {
+
+
+      if (!d || d.ok !== true) {
+
+        throw new Error(
+          "Resposta inválida da API"
+        );
+
+      }
+
+
+      const registros =
+        Array.isArray(d.dados)
+          ? d.dados
+          : [];
+
+
+      /* ======================================
+         CABEÇALHO
+      ====================================== */
+
+      document
+        .getElementById("cabParceiro")
+        .textContent =
+          parceiroNome;
+
+
+      const textoPeriodo =
+        (inicio || "Últimos 7 dias") +
+        " até " +
+        (fim || "Hoje");
+
+
+      document
+        .getElementById("cabPeriodo")
+        .textContent =
+          textoPeriodo;
+
+
+      document
+        .getElementById("periodoRelatorio")
+        .textContent =
+          "Período: " +
+          textoPeriodo;
+
+
+      document
+        .getElementById("cabTotal")
+        .textContent =
+          registros.length;
+
+
+      document
+        .getElementById("cabData")
+        .textContent =
+          new Date()
+            .toLocaleString("pt-BR");
+
+
+      /* ======================================
+         RESUMO
+      ====================================== */
+
+      gerarResumo(registros);
+
+
+      /* ======================================
+         SEM REGISTROS
+      ====================================== */
+
+      if (!registros.length) {
+
+
+        tbody.innerHTML = `
+
+          <tr>
+
+            <td colspan="7">
+              Nenhuma utilização encontrada
+              no período selecionado.
+            </td>
+
+          </tr>
+
+        `;
+
+
+        return;
+
+      }
+
+
+      /* ======================================
+         ORDENA MAIS RECENTE PRIMEIRO
+      ====================================== */
+
+      registros.sort((a,b) => {
+
+        return (
+          new Date(b.data).getTime() -
+          new Date(a.data).getTime()
+        );
+
+      });
+
+
+      tbody.innerHTML = "";
+
+
+      /* ======================================
+         HISTÓRICO
+      ====================================== */
+
+      registros.forEach(r => {
+
+
+        let dataFormatada = "-";
+
+
+        if (r.data) {
+
+          const data =
+            new Date(r.data);
+
+
+          if (!isNaN(data.getTime())) {
+
+            dataFormatada =
+              data.toLocaleString(
+                "pt-BR"
+              );
+
+          }
+
+        }
+
+
+        const item =
+          r.item || "-";
+
+
+        const regra =
+          r.regra_item || "-";
+
+
+        const descricao =
+          r.descricao &&
+          r.descricao !== "-"
+            ? r.descricao
+            : "";
+
+
+        tbody.innerHTML += `
+
+          <tr>
+
+            <td>
+              ${escaparHTML(dataFormatada)}
+            </td>
+
+            <td>
+              ${escaparHTML(r.grupo || "-")}
+            </td>
+
+            <td>
+              ${escaparHTML(textoTipo(r))}
+            </td>
+
+            <td>
+
+              <strong>
+                ${escaparHTML(
+                  r.beneficio || "-"
+                )}
+              </strong>
+
+              ${
+                descricao
+                ? `<br><small>${escaparHTML(descricao)}</small>`
+                : ""
+              }
+
+            </td>
+
+            <td>
+              ${escaparHTML(item)}
+            </td>
+
+            <td>
+              ${escaparHTML(regra)}
+            </td>
+
+            <td>
+              ${escaparHTML(r.codigo || "-")}
+            </td>
+
+          </tr>
+
+        `;
+
+
+      });
+
+
+    })
+
+
+    .catch(err => {
+
+
+      console.error(
+        "ERRO RELATÓRIO:",
+        err
+      );
+
+
+      limparRelatorio();
+
+
+      tbody.innerHTML = `
+
+        <tr>
+
+          <td colspan="7">
+
+            ⚠️ Não foi possível carregar
+            o relatório.
+
+          </td>
+
+        </tr>
+
+      `;
+
+
+      alert(
+        "Falha ao buscar relatório."
+      );
+
+
+    });
+
+
+}
+
+
+/* ==========================================
+   CARREGA AUTOMATICAMENTE
+========================================== */
+
+carregarRelatorio();
+
+
+</script>
+
+
+<!-- ==========================================
+     RODAPÉ PADRÃO
+========================================== -->
+
 <footer style="
   background:#dfffe0;
   padding:12px;
@@ -220,12 +1478,21 @@ carregarRelatorio();
   font-size:12px;
   line-height:1.4;
 ">
-  © 2025 Plataforma AproveitAI • PROMETHEUS EROPRO<br>
 
-  <strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos.
-  Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros,
-  válidos, em regra, para pagamentos à vista em moeda corrente, salvo autorização expressa do estabelecimento.
+  © 2025 Plataforma AproveitAI •
+  PROMETHEUS EROPRO
+  <br>
+
+  <strong>Aviso legal:</strong>
+
+  A Plataforma AproveitAI não garante descontos.
+  Benefícios e promoções são definidos e concedidos
+  exclusivamente pelos parceiros, válidos, em regra,
+  para pagamentos à vista em moeda corrente, salvo
+  autorização expressa do estabelecimento.
+
 </footer>
+
 
 </body>
 </html>
