@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<title>AproveitAI</title>
+
+<meta
+name="theme-color"
+content="#0a7a2a"
+>
+
+<meta
+name="mobile-web-app-capable"
+content="yes"
+>
+
+<meta
+name="apple-mobile-web-app-capable"
+content="yes"
+>
+
+<meta
+name="apple-mobile-web-app-title"
+content="AproveitAI"
+>
+
+<meta
+name="apple-mobile-web-app-status-bar-style"
+content="default"
+>
+
+<link
+rel="manifest"
+href="/manifest.json"
+>
+
+<link
+rel="apple-touch-icon"
+href="/icon.192.png"
+>
+
+<link
+rel="icon"
+href="/favicon.ico"
+>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+body{
+
+  min-height:100vh;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f4fff6 0%,
+      #ffffff 45%,
+      #eef9f0 100%
+    );
+
+  color:#222;
+
+  display:flex;
+
+  justify-content:center;
+
+}
+
+.app{
+
+  width:100%;
+
+  max-width:520px;
+
+  min-height:100vh;
+
+  padding:
+
+    max(25px, env(safe-area-inset-top))
+
+    20px
+
+    max(25px, env(safe-area-inset-bottom));
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+
+/* =========================================
+   MARCA
+========================================= */
+
+.marca{
+
+  text-align:center;
+
+  margin-top:15px;
+
+}
+
+.icone{
+
+  width:105px;
+
+  height:105px;
+
+  border-radius:24px;
+
+  object-fit:cover;
+
+  box-shadow:
+    0 5px 18px
+    rgba(0,0,0,.16);
+
+}
+
+h1{
+
+  margin:
+
+    18px 0 4px;
+
+  color:#086b27;
+
+  font-size:34px;
+
+  font-weight:900;
+
+  letter-spacing:-1px;
+
+}
+
+.subtitulo{
+
+  margin:0;
+
+  font-size:16px;
+
+  font-weight:700;
+
+  color:#333;
+
+}
+
+.slogan{
+
+  margin-top:7px;
+
+  color:#08762c;
+
+  font-size:13px;
+
+  font-weight:600;
+
+}
+
+
+/* =========================================
+   CARTÃO PRINCIPAL
+========================================= */
+
+.card{
+
+  background:#fff;
+
+  margin-top:28px;
+
+  border-radius:20px;
+
+  padding:24px 20px;
+
+  box-shadow:
+    0 6px 25px
+    rgba(0,0,0,.10);
+
+  border:
+    1px solid #e1eee4;
+
+}
+
+.card h2{
+
+  margin:
+    0 0 6px;
+
+  text-align:center;
+
+  color:#064f1e;
+
+  font-size:21px;
+
+}
+
+.orientacao{
+
+  text-align:center;
+
+  color:#666;
+
+  font-size:14px;
+
+  line-height:1.5;
+
+  margin-bottom:22px;
+
+}
+
+
+/* =========================================
+   BOTÕES
+========================================= */
+
+.botao{
+
+  width:100%;
+
+  min-height:76px;
+
+  border:0;
+
+  border-radius:15px;
+
+  margin-top:13px;
+
+  padding:14px 16px;
+
+  cursor:pointer;
+
+  text-decoration:none;
+
+  display:flex;
+
+  align-items:center;
+
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease;
+
+}
+
+.botao:active{
+
+  transform:scale(.98);
+
+}
+
+.botao-cliente{
+
+  background:#0a7a2a;
+
+  color:#fff;
+
+  box-shadow:
+    0 4px 12px
+    rgba(10,122,42,.25);
+
+}
+
+.botao-parceiro{
+
+  background:#075d22;
+
+  color:#fff;
+
+  box-shadow:
+    0 4px 12px
+    rgba(7,93,34,.25);
+
+}
+
+.emoji{
+
+  font-size:31px;
+
+  width:52px;
+
+  text-align:center;
+
+  flex-shrink:0;
+
+}
+
+.texto-botao{
+
+  flex:1;
+
+  text-align:left;
+
+}
+
+.titulo-botao{
+
+  display:block;
+
+  font-size:18px;
+
+  font-weight:900;
+
+  margin-bottom:4px;
+
+}
+
+.descricao-botao{
+
+  display:block;
+
+  font-size:12px;
+
+  line-height:1.35;
+
+  opacity:.95;
+
+}
+
+
+/* =========================================
+   SITE
+========================================= */
+
+.site{
+
+  display:block;
+
+  margin-top:20px;
+
+  padding:13px;
+
+  text-align:center;
+
+  text-decoration:none;
+
+  color:#086b27;
+
+  font-weight:bold;
+
+  font-size:14px;
+
+  border:
+    1px solid #a8d8b4;
+
+  border-radius:12px;
+
+  background:#f6fff8;
+
+}
+
+
+/* =========================================
+   RODAPÉ
+========================================= */
+
+.rodape{
+
+  margin-top:auto;
+
+  padding-top:28px;
+
+  text-align:center;
+
+  color:#666;
+
+  font-size:11px;
+
+  line-height:1.5;
+
+}
+
+.status{
+
+  display:inline-block;
+
+  margin-top:8px;
+
+  background:#e8f7ec;
+
+  color:#08762c;
+
+  padding:6px 10px;
+
+  border-radius:20px;
+
+  font-weight:bold;
+
+}
+
+
+/* =========================================
+   TELAS PEQUENAS
+========================================= */
+
+@media(max-width:380px){
+
+  .app{
+    padding-left:14px;
+    padding-right:14px;
+  }
+
+  h1{
+    font-size:30px;
+  }
+
+  .card{
+    padding:20px 14px;
+  }
+
+  .titulo-botao{
+    font-size:16px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<main class="app">
+
+
+<!-- =====================================
+     IDENTIDADE
+===================================== -->
+
+<section class="marca">
+
+<img
+src="/icon.192.png"
+alt="AproveitAI"
+class="icone"
+>
+
+<h1>
+AproveitAI
+</h1>
+
+<p class="subtitulo">
+Cartão AproveitAI
+</p>
+
+<p class="slogan">
+Tecnologia com ConsciêncIA gera Resultado.
+</p>
+
+</section>
+
+
+<!-- =====================================
+     ACESSOS
+===================================== -->
+
+<section class="card">
+
+<h2>
+Bem-vindo
+</h2>
+
+<p class="orientacao">
+Escolha abaixo como deseja acessar
+a Plataforma AproveitAI.
+</p>
+
+
+<!-- CLIENTE -->
+
+<a
+href="/painelcliente.html"
+class="botao botao-cliente"
+>
+
+<span class="emoji">
+👤
+</span>
+
+<span class="texto-botao">
+
+<span class="titulo-botao">
+SOU CLIENTE
+</span>
+
+<span class="descricao-botao">
+Acesse seu cartão, benefícios,
+promoções e histórico.
+</span>
+
+</span>
+
+</a>
+
+
+<!-- PARCEIRO -->
+
+<a
+href="/painelparceiro.html"
+class="botao botao-parceiro"
+>
+
+<span class="emoji">
+🏪
+</span>
+
+<span class="texto-botao">
+
+<span class="titulo-botao">
+SOU PARCEIRO
+</span>
+
+<span class="descricao-botao">
+Valide clientes e acompanhe
+benefícios, promoções e resultados.
+</span>
+
+</span>
+
+</a>
+
+
+<!-- SITE -->
+
+<a
+href="/index.html"
+class="site"
+>
+
+🌐 Visitar o site AproveitAI
+
+</a>
+
+
+</section>
+
+
+<!-- =====================================
+     RODAPÉ
+===================================== -->
+
+<footer class="rodape">
+
+<strong>
+Plataforma AproveitAI
+</strong>
+
+<br>
+
+PROMETHEUS EROPRO
+
+<br>
+
+<span class="status">
+● Plataforma Online
+</span>
+
+</footer>
+
+
+</main>
+
+
+<!-- =====================================
+     SERVICE WORKER
+===================================== -->
+
+<script>
+
+if ("serviceWorker" in navigator){
+
+  window.addEventListener(
+    "load",
+    function(){
+
+      navigator
+        .serviceWorker
+        .register("/sw.js")
+
+        .catch(function(erro){
+
+          console.error(
+            "Erro ao registrar Service Worker:",
+            erro
+          );
+
+        });
+
+    }
+  );
+
+}
+
+</script>
+
+
+</body>
+
+</html>
