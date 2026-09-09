@@ -142,165 +142,260 @@ function pegarCampo(obj, campos){
 async function consultar() {
 
   const cpf =
-    document.getElementById("cpf").value.replace(/\D/g,"");
+    document
+      .getElementById("cpf")
+      .value
+      .replace(/\D/g, "");
 
   const nascimento =
-    document.getElementById("nascimento").value;
+    document
+      .getElementById("nascimento")
+      .value;
 
   const box =
     document.getElementById("resultado");
 
-  box.innerHTML = "Consultando...";
 
-  if (!cpf || cpf.length !== 11 || !nascimento) {
-    box.innerHTML = "Informe CPF e data de nascimento.";
+  if (
+    !cpf ||
+    cpf.length !== 11 ||
+    !nascimento
+  ) {
+
+    box.innerHTML =
+      "Informe CPF e data de nascimento.";
+
     return;
+
   }
 
-  // Limpa callback e script anteriores
-  delete window.retornoConsulta;
 
-  const antigo =
-    document.getElementById("jsonpConsulta");
+  box.innerHTML = "Consultando...";
 
-  if (antigo) antigo.remove();
 
-  const url =
-    `${sheetURL}?acao=buscarClienteId` +
-    `&callback=retornoConsulta` +
-    `&cpf=${encodeURIComponent(cpf)}` +
-    `&nascimento=${encodeURIComponent(nascimento)}` +
-    `&_=${Date.now()}`;
+  try {
 
-  window.retornoConsulta = async function (achado) {
+    const url =
+      sheetURL +
+      "?acao=buscarClienteId" +
+      "&cpf=" +
+      encodeURIComponent(cpf) +
+      "&nascimento=" +
+      encodeURIComponent(nascimento) +
+      "&_=" +
+      Date.now();
 
-    try {
 
-      // Remove o script após receber resposta
-      const antigo =
-        document.getElementById("jsonpConsulta");
+    const resposta =
+      await fetch(url);
 
-      if (antigo) antigo.remove();
 
-      if (!achado || !achado.ok) {
+    if (!resposta.ok) {
 
-        box.innerHTML =
-          achado?.mensagem || "Cliente não localizado.";
-
-        return;
-
-      }
-
-      const ativo = isAtivo(
-        achado.ativo || achado.statusCliente
+      throw new Error(
+        "Servidor retornou HTTP " +
+        resposta.status
       );
 
-      ultimoIdPublico = achado.idPublico || "";
+    }
 
-      sessionStorage.setItem(
-        "clienteCpf",
-        cpf
+
+    const achado =
+      await resposta.json();
+
+
+    console.log(
+      "RESPOSTA CLIENTE:",
+      achado
+    );
+
+
+    if (
+      !achado ||
+      achado.ok !== true
+    ) {
+
+      box.innerHTML =
+        achado?.mensagem ||
+        "Cliente não localizado.";
+
+      return;
+
+    }
+
+
+    const ativo =
+      isAtivo(
+        achado.ativo ||
+        achado.statusCliente
       );
 
-      sessionStorage.setItem(
-        "clienteNascimento",
-        nascimento
-      );
 
-      sessionStorage.setItem(
-        "clienteIdPublico",
-        ultimoIdPublico
-      );
+    ultimoIdPublico =
+      achado.idPublico || "";
 
-      // ==========================
-      // CLIENTE INATIVO
-      // ==========================
 
-      if (!ativo) {
+    sessionStorage.setItem(
+      "clienteCpf",
+      cpf
+    );
 
-        document.getElementById("bemVindoNome").innerHTML = "";
+    sessionStorage.setItem(
+      "clienteNascimento",
+      nascimento
+    );
 
-        document.getElementById("btnBeneficios").style.display = "none";
-        document.getElementById("btnCartao").style.display = "none";
-        document.getElementById("btnParceiros").style.display = "none";
+    sessionStorage.setItem(
+      "clienteIdPublico",
+      ultimoIdPublico
+    );
 
-        box.innerHTML = `
-        <div style="
-        margin-top:12px;
-        padding:16px;
-        border-radius:10px;
-        background:#ffeaea;
-        border:2px solid #c62828;
-        color:#7a0000;
-        text-align:center;
-        ">
 
-        ⚠️ Cadastro localizado, porém está INATIVO.<br><br>
+    /* =====================================
+       CLIENTE INATIVO
+    ===================================== */
 
-        <a
-        class="btn-aproveitai"
-        target="_blank"
-        href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20ou%20renovar%20meu%20Cartão%20AproveitAI."
-        >
+    if (!ativo) {
 
-        💳 Ativar ou renovar meu cartão
+      document
+        .getElementById("bemVindoNome")
+        .innerHTML = "";
 
-        </a>
 
-        </div>
-        `;
+      document
+        .getElementById("btnBeneficios")
+        .style.display = "none";
 
-        return;
+      document
+        .getElementById("btnCartao")
+        .style.display = "none";
 
-      }
+      document
+        .getElementById("btnParceiros")
+        .style.display = "none";
 
-      // ==========================
-      // CLIENTE ATIVO
-      // ==========================
-
-      document.getElementById("bemVindoNome").innerHTML = `
-      <span style="color:#000">
-      Olá,
-      <strong style="color:#0a7f2e">
-      ${achado.nome || achado.nomeCliente}
-      </strong> 👋
-      <br>
-      Seu cadastro está
-      <strong style="color:#0a7f2e">
-      ATIVO
-      </strong>.
-      </span>
-      `;
-
-      document.getElementById("btnBeneficios").style.display = "block";
-      document.getElementById("btnCartao").style.display = "block";
-      document.getElementById("btnParceiros").style.display = "block";
 
       box.innerHTML = `
 
-      <div><b>Nome:</b> ${achado.nome || achado.nomeCliente}</div>
+        <div style="
+          margin-top:12px;
+          padding:16px;
+          border-radius:10px;
+          background:#ffeaea;
+          border:2px solid #c62828;
+          color:#7a0000;
+          text-align:center;
+        ">
 
-      <div><b>CPF:</b> ${achado.cpf || "-"}</div>
+          ⚠️ Cadastro localizado,
+          porém está INATIVO.
 
-      <div><b>Celular:</b> ${achado.celular || "-"}</div>
+          <br><br>
 
-      <div><b>ID Público:</b> ${achado.idPublico || "-"}</div>
+          <a
+            class="btn-aproveitai"
+            target="_blank"
+            href="https://wa.me/5528999692303?text=Olá,%20quero%20ativar%20ou%20renovar%20meu%20Cartão%20AproveitAI."
+          >
 
-      <div><b>Grupo:</b> ${achado.grupo || "-"}</div>
+            💳 Ativar ou renovar meu cartão
 
-      <div><b>Cidade:</b> ${achado.cidade || "-"}</div>
+          </a>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* =====================================
+       CLIENTE ATIVO
+    ===================================== */
+
+    document
+      .getElementById("bemVindoNome")
+      .innerHTML = `
+
+        <span style="color:#000">
+
+          Olá,
+
+          <strong style="color:#0a7f2e">
+            ${achado.nome || achado.nomeCliente}
+          </strong> 👋
+
+          <br>
+
+          Seu cadastro está
+
+          <strong style="color:#0a7f2e">
+            ATIVO
+          </strong>.
+
+        </span>
+
+      `;
+
+
+    document
+      .getElementById("btnBeneficios")
+      .style.display = "block";
+
+    document
+      .getElementById("btnCartao")
+      .style.display = "block";
+
+    document
+      .getElementById("btnParceiros")
+      .style.display = "block";
+
+
+    box.innerHTML = `
+
+      <div>
+        <b>Nome:</b>
+        ${achado.nome || achado.nomeCliente}
+      </div>
+
+      <div>
+        <b>CPF:</b>
+        ${achado.cpf || "-"}
+      </div>
+
+      <div>
+        <b>Celular:</b>
+        ${achado.celular || "-"}
+      </div>
+
+      <div>
+        <b>ID Público:</b>
+        ${achado.idPublico || "-"}
+      </div>
+
+      <div>
+        <b>Grupo:</b>
+        ${achado.grupo || "-"}
+      </div>
+
+      <div>
+        <b>Cidade:</b>
+        ${achado.cidade || "-"}
+      </div>
 
       <div style="
-      margin-top:10px;
-      padding:8px;
-      background:#0a7f2e;
-      color:#fff;
-      border-radius:8px;
-      text-align:center;
-      font-weight:bold;
+        margin-top:10px;
+        padding:8px;
+        background:#0a7f2e;
+        color:#fff;
+        border-radius:8px;
+        text-align:center;
+        font-weight:bold;
       ">
 
-      STATUS: ATIVO
+        STATUS: ATIVO
 
       </div>
 
@@ -312,90 +407,93 @@ async function consultar() {
 
       <div style="margin-top:18px">
 
-      <button
-      class="btn-aproveitai"
-      onclick="solicitarAlteracao()">
-
-      📱 Solicitar alteração cadastral
-
-      </button>
-
-      </div>
-      `;
-
-      // Veículos
-
-      try {
-
-        carregarVeiculos(achado);
-
-      } catch (e) {
-
-        console.error("ERRO VEÍCULOS:", e);
-
-      }
-
-      // Histórico
-
-      try {
-
-        await carregarHistorico(cpf);
-
-      } catch (e) {
-
-        console.error("ERRO HISTÓRICO:", e);
-
-      }
-
-    } catch (err) {
-
-      console.error(err);
-
-      box.innerHTML = `
-      <div style="
-      padding:15px;
-      background:#ffeaea;
-      border:2px solid red;
-      border-radius:8px;
-      color:#900;
-      font-weight:bold;
-      ">
-
-      Erro JavaScript:<br>
-
-      ${err.message}
+        <button
+          class="btn-aproveitai"
+          onclick="solicitarAlteracao()"
+        >
+          📱 Solicitar alteração cadastral
+        </button>
 
       </div>
-      `;
 
-    } finally {
+    `;
 
-      delete window.retornoConsulta;
 
-      const antigo =
-        document.getElementById("jsonpConsulta");
+    /* =====================================
+       VEÍCULOS
+    ===================================== */
 
-      if (antigo) antigo.remove();
+    try {
+
+      carregarVeiculos(achado);
+
+    } catch (erro) {
+
+      console.error(
+        "ERRO VEÍCULOS:",
+        erro
+      );
 
     }
 
-  };
 
-  const script =
-    document.createElement("script");
+    /* =====================================
+       HISTÓRICO
+    ===================================== */
 
-  script.id = "jsonpConsulta";
+    try {
 
-  script.src = url;
+      await carregarHistorico(cpf);
 
-  script.onerror = function () {
+    } catch (erro) {
 
-    box.innerHTML =
-      "Erro ao comunicar com o servidor.";
+      console.error(
+        "ERRO HISTÓRICO:",
+        erro
+      );
 
-  };
+    }
 
-  document.body.appendChild(script);
+
+  } catch (erro) {
+
+    console.error(
+      "ERRO CONSULTA CLIENTE:",
+      erro
+    );
+
+
+    box.innerHTML = `
+
+      <div style="
+        padding:15px;
+        background:#ffeaea;
+        border:2px solid #c62828;
+        border-radius:8px;
+        color:#900;
+        font-weight:bold;
+        text-align:center;
+      ">
+
+        ❌ Não foi possível consultar seus dados.
+
+        <br><br>
+
+        <span style="
+          font-size:12px;
+          font-weight:normal;
+        ">
+
+          Verifique sua conexão
+          e tente novamente.
+
+        </span>
+
+      </div>
+
+    `;
+
+  }
 
 }
 
