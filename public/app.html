@@ -338,6 +338,47 @@ h1{
 
 }
 
+/* =========================================
+   INSTALAR APP
+========================================= */
+
+.btn-instalar{
+
+  width:100%;
+
+  min-height:58px;
+
+  margin-top:18px;
+
+  padding:14px 16px;
+
+  border:2px solid #0a7a2a;
+
+  border-radius:14px;
+
+  background:#ffffff;
+
+  color:#086b27;
+
+  font-size:16px;
+
+  font-weight:900;
+
+  cursor:pointer;
+
+  text-align:center;
+
+  box-shadow:
+    0 3px 10px
+    rgba(10,122,42,.12);
+
+}
+
+.btn-instalar:active{
+
+  transform:scale(.98);
+
+}
 
 /* =========================================
    SITE
@@ -565,6 +606,30 @@ benefícios, promoções e resultados.
 
 </a>
 
+<button
+  id="btnInstalarApp"
+  class="btn-app btn-instalar"
+  type="button"
+  style="display:none;"
+>
+  📲 INSTALAR APROVEITAI
+</button>
+
+<div
+  id="orientacaoInstalacao"
+  style="
+    display:none;
+    margin:12px auto;
+    padding:14px;
+    max-width:520px;
+    background:#fff8d8;
+    border:1px solid #e3c400;
+    border-radius:10px;
+    font-size:14px;
+    line-height:1.5;
+    text-align:left;
+  "
+></div>
 
 <!-- SITE -->
 
@@ -827,6 +892,8 @@ async function verificarStatusSistema(){
 verificarStatusSistema();
 
 </script>
+
+<script src="/js/instalar-app.js"></script>
 
 </body>
 

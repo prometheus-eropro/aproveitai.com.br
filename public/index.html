@@ -11,7 +11,7 @@
 
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="/manifest.json">
 
 <link rel="apple-touch-icon" href="icon.192.png">
 
@@ -133,6 +133,36 @@ class="btn-aproveitai">
 🏪 Área do Parceiro
 
 </a>
+
+
+<!-- INSTALAR APROVEITAI -->
+
+<button
+  id="btnInstalarApp"
+  class="btn-aproveitai"
+  type="button"
+  style="display:none;"
+>
+📲 Instalar AproveitAI
+</button>
+
+<div
+  id="orientacaoInstalacao"
+  style="
+    display:none;
+    width:100%;
+    max-width:520px;
+    margin:12px auto;
+    padding:14px;
+    background:#fff8d8;
+    border:1px solid #e3c400;
+    border-radius:10px;
+    font-size:14px;
+    line-height:1.5;
+    text-align:left;
+  "
+></div>
+
 
 </div>
 
@@ -871,6 +901,8 @@ navigator.serviceWorker.register('/sw.js');
 }
 
 </script>
+
+<script src="/js/instalar-app.js"></script>
 
 </body>
 </html>
