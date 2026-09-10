@@ -733,6 +733,8 @@ if (
 
 <script>
 
+<script>
+
 async function verificarStatusSistema(){
 
   const status =
@@ -789,102 +791,74 @@ async function verificarStatusSistema(){
   }
 
 
-  /*
-    Usamos JSONP porque a Plataforma
-    já utiliza esse padrão com o GAS.
+  try {
 
-    Assim evitamos problemas de CORS
-    entre aproveitai.com.br e Apps Script.
-  */
-
-  const callback =
-    "statusAproveitAI_" +
-    Date.now();
+    const url =
+      CONFIG.api +
+      "?acao=status" +
+      "&_=" +
+      Date.now();
 
 
-  const script =
-    document.createElement("script");
+    const resposta =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store"
+      });
 
 
-  const timeout =
-    setTimeout(function(){
+    if (!resposta.ok){
 
-      if (window[callback]){
+      throw new Error(
+        "HTTP " + resposta.status
+      );
 
-        delete window[callback];
-
-      }
-
-      script.remove();
-
-      mostrarOffline();
-
-    }, 8000);
+    }
 
 
-  window[callback] =
-    function(resposta){
-
-      clearTimeout(timeout);
-
-      script.remove();
-
-      delete window[callback];
+    const dados =
+      await resposta.json();
 
 
-      const operacional =
-
-        resposta &&
-
-        resposta.ok === true &&
-
-        String(
-          resposta.status || ""
-        ).toUpperCase() ===
-        "OPERACIONAL";
+    console.log(
+      "STATUS APROVEITAI:",
+      dados
+    );
 
 
-      if (operacional){
+    const operacional =
 
-        mostrarOnline();
+      dados &&
 
-      }else{
+      dados.ok === true &&
 
-        mostrarOffline();
+      String(
+        dados.status || ""
+      ).toUpperCase() ===
+      "OPERACIONAL";
 
-      }
 
-    };
+    if (operacional){
 
+      mostrarOnline();
 
-  script.onerror =
-    function(){
-
-      clearTimeout(timeout);
-
-      script.remove();
-
-      delete window[callback];
+    }else{
 
       mostrarOffline();
 
-    };
+    }
 
 
-  script.src =
+  } catch (erro){
 
-    CONFIG.api +
+    console.error(
+      "ERRO STATUS APROVEITAI:",
+      erro
+    );
 
-    "?acao=status" +
+    mostrarOffline();
 
-    "&callback=" +
-    encodeURIComponent(callback) +
-
-    "&_=" +
-    Date.now();
-
-
-  document.body.appendChild(script);
+  }
 
 }
 
