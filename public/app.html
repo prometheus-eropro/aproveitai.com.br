@@ -733,7 +733,7 @@ if (
 
 <script>
 
-function verificarStatusSistema() {
+async function verificarStatusSistema() {
 
   const status =
     document.getElementById("statusSistema");
@@ -763,141 +763,81 @@ function verificarStatusSistema() {
   }
 
 
-  const callback =
-    "statusAproveitAI_" +
-    Date.now();
+  try {
+
+    const url =
+      CONFIG.api +
+      "?acao=status&_=" +
+      Date.now();
 
 
-  const script =
-    document.createElement("script");
-
-
-  let finalizado = false;
-
-
-  function limpar() {
-
-    if (script.parentNode) {
-      script.remove();
-    }
-
-    try {
-      delete window[callback];
-    } catch (e) {}
-
-  }
-
-
-  /* ==========================================
-     RESPOSTA DO SERVIDOR
-  ========================================== */
-
-  window[callback] =
-    function (dados) {
-
-      finalizado = true;
-
-      console.log(
-        "STATUS APROVEITAI:",
-        dados
+    const resposta =
+      await fetch(
+        url,
+        {
+          method: "GET",
+          cache: "no-store"
+        }
       );
 
 
-      if (
-        dados &&
-        dados.ok === true &&
-        String(
-          dados.status || ""
-        ).toUpperCase() ===
-        "OPERACIONAL"
-      ) {
+    if (!resposta.ok) {
 
-        status.className =
-          "status status-online";
+      throw new Error(
+        "HTTP " + resposta.status
+      );
 
-        status.innerHTML =
-          "🟢 Sistema operacional";
-
-      } else {
-
-        status.className =
-          "status status-offline";
-
-        status.innerHTML =
-          "🔴 Sistema indisponível";
-
-      }
+    }
 
 
-      limpar();
+    const dados =
+      await resposta.json();
 
-    };
+
+    console.log(
+      "STATUS APROVEITAI:",
+      dados
+    );
 
 
-  /* ==========================================
-     ERRO DE CARREGAMENTO
-  ========================================== */
-
-  script.onerror =
-    function () {
-
-      if (finalizado) return;
-
-      finalizado = true;
-
+    if (
+      dados &&
+      dados.ok === true &&
+      String(
+        dados.status || ""
+      ).toUpperCase() ===
+      "OPERACIONAL"
+    ) {
 
       status.className =
-        "status status-offline";
+        "status status-online";
 
       status.innerHTML =
-        "🔴 Sistema indisponível";
+        "🟢 Sistema operacional";
+
+    } else {
+
+      throw new Error(
+        "Status não operacional"
+      );
+
+    }
 
 
-      limpar();
+  } catch (erro) {
 
-    };
+    console.error(
+      "ERRO STATUS APROVEITAI:",
+      erro
+    );
 
+    status.className =
+      "status status-offline";
 
-  /* ==========================================
-     TIMEOUT — 10 SEGUNDOS
-  ========================================== */
+    status.innerHTML =
+      "🔴 Sistema indisponível";
 
-  setTimeout(
-    function () {
-
-      if (finalizado) return;
-
-      finalizado = true;
-
-
-      status.className =
-        "status status-offline";
-
-      status.innerHTML =
-        "🔴 Sistema indisponível";
-
-
-      limpar();
-
-    },
-    10000
-  );
-
-
-  /* ==========================================
-     CHAMADA JSONP
-  ========================================== */
-
-  script.src =
-    CONFIG.api +
-    "?acao=status" +
-    "&callback=" +
-    encodeURIComponent(callback) +
-    "&_=" +
-    Date.now();
-
-
-  document.body.appendChild(script);
+  }
 
 }
 

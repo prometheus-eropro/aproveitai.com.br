@@ -229,34 +229,33 @@
 
 
     /* ================================================
-       FALLBACK
-    ================================================ */
+   FALLBACK
+================================================ */
 
-    mostrarMensagem(`
+mostrarMensagem(`
 
-      <strong>
-        📲 Instalar AproveitAI
-      </strong>
+  <div style="text-align:center;">
 
-      <br><br>
+    <strong>
+      📲 AproveitAI
+    </strong>
 
-      Abra o menu do navegador
+    <br><br>
 
-      <strong>⋮</strong>
+    Se você <strong>já instalou o AproveitAI</strong>,
+    abra pelo ícone na tela do seu celular.
 
-      e escolha
+    <br><br>
 
-      <strong>
-        Instalar aplicativo
-      </strong>
+    Se ainda não instalou, abra o menu do navegador
+    <strong>⋮</strong> e procure por
+    <strong>Instalar aplicativo</strong>
+    ou
+    <strong>Adicionar à tela inicial</strong>.
 
-      ou
+  </div>
 
-      <strong>
-        Adicionar à tela inicial
-      </strong>.
-
-    `);
+`);
 
   }
 
