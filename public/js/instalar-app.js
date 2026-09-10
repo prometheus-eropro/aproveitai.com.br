@@ -194,23 +194,34 @@
 
       mostrarMensagem(`
 
-        <strong>
-          📲 Instalar AproveitAI
-        </strong>
+  <div style="text-align:center;">
 
-        <br><br>
+    <strong>
+      📲 AproveitAI
+    </strong>
 
-        No Safari, toque em
+    <br><br>
 
-        <strong>Compartilhar</strong>
+    Se você <strong>já instalou o AproveitAI</strong>,
+    abra pelo ícone na tela do seu celular.
 
-        e depois em
+    <br><br>
 
-        <strong>
-          Adicionar à Tela de Início
-        </strong>.
+    Se ainda não instalou, abra o menu do navegador
 
-      `);
+    <strong>⋮</strong>
+
+    e procure por
+
+    <strong>Instalar aplicativo</strong>
+
+    ou
+
+    <strong>Adicionar à tela inicial</strong>.
+
+  </div>
+
+`);
 
       return;
 

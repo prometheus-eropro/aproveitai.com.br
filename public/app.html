@@ -735,7 +735,7 @@ if (
 
 <script>
 
-async function verificarStatusSistema(){
+function verificarStatusSistema() {
 
   const status =
     document.getElementById("statusSistema");
@@ -743,29 +743,17 @@ async function verificarStatusSistema(){
   if (!status) return;
 
 
-  function mostrarVerificando(){
+  status.className =
+    "status status-verificando";
 
-    status.className =
-      "status status-verificando";
-
-    status.innerHTML =
-      "🟡 Verificando sistema...";
-
-  }
+  status.innerHTML =
+    "🟡 Verificando sistema...";
 
 
-  function mostrarOnline(){
-
-    status.className =
-      "status status-online";
-
-    status.innerHTML =
-      "🟢 Sistema operacional";
-
-  }
-
-
-  function mostrarOffline(){
+  if (
+    typeof CONFIG === "undefined" ||
+    !CONFIG.api
+  ) {
 
     status.className =
       "status status-offline";
@@ -773,92 +761,145 @@ async function verificarStatusSistema(){
     status.innerHTML =
       "🔴 Sistema indisponível";
 
-  }
-
-
-  mostrarVerificando();
-
-
-  if (
-    typeof CONFIG === "undefined" ||
-    !CONFIG.api
-  ){
-
-    mostrarOffline();
-
     return;
+  }
+
+
+  const callback =
+    "statusAproveitAI_" +
+    Date.now();
+
+
+  const script =
+    document.createElement("script");
+
+
+  let finalizado = false;
+
+
+  function limpar() {
+
+    if (script.parentNode) {
+      script.remove();
+    }
+
+    try {
+      delete window[callback];
+    } catch (e) {}
 
   }
 
 
-  try {
+  /* ==========================================
+     RESPOSTA DO SERVIDOR
+  ========================================== */
 
-    const url =
-      CONFIG.api +
-      "?acao=status" +
-      "&_=" +
-      Date.now();
+  window[callback] =
+    function (dados) {
 
+      finalizado = true;
 
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store"
-      });
-
-
-    if (!resposta.ok){
-
-      throw new Error(
-        "HTTP " + resposta.status
+      console.log(
+        "STATUS APROVEITAI:",
+        dados
       );
 
-    }
+
+      if (
+        dados &&
+        dados.ok === true &&
+        String(
+          dados.status || ""
+        ).toUpperCase() ===
+        "OPERACIONAL"
+      ) {
+
+        status.className =
+          "status status-online";
+
+        status.innerHTML =
+          "🟢 Sistema operacional";
+
+      } else {
+
+        status.className =
+          "status status-offline";
+
+        status.innerHTML =
+          "🔴 Sistema indisponível";
+
+      }
 
 
-    const dados =
-      await resposta.json();
+      limpar();
+
+    };
 
 
-    console.log(
-      "STATUS APROVEITAI:",
-      dados
-    );
+  /* ==========================================
+     ERRO DE CARREGAMENTO
+  ========================================== */
+
+  script.onerror =
+    function () {
+
+      if (finalizado) return;
+
+      finalizado = true;
 
 
-    const operacional =
+      status.className =
+        "status status-offline";
 
-      dados &&
-
-      dados.ok === true &&
-
-      String(
-        dados.status || ""
-      ).toUpperCase() ===
-      "OPERACIONAL";
+      status.innerHTML =
+        "🔴 Sistema indisponível";
 
 
-    if (operacional){
+      limpar();
 
-      mostrarOnline();
-
-    }else{
-
-      mostrarOffline();
-
-    }
+    };
 
 
-  } catch (erro){
+  /* ==========================================
+     TIMEOUT — 10 SEGUNDOS
+  ========================================== */
 
-    console.error(
-      "ERRO STATUS APROVEITAI:",
-      erro
-    );
+  setTimeout(
+    function () {
 
-    mostrarOffline();
+      if (finalizado) return;
 
-  }
+      finalizado = true;
+
+
+      status.className =
+        "status status-offline";
+
+      status.innerHTML =
+        "🔴 Sistema indisponível";
+
+
+      limpar();
+
+    },
+    10000
+  );
+
+
+  /* ==========================================
+     CHAMADA JSONP
+  ========================================== */
+
+  script.src =
+    CONFIG.api +
+    "?acao=status" +
+    "&callback=" +
+    encodeURIComponent(callback) +
+    "&_=" +
+    Date.now();
+
+
+  document.body.appendChild(script);
 
 }
 
