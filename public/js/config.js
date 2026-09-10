@@ -1,6 +1,6 @@
 const CONFIG = {
 
-    versao: "2026.09.09-002",
+    versao: "2026.09.10-001",
     empresa: "PROMETHEUS EROPRO",
     plataforma: "PROMETHEUS HUB",
     sistema: "Cartão AproveitAI",
