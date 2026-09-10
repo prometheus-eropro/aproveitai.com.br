@@ -3438,3 +3438,291 @@ body.pagina-promocoes {
   line-height: 1.4;
   color: #444;
 }
+
+/* =====================================================
+   MENU PRINCIPAL — PADRONIZAÇÃO
+===================================================== */
+
+.menu-principal {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  gap: 10px;
+  width: 100%;
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.menu-principal a,
+.menu-principal button {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 11px 8px !important;
+  margin: 0 !important;
+
+  min-height: 42px;
+  height: auto;
+
+  font-size: 14px !important;
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+
+/* TABLET */
+
+@media (max-width: 1000px) {
+
+  .menu-principal {
+    flex-wrap: wrap;
+  }
+
+  .menu-principal a,
+  .menu-principal button {
+    flex: 1 1 28%;
+    max-width: 31%;
+  }
+
+}
+
+
+/* CELULAR */
+
+@media (max-width: 650px) {
+
+  .menu-principal {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .menu-principal a,
+  .menu-principal button {
+    width: 100% !important;
+    max-width: 305px;
+    min-height: 44px;
+  }
+
+}
+
+/* =====================================================
+   INDEX — MENU PRINCIPAL OFICIAL
+===================================================== */
+
+.menu-principal {
+  width: 100%;
+  max-width: 1280px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, minmax(0, 1fr));
+
+  gap: 10px;
+
+  align-items: stretch;
+
+  box-sizing: border-box;
+}
+
+
+/* TODOS OS BOTÕES IGUAIS */
+
+.menu-principal .btn-aproveitai {
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  min-height: 44px;
+
+  margin: 0 !important;
+  padding: 10px 6px !important;
+
+  display: flex !important;
+
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  font-size: 13px !important;
+  font-weight: 700;
+
+  line-height: 1.15;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  border-radius: 10px;
+}
+
+
+/* =====================================================
+   INSTALAÇÃO
+===================================================== */
+
+.instalar-aproveitai-box {
+
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  margin: 18px auto 4px;
+
+}
+
+
+.btn-instalar-app {
+
+  width: auto !important;
+
+  min-width: 190px;
+  max-width: 260px;
+
+  padding: 9px 18px !important;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  background: #ffffff !important;
+
+  color: #08752a !important;
+
+  border: 2px solid #08752a !important;
+
+  border-radius: 24px !important;
+
+  font-size: 14px !important;
+
+  font-weight: 700 !important;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 7px rgba(0,0,0,.12);
+}
+
+
+.btn-instalar-app:hover {
+
+  background: #eef9f1 !important;
+
+}
+
+
+/* MENSAGEM DE INSTALAÇÃO */
+
+.instalacao-msg {
+
+  width: 100%;
+
+  max-width: 390px;
+
+  margin: 10px auto 0;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  background: #fff8d8;
+
+  border: 1px solid #e3c400;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  text-align: left;
+
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1050px) {
+
+  .menu-principal {
+
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+
+  }
+
+}
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media (max-width: 650px) {
+
+  .menu-principal {
+
+    width: 100%;
+
+    max-width: 330px;
+
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+
+  }
+
+
+  .menu-principal .btn-aproveitai {
+
+    width: 100% !important;
+
+    min-height: 46px;
+
+    font-size: 15px !important;
+
+  }
+
+
+  .instalar-aproveitai-box {
+
+    margin-top: 18px;
+
+  }
+
+
+  .btn-instalar-app {
+
+    min-width: 210px;
+
+    font-size: 14px !important;
+
+  }
+
+}

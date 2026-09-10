@@ -1,6 +1,5 @@
 /* =====================================================
-   APROVEITAI — INSTALAÇÃO DO APP / PWA
-   Arquivo: js/instalar-app.js
+   APROVEITAI — INSTALAÇÃO DO PWA
 ===================================================== */
 
 (function () {
@@ -8,124 +7,104 @@
   let eventoInstalacao = null;
 
 
-  /* =====================================================
-     ELEMENTOS DA PÁGINA
-  ===================================================== */
-
-  function elementos() {
-
-    return {
-      botao:
-        document.getElementById("btnInstalarApp"),
-
-      orientacao:
-        document.getElementById("orientacaoInstalacao")
-    };
-
-  }
-
-
-  /* =====================================================
-     VERIFICA SE JÁ ESTÁ RODANDO COMO APP
-  ===================================================== */
-
-  function appJaInstalado() {
+  function instalado() {
 
     return (
-      window.matchMedia("(display-mode: standalone)").matches ||
+      window.matchMedia(
+        "(display-mode: standalone)"
+      ).matches ||
       window.navigator.standalone === true
     );
 
   }
 
 
-  /* =====================================================
-     IDENTIFICA IPHONE / IPAD
-  ===================================================== */
+  function isIOS() {
 
-  function dispositivoApple() {
-
-    return /iphone|ipad|ipod/i.test(
-      navigator.userAgent
+    return (
+      /iphone|ipad|ipod/i.test(
+        navigator.userAgent
+      ) ||
+      (
+        navigator.platform === "MacIntel" &&
+        navigator.maxTouchPoints > 1
+      )
     );
 
   }
 
 
-  /* =====================================================
-     MOSTRAR BOTÃO
-  ===================================================== */
+  function pegarBotao() {
+
+    return (
+      document.querySelector(
+        "[data-instalar-aproveitai]"
+      ) ||
+      document.getElementById(
+        "btnInstalarApp"
+      )
+    );
+
+  }
+
+
+  function pegarMensagem() {
+
+    return (
+      document.querySelector(
+        "[data-instalacao-msg]"
+      ) ||
+      document.getElementById(
+        "orientacaoInstalacao"
+      )
+    );
+
+  }
+
 
   function mostrarBotao() {
 
-    const { botao } = elementos();
+    const botao =
+      pegarBotao();
 
-    if (!botao) {
-      return;
-    }
+    if (!botao) return;
 
-    if (appJaInstalado()) {
-
-      botao.style.display = "none";
-
-      return;
-    }
-
-    botao.style.display = "";
+    botao.style.display =
+      "inline-flex";
 
   }
 
-
-  /* =====================================================
-     ESCONDER BOTÃO
-  ===================================================== */
 
   function esconderBotao() {
 
-    const { botao } = elementos();
+    const botao =
+      pegarBotao();
 
-    if (botao) {
-      botao.style.display = "none";
-    }
+    if (!botao) return;
 
-  }
-
-
-  /* =====================================================
-     MENSAGEM AUXILIAR
-  ===================================================== */
-
-  function mostrarOrientacao(html) {
-
-    const { orientacao } = elementos();
-
-    if (!orientacao) {
-      return;
-    }
-
-    orientacao.innerHTML = html;
-    orientacao.style.display = "block";
+    botao.style.display =
+      "none";
 
   }
 
 
-  function esconderOrientacao() {
+  function mostrarMensagem(html) {
 
-    const { orientacao } = elementos();
+    const box =
+      pegarMensagem();
 
-    if (!orientacao) {
-      return;
-    }
+    if (!box) return;
 
-    orientacao.style.display = "none";
-    orientacao.innerHTML = "";
+    box.hidden = false;
+    box.style.display = "block";
+    box.innerHTML = html;
 
   }
 
 
-  /* =====================================================
-     NAVEGADOR LIBEROU INSTALAÇÃO PWA
-  ===================================================== */
+  /* ==================================================
+     NAVEGADOR DISPONIBILIZOU INSTALAÇÃO
+  ================================================== */
 
   window.addEventListener(
     "beforeinstallprompt",
@@ -133,7 +112,12 @@
 
       evento.preventDefault();
 
-      eventoInstalacao = evento;
+      eventoInstalacao =
+        evento;
+
+      console.log(
+        "AproveitAI: instalação disponível."
+      );
 
       mostrarBotao();
 
@@ -141,204 +125,194 @@
   );
 
 
-  /* =====================================================
-     CLIQUE EM INSTALAR
-  ===================================================== */
+  /* ==================================================
+     CLIQUE NO BOTÃO
+  ================================================== */
 
-  async function instalarAproveitai() {
+  async function instalar() {
 
-    esconderOrientacao();
-
-
-    /* ==========================================
-       JÁ ESTÁ INSTALADO
-    ========================================== */
-
-    if (appJaInstalado()) {
+    if (instalado()) {
 
       esconderBotao();
 
       return;
+
     }
 
 
-    /* ==========================================
-       IPHONE / IPAD
-    ========================================== */
-
-    if (dispositivoApple()) {
-
-      mostrarOrientacao(`
-        <strong>📱 Instalar AproveitAI no iPhone/iPad</strong>
-
-        <br><br>
-
-        1. Abra esta página pelo
-        <strong>Safari</strong>.
-
-        <br><br>
-
-        2. Toque no botão
-        <strong>Compartilhar</strong>.
-
-        <br><br>
-
-        3. Escolha
-        <strong>Adicionar à Tela de Início</strong>.
-
-        <br><br>
-
-        4. Toque em
-        <strong>Adicionar</strong>.
-      `);
-
-      return;
-    }
-
-
-    /* ==========================================
-       ANDROID / CHROME / EDGE COMPATÍVEL
-    ========================================== */
+    /* ================================================
+       ANDROID / EDGE / CHROME
+    ================================================ */
 
     if (eventoInstalacao) {
 
       try {
 
-        eventoInstalacao.prompt();
+        await eventoInstalacao.prompt();
 
-        const resultado =
+        const escolha =
           await eventoInstalacao.userChoice;
+
+        console.log(
+          "AproveitAI instalação:",
+          escolha.outcome
+        );
+
 
         eventoInstalacao = null;
 
 
         if (
-          resultado &&
-          resultado.outcome === "accepted"
+          escolha.outcome ===
+          "accepted"
         ) {
 
           esconderBotao();
-          esconderOrientacao();
 
         }
+
+        return;
+
 
       } catch (erro) {
 
         console.error(
-          "Erro ao solicitar instalação:",
+          "Erro ao instalar AproveitAI:",
           erro
         );
 
       }
 
-      return;
     }
 
 
-    /* ==========================================
-       NAVEGADOR NÃO LIBEROU PROMPT AUTOMÁTICO
-    ========================================== */
+    /* ================================================
+       IPHONE / IPAD
+    ================================================ */
 
-    mostrarOrientacao(`
-      <strong>📲 Instalar AproveitAI</strong>
+    if (isIOS()) {
+
+      mostrarMensagem(`
+
+        <strong>
+          📲 Instalar AproveitAI
+        </strong>
+
+        <br><br>
+
+        No Safari, toque em
+
+        <strong>Compartilhar</strong>
+
+        e depois em
+
+        <strong>
+          Adicionar à Tela de Início
+        </strong>.
+
+      `);
+
+      return;
+
+    }
+
+
+    /* ================================================
+       FALLBACK
+    ================================================ */
+
+    mostrarMensagem(`
+
+      <strong>
+        📲 Instalar AproveitAI
+      </strong>
 
       <br><br>
 
       Abra o menu do navegador
+
       <strong>⋮</strong>
-      e procure por:
 
-      <br><br>
+      e escolha
 
-      <strong>Instalar aplicativo</strong>
-
-      <br>
+      <strong>
+        Instalar aplicativo
+      </strong>
 
       ou
 
-      <br>
+      <strong>
+        Adicionar à tela inicial
+      </strong>.
 
-      <strong>Adicionar à tela inicial</strong>.
     `);
 
   }
 
 
-  /* =====================================================
+  /* ==================================================
+     PREPARA BOTÃO
+  ================================================== */
+
+  function iniciar() {
+
+    const botao =
+      pegarBotao();
+
+    if (!botao) {
+
+      return;
+
+    }
+
+
+    if (instalado()) {
+
+      esconderBotao();
+
+      return;
+
+    }
+
+
+    mostrarBotao();
+
+
+    botao.addEventListener(
+      "click",
+      instalar
+    );
+
+  }
+
+
+  /* ==================================================
      INSTALAÇÃO CONCLUÍDA
-  ===================================================== */
+  ================================================== */
 
   window.addEventListener(
     "appinstalled",
     function () {
 
+      console.log(
+        "AproveitAI instalado."
+      );
+
       eventoInstalacao = null;
 
       esconderBotao();
-      esconderOrientacao();
 
     }
   );
 
 
-  /* =====================================================
+  /* ==================================================
      INICIALIZAÇÃO
-  ===================================================== */
-
-  function iniciar() {
-
-    const { botao } = elementos();
-
-    if (!botao) {
-      return;
-    }
-
-
-    botao.addEventListener(
-      "click",
-      instalarAproveitai
-    );
-
-
-    if (appJaInstalado()) {
-
-      esconderBotao();
-
-      return;
-    }
-
-
-    /*
-      No iPhone mostramos o botão para
-      apresentar as instruções manuais.
-    */
-
-    if (dispositivoApple()) {
-
-      mostrarBotao();
-
-      return;
-    }
-
-
-    /*
-      Nos demais navegadores o botão também
-      permanece disponível.
-
-      Se o navegador liberar beforeinstallprompt,
-      teremos instalação automática.
-
-      Caso contrário, mostramos as instruções
-      pelo menu do navegador.
-    */
-
-    mostrarBotao();
-
-  }
-
+  ================================================== */
 
   if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
   ) {
 
     document.addEventListener(
