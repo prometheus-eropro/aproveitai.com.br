@@ -4123,7 +4123,6 @@ async function saveEditModal(){
 
   const patch = {};
 
-
   /* ======================================================
      MONTA DADOS DO FORMULÁRIO
   ====================================================== */
@@ -4134,11 +4133,9 @@ async function saveEditModal(){
     )
     .forEach(el => {
 
-      const k =
-        el.dataset.key;
+      const k = el.dataset.key;
 
       if(!k) return;
-
 
       /* ==========================================
          CAMPO DE ARQUIVO
@@ -4158,9 +4155,7 @@ async function saveEditModal(){
             : null;
 
         return;
-
       }
-
 
       /* ==========================================
          CHECKBOX
@@ -4177,31 +4172,55 @@ async function saveEditModal(){
             : "NAO";
 
         return;
-
       }
-
 
       /* ==========================================
          CAMPOS NORMAIS
       ========================================== */
 
-      patch[k] =
-        el.value;
+      patch[k] = el.value;
 
     });
 
 
+  const btn =
+    $("btnEditSave");
+
+  const textoOriginal =
+    btn
+      ? btn.innerHTML
+      : "Salvar";
+
+
   try{
 
-    $("btnEditSave").disabled =
-      true;
+    /* ==========================================
+       BLOQUEIA DUPLO CLIQUE
+    ========================================== */
 
+    if(btn){
+
+      btn.disabled = true;
+
+      btn.innerHTML =
+        "⏳ Salvando...";
+
+    }
+
+
+    /* ==========================================
+       EXECUTA SALVAMENTO
+    ========================================== */
 
     await editCtx.onSave(
       patch,
       editCtx.initial
     );
 
+
+    /* ==========================================
+       FECHA SOMENTE SE SALVOU
+    ========================================== */
 
     closeEditModal();
 
@@ -4214,15 +4233,51 @@ async function saveEditModal(){
     );
 
 
+    /* ==========================================
+       RECUPERA MENSAGEM REAL DO ERRO
+    ========================================== */
+
+    const mensagem =
+      err?.message ||
+      err?.erro ||
+      err?.msg ||
+      err?.mensagem ||
+      "Não foi possível salvar. Verifique os dados e tente novamente.";
+
+
+    /* ==========================================
+       AVISO VISÍVEL AO ADMINISTRADOR
+    ========================================== */
+
+    alert(
+      "⚠️ NÃO FOI POSSÍVEL SALVAR\n\n" +
+      mensagem
+    );
+
+
+    /* ==========================================
+       TOAST COMPLEMENTAR
+    ========================================== */
+
     toast(
-      "Erro ao salvar"
+      "⚠️ Verifique os dados informados."
     );
 
 
   }finally{
 
-    $("btnEditSave").disabled =
-      false;
+    /* ==========================================
+       RESTAURA BOTÃO
+    ========================================== */
+
+    if(btn){
+
+      btn.disabled = false;
+
+      btn.innerHTML =
+        textoOriginal;
+
+    }
 
   }
 
