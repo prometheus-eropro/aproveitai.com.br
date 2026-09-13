@@ -13881,6 +13881,82 @@ async function salvarParceiroCompleto(){
       ? documento
       : "";
 
+  /* ======================================================
+     2.1 - IMPEDE CPF / CNPJ DUPLICADO
+  ====================================================== */
+
+  const documentoNormalizado =
+    String(documento || "")
+      .replace(/\D/g, "");
+
+
+  const parceiroExistente =
+    (state.cache.parceiros || [])
+      .find(p => {
+
+        const cnpjExistente =
+          String(p.cnpj || "")
+            .replace(/\D/g, "");
+
+        const cpfExistente =
+          String(p.cpf || "")
+            .replace(/\D/g, "");
+
+        if(tipoDocumento === "CNPJ"){
+          return (
+            documentoNormalizado &&
+            cnpjExistente === documentoNormalizado
+          );
+        }
+
+        if(tipoDocumento === "CPF"){
+          return (
+            documentoNormalizado &&
+            cpfExistente === documentoNormalizado
+          );
+        }
+
+        return false;
+
+      });
+
+
+  if(parceiroExistente){
+
+    const nomeExistente =
+      parceiroExistente.nomeFantasia ||
+      parceiroExistente.razaoSocial ||
+      "Parceiro";
+
+    const idExistente =
+      parceiroExistente.parceiro_id ||
+      "-";
+
+    const statusExistente =
+      parceiroExistente.ativo ||
+      "-";
+
+
+    alert(
+      "⚠️ PARCEIRO JÁ CADASTRADO\n\n" +
+      "Este " +
+      tipoDocumento +
+      " já está cadastrado na Plataforma AproveitAI.\n\n" +
+      "Parceiro: " +
+      nomeExistente +
+      "\n" +
+      "ID: " +
+      idExistente +
+      "\n" +
+      "Status: " +
+      statusExistente +
+      "\n\n" +
+      "Localize o parceiro na lista para consultar ou editar o cadastro."
+    );
+
+    return;
+
+  }
 
   /* ======================================================
      3 - LOGO DO PARCEIRO
