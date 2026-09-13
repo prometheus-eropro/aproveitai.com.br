@@ -5423,27 +5423,52 @@ function editarParceiro(parceiroId){
          NESTA EDIÇÃO COMUM
       ========================================== */
 
-      delete patch.parceiro_id;
+delete patch.parceiro_id;
 
-      delete patch.tipo_documento;
+delete patch.tipo_documento;
 
-      delete patch.cnpj;
+delete patch.cnpj;
 
-      delete patch.cpf;
+delete patch.cpf;
+
+delete patch.nascimento;
+
+delete patch.numero_contrato;
 
 
       /* ==========================================
          NORMALIZA DADOS
       ========================================== */
 
-      if(patch.whatsapp){
+/* ==========================================
+   WHATSAPP OBRIGATÓRIO
+========================================== */
 
-        patch.whatsapp =
-          apenasNumeros(
-            patch.whatsapp
-          );
+patch.whatsapp =
+  apenasNumeros(
+    patch.whatsapp || ""
+  );
 
-      }
+
+if(!patch.whatsapp){
+
+  throw new Error(
+    "Informe o WhatsApp do parceiro."
+  );
+
+}
+
+
+if(
+  patch.whatsapp.length !== 10 &&
+  patch.whatsapp.length !== 11
+){
+
+  throw new Error(
+    "WhatsApp inválido. Informe DDD + número."
+  );
+
+}
 
 
       if(patch.telefone){
