@@ -279,20 +279,116 @@ body {
   maxlength="10"
   required
 >
-<h3>🚗 Dados do Veículo (opcional no cadastro)</h3>
+<h3>🚗 Veículos (opcional no cadastro)</h3>
 
-<label>Tipo de veículo</label>
-<select id="tipoVeiculo" name="tipoVeiculo">
-  <option value="">Não informar agora</option>
-  <option value="carro">Carro</option>
-  <option value="moto">Moto</option>
-</select>
+<p style="
+  font-size:14px;
+  color:#555;
+  margin-bottom:12px;
+">
+  Você pode cadastrar até 2 veículos.
+</p>
 
-<label>Placa</label>
-<input type="text" name="placa_1" placeholder="ABC-1234">
+<!-- VEÍCULO 1 -->
 
-<label>Modelo</label>
-<input type="text" name="modelo_1" placeholder="Ex: Onix, CG 160">
+<div style="
+  background:#f7f7f7;
+  border:1px solid #ddd;
+  padding:14px;
+  border-radius:10px;
+  margin-bottom:12px;
+">
+
+  <strong>🚘 Veículo 1</strong>
+
+  <label>Placa</label>
+  <input
+    type="text"
+    name="placa_1"
+    maxlength="8"
+    placeholder="ABC-1234"
+    style="text-transform:uppercase;"
+  >
+
+  <label>Modelo</label>
+  <input
+    type="text"
+    name="modelo_1"
+    placeholder="Ex: Onix, CG 160"
+  >
+
+</div>
+
+<!-- BOTÃO SEGUNDO VEÍCULO -->
+
+<button
+  type="button"
+  id="btnSegundoVeiculo"
+  onclick="mostrarSegundoVeiculo()"
+  style="
+    width:100%;
+    padding:11px;
+    border:1px solid #0a7a3c;
+    background:#ffffff;
+    color:#0a7a3c;
+    font-weight:bold;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:12px;
+  "
+>
+  ➕ Adicionar segundo veículo
+</button>
+
+<!-- VEÍCULO 2 -->
+
+<div
+  id="segundoVeiculo"
+  style="
+    display:none;
+    background:#f7f7f7;
+    border:1px solid #ddd;
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:12px;
+  "
+>
+
+  <strong>🚘 Veículo 2</strong>
+
+  <label>Placa</label>
+  <input
+    type="text"
+    name="placa_2"
+    maxlength="8"
+    placeholder="ABC-1234"
+    style="text-transform:uppercase;"
+  >
+
+  <label>Modelo</label>
+  <input
+    type="text"
+    name="modelo_2"
+    placeholder="Ex: Strada, Biz 125"
+  >
+
+  <button
+    type="button"
+    onclick="removerSegundoVeiculo()"
+    style="
+      width:100%;
+      padding:9px;
+      margin-top:12px;
+      border:1px solid #999;
+      background:#fff;
+      border-radius:8px;
+      cursor:pointer;
+    "
+  >
+    ✖ Remover segundo veículo
+  </button>
+
+</div>
 
 <p style="font-weight:bold;color:#0a7a3b">
 ⚠️ Ao informar os dados do veículo, autorizo expressamente o
@@ -499,6 +595,41 @@ nascimento.addEventListener("input", function () {
 
 });
 
+function mostrarSegundoVeiculo() {
+
+  document.getElementById(
+    "segundoVeiculo"
+  ).style.display = "block";
+
+  document.getElementById(
+    "btnSegundoVeiculo"
+  ).style.display = "none";
+
+}
+
+
+function removerSegundoVeiculo() {
+
+  const bloco =
+    document.getElementById(
+      "segundoVeiculo"
+    );
+
+  bloco.querySelector(
+    '[name="placa_2"]'
+  ).value = "";
+
+  bloco.querySelector(
+    '[name="modelo_2"]'
+  ).value = "";
+
+  bloco.style.display = "none";
+
+  document.getElementById(
+    "btnSegundoVeiculo"
+  ).style.display = "block";
+
+}
 
 </script>
 </body>
