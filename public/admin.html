@@ -4752,18 +4752,33 @@ if(nascimentoOriginal){
       delete patch.nascimento;
 
 
-      /* =========================================
-         NORMALIZA CELULAR
-      ========================================= */
+/* =========================================
+   WHATSAPP OBRIGATÓRIO
+========================================= */
 
-      if(patch.celular){
+patch.celular =
+  apenasNumeros(
+    patch.celular || ""
+  );
 
-        patch.celular =
-          apenasNumeros(
-            patch.celular
-          );
+if(!patch.celular){
 
-      }
+  throw new Error(
+    "Informe o WhatsApp do cliente."
+  );
+
+}
+
+if(
+  patch.celular.length !== 10 &&
+  patch.celular.length !== 11
+){
+
+  throw new Error(
+    "WhatsApp inválido. Informe DDD + número."
+  );
+
+}
 
 
       /* =========================================
@@ -11568,6 +11583,38 @@ function novoCliente(){
 
     onSave:async(dados)=>{
 
+/* =========================================
+   WHATSAPP OBRIGATÓRIO
+========================================= */
+
+/* =========================================
+   WHATSAPP OBRIGATÓRIO
+========================================= */
+
+dados.celular =
+  apenasNumeros(
+    dados.celular || ""
+  );
+
+if(!dados.celular){
+
+  throw new Error(
+    "Informe o WhatsApp do cliente."
+  );
+
+}
+
+if(
+  dados.celular.length !== 10 &&
+  dados.celular.length !== 11
+){
+
+  throw new Error(
+    "WhatsApp inválido. Informe DDD + número."
+  );
+
+}
+
       /* =========================
          CAMPOS OBRIGATÓRIOS
       ========================= */
@@ -14206,6 +14253,36 @@ async function salvarParceiroCompleto(){
 
   };
 
+/* ======================================================
+   WHATSAPP OBRIGATÓRIO DO PARCEIRO
+====================================================== */
+
+parceiro.whatsapp =
+  apenasNumeros(
+    parceiro.whatsapp || ""
+  );
+
+if(!parceiro.whatsapp){
+
+  alert(
+    "Informe o WhatsApp do parceiro."
+  );
+
+  return;
+}
+
+if(
+  parceiro.whatsapp.length !== 10 &&
+  parceiro.whatsapp.length !== 11
+){
+
+  alert(
+    "WhatsApp inválido.\n\n" +
+    "Informe DDD + número."
+  );
+
+  return;
+}
 
   /* ======================================================
      6 - CAMPOS OBRIGATÓRIOS
