@@ -43,7 +43,8 @@ style="width:240px;margin-bottom:20px;">
 
 <p>
 
-Seu cadastro foi realizado com sucesso e seu cartão já está liberado para utilização.
+Seu cadastro foi realizado com sucesso e seu
+<strong>teste gratuito já está ativo.</strong>
 
 </p>
 
@@ -74,15 +75,31 @@ você poderá utilizar normalmente todos os benefícios disponíveis na Platafor
 
 <p>
 
-Após esse período, basta ativar seu cadastro para continuar economizando com descontos exclusivos em nossos parceiros.
+Após esse período, será necessário ativar seu plano para continuar utilizando os benefícios disponíveis na Plataforma AproveitAI.
 
 </p>
 
-<p>
+<div id="infoTeste" style="
+  background:#ffffff;
+  border:2px solid #0a7a2a;
+  border-radius:8px;
+  padding:12px;
+  margin-top:15px;
+">
 
-A data de vencimento foi enviada para o seu WhatsApp cadastrado.
+  <strong style="color:#0a7a2a;">
+    📅 Período de teste
+  </strong>
 
-</p>
+  <div id="dataFimTeste" style="
+    margin-top:6px;
+    font-size:17px;
+    font-weight:bold;
+  ">
+    15 dias gratuitos a partir do cadastro
+  </div>
+
+</div>
 
 </div>
 
@@ -91,6 +108,10 @@ A data de vencimento foi enviada para o seu WhatsApp cadastrado.
 Próximos passos
 
 </h3>
+
+<p>
+✔ Instale o <strong>App AproveitAI</strong> no seu celular para ter acesso rápido à Plataforma, ao seu cartão digital, parceiros, benefícios e promoções.
+</p>
 
 <p>
 ✔ Acesse a Plataforma e conheça os parceiros, benefícios e promoções disponíveis.
@@ -105,11 +126,7 @@ Próximos passos
 </p>
 
 <p>
-✔ Apresente ao parceiro o <strong>Código ERO de Autorização</strong> gerado pelo sistema.
-</p>
-
-<p>
-✔ Após os 15 dias de teste gratuito, ative seu cadastro para continuar utilizando os benefícios da Plataforma AproveitAI.
+✔ Após a validação, apresente ao parceiro o <strong>Código ERO</strong> gerado pela Plataforma.
 </p>
 
 <div style="
@@ -121,7 +138,7 @@ color:#856404;
 font-weight:bold;
 ">
 
-💡 Durante o período de teste você terá acesso aos mesmos benefícios dos demais clientes ativos. Após os 15 dias, basta ativar seu cadastro para continuar aproveitando descontos exclusivos.
+💡 Durante o período de teste você terá acesso aos benefícios disponíveis para clientes ativos. Após os 15 dias, será necessário ativar seu plano para continuar utilizando a Plataforma AproveitAI.
 
 </div>
 
@@ -149,17 +166,109 @@ Tecnologia com ConsciêncIA gera Resultado.
 
 </p>
 
-<a href="index.html" class="btn-aproveitai">
-⬅ Voltar ao site
-</a>
+<div style="
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:25px;
+">
+
+  <a
+    href="painelcliente.html"
+    class="btn-aproveitai"
+    style="
+      text-decoration:none;
+      text-align:center;
+      font-weight:bold;
+    "
+  >
+    💳 Acessar minha Área do Cliente
+  </a>
+
+  <a
+    href="app.html"
+    class="btn-aproveitai"
+    style="
+      text-decoration:none;
+      text-align:center;
+      font-weight:bold;
+    "
+  >
+    📱 Instalar o App AproveitAI
+  </a>
+
+  <a
+    href="index.html"
+    class="btn-aproveitai"
+    style="
+      text-decoration:none;
+      text-align:center;
+      font-weight:bold;
+    "
+  >
+    🏪 Ver parceiros e benefícios
+  </a>
+
+</div>
 
 </div>
 
 
 <script>
-function voltarPagina() {
-  window.location.href = "index.html";
+
+/* ==========================================
+   DADOS DO CADASTRO
+========================================== */
+
+const parametros =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const testeAte =
+  parametros.get("testeAte");
+
+const nomeCliente =
+  parametros.get("nome");
+
+const idPublico =
+  parametros.get("id");
+
+
+/* ==========================================
+   MOSTRAR FIM DO TESTE
+========================================== */
+
+if (testeAte) {
+
+  const campo =
+    document.getElementById(
+      "dataFimTeste"
+    );
+
+  if (campo) {
+
+    campo.innerHTML =
+      "Seu teste gratuito está ativo até " +
+      "<strong>" +
+      testeAte +
+      "</strong>";
+
+  }
+
 }
+
+
+/* ==========================================
+   VOLTAR
+========================================== */
+
+function voltarPagina() {
+  window.location.href =
+    "index.html";
+}
+
 </script>
+
 </body>
 </html>
