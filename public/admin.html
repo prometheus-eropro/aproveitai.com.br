@@ -11570,21 +11570,24 @@ function novoCliente(){
 },
 
 
-      {
+{
   key:"responsavelPagamento",
-  label:"Responsável pelo pagamento",
+  label:"Quem paga a mensalidade?",
   type:"select",
   options:[
-    {value:"CLIENTE", label:"Cliente"},
-    {value:"EMPRESA", label:"Empresa / Associação"}
+    {value:"CLIENTE", label:"O próprio cliente"},
+    {value:"EMPRESA", label:"Empresa"},
+    {value:"ASSOCIACAO", label:"Associação"},
+    {value:"SINDICATO", label:"Sindicato"},
+    {value:"OUTRO", label:"Outro responsável"}
   ],
   value:"CLIENTE"
 },
 
-      {
-        key:"grupoPagante",
-        label:"Grupo pagante"
-      },
+{
+  key:"grupoPagante",
+  label:"Nome da empresa / associação / sindicato / responsável"
+},
 
       {
         key:"dataEntradaGrupo",
@@ -11607,10 +11610,6 @@ function novoCliente(){
 
 
     onSave:async(dados)=>{
-
-/* =========================================
-   WHATSAPP OBRIGATÓRIO
-========================================= */
 
 /* =========================================
    WHATSAPP OBRIGATÓRIO
@@ -11702,6 +11701,53 @@ if(
 
       }
 
+      /* =========================================
+   RESPONSÁVEL PELO PAGAMENTO
+========================================= */
+
+dados.responsavelPagamento =
+  String(
+    dados.responsavelPagamento || "CLIENTE"
+  )
+  .trim()
+  .toUpperCase();
+
+dados.grupoPagante =
+  String(
+    dados.grupoPagante || ""
+  )
+  .trim();
+
+
+/* =========================================
+   PAGAMENTO PELO PRÓPRIO CLIENTE
+========================================= */
+
+if(
+  dados.responsavelPagamento === "CLIENTE"
+){
+
+  // Evita gravar informação indevida
+  // quando o próprio cliente paga.
+  dados.grupoPagante = "";
+
+}
+
+
+/* =========================================
+   PAGAMENTO POR TERCEIRO
+========================================= */
+
+if(
+  dados.responsavelPagamento !== "CLIENTE" &&
+  !dados.grupoPagante
+){
+
+  throw new Error(
+    "Informe o nome da empresa, associação, sindicato ou responsável pelo pagamento."
+  );
+
+}
 
       /* =========================
          VERIFICA CPF EXISTENTE
