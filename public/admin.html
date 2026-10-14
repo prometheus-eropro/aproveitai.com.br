@@ -3540,11 +3540,12 @@ async function callAPI(params = {}, tempoLimite = 60000){
 
       encerrarCallbackDepois();
 
-      reject(
-        new Error(
-          "Erro ao acessar o Google Apps Script."
-        )
-      );
+    reject(
+  new Error(
+    "Erro ao acessar o Google Apps Script. Ação: " +
+    String(params?.action || params?.acao || "NÃO IDENTIFICADA")
+  )
+);
 
     };
 
@@ -3572,11 +3573,12 @@ async function callAPI(params = {}, tempoLimite = 60000){
         encerrarCallbackDepois();
 
 
-        reject(
-          new Error(
-            "Tempo limite de comunicação com a API."
-          )
-        );
+      reject(
+  new Error(
+    "Tempo limite de comunicação com a API. Ação: " +
+    String(params?.action || params?.acao || "NÃO IDENTIFICADA")
+  )
+);
 
       },tempoLimite);
 
