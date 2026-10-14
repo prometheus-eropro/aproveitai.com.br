@@ -9827,21 +9827,101 @@ async function loadLogAdmin(force=false){
   renderLogAdmin();
 }
 function renderLogAdmin(){
-  const q = ($("filtroLogAdmin").value||"").trim().toLowerCase();
-  const rows = state.cache.log_admin
-    .slice().reverse()
-    .filter(l => !q ? true : JSON.stringify(l).toLowerCase().includes(q))
-    .slice(0, 500);
+
+  const q =
+    ($("filtroLogAdmin").value || "")
+      .trim()
+      .toLowerCase();
+
+  const rows =
+    (state.cache.log_admin || [])
+      .slice()
+      .reverse()
+      .filter(l => {
+
+        if(!q) return true;
+
+        return JSON.stringify(l)
+          .toLowerCase()
+          .includes(q);
+
+      })
+      .slice(0, 50);
+
 
   renderTable("tblLogAdmin", rows, [
-    {key:"data", label:"Data", render:(r)=>formatarDataBR(r.data)},
 
-    {key:"admin", label:"Admin"},
-    {key:"acao", label:"Ação"},
-    {key:"entidade", label:"Entidade"},
-    {key:"id", label:"ID"},
-    {key:"detalhes", label:"Detalhes"},
+    {
+      key:"dataHora",
+      label:"Data/Hora",
+      render:(r) => r.dataHora || ""
+    },
+
+    {
+      key:"admin",
+      label:"Administrador"
+    },
+
+    {
+      key:"acao",
+      label:"Ação"
+    },
+
+    {
+      key:"aba",
+      label:"Entidade"
+    },
+
+    {
+      key:"identificador",
+      label:"Identificador"
+    },
+
+    {
+      key:"detalhes",
+      label:"Detalhes",
+      render:(r) => {
+
+        const valor =
+          String(r.detalhes || "").trim();
+
+        if(!valor) return "";
+
+        /*
+         Tenta melhorar a visualização
+         quando detalhes estiver em JSON.
+        */
+        try{
+
+          const obj = JSON.parse(valor);
+
+          return Object.entries(obj)
+            .map(([chave, valor]) => {
+
+              if(
+                typeof valor === "object" &&
+                valor !== null
+              ){
+                valor =
+                  JSON.stringify(valor);
+              }
+
+              return `${chave}: ${valor}`;
+
+            })
+            .join(" | ");
+
+        }catch(e){
+
+          return valor;
+
+        }
+
+      }
+    }
+
   ]);
+
 }
 
 async function loadAdmins(force=false){
