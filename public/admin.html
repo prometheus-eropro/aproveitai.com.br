@@ -9939,13 +9939,13 @@ async function novoPagamento(){
         key:"tipo_receita",
         label:"Tipo de receita",
         type:"select",
-        options:[
-          "MENSALIDADE",
-          "IMPLANTACAO",
-          "SERVICO",
-          "PUBLICIDADE",
-          "OUTRO"
-        ]
+      options:[
+  {value:"MENSALIDADE", label:"Mensalidade"},
+  {value:"IMPLANTACAO", label:"Implantação"},
+  {value:"SERVICO", label:"Serviço"},
+  {value:"PUBLICIDADE", label:"Publicidade"},
+  {value:"OUTRO", label:"Outro"}
+]
       },
 
       {
@@ -9973,29 +9973,29 @@ async function novoPagamento(){
         key:"forma_pagamento",
         label:"Forma de pagamento",
         type:"select",
-        options:[
-          "",
-          "PIX",
-          "DINHEIRO",
-          "BOLETO",
-          "TRANSFERENCIA",
-          "CARTAO",
-          "OUTRO"
-        ]
+       options:[
+  {value:"", label:"Selecione..."},
+  {value:"PIX", label:"Pix"},
+  {value:"DINHEIRO", label:"Dinheiro"},
+  {value:"BOLETO", label:"Boleto"},
+  {value:"TRANSFERENCIA", label:"Transferência"},
+  {value:"CARTAO", label:"Cartão"},
+  {value:"OUTRO", label:"Outro"}
+]
       },
 
       {
         key:"responsavel_pagamento",
         label:"Responsável pelo pagamento",
         type:"select",
-        options:[
-          "",
-          "CLIENTE",
-          "EMPRESA",
-          "ASSOCIACAO",
-          "PARCEIRO",
-          "OUTRO"
-        ]
+       options:[
+  {value:"", label:"Selecione..."},
+  {value:"CLIENTE", label:"Cliente"},
+  {value:"EMPRESA", label:"Empresa"},
+  {value:"ASSOCIACAO", label:"Associação"},
+  {value:"PARCEIRO", label:"Parceiro"},
+  {value:"OUTRO", label:"Outro"}
+]
       },
 
       {
@@ -10197,42 +10197,15 @@ async function novoPagamento(){
 
 function ativarBuscaPagadorFinanceiro(){
 
-  const busca =
-    document.querySelector(
-      '[data-edit-key="busca_pagador"]'
-    ) ||
-    document.querySelector(
-      '[name="busca_pagador"]'
-    );
+ const campoBusca =
+  localizarCampoEditFinanceiro(
+    "busca_pagador"
+  );
 
-
-  const tipo =
-    document.querySelector(
-      '[data-edit-key="tipo_pagador"]'
-    ) ||
-    document.querySelector(
-      '[name="tipo_pagador"]'
-    );
-
-
-  /*
-   * Compatibilidade com o openEditModal atual.
-   * Caso os campos não possuam name/data-edit-key,
-   * procura pelo ID gerado pelo modal.
-   */
-
-  const campoBusca =
-    busca ||
-    document.getElementById(
-      "edit_busca_pagador"
-    );
-
-
-  const campoTipo =
-    tipo ||
-    document.getElementById(
-      "edit_tipo_pagador"
-    );
+const campoTipo =
+  localizarCampoEditFinanceiro(
+    "tipo_pagador"
+  );
 
 
   if(!campoBusca){
@@ -10815,32 +10788,13 @@ function limparPagadorFinanceiro(){
    FINANCEIRO — LOCALIZA CAMPO DO MODAL
 ====================================================== */
 
-function localizarCampoEditFinanceiro(
-  chave
-){
+function localizarCampoEditFinanceiro(chave){
 
-  return (
-
-    document.querySelector(
-      `[data-edit-key="${chave}"]`
-    )
-
-    ||
-
-    document.querySelector(
-      `[name="${chave}"]`
-    )
-
-    ||
-
-    document.getElementById(
-      "edit_" + chave
-    )
-
+  return document.querySelector(
+    `#editForm [data-key="${chave}"]`
   );
 
 }
-
 
 /* ======================================================
    FINANCEIRO — SEGURANÇA HTML
