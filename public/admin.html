@@ -3038,11 +3038,41 @@ style="display:none;margin-top:20px;">
 
           <!-- LOG ADMIN -->
           <section data-section="log_admin" style="display:none">
-            <div class="row">
-              <input class="input" id="filtroLogAdmin" placeholder="Buscar (admin / ação / entidade / id)"/>
-              <button class="btn" id="btnReloadLogAdmin">Recarregar</button>
-              <button class="btn" id="btnCsvLogAdmin">Exportar CSV</button>
-            </div>
+           <div class="row">
+
+  <input
+    class="input"
+    id="filtroLogAdmin"
+    placeholder="Buscar (admin / ação / entidade / identificador)"
+  />
+
+  <input
+    class="input"
+    type="date"
+    id="filtroLogAdminInicio"
+    title="Data inicial"
+  />
+
+  <input
+    class="input"
+    type="date"
+    id="filtroLogAdminFim"
+    title="Data final"
+  />
+
+  <button class="btn" id="btnLimparFiltroLogAdmin">
+    Limpar filtros
+  </button>
+
+  <button class="btn" id="btnReloadLogAdmin">
+    Recarregar
+  </button>
+
+  <button class="btn primary" id="btnCsvLogAdmin">
+    Exportar CSV
+  </button>
+
+</div>
             <div class="hint">Somente leitura. Mostra a aba <b>log_admin</b>.</div>
             <div class="hr"></div>
             <div class="tableWrap">
@@ -9826,101 +9856,219 @@ async function loadLogAdmin(force=false){
   state.loaded.log_admin = true;
   renderLogAdmin();
 }
-function renderLogAdmin(){
+function obterLogsAdminFiltrados(){
 
   const q =
-    ($("filtroLogAdmin").value || "")
+    ($("filtroLogAdmin")?.value || "")
       .trim()
       .toLowerCase();
 
-  const rows =
-    (state.cache.log_admin || [])
-      .slice()
-      .reverse()
-      .filter(l => {
+  const inicio =
+    $("filtroLogAdminInicio")?.value || "";
 
-        if(!q) return true;
-
-        return JSON.stringify(l)
-          .toLowerCase()
-          .includes(q);
-
-      })
-      .slice(0, 50);
+  const fim =
+    $("filtroLogAdminFim")?.value || "";
 
 
-  renderTable("tblLogAdmin", rows, [
+  return (state.cache.log_admin || [])
+    .filter(l => {
 
-    {
-      key:"dataHora",
-      label:"Data/Hora",
-      render:(r) => r.dataHora || ""
-    },
+      /* =========================
+         FILTRO DE TEXTO
+      ========================= */
 
-    {
-      key:"admin",
-      label:"Administrador"
-    },
+      if(q){
 
-    {
-      key:"acao",
-      label:"Ação"
-    },
+        const texto = [
+          l.admin,
+          l.acao,
+          l.aba,
+          l.identificador,
+          l.detalhes
+        ]
+        .join(" ")
+        .toLowerCase();
 
-    {
-      key:"aba",
-      label:"Entidade"
-    },
+        if(!texto.includes(q)){
+          return false;
+        }
 
-    {
-      key:"identificador",
-      label:"Identificador"
-    },
+      }
 
-    {
-      key:"detalhes",
-      label:"Detalhes",
-      render:(r) => {
 
-        const valor =
-          String(r.detalhes || "").trim();
+      /* =========================
+         FILTRO DE DATA
+      ========================= */
 
-        if(!valor) return "";
+      if(inicio || fim){
 
-        /*
-         Tenta melhorar a visualização
-         quando detalhes estiver em JSON.
-        */
-        try{
+        const dataRegistro =
+          new Date(l.dataHora);
 
-          const obj = JSON.parse(valor);
+        if(isNaN(dataRegistro.getTime())){
+          return false;
+        }
 
-          return Object.entries(obj)
-            .map(([chave, valor]) => {
 
-              if(
-                typeof valor === "object" &&
-                valor !== null
-              ){
-                valor =
-                  JSON.stringify(valor);
-              }
+        if(inicio){
 
-              return `${chave}: ${valor}`;
+          const dataInicio =
+            new Date(inicio + "T00:00:00");
 
-            })
-            .join(" | ");
+          if(dataRegistro < dataInicio){
+            return false;
+          }
 
-        }catch(e){
+        }
 
-          return valor;
+
+        if(fim){
+
+          const dataFim =
+            new Date(fim + "T23:59:59");
+
+          if(dataRegistro > dataFim){
+            return false;
+          }
 
         }
 
       }
-    }
 
-  ]);
+      return true;
+
+    })
+    .slice()
+    .reverse();
+
+}
+
+
+function formatarDataHoraLogAdmin(valor){
+
+  if(!valor) return "";
+
+  const data = new Date(valor);
+
+  if(isNaN(data.getTime())){
+    return String(valor);
+  }
+
+  return data.toLocaleString(
+    "pt-BR",
+    {
+      day:"2-digit",
+      month:"2-digit",
+      year:"numeric",
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit"
+    }
+  );
+
+}
+
+
+function renderLogAdmin(){
+
+  const rows =
+    obterLogsAdminFiltrados()
+      .slice(0,500);
+
+
+  renderTable(
+    "tblLogAdmin",
+    rows,
+    [
+
+      {
+        key:"dataHora",
+        label:"Data/Hora",
+        render:(r)=>
+          formatarDataHoraLogAdmin(r.dataHora)
+      },
+
+      {
+        key:"admin",
+        label:"Administrador"
+      },
+
+      {
+        key:"acao",
+        label:"Ação"
+      },
+
+      {
+        key:"aba",
+        label:"Entidade"
+      },
+
+      {
+        key:"identificador",
+        label:"Identificador"
+      },
+
+      {
+        key:"detalhes",
+        label:"Detalhes"
+      }
+
+    ]
+  );
+
+}
+
+function exportarLogAdminCSV(){
+
+  const rows =
+    obterLogsAdminFiltrados();
+
+  if(!rows.length){
+
+    toast("Nenhum registro encontrado para exportar.");
+
+    return;
+
+  }
+
+
+  const dados = rows.map(r => ({
+
+    "Data/Hora":
+      formatarDataHoraLogAdmin(r.dataHora),
+
+    "Administrador":
+      r.admin || "",
+
+    "Ação":
+      r.acao || "",
+
+    "Entidade":
+      r.aba || "",
+
+    "Identificador":
+      r.identificador || "",
+
+    "Detalhes":
+      r.detalhes || ""
+
+  }));
+
+
+  const agora = new Date();
+
+  const nome =
+    "log_admin_" +
+    agora.getFullYear() + "-" +
+    String(agora.getMonth()+1).padStart(2,"0") + "-" +
+    String(agora.getDate()).padStart(2,"0") +
+    ".csv";
+
+
+  downloadCSV(
+    nome,
+    dados
+  );
 
 }
 
@@ -10052,6 +10200,46 @@ $("filtroBeneficios")?.addEventListener("input", renderBeneficios);
 $("filtroPromocoes")?.addEventListener("input", renderPromocoes);
 $("filtroLogs")?.addEventListener("input", renderLogs);
 $("filtroLogAdmin")?.addEventListener("input", renderLogAdmin);
+$("filtroLogAdminInicio")
+  ?.addEventListener(
+    "change",
+    renderLogAdmin
+  );
+
+$("filtroLogAdminFim")
+  ?.addEventListener(
+    "change",
+    renderLogAdmin
+  );
+
+
+$("btnLimparFiltroLogAdmin")
+  ?.addEventListener(
+    "click",
+    () => {
+
+      $("filtroLogAdmin").value = "";
+      $("filtroLogAdminInicio").value = "";
+      $("filtroLogAdminFim").value = "";
+
+      renderLogAdmin();
+
+    }
+  );
+
+
+$("btnCsvLogAdmin")
+  ?.addEventListener(
+    "click",
+    exportarLogAdminCSV
+  );
+
+
+$("btnReloadLogAdmin")
+  ?.addEventListener(
+    "click",
+    () => loadLogAdmin(true)
+  );
 $("filtroAdmins")?.addEventListener("input", renderAdmins);
 
   /* ================= CLIENTES ================= */
