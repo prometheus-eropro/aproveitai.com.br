@@ -9824,32 +9824,101 @@ function renderPagamentos(){
 
 /* ======================================================
    FINANCEIRO — NOVO RECEBIMENTO
+   BUSCA INTELIGENTE DE PAGADOR
 ====================================================== */
 
-function novoPagamento(){
+async function novoPagamento(){
+
+  /* ==========================================
+     GARANTE CLIENTES E PARCEIROS NO CACHE
+  ========================================== */
+
+  try{
+
+    if(
+      !Array.isArray(state.cache.clientes) ||
+      !state.cache.clientes.length
+    ){
+      await loadClientes(true);
+    }
+
+    if(
+      !Array.isArray(state.cache.parceiros) ||
+      !state.cache.parceiros.length
+    ){
+      await loadParceiros(true);
+    }
+
+  }catch(erro){
+
+    console.error(
+      "Erro ao carregar pagadores:",
+      erro
+    );
+
+  }
+
 
   const hoje = new Date();
 
   const competenciaPadrao =
     hoje.getFullYear() + "-" +
-    String(hoje.getMonth() + 1).padStart(2,"0");
+    String(
+      hoje.getMonth() + 1
+    ).padStart(2,"0");
+
+
+  /* ==========================================
+     ABRE MODAL
+  ========================================== */
 
   openEditModal({
 
     title:"Novo Recebimento",
 
     hint:
-      "Cadastre um recebimento da Plataforma AproveitAI. " +
-      "O lançamento ficará registrado no histórico financeiro.",
+      "Selecione o tipo de pagador e pesquise pelo nome, CPF/CNPJ ou ID.",
 
     initial:{
+
       tipo_pagador:"CLIENTE",
+
+      busca_pagador:"",
+
+      nome_pagador:"",
+
+      cpf_cnpj:"",
+
+      pagador_id:"",
+
       tipo_receita:"MENSALIDADE",
-      competencia:competenciaPadrao,
+
+      competencia:
+        competenciaPadrao,
+
       status:"PENDENTE"
+
     },
 
     fields:[
+
+      {
+        key:"tipo_pagador",
+        label:"Tipo de pagador",
+        type:"select",
+        options:[
+          "CLIENTE",
+          "PARCEIRO",
+          "EMPRESA",
+          "ASSOCIACAO",
+          "OUTRO"
+        ]
+      },
+
+      {
+        key:"busca_pagador",
+        label:"Buscar por nome, CPF/CNPJ ou ID"
+      },
 
       {
         key:"nome_pagador",
@@ -9862,16 +9931,8 @@ function novoPagamento(){
       },
 
       {
-        key:"tipo_pagador",
-        label:"Tipo de pagador",
-        type:"select",
-        options:[
-          "CLIENTE",
-          "EMPRESA",
-          "ASSOCIACAO",
-          "PARCEIRO",
-          "OUTRO"
-        ]
+        key:"pagador_id",
+        label:"ID do cadastro"
       },
 
       {
@@ -9928,6 +9989,7 @@ function novoPagamento(){
         label:"Responsável pelo pagamento",
         type:"select",
         options:[
+          "",
           "CLIENTE",
           "EMPRESA",
           "ASSOCIACAO",
@@ -9949,39 +10011,140 @@ function novoPagamento(){
 
     ],
 
+
     onSave:async(dados)=>{
 
-      if(!String(dados.nome_pagador || "").trim()){
+      /* ==========================================
+         VALIDAÇÕES
+      ========================================== */
+
+      const tipo =
+        String(
+          dados.tipo_pagador || ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+      if(
+        (
+          tipo === "CLIENTE" ||
+          tipo === "PARCEIRO"
+        ) &&
+        !String(
+          dados.pagador_id || ""
+        ).trim()
+      ){
+
         throw new Error(
-          "Informe o nome do pagador."
+          "Selecione o pagador nos resultados da pesquisa."
         );
+
       }
 
-      if(!String(dados.valor || "").trim()){
+
+      if(
+        !String(
+          dados.nome_pagador || ""
+        ).trim()
+      ){
+
+        throw new Error(
+          "Informe o pagador."
+        );
+
+      }
+
+
+      if(
+        !String(
+          dados.valor || ""
+        ).trim()
+      ){
+
         throw new Error(
           "Informe o valor."
         );
+
       }
 
-      if(!String(dados.competencia || "").trim()){
+
+      if(
+        !String(
+          dados.competencia || ""
+        ).trim()
+      ){
+
         throw new Error(
           "Informe a competência."
         );
+
       }
 
-      if(!String(dados.data_vencimento || "").trim()){
+
+      if(
+        !String(
+          dados.data_vencimento || ""
+        ).trim()
+      ){
+
         throw new Error(
           "Informe a data de vencimento."
         );
+
       }
 
+
+      /* ==========================================
+         VÍNCULO COM CADASTRO
+      ========================================== */
+
+      let clienteId = "";
+      let parceiroId = "";
+
+
+      if(tipo === "CLIENTE"){
+
+        clienteId =
+          String(
+            dados.pagador_id || ""
+          ).trim();
+
+      }
+
+
+      if(tipo === "PARCEIRO"){
+
+        parceiroId =
+          String(
+            dados.pagador_id || ""
+          ).trim();
+
+      }
+
+
+      /* campos auxiliares não vão para planilha */
+
+      delete dados.busca_pagador;
+      delete dados.pagador_id;
+
+
+      /* ==========================================
+         SALVA
+      ========================================== */
 
       const resp =
         await callAPI({
 
           action:"criar_pagamento",
 
-          ...dados
+          ...dados,
+
+          cliente_id:
+            clienteId,
+
+          parceiro_id:
+            parceiroId
 
         });
 
@@ -9992,10 +10155,12 @@ function novoPagamento(){
       ){
 
         throw new Error(
+
           resp?.erro ||
           resp?.msg ||
           resp?.mensagem ||
           "Não foi possível registrar o recebimento."
+
         );
 
       }
@@ -10014,8 +10179,702 @@ function novoPagamento(){
 
   });
 
+
+  /* ==========================================
+     ATIVA BUSCA APÓS MODAL SER RENDERIZADO
+  ========================================== */
+
+  setTimeout(
+    ativarBuscaPagadorFinanceiro,
+    50
+  );
+
 }
 
+/* ======================================================
+   FINANCEIRO — BUSCA DE PAGADOR
+====================================================== */
+
+function ativarBuscaPagadorFinanceiro(){
+
+  const busca =
+    document.querySelector(
+      '[data-edit-key="busca_pagador"]'
+    ) ||
+    document.querySelector(
+      '[name="busca_pagador"]'
+    );
+
+
+  const tipo =
+    document.querySelector(
+      '[data-edit-key="tipo_pagador"]'
+    ) ||
+    document.querySelector(
+      '[name="tipo_pagador"]'
+    );
+
+
+  /*
+   * Compatibilidade com o openEditModal atual.
+   * Caso os campos não possuam name/data-edit-key,
+   * procura pelo ID gerado pelo modal.
+   */
+
+  const campoBusca =
+    busca ||
+    document.getElementById(
+      "edit_busca_pagador"
+    );
+
+
+  const campoTipo =
+    tipo ||
+    document.getElementById(
+      "edit_tipo_pagador"
+    );
+
+
+  if(!campoBusca){
+
+    console.warn(
+      "Campo de busca do pagador não localizado."
+    );
+
+    return;
+
+  }
+
+
+  /* ==========================================
+     CAIXA DE RESULTADOS
+  ========================================== */
+
+  let resultados =
+    document.getElementById(
+      "resultadosPagadorFinanceiro"
+    );
+
+
+  if(!resultados){
+
+    resultados =
+      document.createElement("div");
+
+    resultados.id =
+      "resultadosPagadorFinanceiro";
+
+
+    resultados.style.cssText = `
+
+      position:absolute;
+      z-index:999999;
+      background:#fff;
+      border:1px solid #ccc;
+      border-radius:8px;
+      box-shadow:0 5px 18px rgba(0,0,0,.18);
+      max-height:260px;
+      overflow-y:auto;
+      display:none;
+
+    `;
+
+
+    document.body.appendChild(
+      resultados
+    );
+
+  }
+
+
+  /* ==========================================
+     POSICIONA RESULTADOS
+  ========================================== */
+
+  function posicionar(){
+
+    const rect =
+      campoBusca.getBoundingClientRect();
+
+
+    resultados.style.left =
+      (
+        rect.left +
+        window.scrollX
+      ) + "px";
+
+
+    resultados.style.top =
+      (
+        rect.bottom +
+        window.scrollY +
+        4
+      ) + "px";
+
+
+    resultados.style.width =
+      rect.width + "px";
+
+  }
+
+
+  /* ==========================================
+     NORMALIZA TEXTO
+  ========================================== */
+
+  function normalizar(valor){
+
+    return String(
+      valor || ""
+    )
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .toLowerCase()
+    .trim();
+
+  }
+
+
+  /* ==========================================
+     BUSCA
+  ========================================== */
+
+  function pesquisar(){
+
+    const termo =
+      normalizar(
+        campoBusca.value
+      );
+
+
+    resultados.innerHTML = "";
+
+
+    if(termo.length < 2){
+
+      resultados.style.display =
+        "none";
+
+      return;
+
+    }
+
+
+    const tipoSelecionado =
+      String(
+        campoTipo?.value ||
+        "CLIENTE"
+      )
+      .trim()
+      .toUpperCase();
+
+
+    let encontrados = [];
+
+
+    /* ======================================
+       CLIENTES
+    ====================================== */
+
+    if(
+      tipoSelecionado === "CLIENTE"
+    ){
+
+      encontrados =
+        (
+          state.cache.clientes ||
+          []
+        )
+        .map(c => {
+
+          const nome =
+            String(
+              c.nome ||
+              c.nome_completo ||
+              ""
+            ).trim();
+
+
+          const documento =
+            String(
+              c.cpf ||
+              ""
+            ).trim();
+
+
+          const id =
+            String(
+              c.idPublico ||
+              c.id_publico ||
+              c.cliente_id ||
+              ""
+            ).trim();
+
+
+          return {
+
+            tipo:"CLIENTE",
+
+            nome:nome,
+
+            documento:
+              documento,
+
+            id:id,
+
+            original:c
+
+          };
+
+        });
+
+    }
+
+
+    /* ======================================
+       PARCEIROS
+    ====================================== */
+
+    else if(
+      tipoSelecionado === "PARCEIRO"
+    ){
+
+      encontrados =
+        (
+          state.cache.parceiros ||
+          []
+        )
+        .map(p => {
+
+          const nome =
+            String(
+              p.nome ||
+              p.nome_fantasia ||
+              p.empresa ||
+              p.razao_social ||
+              ""
+            ).trim();
+
+
+          const documento =
+            String(
+              p.cnpj ||
+              p.cpf_cnpj ||
+              p.documento ||
+              ""
+            ).trim();
+
+
+          const id =
+            String(
+              p.parceiro_id ||
+              ""
+            ).trim();
+
+
+          return {
+
+            tipo:"PARCEIRO",
+
+            nome:nome,
+
+            documento:
+              documento,
+
+            id:id,
+
+            original:p
+
+          };
+
+        });
+
+    }
+
+
+    /*
+     * Empresa, Associação e Outro
+     * permanecem com preenchimento manual
+     * enquanto não houver cadastro próprio.
+     */
+
+    else{
+
+      resultados.style.display =
+        "none";
+
+      return;
+
+    }
+
+
+    encontrados =
+      encontrados
+      .filter(item => {
+
+        const texto =
+          normalizar(
+            [
+              item.nome,
+              item.documento,
+              item.id
+            ].join(" ")
+          );
+
+
+        return texto.includes(
+          termo
+        );
+
+      })
+      .slice(
+        0,
+        10
+      );
+
+
+    if(!encontrados.length){
+
+      resultados.innerHTML = `
+
+        <div style="
+          padding:12px;
+          color:#666;
+        ">
+
+          Nenhum cadastro encontrado.
+
+        </div>
+
+      `;
+
+
+      posicionar();
+
+      resultados.style.display =
+        "block";
+
+      return;
+
+    }
+
+
+    /* ======================================
+       MOSTRA RESULTADOS
+    ====================================== */
+
+    encontrados.forEach(
+      item => {
+
+        const linha =
+          document.createElement(
+            "div"
+          );
+
+
+        linha.style.cssText = `
+
+          padding:10px 12px;
+          cursor:pointer;
+          border-bottom:1px solid #eee;
+
+        `;
+
+
+        linha.innerHTML = `
+
+          <strong>
+            ${escHtmlFinanceiro(
+              item.nome
+            )}
+          </strong>
+
+          <div style="
+            font-size:12px;
+            color:#666;
+            margin-top:3px;
+          ">
+
+            ${escHtmlFinanceiro(
+              item.documento
+            )}
+
+            ${
+              item.id
+                ? " • " +
+                  escHtmlFinanceiro(
+                    item.id
+                  )
+                : ""
+            }
+
+          </div>
+
+        `;
+
+
+        linha.addEventListener(
+          "mouseenter",
+          () => {
+
+            linha.style.background =
+              "#f2f8f3";
+
+          }
+        );
+
+
+        linha.addEventListener(
+          "mouseleave",
+          () => {
+
+            linha.style.background =
+              "#fff";
+
+          }
+        );
+
+
+        linha.addEventListener(
+          "click",
+          () => {
+
+            selecionarPagadorFinanceiro(
+              item
+            );
+
+
+            resultados.style.display =
+              "none";
+
+          }
+        );
+
+
+        resultados.appendChild(
+          linha
+        );
+
+      }
+    );
+
+
+    posicionar();
+
+    resultados.style.display =
+      "block";
+
+  }
+
+
+  /* ==========================================
+     EVENTOS
+  ========================================== */
+
+  campoBusca.addEventListener(
+    "input",
+    pesquisar
+  );
+
+
+  campoBusca.addEventListener(
+    "focus",
+    pesquisar
+  );
+
+
+  campoTipo?.addEventListener(
+    "change",
+    () => {
+
+      campoBusca.value = "";
+
+      limparPagadorFinanceiro();
+
+      resultados.style.display =
+        "none";
+
+    }
+  );
+
+
+  window.addEventListener(
+    "resize",
+    posicionar
+  );
+
+
+  window.addEventListener(
+    "scroll",
+    posicionar,
+    true
+  );
+
+}
+
+
+/* ======================================================
+   FINANCEIRO — SELECIONAR PAGADOR
+====================================================== */
+
+function selecionarPagadorFinanceiro(
+  item
+){
+
+  const nome =
+    localizarCampoEditFinanceiro(
+      "nome_pagador"
+    );
+
+  const documento =
+    localizarCampoEditFinanceiro(
+      "cpf_cnpj"
+    );
+
+  const id =
+    localizarCampoEditFinanceiro(
+      "pagador_id"
+    );
+
+  const busca =
+    localizarCampoEditFinanceiro(
+      "busca_pagador"
+    );
+
+
+  if(nome){
+
+    nome.value =
+      item.nome || "";
+
+  }
+
+
+  if(documento){
+
+    documento.value =
+      item.documento || "";
+
+  }
+
+
+  if(id){
+
+    id.value =
+      item.id || "";
+
+  }
+
+
+  if(busca){
+
+    busca.value =
+      item.nome || "";
+
+  }
+
+}
+
+
+/* ======================================================
+   FINANCEIRO — LIMPAR PAGADOR
+====================================================== */
+
+function limparPagadorFinanceiro(){
+
+  [
+    "nome_pagador",
+    "cpf_cnpj",
+    "pagador_id"
+  ]
+  .forEach(
+    chave => {
+
+      const campo =
+        localizarCampoEditFinanceiro(
+          chave
+        );
+
+
+      if(campo){
+
+        campo.value = "";
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ======================================================
+   FINANCEIRO — LOCALIZA CAMPO DO MODAL
+====================================================== */
+
+function localizarCampoEditFinanceiro(
+  chave
+){
+
+  return (
+
+    document.querySelector(
+      `[data-edit-key="${chave}"]`
+    )
+
+    ||
+
+    document.querySelector(
+      `[name="${chave}"]`
+    )
+
+    ||
+
+    document.getElementById(
+      "edit_" + chave
+    )
+
+  );
+
+}
+
+
+/* ======================================================
+   FINANCEIRO — SEGURANÇA HTML
+====================================================== */
+
+function escHtmlFinanceiro(
+  valor
+){
+
+  return String(
+    valor ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
 
 /* ======================================================
    FINANCEIRO — EXPORTAR RECEBIMENTOS CSV
