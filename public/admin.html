@@ -9822,6 +9822,326 @@ function renderPagamentos(){
 
 }
 
+/* ======================================================
+   FINANCEIRO — NOVO RECEBIMENTO
+====================================================== */
+
+function novoPagamento(){
+
+  const hoje = new Date();
+
+  const competenciaPadrao =
+    hoje.getFullYear() + "-" +
+    String(hoje.getMonth() + 1).padStart(2,"0");
+
+  openEditModal({
+
+    title:"Novo Recebimento",
+
+    hint:
+      "Cadastre um recebimento da Plataforma AproveitAI. " +
+      "O lançamento ficará registrado no histórico financeiro.",
+
+    initial:{
+      tipo_pagador:"CLIENTE",
+      tipo_receita:"MENSALIDADE",
+      competencia:competenciaPadrao,
+      status:"PENDENTE"
+    },
+
+    fields:[
+
+      {
+        key:"nome_pagador",
+        label:"Nome do pagador"
+      },
+
+      {
+        key:"cpf_cnpj",
+        label:"CPF / CNPJ"
+      },
+
+      {
+        key:"tipo_pagador",
+        label:"Tipo de pagador",
+        type:"select",
+        options:[
+          "CLIENTE",
+          "EMPRESA",
+          "ASSOCIACAO",
+          "PARCEIRO",
+          "OUTRO"
+        ]
+      },
+
+      {
+        key:"tipo_receita",
+        label:"Tipo de receita",
+        type:"select",
+        options:[
+          "MENSALIDADE",
+          "IMPLANTACAO",
+          "SERVICO",
+          "PUBLICIDADE",
+          "OUTRO"
+        ]
+      },
+
+      {
+        key:"competencia",
+        label:"Competência"
+      },
+
+      {
+        key:"descricao",
+        label:"Descrição"
+      },
+
+      {
+        key:"valor",
+        label:"Valor"
+      },
+
+      {
+        key:"data_vencimento",
+        label:"Data de vencimento",
+        type:"date"
+      },
+
+      {
+        key:"forma_pagamento",
+        label:"Forma de pagamento",
+        type:"select",
+        options:[
+          "",
+          "PIX",
+          "DINHEIRO",
+          "BOLETO",
+          "TRANSFERENCIA",
+          "CARTAO",
+          "OUTRO"
+        ]
+      },
+
+      {
+        key:"responsavel_pagamento",
+        label:"Responsável pelo pagamento",
+        type:"select",
+        options:[
+          "CLIENTE",
+          "EMPRESA",
+          "ASSOCIACAO",
+          "PARCEIRO",
+          "OUTRO"
+        ]
+      },
+
+      {
+        key:"referencia_externa",
+        label:"Referência externa"
+      },
+
+      {
+        key:"observacoes",
+        label:"Observações",
+        type:"textarea"
+      }
+
+    ],
+
+    onSave:async(dados)=>{
+
+      if(!String(dados.nome_pagador || "").trim()){
+        throw new Error(
+          "Informe o nome do pagador."
+        );
+      }
+
+      if(!String(dados.valor || "").trim()){
+        throw new Error(
+          "Informe o valor."
+        );
+      }
+
+      if(!String(dados.competencia || "").trim()){
+        throw new Error(
+          "Informe a competência."
+        );
+      }
+
+      if(!String(dados.data_vencimento || "").trim()){
+        throw new Error(
+          "Informe a data de vencimento."
+        );
+      }
+
+
+      const resp =
+        await callAPI({
+
+          action:"criar_pagamento",
+
+          ...dados
+
+        });
+
+
+      if(
+        !resp ||
+        resp.ok !== true
+      ){
+
+        throw new Error(
+          resp?.erro ||
+          resp?.msg ||
+          resp?.mensagem ||
+          "Não foi possível registrar o recebimento."
+        );
+
+      }
+
+
+      toast(
+        "Recebimento registrado com sucesso."
+      );
+
+
+      state.loaded.pagamentos = false;
+
+      await loadPagamentos(true);
+
+    }
+
+  });
+
+}
+
+
+/* ======================================================
+   FINANCEIRO — EXPORTAR RECEBIMENTOS CSV
+====================================================== */
+
+function exportarPagamentosCSV(){
+
+  const q =
+    ($("filtroPagamentos")?.value || "")
+      .trim()
+      .toLowerCase();
+
+
+  const todos =
+    Array.isArray(state.cache.pagamentos)
+      ? state.cache.pagamentos
+      : [];
+
+
+  const rows =
+    todos
+      .slice()
+      .reverse()
+      .filter(p => {
+
+        if(!q){
+          return true;
+        }
+
+        return JSON
+          .stringify(p)
+          .toLowerCase()
+          .includes(q);
+
+      });
+
+
+  if(!rows.length){
+
+    toast(
+      "Nenhum recebimento encontrado para exportar."
+    );
+
+    return;
+
+  }
+
+
+  const dados =
+    rows.map(p => ({
+
+      "ID":
+        p.pagamento_id || "",
+
+      "Pagador":
+        p.nome_pagador || "",
+
+      "CPF/CNPJ":
+        p.cpf_cnpj || "",
+
+      "Tipo Pagador":
+        p.tipo_pagador || "",
+
+      "Tipo Receita":
+        p.tipo_receita || "",
+
+      "Competência":
+        p.competencia || "",
+
+      "Descrição":
+        p.descricao || "",
+
+      "Valor":
+        p.valor || "",
+
+      "Vencimento":
+        p.data_vencimento
+          ? formatarDataBR(p.data_vencimento)
+          : "",
+
+      "Pagamento":
+        p.data_pagamento
+          ? formatarDataBR(p.data_pagamento)
+          : "",
+
+      "Forma":
+        p.forma_pagamento || "",
+
+      "Status":
+        p.status || "",
+
+      "Responsável Pagamento":
+        p.responsavel_pagamento || "",
+
+      "Referência Externa":
+        p.referencia_externa || "",
+
+      "Observações":
+        p.observacoes || ""
+
+    }));
+
+
+  const agora =
+    new Date();
+
+
+  const nome =
+    "recebimentos_aproveitai_" +
+    agora.getFullYear() + "-" +
+    String(
+      agora.getMonth() + 1
+    ).padStart(2,"0") + "-" +
+    String(
+      agora.getDate()
+    ).padStart(2,"0") +
+    ".csv";
+
+
+  downloadCSV(
+    nome,
+    dados
+  );
+
+}
+
 /* ---------- LOGS / LOG_ADMIN / ADMINS ---------- */
 async function loadLogs(force=false){
   if(state.loaded.logs && !force) return;
@@ -9835,7 +10155,7 @@ function renderLogs(){
   const rows = state.cache.logs
     .slice().reverse()
     .filter(l => !q ? true : JSON.stringify(l).toLowerCase().includes(q))
-    .slice(0, 500);
+    .slice(0, 50);
 
   renderTable("tblLogs", rows, [
     {key:"data", label:"Data", render:(r)=>formatarDataBR(r.data)},
@@ -10240,6 +10560,7 @@ $("btnReloadLogAdmin")
     "click",
     () => loadLogAdmin(true)
   );
+
 $("filtroAdmins")?.addEventListener("input", renderAdmins);
 
   /* ================= CLIENTES ================= */
@@ -10276,6 +10597,26 @@ $("btnReloadPagamentos")?.addEventListener(
 $("filtroPagamentos")?.addEventListener(
   "input",
   () => renderPagamentos()
+);
+
+$("btnNovoPagamento")?.addEventListener(
+  "click",
+  () => novoPagamento()
+);
+
+$("btnCsvPagamentos")?.addEventListener(
+  "click",
+  () => exportarPagamentosCSV()
+);
+
+$("btnNovoPagamento")?.addEventListener(
+  "click",
+  () => novoPagamento()
+);
+
+$("btnCsvPagamentos")?.addEventListener(
+  "click",
+  () => exportarPagamentosCSV()
 );
 
 /* ================= LOGS ================= */
