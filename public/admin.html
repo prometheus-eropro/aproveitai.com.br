@@ -9573,6 +9573,54 @@ async function loadPagamentos(force=false){
 
 }
 
+/* =====================================================
+   FORMATA COMPETÊNCIA FINANCEIRA
+   Saída oficial: MM/AAAA
+===================================================== */
+function formatarCompetencia(valor){
+
+  if(valor === null || valor === undefined || valor === ""){
+    return "";
+  }
+
+  const texto = String(valor).trim();
+
+  // Já está no formato MM/AAAA
+  if(/^\d{2}\/\d{4}$/.test(texto)){
+    return texto;
+  }
+
+  // Formato AAAA-MM
+  let m = texto.match(/^(\d{4})-(\d{2})$/);
+
+  if(m){
+    return `${m[2]}/${m[1]}`;
+  }
+
+  // Formato ISO:
+  // 2026-09-01
+  // 2026-09-01T03:00:00.000Z
+  m = texto.match(/^(\d{4})-(\d{2})-\d{2}/);
+
+  if(m){
+    return `${m[2]}/${m[1]}`;
+  }
+
+  // Última tentativa para valores de data reconhecíveis
+  const data = new Date(valor);
+
+  if(!isNaN(data.getTime())){
+    return (
+      String(data.getUTCMonth() + 1).padStart(2, "0") +
+      "/" +
+      data.getUTCFullYear()
+    );
+  }
+
+  // Segurança: não perde o conteúdo original
+  return texto;
+}
+
 function renderPagamentos(){
 
   const q =
@@ -9772,9 +9820,10 @@ function renderPagamentos(){
       },
 
       {
-        key:"competencia",
-        label:"Competência"
-      },
+  key:"competencia",
+  label:"Competência",
+  render:(r)=>formatarCompetencia(r.competencia)
+},
 
       {
         key:"descricao",
@@ -11078,11 +11127,14 @@ function mostrarCobrancasAbertasFinanceiro(
       <strong>
 
         ${
-          escHtmlFinanceiro(
-            p.competencia ||
-            p.descricao ||
-            "Cobrança"
-          )
+         escHtmlFinanceiro(
+  p.competencia
+    ? formatarCompetencia(p.competencia)
+    : (
+        p.descricao ||
+        "Cobrança"
+      )
+)
         }
 
         — ${valorFormatado}
@@ -11153,6 +11205,31 @@ function mostrarCobrancasAbertasFinanceiro(
 
 }
 
+function competenciaParaInputFinanceiro(valor){
+
+  if(!valor){
+    return "";
+  }
+
+  const texto = String(valor).trim();
+
+  // ISO ou AAAA-MM
+  let m = texto.match(/^(\d{4})-(\d{2})/);
+
+  if(m){
+    return `${m[1]}-${m[2]}`;
+  }
+
+  // MM/AAAA
+  m = texto.match(/^(\d{2})\/(\d{4})$/);
+
+  if(m){
+    return `${m[2]}-${m[1]}`;
+  }
+
+  return "";
+}
+
 
 /* ======================================================
    FINANCEIRO — PREENCHE COBRANÇA SELECIONADA
@@ -11199,11 +11276,12 @@ function preencherCobrancaSelecionadaFinanceiro(
 
   if(competencia){
 
-    competencia.value =
-      pagamento.competencia ||
-      "";
+  competencia.value =
+    competenciaParaInputFinanceiro(
+      pagamento.competencia
+    );
 
-  }
+}
 
 
   if(descricao){
