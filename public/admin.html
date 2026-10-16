@@ -9749,11 +9749,14 @@ function renderPagamentos(){
     }
 
 
-    if(status === "VENCIDO"){
+   if(
+  status === "VENCIDO" ||
+  status === "ATRASADO"
+){
 
-      totalVencido += valor;
+  totalVencido += valor;
 
-    }
+}
 
   });
 
