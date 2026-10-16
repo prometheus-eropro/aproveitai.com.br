@@ -9902,18 +9902,18 @@ async function novoPagamento(){
 
     fields:[
 
-      {
-        key:"tipo_pagador",
-        label:"Tipo de pagador",
-        type:"select",
-        options:[
-          "CLIENTE",
-          "PARCEIRO",
-          "EMPRESA",
-          "ASSOCIACAO",
-          "OUTRO"
-        ]
-      },
+     {
+  key:"tipo_pagador",
+  label:"Tipo de pagador",
+  type:"select",
+  options:[
+    {value:"CLIENTE", label:"Cliente"},
+    {value:"PARCEIRO", label:"Parceiro"},
+    {value:"EMPRESA", label:"Empresa"},
+    {value:"ASSOCIACAO", label:"Associação"},
+    {value:"OUTRO", label:"Outro"}
+  ]
+},
 
       {
         key:"busca_pagador",
@@ -10744,10 +10744,552 @@ function selecionarPagadorFinanceiro(
 
   if(busca){
 
-    busca.value =
-      item.nome || "";
+  busca.value =
+    item.nome || "";
+
+}
+
+
+/* ==========================================
+   SE FOR CLIENTE, MOSTRA COBRANÇAS ABERTAS
+========================================== */
+
+if(
+  String(item.tipo || "")
+    .toUpperCase() === "CLIENTE"
+){
+
+  mostrarCobrancasAbertasFinanceiro(
+    item.id
+  );
+
+}else{
+
+  removerCobrancasAbertasFinanceiro();
+
+}
+
+}
+
+/* ======================================================
+   FINANCEIRO — COBRANÇAS EM ABERTO DO PAGADOR
+====================================================== */
+
+function mostrarCobrancasAbertasFinanceiro(
+  clienteId
+){
+
+  removerCobrancasAbertasFinanceiro();
+
+
+  const form =
+    document.getElementById(
+      "editForm"
+    );
+
+
+  if(!form){
+    return;
+  }
+
+
+  const idBusca =
+    String(
+      clienteId || ""
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const pagamentos =
+    Array.isArray(
+      state.cache.pagamentos
+    )
+      ? state.cache.pagamentos
+      : [];
+
+
+  const abertos =
+    pagamentos
+      .filter(p => {
+
+        const idPagamentoCliente =
+          String(
+            p.cliente_id || ""
+          )
+          .trim()
+          .toUpperCase();
+
+
+        const status =
+          String(
+            p.status || ""
+          )
+          .trim()
+          .toUpperCase();
+
+
+        return (
+
+          idPagamentoCliente ===
+          idBusca
+
+          &&
+
+          (
+            status === "PENDENTE" ||
+            status === "ATRASADO" ||
+            status === "VENCIDO"
+          )
+
+        );
+
+      })
+      .sort((a,b) => {
+
+        return new Date(
+          a.data_vencimento || 0
+        ) -
+        new Date(
+          b.data_vencimento || 0
+        );
+
+      });
+
+
+  const box =
+    document.createElement(
+      "div"
+    );
+
+
+  box.id =
+    "cobrancasAbertasFinanceiro";
+
+
+  box.style.cssText = `
+
+    flex:0 0 100%;
+    width:100%;
+    margin-top:5px;
+    padding:15px;
+    border:1px solid #d8e6da;
+    border-radius:10px;
+    background:#f7fbf8;
+
+  `;
+
+
+  const titulo =
+    document.createElement(
+      "div"
+    );
+
+
+  titulo.innerHTML = `
+
+    <strong style="
+      font-size:15px;
+      color:#075b24;
+    ">
+
+      💰 Cobranças em aberto
+
+    </strong>
+
+    <div style="
+      font-size:12px;
+      color:#666;
+      margin-top:3px;
+    ">
+
+      Selecione a cobrança que está sendo paga.
+
+    </div>
+
+  `;
+
+
+  box.appendChild(
+    titulo
+  );
+
+
+  /* ==========================================
+     NENHUMA COBRANÇA
+  ========================================== */
+
+  if(!abertos.length){
+
+    const vazio =
+      document.createElement(
+        "div"
+      );
+
+
+    vazio.style.cssText = `
+
+      margin-top:12px;
+      padding:12px;
+      background:#fff;
+      border:1px solid #ddd;
+      border-radius:8px;
+
+    `;
+
+
+    vazio.innerHTML = `
+
+      <strong>
+        Nenhuma cobrança em aberto.
+      </strong>
+
+      <div style="
+        margin-top:4px;
+        font-size:12px;
+        color:#666;
+      ">
+
+        Não existe mensalidade pendente,
+        atrasada ou vencida para este cliente.
+
+      </div>
+
+    `;
+
+
+    box.appendChild(
+      vazio
+    );
+
+
+    form.prepend(
+      box
+    );
+
+
+    return;
 
   }
+
+
+  /* ==========================================
+     LISTA COBRANÇAS
+  ========================================== */
+
+  abertos.forEach(p => {
+
+    const linha =
+      document.createElement(
+        "label"
+      );
+
+
+    linha.style.cssText = `
+
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top:10px;
+      padding:12px;
+      background:#fff;
+      border:1px solid #ddd;
+      border-radius:8px;
+      cursor:pointer;
+
+    `;
+
+
+    const radio =
+      document.createElement(
+        "input"
+      );
+
+
+    radio.type =
+      "radio";
+
+
+    radio.name =
+      "pagamentoFinanceiroSelecionado";
+
+
+    radio.value =
+      p.pagamento_id || "";
+
+
+    radio.style.cssText = `
+
+      width:18px;
+      height:18px;
+      flex:0 0 18px;
+
+    `;
+
+
+    radio.addEventListener(
+      "change",
+      () => {
+
+        preencherCobrancaSelecionadaFinanceiro(
+          p
+        );
+
+      }
+    );
+
+
+    const info =
+      document.createElement(
+        "div"
+      );
+
+
+    info.style.flex =
+      "1";
+
+
+    const valor =
+      Number(
+        String(
+          p.valor || 0
+        )
+        .replace(/\./g,"")
+        .replace(",",".")
+      );
+
+
+    const valorFormatado =
+      Number.isFinite(valor)
+        ? valor.toLocaleString(
+            "pt-BR",
+            {
+              style:"currency",
+              currency:"BRL"
+            }
+          )
+        : String(
+            p.valor || ""
+          );
+
+
+    info.innerHTML = `
+
+      <strong>
+
+        ${
+          escHtmlFinanceiro(
+            p.competencia ||
+            p.descricao ||
+            "Cobrança"
+          )
+        }
+
+        — ${valorFormatado}
+
+      </strong>
+
+      <div style="
+        margin-top:4px;
+        font-size:12px;
+        color:#555;
+      ">
+
+        Vencimento:
+        ${
+          p.data_vencimento
+            ? escHtmlFinanceiro(
+                formatarDataBR(
+                  p.data_vencimento
+                )
+              )
+            : "-"
+        }
+
+        &nbsp;•&nbsp;
+
+        Status:
+        <strong>
+          ${
+            escHtmlFinanceiro(
+              p.status || ""
+            )
+          }
+        </strong>
+
+        &nbsp;•&nbsp;
+
+        ${
+          escHtmlFinanceiro(
+            p.pagamento_id || ""
+          )
+        }
+
+      </div>
+
+    `;
+
+
+    linha.appendChild(
+      radio
+    );
+
+
+    linha.appendChild(
+      info
+    );
+
+
+    box.appendChild(
+      linha
+    );
+
+  });
+
+
+  form.prepend(
+    box
+  );
+
+}
+
+
+/* ======================================================
+   FINANCEIRO — PREENCHE COBRANÇA SELECIONADA
+====================================================== */
+
+function preencherCobrancaSelecionadaFinanceiro(
+  pagamento
+){
+
+  const tipoReceita =
+    localizarCampoEditFinanceiro(
+      "tipo_receita"
+    );
+
+  const competencia =
+    localizarCampoEditFinanceiro(
+      "competencia"
+    );
+
+  const descricao =
+    localizarCampoEditFinanceiro(
+      "descricao"
+    );
+
+  const valor =
+    localizarCampoEditFinanceiro(
+      "valor"
+    );
+
+  const vencimento =
+    localizarCampoEditFinanceiro(
+      "data_vencimento"
+    );
+
+
+  if(tipoReceita){
+
+    tipoReceita.value =
+      pagamento.tipo_receita ||
+      "MENSALIDADE";
+
+  }
+
+
+  if(competencia){
+
+    competencia.value =
+      pagamento.competencia ||
+      "";
+
+  }
+
+
+  if(descricao){
+
+    descricao.value =
+      pagamento.descricao ||
+      "";
+
+  }
+
+
+  if(valor){
+
+    valor.value =
+      pagamento.valor ||
+      "";
+
+  }
+
+
+  if(vencimento){
+
+    const d =
+      pagamento.data_vencimento;
+
+
+    if(d){
+
+      const data =
+        new Date(d);
+
+
+      if(
+        !isNaN(
+          data.getTime()
+        )
+      ){
+
+        vencimento.value =
+          data.getFullYear() +
+          "-" +
+          String(
+            data.getMonth() + 1
+          ).padStart(2,"0") +
+          "-" +
+          String(
+            data.getDate()
+          ).padStart(2,"0");
+
+      }
+
+    }
+
+  }
+
+
+  /*
+   * Guarda o ID real da cobrança.
+   * Ainda NÃO dá baixa.
+   */
+
+  window.pagamentoFinanceiroSelecionado =
+    pagamento.pagamento_id || "";
+
+}
+
+
+/* ======================================================
+   FINANCEIRO — REMOVE COBRANÇAS DA TELA
+====================================================== */
+
+function removerCobrancasAbertasFinanceiro(){
+
+  const box =
+    document.getElementById(
+      "cobrancasAbertasFinanceiro"
+    );
+
+
+  if(box){
+    box.remove();
+  }
+
+
+  window.pagamentoFinanceiroSelecionado =
+    "";
 
 }
 
