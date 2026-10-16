@@ -10858,52 +10858,104 @@ function mostrarCobrancasAbertasFinanceiro(
       : [];
 
 
-  const abertos =
-    pagamentos
-      .filter(p => {
+  /* ==========================================
+   COBRANÇAS VENCIDAS ATÉ HOJE
+========================================== */
 
-        const idPagamentoCliente =
-          String(
-            p.cliente_id || ""
-          )
-          .trim()
-          .toUpperCase();
+const hoje =
+  new Date();
 
-
-        const status =
-          String(
-            p.status || ""
-          )
-          .trim()
-          .toUpperCase();
+hoje.setHours(
+  23,
+  59,
+  59,
+  999
+);
 
 
-        return (
+const todasAbertasCliente =
+  pagamentos
+    .filter(p => {
 
-          idPagamentoCliente ===
-          idBusca
+      const idPagamentoCliente =
+        String(
+          p.cliente_id || ""
+        )
+        .trim()
+        .toUpperCase();
 
-          &&
 
-          (
-            status === "PENDENTE" ||
-            status === "ATRASADO" ||
-            status === "VENCIDO"
-          )
+      const status =
+        String(
+          p.status || ""
+        )
+        .trim()
+        .toUpperCase();
 
-        );
 
-      })
-      .sort((a,b) => {
+      return (
 
-        return new Date(
-          a.data_vencimento || 0
-        ) -
+        idPagamentoCliente ===
+        idBusca
+
+        &&
+
+        (
+          status === "PENDENTE" ||
+          status === "ATRASADO" ||
+          status === "VENCIDO"
+        )
+
+      );
+
+    });
+
+
+/* ==========================================
+   MOSTRA AUTOMATICAMENTE SOMENTE AS
+   COBRANÇAS VENCIDAS ATÉ HOJE
+========================================== */
+
+const abertos =
+  todasAbertasCliente
+    .filter(p => {
+
+      if(!p.data_vencimento){
+        return false;
+      }
+
+
+      const vencimento =
         new Date(
-          b.data_vencimento || 0
+          p.data_vencimento
         );
 
-      });
+
+      if(
+        isNaN(
+          vencimento.getTime()
+        )
+      ){
+        return false;
+      }
+
+
+      return (
+        vencimento.getTime() <=
+        hoje.getTime()
+      );
+
+    })
+    .sort((a,b) => {
+
+      return new Date(
+        a.data_vencimento || 0
+      ) -
+      new Date(
+        b.data_vencimento || 0
+      );
+
+    });
 
 
   const box =
