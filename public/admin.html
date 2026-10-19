@@ -3790,22 +3790,90 @@ function renderTable(tableId, rows, columns, options={}){
 }
 
 function downloadCSV(filename, rows){
-  if(!rows || !rows.length){ toast("Nada para exportar"); return; }
-  const headers = Object.keys(rows[0]);
-  const esc = (v)=>('"'+String(v??"").replaceAll('"','""')+'"');
-  const csv = [headers.map(esc).join(",")].concat(
-    rows.map(r => headers.map(h=>esc(r[h])).join(","))
-  ).join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href=url; a.download=filename;
-  document.body.appendChild(a); a.click(); a.remove();
+
+  if(!rows || !rows.length){
+    toast("Nada para exportar");
+    return;
+  }
+
+  const headers =
+    Object.keys(rows[0]);
+
+  /*
+   * Excel em português/Brasil:
+   * usa ponto e vírgula como separador.
+   */
+  const separador = ";";
+
+  /*
+   * Protege aspas, quebras de linha
+   * e demais conteúdos das células.
+   */
+  const esc = (v) => {
+
+    const valor =
+      String(v ?? "")
+        .replaceAll('"', '""');
+
+    return '"' + valor + '"';
+
+  };
+
+  const csv =
+    [
+      headers
+        .map(esc)
+        .join(separador)
+    ]
+    .concat(
+      rows.map(
+        r =>
+          headers
+            .map(
+              h => esc(r[h])
+            )
+            .join(separador)
+      )
+    )
+    .join("\r\n");
+
+  /*
+   * BOM UTF-8:
+   * faz o Excel reconhecer corretamente
+   * ç, ã, ê, ó etc.
+   */
+  const BOM = "\uFEFF";
+
+  const blob =
+    new Blob(
+      [
+        BOM,
+        csv
+      ],
+      {
+        type:
+          "text/csv;charset=utf-8;"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href = url;
+  a.download = filename;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
   URL.revokeObjectURL(url);
 }
 
-/*** 8) EDIT MODAL (GENÉRICO) ***/
-let editCtx = null;
 
 function openEditModal({title, hint, fields, initial, onSave}){
 
