@@ -10960,6 +10960,47 @@ const abertos =
 
     });
 
+/* ==========================================
+   COBRANÇAS AINDA NÃO VENCIDAS
+========================================== */
+
+const futuras =
+  todasAbertasCliente
+    .filter(p => {
+
+      if(!p.data_vencimento){
+        return false;
+      }
+
+      const vencimento =
+        new Date(
+          p.data_vencimento
+        );
+
+      if(
+        isNaN(
+          vencimento.getTime()
+        )
+      ){
+        return false;
+      }
+
+      return (
+        vencimento.getTime() >
+        hoje.getTime()
+      );
+
+    })
+    .sort((a,b) => {
+
+      return new Date(
+        a.data_vencimento || 0
+      ) -
+      new Date(
+        b.data_vencimento || 0
+      );
+
+    });
 
   const box =
     document.createElement(
@@ -11253,6 +11294,245 @@ const abertos =
 
   });
 
+/* ==========================================
+   BOTÃO — COBRANÇAS AINDA NÃO VENCIDAS
+========================================== */
+
+if(futuras.length){
+
+  const btnFuturas =
+    document.createElement(
+      "button"
+    );
+
+  btnFuturas.type =
+    "button";
+
+  btnFuturas.textContent =
+    "🔎 Ver cobranças ainda não vencidas (" +
+    futuras.length +
+    ")";
+
+  btnFuturas.style.cssText = `
+
+    margin-top:12px;
+    padding:9px 14px;
+    border:1px solid #07852c;
+    border-radius:8px;
+    background:#fff;
+    color:#075b24;
+    font-weight:700;
+    cursor:pointer;
+
+  `;
+
+
+  const areaFuturas =
+    document.createElement(
+      "div"
+    );
+
+  areaFuturas.style.display =
+    "none";
+
+
+  futuras.forEach(p => {
+
+    const linha =
+      document.createElement(
+        "label"
+      );
+
+    linha.style.cssText = `
+
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top:10px;
+      padding:12px;
+      background:#fff;
+      border:1px solid #ddd;
+      border-radius:8px;
+      cursor:pointer;
+
+    `;
+
+
+    const radio =
+      document.createElement(
+        "input"
+      );
+
+    radio.type =
+      "radio";
+
+    radio.name =
+      "pagamentoFinanceiroSelecionado";
+
+    radio.value =
+      p.pagamento_id || "";
+
+    radio.style.cssText = `
+
+      width:18px;
+      height:18px;
+      flex:0 0 18px;
+
+    `;
+
+
+    radio.addEventListener(
+      "change",
+      () => {
+
+        preencherCobrancaSelecionadaFinanceiro(
+          p
+        );
+
+      }
+    );
+
+
+    const info =
+      document.createElement(
+        "div"
+      );
+
+    info.style.flex =
+      "1";
+
+
+    const numero =
+      Number(
+        String(
+          p.valor || 0
+        )
+        .replace(/\./g,"")
+        .replace(",",".")
+      );
+
+
+    const valorFormatado =
+      Number.isFinite(numero)
+        ? numero.toLocaleString(
+            "pt-BR",
+            {
+              style:"currency",
+              currency:"BRL"
+            }
+          )
+        : String(
+            p.valor || ""
+          );
+
+
+    info.innerHTML = `
+
+      <strong>
+
+        ${
+          escHtmlFinanceiro(
+            formatarCompetencia(
+              p.competencia
+            ) ||
+            p.descricao ||
+            "Cobrança"
+          )
+        }
+
+        — ${valorFormatado}
+
+      </strong>
+
+      <div style="
+        margin-top:4px;
+        font-size:12px;
+        color:#555;
+      ">
+
+        Vencimento:
+        ${
+          p.data_vencimento
+            ? escHtmlFinanceiro(
+                formatarDataBR(
+                  p.data_vencimento
+                )
+              )
+            : "-"
+        }
+
+        &nbsp;•&nbsp;
+
+        Status:
+        <strong>
+          ${
+            escHtmlFinanceiro(
+              p.status || ""
+            )
+          }
+        </strong>
+
+        &nbsp;•&nbsp;
+
+        ${
+          escHtmlFinanceiro(
+            p.pagamento_id || ""
+          )
+        }
+
+      </div>
+
+    `;
+
+
+    linha.appendChild(
+      radio
+    );
+
+    linha.appendChild(
+      info
+    );
+
+    areaFuturas.appendChild(
+      linha
+    );
+
+  });
+
+
+  btnFuturas.addEventListener(
+    "click",
+    () => {
+
+      const fechado =
+        areaFuturas.style.display ===
+        "none";
+
+      areaFuturas.style.display =
+        fechado
+          ? "block"
+          : "none";
+
+      btnFuturas.textContent =
+        fechado
+          ? "🔼 Ocultar cobranças ainda não vencidas"
+          : "🔎 Ver cobranças ainda não vencidas (" +
+            futuras.length +
+            ")";
+
+    }
+  );
+
+
+  box.appendChild(
+    btnFuturas
+  );
+
+  box.appendChild(
+    areaFuturas
+  );
+
+}
 
   form.prepend(
     box
@@ -11571,7 +11851,9 @@ function exportarPagamentosCSV(){
         p.tipo_receita || "",
 
       "Competência":
-        p.competencia || "",
+  formatarCompetencia(
+    p.competencia
+  ),
 
       "Descrição":
         p.descricao || "",
