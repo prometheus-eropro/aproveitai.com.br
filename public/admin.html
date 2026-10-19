@@ -11918,10 +11918,12 @@ function exportarPagamentosCSV(){
       "Tipo Receita":
         p.tipo_receita || "",
 
-      "Competência":
+     "Competência":
+  '="' +
   formatarCompetencia(
     p.competencia
-  ),
+  ) +
+  '"',
 
       "Descrição":
         p.descricao || "",
