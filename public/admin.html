@@ -9514,14 +9514,19 @@ document
           action:
             "enviar_whatsapp_solicitacao",
 
-          protocolo:
-            protocolo,
+         protocolo:
+  protocolo,
 
-          telefone:
-            telefone,
+telefone:
+  telefone,
 
-          mensagem:
-            mensagem,
+mensagem:
+  mensagem,
+
+status:
+  String(s.status || "")
+    .trim()
+    .toUpperCase(),
 
           usuario:
             state.adminUsuario || "",
