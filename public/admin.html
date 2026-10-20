@@ -2805,8 +2805,7 @@ style="display:none;margin-top:20px;">
     type="button"
     class="btn"
     id="btnEnviarWhatsAppSolicitacao"
-    disabled
-    style="
+      style="
       width:100%;
       margin-top:12px;
       background:#128C7E;
@@ -9398,19 +9397,194 @@ Caso ainda precise de atendimento, entre novamente em contato conosco.
   }
 
 
-  campo.value =
+   campo.value =
     mensagem;
 
 
   /*
-   * O botão continuará desabilitado
-   * até ligarmos o envio à API.
+   * Habilita o botão quando existir
+   * uma mensagem pronta para envio.
    */
   if(botao){
-    botao.disabled = true;
+    botao.disabled =
+      !String(mensagem || "").trim();
   }
 
 }
+
+/* =========================================================
+   SOLICITAÇÕES — ENVIO WHATSAPP
+========================================================= */
+
+document
+  .getElementById("btnEnviarWhatsAppSolicitacao")
+  ?.addEventListener("click", async function(){
+
+    const s =
+      window.solicitacaoAtual;
+
+
+    if(!s){
+
+      alert(
+        "Nenhuma solicitação está aberta."
+      );
+
+      return;
+
+    }
+
+
+    const protocolo =
+      String(
+        s.protocolo || ""
+      ).trim();
+
+
+    const telefone =
+      String(
+        s.telefone || ""
+      ).trim();
+
+
+    const campoMensagem =
+      document.getElementById(
+        "solMensagemWhatsApp"
+      );
+
+
+    const mensagem =
+      String(
+        campoMensagem?.value || ""
+      ).trim();
+
+
+    if(!telefone){
+
+      alert(
+        "Esta solicitação não possui telefone para envio."
+      );
+
+      return;
+
+    }
+
+
+    if(!mensagem){
+
+      alert(
+        "Informe a mensagem que será enviada."
+      );
+
+      return;
+
+    }
+
+
+    if(
+      !confirm(
+        "Confirma o envio desta mensagem pelo WhatsApp?"
+      )
+    ){
+      return;
+    }
+
+
+    const botao =
+      document.getElementById(
+        "btnEnviarWhatsAppSolicitacao"
+      );
+
+
+    if(botao){
+
+      botao.disabled = true;
+
+      botao.textContent =
+        "⏳ Enviando...";
+
+    }
+
+
+    try {
+
+      const r =
+        await callAPI({
+
+          action:
+            "enviar_whatsapp_solicitacao",
+
+          protocolo:
+            protocolo,
+
+          telefone:
+            telefone,
+
+          mensagem:
+            mensagem,
+
+          usuario:
+            state.adminUsuario || "",
+
+          senha:
+            state.adminSenha || ""
+
+        });
+
+
+      console.log(
+        "ENVIO WHATSAPP SOLICITAÇÃO:",
+        r
+      );
+
+
+      if(!r || r.ok !== true){
+
+        throw new Error(
+          r?.erro ||
+          "Não foi possível enviar a mensagem."
+        );
+
+      }
+
+
+      alert(
+        "WhatsApp enviado com sucesso."
+      );
+
+
+    } catch(err) {
+
+      console.error(
+        "ERRO WHATSAPP SOLICITAÇÃO:",
+        err
+      );
+
+
+      alert(
+        "Erro ao enviar WhatsApp:\n\n" +
+        (
+          err?.message ||
+          String(err)
+        )
+      );
+
+
+    } finally {
+
+      if(botao){
+
+        botao.disabled = false;
+
+        botao.textContent =
+          "📲 Enviar WhatsApp";
+
+      }
+
+    }
+
+  });
+
 
 async function concluirSolicitacao(){
 
