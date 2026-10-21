@@ -12418,18 +12418,62 @@ async function loadAdmins(force=false){
   state.loaded.admins = true;
   renderAdmins();
 }
+
 function renderAdmins(){
-  const q = ($("filtroAdmins").value||"").trim().toLowerCase();
-  const rows = state.cache.admins.filter(a=>{
-    if(!q) return true;
-    return JSON.stringify(a).toLowerCase().includes(q);
-  });
-  renderTable("tblAdmins", rows, [
-    {key:"usuario", label:"Usuário"},
-    {key:"senha", label:"Senha"},
-    {key:"nome", label:"Nome"},
-    {key:"ativo", label:"Ativo"},
-  ]);
+
+  const q =
+    ($("filtroAdmins").value || "")
+      .trim()
+      .toLowerCase();
+
+
+  const rows =
+    state.cache.admins.filter(a => {
+
+      if(!q) return true;
+
+      /*
+       * Pesquisa somente campos seguros.
+       * A senha não participa da pesquisa
+       * nem é exibida na tabela.
+       */
+      const texto = [
+        a.usuario,
+        a.nome,
+        a.ativo,
+        a.permissao
+      ]
+      .join(" ")
+      .toLowerCase();
+
+      return texto.includes(q);
+
+    });
+
+
+  renderTable(
+    "tblAdmins",
+    rows,
+    [
+      {
+        key:"usuario",
+        label:"Usuário"
+      },
+      {
+        key:"nome",
+        label:"Nome"
+      },
+      {
+        key:"ativo",
+        label:"Ativo"
+      },
+      {
+        key:"permissao",
+        label:"Permissão"
+      }
+    ]
+  );
+
 }
 
 /*** 11) WIRES (EVENTS) ***/
