@@ -12426,17 +12426,11 @@ function renderAdmins(){
       .trim()
       .toLowerCase();
 
-
   const rows =
     state.cache.admins.filter(a => {
 
       if(!q) return true;
 
-      /*
-       * Pesquisa somente campos seguros.
-       * A senha não participa da pesquisa
-       * nem é exibida na tabela.
-       */
       const texto = [
         a.usuario,
         a.nome,
@@ -12450,26 +12444,29 @@ function renderAdmins(){
 
     });
 
-
   renderTable(
     "tblAdmins",
     rows,
     [
       {
         key:"usuario",
-        label:"Usuário"
+        label:"Usuário",
+        width:"22%"
       },
       {
         key:"nome",
-        label:"Nome"
+        label:"Nome",
+        width:"38%"
       },
       {
         key:"ativo",
-        label:"Ativo"
+        label:"Ativo",
+        width:"15%"
       },
       {
         key:"permissao",
-        label:"Permissão"
+        label:"Permissão",
+        width:"25%"
       }
     ]
   );
