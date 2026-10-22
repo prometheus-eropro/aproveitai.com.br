@@ -841,6 +841,48 @@ td:last-child{
 
 }
 
+/* =====================================================
+   ADMINISTRADORES — TABELA COMPACTA
+   Não afeta as demais tabelas do Admin
+===================================================== */
+
+#tblAdmins{
+    width:100%;
+    min-width:0;
+    table-layout:fixed;
+}
+
+#tblAdmins th,
+#tblAdmins td{
+    padding:10px 12px;
+    white-space:normal;
+    overflow-wrap:break-word;
+}
+
+/* Usuário */
+#tblAdmins th:nth-child(1),
+#tblAdmins td:nth-child(1){
+    width:22%;
+}
+
+/* Nome */
+#tblAdmins th:nth-child(2),
+#tblAdmins td:nth-child(2){
+    width:38%;
+}
+
+/* Ativo */
+#tblAdmins th:nth-child(3),
+#tblAdmins td:nth-child(3){
+    width:15%;
+}
+
+/* Permissão */
+#tblAdmins th:nth-child(4),
+#tblAdmins td:nth-child(4){
+    width:25%;
+}
+
 /*==================================================
 =                 BOTÕES                            =
 ==================================================*/
