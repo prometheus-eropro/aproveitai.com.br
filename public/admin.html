@@ -3678,9 +3678,35 @@ async function ensureLogin(){
   try{
     const res = await callAPI({ action:"loginAdmin", key: state.key });
     if(res && res.ok){
-      state.admin = res.admin || "Admin";
-      store.set("apv_admin_key", state.key);
-      store.set("apv_admin_name", state.admin);
+
+  state.admin =
+    res.admin || "Admin";
+
+  state.permissao =
+    String(
+      res.permissao || "operacional"
+    )
+    .trim()
+    .toLowerCase();
+
+
+  store.set(
+    "apv_admin_key",
+    state.key
+  );
+
+  store.set(
+    "apv_admin_name",
+    state.admin
+  );
+
+  store.set(
+    "apv_admin_permissao",
+    state.permissao
+  );
+
+aplicarPermissoesVisuais();
+
       setPill("Logado: " + state.admin);
       showOverlay("overlayLogin", false);
       return true;
@@ -3696,6 +3722,155 @@ async function ensureLogin(){
     $("loginMsg").textContent = "Acesso negado. Verifique a key na aba 'admins'.";
     return false;
   }
+}
+
+/* ======================================================
+   PERMISSÕES VISUAIS DO PAINEL ADMIN
+
+   TOTAL
+   - acesso administrativo completo
+
+   OPERACIONAL
+   - mantém operação diária
+   - pode receber parcelas
+   - não administra usuários
+   - não cria cobranças
+   - não visualiza resumo financeiro consolidado
+   - não acessa configurações/backup
+====================================================== */
+
+function aplicarPermissoesVisuais(){
+
+  const permissao =
+    String(
+      state.permissao || "operacional"
+    )
+    .trim()
+    .toLowerCase();
+
+  const total =
+    permissao === "total";
+
+
+  /* ==========================================
+     NOVO RECEBIMENTO
+     Somente TOTAL cria cobrança manual
+  ========================================== */
+
+  const btnNovoPagamento =
+    document.getElementById(
+      "btnNovoPagamento"
+    );
+
+  if(btnNovoPagamento){
+
+    btnNovoPagamento.style.display =
+      total ? "" : "none";
+
+  }
+
+
+  /* ==========================================
+     EXPORTAÇÃO FINANCEIRA
+     Somente TOTAL
+  ========================================== */
+
+  const btnCsvPagamentos =
+    document.getElementById(
+      "btnCsvPagamentos"
+    );
+
+  if(btnCsvPagamentos){
+
+    btnCsvPagamentos.style.display =
+      total ? "" : "none";
+
+  }
+
+
+  /* ==========================================
+     RESUMO FINANCEIRO CONSOLIDADO
+     Somente TOTAL
+
+     Localizamos o bloco através do primeiro
+     indicador financeiro.
+  ========================================== */
+
+  const totalRecebido =
+    document.getElementById(
+      "finTotalRecebido"
+    );
+
+  if(totalRecebido){
+
+    const cards =
+      totalRecebido.closest(
+        ".cards"
+      );
+
+    if(cards){
+
+      cards.style.display =
+        total ? "" : "none";
+
+    }
+
+  }
+
+
+  /* ==========================================
+     ADMINISTRADORES
+     Somente TOTAL
+  ========================================== */
+
+  const menuAdmins =
+    document.querySelector(
+      '[data-view="admins"]'
+    );
+
+  if(menuAdmins){
+
+    menuAdmins.style.display =
+      total ? "" : "none";
+
+  }
+
+
+  /* ==========================================
+     CONFIGURAÇÕES
+     Somente TOTAL
+  ========================================== */
+
+  const menuConfig =
+    document.querySelector(
+      '[data-view="config"]'
+    );
+
+  if(menuConfig){
+
+    menuConfig.style.display =
+      total ? "" : "none";
+
+  }
+
+
+  /* ==========================================
+     BACKUP
+     Somente TOTAL
+  ========================================== */
+
+  const menuBackup =
+    document.querySelector(
+      '[data-view="backup"]'
+    );
+
+  if(menuBackup){
+
+    menuBackup.style.display =
+      total ? "" : "none";
+
+  }
+
 }
 
 function logout(){
@@ -9818,12 +9993,50 @@ async function loadPagamentos(force=false){
     return;
   }
 
+
   try{
 
-    const r =
-      await callAPI({
-        aba:"pagamentos"
-      });
+    const permissao =
+      String(
+        state.permissao || "operacional"
+      )
+      .trim()
+      .toLowerCase();
+
+
+    let r;
+
+
+    /* ==========================================
+       TOTAL
+       Acesso ao Financeiro completo
+    ========================================== */
+
+    if(permissao === "total"){
+
+      r =
+        await callAPI({
+          aba:"pagamentos"
+        });
+
+    }
+
+
+    /* ==========================================
+       OPERACIONAL
+       Consulta limitada somente para recebimento
+    ========================================== */
+
+    else{
+
+      r =
+        await callAPI({
+          action:
+            "listar_pagamentos_recebimento"
+        });
+
+    }
+
 
     if(
       !r ||
@@ -9832,30 +10045,46 @@ async function loadPagamentos(force=false){
 
       throw new Error(
         r?.erro ||
-        r?.msg ||
-        "Erro ao carregar recebimentos."
+        "Não foi possível carregar os pagamentos."
       );
 
     }
+
 
     state.cache.pagamentos =
       Array.isArray(r.dados)
         ? r.dados
         : [];
 
-    state.loaded.pagamentos = true;
+
+    state.loaded.pagamentos =
+      true;
+
 
     renderPagamentos();
+
 
   }catch(err){
 
     console.error(
-      "ERRO LOAD PAGAMENTOS:",
+      "ERRO AO CARREGAR PAGAMENTOS:",
       err
     );
 
+
+    state.cache.pagamentos =
+      [];
+
+
+    state.loaded.pagamentos =
+      false;
+
+
+    renderPagamentos();
+
+
     toast(
-      "Erro ao carregar recebimentos."
+      "Erro ao carregar pagamentos."
     );
 
   }
@@ -10153,9 +10382,70 @@ function renderPagamentos(){
         label:"Forma"
       },
 
-      {
+           {
         key:"status",
         label:"Status"
+      },
+
+      {
+        key:"acoes",
+        label:"Ações",
+
+        render:(r)=>{
+
+          const status =
+            String(
+              r.status || ""
+            )
+            .trim()
+            .toUpperCase();
+
+
+          /*
+           * Pagamento já concluído ou cancelado
+           * não pode receber nova baixa.
+           */
+          if(
+            status === "PAGO" ||
+            status === "CANCELADO"
+          ){
+
+            return "—";
+
+          }
+
+
+          const pagamentoId =
+            String(
+              r.pagamento_id || ""
+            )
+            .trim();
+
+
+          if(!pagamentoId){
+
+            return "—";
+
+          }
+
+
+          return `
+            <button
+              type="button"
+              class="btn"
+              onclick="abrirRecebimentoPagamento(
+                '${pagamentoId.replace(/'/g,"\\'")}'
+              )"
+              style="
+                padding:6px 10px;
+                white-space:nowrap;
+              "
+            >
+              💰 Receber
+            </button>
+          `;
+
+        }
       }
 
     ]
@@ -12200,6 +12490,315 @@ function exportarPagamentosCSV(){
     nome,
     dados
   );
+
+}
+
+/* ======================================================
+   FINANCEIRO — RECEBER / DAR BAIXA
+====================================================== */
+
+async function abrirRecebimentoPagamento(pagamentoId){
+
+  try{
+
+    const id =
+      String(
+        pagamentoId || ""
+      ).trim();
+
+
+    if(!id){
+
+      alert(
+        "Pagamento não identificado."
+      );
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       LOCALIZA PAGAMENTO NO CACHE
+    ========================================== */
+
+    const pagamento =
+      (
+        state.cache.pagamentos || []
+      ).find(p =>
+
+        String(
+          p.pagamento_id || ""
+        ).trim() === id
+
+      );
+
+
+    if(!pagamento){
+
+      alert(
+        "Pagamento não localizado. Recarregue os recebimentos."
+      );
+
+      return;
+
+    }
+
+
+    const status =
+      String(
+        pagamento.status || ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    if(status === "PAGO"){
+
+      alert(
+        "Este pagamento já está pago."
+      );
+
+      return;
+
+    }
+
+
+    if(status === "CANCELADO"){
+
+      alert(
+        "Pagamento cancelado não pode receber baixa."
+      );
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       DADOS PARA CONFERÊNCIA
+    ========================================== */
+
+    const pagador =
+      pagamento.nome_pagador ||
+      pagamento.cliente_id ||
+      pagamento.cpf_cnpj ||
+      "Não informado";
+
+
+    const competencia =
+      pagamento.competencia ||
+      "Não informada";
+
+
+    const valor =
+      pagamento.valor || "";
+
+
+    /* ==========================================
+       ESCOLHA DA FORMA DE PAGAMENTO
+    ========================================== */
+
+    const formaDigitada =
+      prompt(
+        "RECEBER PAGAMENTO\n\n" +
+
+        "Pagador: " +
+        pagador +
+        "\n" +
+
+        "Competência: " +
+        competencia +
+        "\n" +
+
+        "Valor: " +
+        valor +
+        "\n\n" +
+
+        "Informe a forma de pagamento:\n\n" +
+
+        "DINHEIRO\n" +
+        "PIX\n" +
+        "CARTAO\n" +
+        "TRANSFERENCIA\n" +
+        "BOLETO\n" +
+        "OUTRO"
+      );
+
+
+    /*
+     * Usuário cancelou a operação.
+     */
+    if(formaDigitada === null){
+
+      return;
+
+    }
+
+
+    const formaPagamento =
+      String(
+        formaDigitada || ""
+      )
+      .trim()
+      .toUpperCase();
+
+
+    const formasPermitidas = [
+      "DINHEIRO",
+      "PIX",
+      "CARTAO",
+      "TRANSFERENCIA",
+      "BOLETO",
+      "OUTRO"
+    ];
+
+
+    if(
+      !formasPermitidas.includes(
+        formaPagamento
+      )
+    ){
+
+      alert(
+        "Forma de pagamento inválida.\n\n" +
+        "Utilize:\n" +
+        "DINHEIRO, PIX, CARTAO, TRANSFERENCIA, BOLETO ou OUTRO."
+      );
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       CONFIRMAÇÃO FINAL
+    ========================================== */
+
+    const confirmar =
+      confirm(
+
+        "CONFIRMAR RECEBIMENTO?\n\n" +
+
+        "Pagador: " +
+        pagador +
+        "\n" +
+
+        "Competência: " +
+        competencia +
+        "\n" +
+
+        "Valor: " +
+        valor +
+        "\n" +
+
+        "Forma: " +
+        formaPagamento +
+        "\n\n" +
+
+        "Após confirmar, o pagamento será registrado como PAGO."
+
+      );
+
+
+    if(!confirmar){
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       ENVIA PARA A ROTA SEGURA DO BACKEND
+    ========================================== */
+
+    toast(
+      "Registrando recebimento..."
+    );
+
+
+    const resp =
+      await callAPI({
+
+        action:
+          "receber_pagamento",
+
+        pagamento_id:
+          id,
+
+        forma_pagamento:
+          formaPagamento
+
+      });
+
+
+    if(
+      !resp ||
+      resp.ok !== true
+    ){
+
+      throw new Error(
+        resp?.erro ||
+        "Não foi possível registrar o recebimento."
+      );
+
+    }
+
+
+    /* ==========================================
+       ATUALIZA A TELA
+    ========================================== */
+
+    toast(
+      "Pagamento recebido com sucesso."
+    );
+
+
+    /*
+     * Força nova leitura da planilha.
+     * Não altera o cache manualmente.
+     */
+    state.loaded.pagamentos =
+      false;
+
+
+    await loadPagamentos(
+      true
+    );
+
+
+    alert(
+      "✅ RECEBIMENTO CONFIRMADO\n\n" +
+
+      "Pagador: " +
+      pagador +
+      "\n" +
+
+      "Competência: " +
+      competencia +
+      "\n" +
+
+      "Forma: " +
+      formaPagamento
+    );
+
+
+  }catch(err){
+
+    console.error(
+      "ERRO AO RECEBER PAGAMENTO:",
+      err
+    );
+
+
+    alert(
+      "Erro ao receber pagamento:\n\n" +
+      String(
+        err.message || err
+      )
+    );
+
+  }
 
 }
 
