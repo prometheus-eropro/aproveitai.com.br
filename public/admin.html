@@ -3155,61 +3155,127 @@ Somente leitura.
 </section>
 
 <section data-section="materiais" style="display:none">
-
 <h2>📂 Central de Materiais</h2>
 
+<p class="muted">
+  Biblioteca oficial de documentos e materiais da Plataforma AproveitAI.
+</p>
+
+<!-- =====================================
+     DOCUMENTOS OFICIAIS
+===================================== -->
+
+<h3>📚 Documentos Oficiais</h3>
+
 <div class="row">
 
-<a class="btn primary"
-href="contrato-parceiro.html"
-target="_blank">
-📄 Contrato Parceiro (Branco)
-</a>
+  <button
+    type="button"
+    class="btn"
+    onclick="abrirMaterialOficial('manual')">
+    📘 Manual do Parceiro
+  </button>
 
-<a class="btn"
-href="gerar-contrato-parceiro.html"
-target="_blank">
-📄 Gerar Contrato Parceiro
-</a>
+  <button
+    type="button"
+    class="btn"
+    onclick="abrirMaterialOficial('kit')">
+    📋 Kit de Implantação
+  </button>
+
+  <button
+    type="button"
+    class="btn"
+    onclick="abrirMaterialOficial('apresentacao')">
+    📊 Apresentação AproveitAI
+  </button>
+
+  <button
+    type="button"
+    class="btn"
+    onclick="abrirMaterialOficial('cartaz_a4')">
+    🖼️ Cartaz Parceiro A4
+  </button>
 
 </div>
+
 
 <div class="hr"></div>
 
+
+<!-- =====================================
+     CONTRATO
+===================================== -->
+
+<h3>📄 Contrato do Parceiro</h3>
+
+<p class="muted">
+  Utilize o gerador oficial para preparar o contrato de um novo parceiro.
+  Após a implantação, o contrato individual permanece arquivado
+  na pasta própria do parceiro.
+</p>
+
 <div class="row">
 
-<a class="btn"
-href="cartaz_parceiro.html"
-target="_blank">
-🖼️ Cartaz Parceiro
-</a>
-
-<a class="btn"
-href="cartaz_cliente.html"
-target="_blank">
-🖼️ Cartaz Cliente
-</a>
-
-<a class="btn"
-href="cartaz_divulgacao.html"
-target="_blank">
-🚀 Cartaz Divulgação
-</a>
+  <a
+    class="btn primary"
+    href="gerar-contrato-parceiro.html"
+    target="_blank">
+    ✍️ Gerar Contrato Parceiro
+  </a>
 
 </div>
+
 
 <div class="hr"></div>
 
+
+<!-- =====================================
+     MATERIAIS INDIVIDUAIS
+===================================== -->
+
+<h3>🏪 Materiais Individuais do Parceiro</h3>
+
+<p class="muted">
+  QR Code, cartaz de balcão, contrato, benefícios, promoções,
+  relatórios e demais documentos individuais são gerados e
+  armazenados na implantação de cada parceiro.
+</p>
+
 <div class="row">
 
-<a class="btn"
-href="institucional.html"
-target="_blank">
-🏢 Institucional
-</a>
+  <button
+    type="button"
+    class="btn"
+    onclick="loadView('implantacao')">
+    🚀 Acessar Implantação
+  </button>
 
 </div>
 
+
+<div class="hr"></div>
+
+
+<!-- =====================================
+     INSTITUCIONAL
+===================================== -->
+
+<h3>🏢 Plataforma AproveitAI</h3>
+
+<div class="row">
+
+  <a
+    class="btn"
+    href="institucional.html"
+    target="_blank">
+    🌐 Página Institucional
+  </a>
+
+</div>
+
+
+<div class="hr"></div>
 </section>
 
 <section data-section="gerencial" style="display:none">
@@ -3310,6 +3376,15 @@ const store = {
 const state = {
   key: store.get("apv_admin_key") || null,
   admin: store.get("apv_admin_name") || null,
+
+  permissao:
+    String(
+      store.get("apv_admin_permissao") ||
+      "operacional"
+    )
+    .trim()
+    .toLowerCase(),
+
   cache: {
   clientes:[],
   parceiros:[],
@@ -3874,8 +3949,13 @@ function aplicarPermissoesVisuais(){
 }
 
 function logout(){
-  state.key=null; state.admin=null;
-  store.del("apv_admin_key"); store.del("apv_admin_name");
+  state.key=null;
+state.admin=null;
+state.permissao="operacional";
+
+store.del("apv_admin_key");
+store.del("apv_admin_name");
+store.del("apv_admin_permissao");
   setPill("Não autenticado");
   toast("Saiu do admin");
   showOverlay("overlayLogin", true);
@@ -3918,35 +3998,72 @@ function showView(name){
 }
 
 async function loadView(name){
+
   if(!(await ensureLogin())) return;
 
+  /* =====================================
+     SEGURANÇA POR PERFIL
+  ===================================== */
+
+  const permissao =
+    String(state.permissao || "operacional")
+      .trim()
+      .toLowerCase();
+
+  if(
+    permissao !== "total" &&
+    ["admins", "config", "backup"].includes(name)
+  ){
+    toast(
+      "Seu perfil não possui permissão para acessar esta área."
+    );
+
+    return loadDashboard(true);
+  }
+
+
+  /* =====================================
+     NAVEGAÇÃO
+  ===================================== */
+
   if(name === "gerencial")
-  return loadGerencial();
+    return loadGerencial();
 
-  if(name === "dashboard") return loadDashboard(true);
-  if(name === "clientes") return loadClientes(true);
-  if(name === "parceiros") return loadParceiros(true);
-  if(name==="implantacao") return loadImplantacao();
-  if(name === "beneficios") return loadBeneficios(true);
-  if(name === "promocoes") return loadPromocoes(true);
-  if(name === "pagamentos") return loadPagamentos(true);
-  if(name === "logs") return loadLogs(true);
-  if(name === "log_admin") return loadLogAdmin(true);
-  if(name === "admins") return loadAdmins(true);
-  if(name==="novo_parceiro"){
+  if(name === "dashboard")
+    return loadDashboard(true);
 
-renderPaginaNovoParceiro();
+  if(name === "clientes")
+    return loadClientes(true);
 
-return;
+  if(name === "parceiros")
+    return loadParceiros(true);
 
-}
-if(name==="novo_parceiro"){
+  if(name === "implantacao")
+    return loadImplantacao();
 
-renderPaginaNovoParceiro();
+  if(name === "beneficios")
+    return loadBeneficios(true);
 
-return;
+  if(name === "promocoes")
+    return loadPromocoes(true);
 
-}
+  if(name === "pagamentos")
+    return loadPagamentos(true);
+
+  if(name === "logs")
+    return loadLogs(true);
+
+  if(name === "log_admin")
+    return loadLogAdmin(true);
+
+  if(name === "admins")
+    return loadAdmins(true);
+
+  if(name === "novo_parceiro"){
+    renderPaginaNovoParceiro();
+    return;
+  }
+
 }
 
 /*** 7) RENDER TABLES ***/
@@ -10401,18 +10518,18 @@ function renderPagamentos(){
             .toUpperCase();
 
 
-          /*
-           * Pagamento já concluído ou cancelado
-           * não pode receber nova baixa.
-           */
-          if(
-            status === "PAGO" ||
-            status === "CANCELADO"
-          ){
+         /*
+ * Somente pagamentos PENDENTES ou ATRASADOS
+ * podem receber baixa.
+ */
+if(
+  status !== "PENDENTE" &&
+  status !== "ATRASADO"
+){
 
-            return "—";
+  return "—";
 
-          }
+}
 
 
           const pagamentoId =
