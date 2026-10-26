@@ -13064,7 +13064,7 @@ console.log(
 function renderLogs(){
 
   const q =
-    ($("filtroLogs")?.value || "")
+    ($("filtroLogs").value || "")
       .trim()
       .toLowerCase();
 
@@ -13072,18 +13072,14 @@ function renderLogs(){
     (state.cache.logs || [])
       .slice()
       .reverse()
-      .filter(function(l){
-
-        if(!q){
-          return true;
-        }
-
-        return JSON.stringify(l)
-          .toLowerCase()
-          .includes(q);
-
-      })
-      .slice(0,50);
+      .filter(l =>
+        !q
+          ? true
+          : JSON.stringify(l)
+              .toLowerCase()
+              .includes(q)
+      )
+      .slice(0, 50);
 
 
   renderTable(
@@ -13115,7 +13111,11 @@ function renderLogs(){
 
       {
         key:"beneficio_utilizado",
-        label:"Benefício / Promoção"
+        label:"Benefício / Promoção",
+        render:(r)=>
+          r.beneficio_utilizado ||
+          r.item_utilizado ||
+          ""
       },
 
       {
@@ -13150,7 +13150,11 @@ function renderLogs(){
 
       {
         key:"ZAPI STATUS",
-        label:"WhatsApp"
+        label:"WhatsApp",
+        render:(r)=>
+          r["ZAPI STATUS"] ||
+          r.zap_confirmacao ||
+          ""
       }
 
     ]
