@@ -12827,13 +12827,24 @@ async function abrirRecebimentoPagamento(pagamentoId){
       "Não informado";
 
 
-    const competencia =
-      pagamento.competencia ||
+      const competencia =
+      formatarCompetencia(pagamento.competencia) ||
       "Não informada";
 
+    const valor = Number(pagamento.valor);
 
-    const valor =
-      pagamento.valor || "";
+    if(!Number.isFinite(valor)){
+      alert("Valor inválido. Recarregue os recebimentos.");
+      return;
+    }
+
+    const valorFormatado = valor.toLocaleString(
+      "pt-BR",
+      {
+        style: "currency",
+        currency: "BRL"
+      }
+    );
 
 
     /* ==========================================
@@ -12851,9 +12862,8 @@ async function abrirRecebimentoPagamento(pagamentoId){
         "Competência: " +
         competencia +
         "\n" +
-
         "Valor: " +
-        valor +
+        valorFormatado +
         "\n\n" +
 
         "Informe a forma de pagamento:\n\n" +
