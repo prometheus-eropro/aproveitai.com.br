@@ -14215,6 +14215,142 @@ function abrirDocumento(url){
 
 }
 
+/* =====================================================
+   ABRIR MATERIAL DA BIBLIOTECA OFICIAL
+===================================================== */
+
+async function abrirMaterialOficial(tipo){
+
+  try{
+
+    const resposta =
+      await callAPI({
+        action:"bibliotecaOficial"
+      });
+
+    if(
+      !resposta ||
+      resposta.ok === false
+    ){
+      throw new Error(
+        resposta?.erro ||
+        "Não foi possível acessar a Biblioteca Oficial."
+      );
+    }
+
+    const biblioteca =
+      resposta.dados ||
+      resposta.biblioteca ||
+      resposta ||
+      {};
+
+    let material = null;
+
+
+    /* ==========================
+       IDENTIFICA O MATERIAL
+    ========================== */
+
+    switch(
+      String(tipo || "")
+        .trim()
+        .toLowerCase()
+    ){
+
+      case "manual":
+
+        material =
+          biblioteca.manual_parceiro ||
+          biblioteca.manual_comunicacao;
+
+        break;
+
+
+      case "kit":
+
+        material =
+          biblioteca.kit_implantacao;
+
+        break;
+
+
+      case "apresentacao":
+
+        material =
+          biblioteca.apresentacao;
+
+        break;
+
+
+      case "cartaz_a4":
+
+        material =
+          biblioteca.cartaz_parceiro_a4;
+
+        break;
+
+
+      default:
+
+        alert(
+          "Material oficial não identificado."
+        );
+
+        return;
+
+    }
+
+
+    /* ==========================
+       OBTÉM URL
+    ========================== */
+
+    const url =
+      typeof material === "string"
+        ? material
+        : material?.url || "";
+
+
+    if(!url){
+
+      console.warn(
+        "Material não disponível:",
+        tipo,
+        material
+      );
+
+      alert(
+        "Este material ainda não está disponível na Biblioteca Oficial."
+      );
+
+      return;
+
+    }
+
+
+    /* ==========================
+       ABRE DOCUMENTO
+    ========================== */
+
+    abrirDocumento(url);
+
+
+  }catch(erro){
+
+    console.error(
+      "ERRO AO ABRIR MATERIAL OFICIAL:",
+      erro
+    );
+
+    alert(
+      "Não foi possível abrir o material oficial.\n\n" +
+      (erro.message || erro)
+    );
+
+  }
+
+}
+
 
 /* =====================================================
    IMPRIMIR DOCUMENTO
