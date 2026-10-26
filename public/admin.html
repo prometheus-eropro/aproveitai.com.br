@@ -13061,6 +13061,7 @@ console.log(
   state.loaded.logs = true;
   renderLogs();
 }
+
 function renderLogs(){
 
 console.log("RENDER LOGS NOVO 26-10");
@@ -13106,10 +13107,18 @@ console.log("RENDER LOGS NOVO 26-10");
         label:"Cliente"
       },
 
-      {
-        key:"parceiro",
-        label:"Parceiro"
-      },
+     {
+  key:"parceiro",
+  label:"Parceiro",
+  render:(r)=>{
+    return String(
+      r.parceiro ||
+      r.nome_parceiro ||
+      r.parceiro_nome ||
+      ""
+    ).trim();
+  }
+},
 
       {
         key:"beneficio_utilizado",
