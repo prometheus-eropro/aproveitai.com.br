@@ -13047,6 +13047,17 @@ async function loadLogs(force=false){
   if(state.loaded.logs && !force) return;
   const r = await callAPI({ aba:"logs" });
   state.cache.logs = r.dados || [];
+
+console.log(
+  "LOGS RECEBIDOS DA API:",
+  state.cache.logs
+);
+
+console.log(
+  "PRIMEIRO LOG:",
+  state.cache.logs[0]
+);
+
   state.loaded.logs = true;
   renderLogs();
 }
