@@ -3070,7 +3070,7 @@ style="display:none;margin-top:20px;">
               <button class="btn" id="btnCsvLogs">Exportar CSV</button>
 
             </div>
-            <div class="hint">Somente leitura. Mostra exatamente a aba <b>logs</b>.</div>
+            <div class="hint">Histórico de validações realizadas na plataforma. A pesquisa consulta todo o histórico carregado e exibe até 50 resultados por vez.</div>
             <div class="hr"></div>
             <div class="tableWrap">
               <table id="tblLogs"></table>
@@ -13051,22 +13051,100 @@ async function loadLogs(force=false){
   renderLogs();
 }
 function renderLogs(){
-  const q = ($("filtroLogs").value||"").trim().toLowerCase();
-  const rows = state.cache.logs
-    .slice().reverse()
-    .filter(l => !q ? true : JSON.stringify(l).toLowerCase().includes(q))
-    .slice(0, 50);
 
-  renderTable("tblLogs", rows, [
-    {key:"data", label:"Data", render:(r)=>formatarDataBR(r.data)},
+  const q =
+    ($("filtroLogs")?.value || "")
+      .trim()
+      .toLowerCase();
 
-    {key:"cpf", label:"CPF"},
-    {key:"nome", label:"Nome"},
-    {key:"parceiro", label:"Parceiro"},
-    {key:"codigoERO", label:"Código", render:(r)=> r.codigoERO || r["codigo-ero"] || "" },
-    {key:"status", label:"Status"},
-    {key:"tipoValidacao", label:"Tipo"},
-  ]);
+  const rows =
+    (state.cache.logs || [])
+      .slice()
+      .reverse()
+      .filter(function(l){
+
+        if(!q){
+          return true;
+        }
+
+        return JSON.stringify(l)
+          .toLowerCase()
+          .includes(q);
+
+      })
+      .slice(0,50);
+
+
+  renderTable(
+    "tblLogs",
+    rows,
+    [
+
+      {
+        key:"data",
+        label:"Data/Hora",
+        render:(r)=>
+          formatarDataBR(r.data)
+      },
+
+      {
+        key:"cpf",
+        label:"CPF"
+      },
+
+      {
+        key:"cliente",
+        label:"Cliente"
+      },
+
+      {
+        key:"parceiro",
+        label:"Parceiro"
+      },
+
+      {
+        key:"beneficio_utilizado",
+        label:"Benefício / Promoção"
+      },
+
+      {
+        key:"codigo_ero",
+        label:"Código ERO"
+      },
+
+      {
+        key:"status",
+        label:"Status"
+      },
+
+      {
+        key:"tipo",
+        label:"Tipo"
+      },
+
+      {
+        key:"placa",
+        label:"Placa"
+      },
+
+      {
+        key:"modelo",
+        label:"Modelo"
+      },
+
+      {
+        key:"origem",
+        label:"Origem"
+      },
+
+      {
+        key:"ZAPI STATUS",
+        label:"WhatsApp"
+      }
+
+    ]
+  );
+
 }
 
 async function loadLogAdmin(force=false){
@@ -13193,7 +13271,7 @@ function renderLogAdmin(){
 
   const rows =
     obterLogsAdminFiltrados()
-      .slice(0,500);
+      .slice(0,30);
 
 
   renderTable(
