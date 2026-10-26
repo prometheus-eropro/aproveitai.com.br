@@ -13058,6 +13058,11 @@ console.log(
   state.cache.logs[0]
 );
 
+console.log(
+  "CHAVES EXATAS DO PRIMEIRO LOG:",
+  Object.keys(state.cache.logs[0] || {})
+);
+
   state.loaded.logs = true;
   renderLogs();
 }
