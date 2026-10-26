@@ -4828,28 +4828,151 @@ return false;
 
 async function loadGerencial(){
 
-await loadClientes(true);
-await loadParceiros(true);
-await loadLogs(true);
+  await loadClientes(true);
+  await loadParceiros(true);
+  await loadLogs(true);
 
-const clientes = state.cache.clientes || [];
-const parceiros = state.cache.parceiros || [];
-const logs = state.cache.logs || [];
+  const clientes =
+    state.cache.clientes || [];
 
-const cliAtivos =
-clientes.filter(x =>
-String(x.ativo).toLowerCase() === "sim"
-).length;
+  const parceiros =
+    state.cache.parceiros || [];
 
-const parAtivos =
-parceiros.filter(x =>
-String(x.ativo).toLowerCase() === "sim"
-).length;
+  const logs =
+    state.cache.logs || [];
 
-document.getElementById("gCliAtivos").innerText = cliAtivos;
-document.getElementById("gParAtivos").innerText = parAtivos;
-document.getElementById("gHoje").innerText = logs.length;
-document.getElementById("gMes").innerText = logs.length;
+
+  /* ==========================
+     CLIENTES ATIVOS
+  ========================== */
+
+  const cliAtivos =
+    clientes.filter(function(cliente){
+
+      return (
+        String(cliente.ativo || "")
+          .trim()
+          .toLowerCase() === "sim"
+      );
+
+    }).length;
+
+
+  /* ==========================
+     PARCEIROS ATIVOS
+  ========================== */
+
+  const parAtivos =
+    parceiros.filter(function(parceiro){
+
+      return (
+        String(parceiro.ativo || "")
+          .trim()
+          .toLowerCase() === "sim"
+      );
+
+    }).length;
+
+
+  /* ==========================
+     DATA DE HOJE
+  ========================== */
+
+  const agora =
+    new Date();
+
+  const hoje =
+    agora.toLocaleDateString(
+      "pt-BR",
+      {
+        timeZone:
+          "America/Sao_Paulo"
+      }
+    );
+
+
+  /* ==========================
+     VALIDAÇÕES DE HOJE
+  ========================== */
+
+  const validacoesHoje =
+    logs.filter(function(log){
+
+      const valorData =
+        log.dataHora ||
+        log.data_hora ||
+        log.data ||
+        log.timestamp ||
+        "";
+
+      if(!valorData){
+        return false;
+      }
+
+      let dataLog;
+
+      /*
+       * Se vier como Date/ISO
+       */
+      const tentativa =
+        new Date(valorData);
+
+      if(
+        !isNaN(
+          tentativa.getTime()
+        )
+      ){
+
+        dataLog =
+          tentativa.toLocaleDateString(
+            "pt-BR",
+            {
+              timeZone:
+                "America/Sao_Paulo"
+            }
+          );
+
+      }else{
+
+        /*
+         * Formato da planilha:
+         * dd/mm/aaaa ...
+         */
+        dataLog =
+          String(valorData)
+            .trim()
+            .substring(0,10);
+
+      }
+
+      return dataLog === hoje;
+
+    }).length;
+
+
+  /* ==========================
+     EXIBIÇÃO
+  ========================== */
+
+  document
+    .getElementById("gCliAtivos")
+    .innerText =
+      cliAtivos;
+
+  document
+    .getElementById("gParAtivos")
+    .innerText =
+      parAtivos;
+
+  document
+    .getElementById("gHoje")
+    .innerText =
+      validacoesHoje;
+
+  document
+    .getElementById("gMes")
+    .innerText =
+      logs.length;
 
 }
 
