@@ -13110,13 +13110,17 @@ console.log("RENDER LOGS NOVO 26-10");
      {
   key:"parceiro",
   label:"Parceiro",
+
   render:(r)=>{
-    return String(
-      r.parceiro ||
-      r.nome_parceiro ||
-      r.parceiro_nome ||
-      ""
-    ).trim();
+
+    console.log(
+      "TESTE PARCEIRO NA TABELA:",
+      r.parceiro,
+      r
+    );
+
+    return r.parceiro || "SEM PARCEIRO";
+
   }
 },
 
