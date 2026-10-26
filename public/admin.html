@@ -13044,32 +13044,76 @@ async function abrirRecebimentoPagamento(pagamentoId){
 
 /* ---------- LOGS / LOG_ADMIN / ADMINS ---------- */
 async function loadLogs(force=false){
+
   if(state.loaded.logs && !force) return;
-  const r = await callAPI({ aba:"logs" });
-  state.cache.logs = r.dados || [];
 
-console.log(
-  "LOGS RECEBIDOS DA API:",
-  state.cache.logs
-);
+  try{
 
-console.log(
-  "PRIMEIRO LOG:",
-  state.cache.logs[0]
-);
+    const [rAtual, rHistorico] =
+      await Promise.all([
 
-console.log(
-  "CHAVES EXATAS DO PRIMEIRO LOG:",
-  Object.keys(state.cache.logs[0] || {})
-);
+        callAPI({
+          aba:"logs"
+        }),
 
-  state.loaded.logs = true;
-  renderLogs();
+        callAPI({
+          aba:"logs_historico"
+        })
+
+      ]);
+
+
+    const logsAtuais =
+      Array.isArray(rAtual?.dados)
+        ? rAtual.dados
+        : [];
+
+
+    const logsHistoricos =
+      Array.isArray(rHistorico?.dados)
+        ? rHistorico.dados
+        : [];
+
+
+    /*
+     * IMPORTANTE:
+     * Não altera nenhuma planilha.
+     * Apenas reúne os registros no navegador
+     * para consulta administrativa.
+     */
+    state.cache.logs = [
+      ...logsHistoricos,
+      ...logsAtuais
+    ];
+
+
+    state.loaded.logs = true;
+
+    renderLogs();
+
+
+  }catch(err){
+
+    console.error(
+      "Erro ao carregar histórico de validações:",
+      err
+    );
+
+    state.cache.logs = [];
+
+    state.loaded.logs = true;
+
+    renderLogs();
+
+    toast(
+      "Não foi possível carregar o histórico de validações."
+    );
+
+  }
+
 }
 
 function renderLogs(){
-
-console.log("RENDER LOGS NOVO 26-10");
 
   const q =
     ($("filtroLogs").value || "")
@@ -13112,21 +13156,10 @@ console.log("RENDER LOGS NOVO 26-10");
         label:"Cliente"
       },
 
-     {
+{
   key:"parceiro",
   label:"Parceiro",
-
-  render:(r)=>{
-
-    console.log(
-      "TESTE PARCEIRO NA TABELA:",
-      r.parceiro,
-      r
-    );
-
-    return r.parceiro || "SEM PARCEIRO";
-
-  }
+  render:(r)=> r.parceiro || ""
 },
 
       {
