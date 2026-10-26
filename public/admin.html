@@ -3745,6 +3745,7 @@ async function callAPI(params = {}, tempoLimite = 60000){
 
 /*** 5) LOGIN ***/
 async function ensureLogin(){
+
   if(!state.key){
     showOverlay("overlayLogin", true);
     setPill("Não autenticado");
@@ -3787,11 +3788,17 @@ aplicarPermissoesVisuais();
       return true;
     }
     throw res;
-  }catch(err){
+    }catch(err){
     state.key = null;
     state.admin = null;
+    state.permissao = "operacional";
+
     store.del("apv_admin_key");
     store.del("apv_admin_name");
+    store.del("apv_admin_permissao");
+
+    aplicarPermissoesVisuais();
+
     setPill("Não autenticado");
     showOverlay("overlayLogin", true);
     $("loginMsg").textContent = "Acesso negado. Verifique a key na aba 'admins'.";
@@ -12793,21 +12800,15 @@ async function abrirRecebimentoPagamento(pagamentoId){
       .toUpperCase();
 
 
-    if(status === "PAGO"){
+        if(
+      status !== "PENDENTE" &&
+      status !== "ATRASADO"
+    ){
 
       alert(
-        "Este pagamento já está pago."
-      );
-
-      return;
-
-    }
-
-
-    if(status === "CANCELADO"){
-
-      alert(
-        "Pagamento cancelado não pode receber baixa."
+        "Recebimento não permitido.\n\n" +
+        "Somente parcelas PENDENTES ou ATRASADAS podem receber baixa.\n\n" +
+        "Status atual: " + (status || "Não informado")
       );
 
       return;
@@ -13684,16 +13685,6 @@ $("btnReloadPagamentos")?.addEventListener(
 $("filtroPagamentos")?.addEventListener(
   "input",
   () => renderPagamentos()
-);
-
-$("btnNovoPagamento")?.addEventListener(
-  "click",
-  () => novoPagamento()
-);
-
-$("btnCsvPagamentos")?.addEventListener(
-  "click",
-  () => exportarPagamentosCSV()
 );
 
 $("btnNovoPagamento")?.addEventListener(
