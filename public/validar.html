@@ -148,6 +148,8 @@ body {
   
 </div>
 
+<div id="msg" class="msg"></div>
+
     <div id="timer" style="
       margin-top:10px;
       font-size:16px;
@@ -249,7 +251,7 @@ style="width:100%;padding:10px;margin-top:5px;">
   </div>
 </div>
 
-  <div id="msg" class="msg"></div>
+  
 </div>
 
 <script>
@@ -741,7 +743,15 @@ campoStatus.style.color = "#0a7a3c";
 campoStatus.style.fontWeight = "900";
 
   // ===== VEÍCULO =====
-if (resp.exige_placa) {
+const exigePlaca =
+  resp.exige_placa === true ||
+  ["SIM", "TRUE", "1"].includes(
+    String(resp.exige_placa || "").trim().toUpperCase()
+  );
+
+window.exigePlaca = exigePlaca;
+
+if (exigePlaca) {
 
     if (!resp.placa1) {
 
@@ -843,7 +853,7 @@ document.getElementById("validadeCliente").innerText =
 resp.validade || "";
 
 window.dadosValidacao = resp;
-window.exigePlaca = resp.exige_placa === true;
+window.exigePlaca = exigePlaca;
 
 carregarBeneficios(
     parceiroId,
