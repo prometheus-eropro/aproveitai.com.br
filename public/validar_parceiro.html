@@ -78,15 +78,7 @@ body {
 <div class="container">
   <h2>Validação de Benefício</h2>
 
-<div id="versaoSistema"
-     style="
-       color:red;
-       font-size:18px;
-       font-weight:bold;
-       margin-bottom:10px;
-     ">
-  VERSÃO 20261104-QR-API-DIAGNOSTICO
-</div>
+
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
   <label>Data de nascimento do Cliente</label>
@@ -450,8 +442,7 @@ function somenteNumeros(v) {
 /* =============================
    VALIDAÇÃO
 ============================= */
-function validar() {
-
+async function validar() {
   document.getElementById("blocoBeneficio").style.display = "none";
   document.getElementById("blocoVeiculo").style.display = "none";
   document.getElementById("blocoGerarERO").style.display = "none";
@@ -459,292 +450,46 @@ function validar() {
   document.getElementById("btnConfirmar").style.display = "none";
   document.getElementById("btnGerarERO").style.display = "none";
 
-  const cpf =
-    document.getElementById("cpf")
-      .value.replace(/\D/g, "");
-
-  const nascimento =
-    document.getElementById("nascimento")
-      .value.trim();
-
-  if (cpf.length !== 11) {
-
-    mostrarMsg("⚠️ CPF inválido.");
-
+  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
+  const nascimento = document.getElementById("nascimento").value.trim();
+  if (cpf.length !== 11) { mostrarMsg("⚠️ CPF inválido."); return; }
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(nascimento)) {
+    mostrarMsg("⚠️ Informe a data de nascimento no formato DD/MM/AAAA.");
     return;
   }
+  if (!parceiroId) { mostrarMsg("❌ QR Code inválido."); return; }
 
-  if (!nascimento) {
+  const btn = document.getElementById("btnValidar");
+  btn.disabled = true;
+  btn.innerText = "Validando...";
+  mostrarMsg("⏳ Validando cliente...");
 
-    mostrarMsg(
-      "⚠️ Informe a data de nascimento."
-    );
-
-    return;
-  }
-
-  if (!parceiroId) {
-
-    mostrarMsg(
-      "❌ QR Code inválido."
-    );
-
-    return;
-  }
-
-
-  const btn =
-    document.getElementById(
-      "btnValidar"
-    );
-
-  if (btn) {
-
-    btn.disabled = true;
-
-    btn.innerText =
-      "Validando...";
-
-  }
-
-
-  mostrarMsg(
-    "⏳ Validando cliente..."
-  );
-
-
-  /* ==========================================
-     CALLBACK JSONP EXCLUSIVO DESTA CONSULTA
-  ========================================== */
-
-  const callback =
-    "cbValidacao_" +
-    Date.now() +
-    "_" +
-    Math.floor(
-      Math.random() * 100000
-    );
-
-
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
-  let finalizado = false;
-
-
-  function limparConsulta() {
-
-    if (finalizado) {
-      return;
-    }
-
-    finalizado = true;
-
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  let consultaRecebida = false;
+  try {
+    const resposta = await fetch("/api/cliente", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cpf, nascimento, parceiro_id: parceiroId }),
+      cache: "no-store",
+      signal: controller.signal
+    });
+    const resp = await resposta.json();
+    if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+    consultaRecebida = true;
+    retornoValidacao(resp);
+  } catch (erro) {
+    console.error("ERRO CONSULTA CLIENTE:", erro.name, erro.message);
+    mostrarMsg(erro.name === "AbortError"
+      ? "❌ A consulta demorou demais. Tente novamente. Código: CLIENTE_TIMEOUT."
+      : "❌ Não foi possível consultar o cliente. Código: CLIENTE_API. Contate o suporte se persistir.");
+  } finally {
     clearTimeout(timeout);
-
-    try {
-
-      if (script.parentNode) {
-
-        script.parentNode
-          .removeChild(script);
-
-      }
-
-    } catch(e) {}
-
-
-    try {
-
-      delete window[callback];
-
-    } catch(e) {
-
-      window[callback] =
-        undefined;
-
-    }
-
+    // Preserva o bloqueio de nova validação após uma consulta bem-sucedida.
+    if (!consultaRecebida) btn.disabled = false;
+    btn.innerText = "Validar";
   }
-
-
-  /* ==========================================
-     RECEBE RESPOSTA DO CORE
-  ========================================== */
-
-  window[callback] =
-    function(resp) {
-
-      console.log(
-        "RETORNO VALIDAÇÃO:",
-        resp
-      );
-
-
-      limparConsulta();
-
-
-      if (btn) {
-
-        btn.disabled = false;
-
-        btn.innerText =
-          "Validar";
-
-      }
-
-
-      try {
-
-        retornoValidacao(resp);
-
-      } catch(erro) {
-
-        console.error(
-          "ERRO PROCESSANDO VALIDAÇÃO:",
-          erro
-        );
-
-        mostrarMsg(
-          "❌ Erro ao processar os dados do cliente."
-        );
-
-      }
-
-    };
-
-
-  /* ==========================================
-     URL DA VALIDAÇÃO
-  ========================================== */
-
-  /* ==========================================
-     URL DA VALIDAÇÃO
-  ========================================== */
-
-  const url =
-    GAS_URL +
-    "?acao=buscarClienteCPF" +
-
-    "&cpf=" +
-    encodeURIComponent(
-      cpf
-    ) +
-
-    "&nascimento=" +
-    encodeURIComponent(
-      nascimento
-    ) +
-
-    "&p=" +
-    encodeURIComponent(
-      parceiroId
-    ) +
-
-    "&parceiro_id=" +
-    encodeURIComponent(
-      parceiroId
-    ) +
-
-    "&callback=" +
-    encodeURIComponent(
-      callback
-    ) +
-
-    "&_=" +
-    Date.now();
-
-
-  console.log(
-    "URL JSONP VALIDAÇÃO:",
-    url
-  );
-
-
-  /* ==========================================
-     ERRO DE CARREGAMENTO
-  ========================================== */
-
-  script.onerror =
-    function() {
-
-      console.error(
-        "ERRO JSONP VALIDAÇÃO"
-      );
-
-
-      limparConsulta();
-
-
-      if (btn) {
-
-        btn.disabled = false;
-
-        btn.innerText =
-          "Validar";
-
-      }
-
-
-      mostrarMsg(
-        "❌ Não foi possível consultar o cliente."
-      );
-
-    };
-
-
-  /* ==========================================
-     TIMEOUT DE SEGURANÇA
-  ========================================== */
-
-  const timeout =
-    setTimeout(
-      function() {
-
-        if (finalizado) {
-          return;
-        }
-
-
-        console.error(
-          "TIMEOUT VALIDAÇÃO"
-        );
-
-
-        limparConsulta();
-
-
-        if (btn) {
-
-          btn.disabled = false;
-
-          btn.innerText =
-            "Validar";
-
-        }
-
-
-        mostrarMsg(
-          "❌ A consulta demorou demais. Tente novamente."
-        );
-
-      },
-      45000
-    );
-
-
-  /* ==========================================
-     EXECUTA
-  ========================================== */
-
-  script.src = url;
-
-  document.body
-    .appendChild(script);
-
 }
 
 // =============================
