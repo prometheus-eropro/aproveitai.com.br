@@ -1222,10 +1222,49 @@ function carregarRelatorio() {
       }
 
 
-      const registros =
-        Array.isArray(d.dados)
-          ? d.dados
-          : [];
+      
+const registrosRecebidos =
+  Array.isArray(d.dados) ? d.dados : [];
+
+const dataLocalRegistro = (valor) => {
+  const data = new Date(valor);
+
+  if (Number.isNaN(data.getTime())) {
+    return null;
+  }
+
+  const partes = new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone: "America/Sao_Paulo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }
+  ).formatToParts(data);
+
+  const obter = tipo =>
+    partes.find(p => p.type === tipo)?.value;
+
+  return [
+    obter("year"),
+    obter("month"),
+    obter("day")
+  ].join("-");
+};
+
+const registros = registrosRecebidos.filter(r => {
+  if (!inicio && !fim) return true;
+
+  const dia = dataLocalRegistro(r.data);
+  if (!dia) return false;
+
+  if (inicio && dia < inicio) return false;
+  if (fim && dia > fim) return false;
+
+  return true;
+});
+
 
 
       /* ======================================
