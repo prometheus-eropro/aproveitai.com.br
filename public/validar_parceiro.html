@@ -85,7 +85,7 @@ body {
        font-weight:bold;
        margin-bottom:10px;
      ">
-  VERSÃO 20261103-QR-DIAGNOSTICO
+  VERSÃO 20261104-QR-API
 </div>
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
@@ -322,7 +322,7 @@ const elBtn = document.getElementById("btnValidar");
    VIA JSONP
 ========================================== */
 
-function carregarParceiroQR() {
+async function carregarParceiroQR() {
   if (!parceiroId) {
     mostrarMsg("❌ Parceiro não identificado no QR Code.");
     return;
@@ -331,62 +331,40 @@ function carregarParceiroQR() {
   const nomeEl = document.getElementById("nomeParceiro");
   if (nomeEl) nomeEl.textContent = "Identificando parceiro...";
 
-  const callback = "cbParceiroQR_" + Date.now() + "_" +
-    Math.floor(Math.random() * 100000);
-  const script = document.createElement("script");
-  let encerrado = false;
-  let respondeu = false;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
 
-  const timeout = setTimeout(function () {
-    finalizar("TEMPO_ESGOTADO");
-  }, 15000);
+  try {
+    const url = "/api/parceiro?parceiro_id=" +
+      encodeURIComponent(parceiroId) + "&_=" + Date.now();
 
-  function finalizar(motivo, resp) {
-    if (encerrado) return;
-    encerrado = true;
-    clearTimeout(timeout);
-    script.onload = null;
-    script.onerror = null;
-    if (script.parentNode) script.parentNode.removeChild(script);
-    try { delete window[callback]; } catch (e) { window[callback] = undefined; }
+    const resposta = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      signal: controller.signal
+    });
 
-    if (motivo === "OK") {
-      const nome = resp.nomeFantasia || resp.nome || parceiroId;
-      if (nomeEl) nomeEl.textContent = nome;
-      carregarLogoParceiro(resp.logoURL || resp.logo || "");
-      console.info("PARCEIRO QR IDENTIFICADO", parceiroId);
-      return;
+    if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+
+    const dados = await resposta.json();
+    if (!dados || dados.ok !== true) {
+      throw new Error("Resposta negativa da API");
     }
 
+    const nome = dados.nomeFantasia || dados.nome || parceiroId;
+    if (nomeEl) nomeEl.textContent = nome;
+    carregarLogoParceiro(dados.logoURL || dados.logo || "");
+    console.info("PARCEIRO QR IDENTIFICADO", parceiroId);
+
+  } catch (erro) {
     if (nomeEl) nomeEl.textContent = "Parceiro não identificado";
-    const mensagens = {
-      RESPOSTA_NEGATIVA: "❌ O servidor não confirmou o parceiro. Código: PARCEIRO_RESPOSTA. Tente novamente ou contate o suporte.",
-      ERRO_SCRIPT: "❌ Falha de comunicação ao identificar o parceiro. Código: PARCEIRO_REDE. Tente novamente ou use outro navegador.",
-      SEM_CALLBACK: "❌ A resposta de identificação não pôde ser processada. Código: PARCEIRO_CALLBACK. Contate o suporte.",
-      TEMPO_ESGOTADO: "❌ A identificação demorou demais. Código: PARCEIRO_TIMEOUT. Tente novamente."
-    };
-    console.error("FALHA IDENTIFICAÇÃO PARCEIRO", motivo, resp || "", parceiroId);
-    mostrarMsg(mensagens[motivo] || "❌ Falha ao identificar o parceiro.");
+    console.error("FALHA IDENTIFICAÇÃO PARCEIRO", erro, parceiroId);
+    mostrarMsg(erro.name === "AbortError"
+      ? "❌ A identificação demorou demais. Código: PARCEIRO_TIMEOUT. Tente novamente."
+      : "❌ Não foi possível identificar o parceiro. Código: PARCEIRO_API. Tente novamente ou contate o suporte.");
+  } finally {
+    clearTimeout(timeout);
   }
-
-  window[callback] = function (resp) {
-    respondeu = true;
-    if (resp && resp.ok === true) finalizar("OK", resp);
-    else finalizar("RESPOSTA_NEGATIVA", resp);
-  };
-
-  script.onerror = function () { finalizar("ERRO_SCRIPT"); };
-  script.onload = function () {
-    // O arquivo pode carregar sem executar o callback esperado.
-    if (!respondeu) finalizar("SEM_CALLBACK");
-  };
-
-  script.src = GAS_URL +
-    "?acao=dadosEmpresa" +
-    "&parceiro_id=" + encodeURIComponent(parceiroId) +
-    "&callback=" + encodeURIComponent(callback) +
-    "&_=" + Date.now();
-  document.body.appendChild(script);
 }
 
 function carregarLogoParceiro(logo) {
