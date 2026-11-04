@@ -2016,5 +2016,34 @@ window.addEventListener(
 
 </script>
 
+
+<script>
+(function () {
+  function atualizarVersaoRodape() {
+    const destino = document.getElementById("versaoRodape");
+    if (!destino) return;
+
+    const versao =
+      typeof CONFIG !== "undefined"
+        ? CONFIG.versao
+        : "";
+
+    destino.textContent = versao
+      ? String(versao)
+      : "não disponível";
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      atualizarVersaoRodape
+    );
+  } else {
+    atualizarVersaoRodape();
+  }
+})();
+</script>
+
+
 </body>
 </html>
