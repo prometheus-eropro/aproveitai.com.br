@@ -332,7 +332,7 @@ async function carregarParceiroQR() {
   if (nomeEl) nomeEl.textContent = "Identificando parceiro...";
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+  const timeout = setTimeout(() => controller.abort(), 45000);
 
   try {
     const url = "/api/parceiro?parceiro_id=" +
