@@ -1518,9 +1518,13 @@ carregarRelatorio();
   line-height:1.4;
 ">
 
-  © 2025 Plataforma AproveitAI •
-  PROMETHEUS EROPRO
-  <br>
+  
+© 2025 Plataforma AproveitAI •
+PROMETHEUS EROPRO
+<br>
+Versão <span id="versaoRodape"></span>
+<br>
+
 
   <strong>Aviso legal:</strong>
 
@@ -1531,6 +1535,45 @@ carregarRelatorio();
   autorização expressa do estabelecimento.
 
 </footer>
+
+
+<script src="js/config.js"></script>
+
+<script>
+(function () {
+
+  function atualizarVersaoRodape() {
+
+    const destino =
+      document.getElementById("versaoRodape");
+
+    if (!destino) return;
+
+    const versao =
+      typeof CONFIG !== "undefined"
+        ? CONFIG.versao
+        : "";
+
+    destino.textContent =
+      versao ? String(versao) : "não disponível";
+
+  }
+
+  if (document.readyState === "loading") {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      atualizarVersaoRodape
+    );
+
+  } else {
+
+    atualizarVersaoRodape();
+
+  }
+
+})();
+</script>
 
 
 </body>
