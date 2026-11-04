@@ -85,7 +85,7 @@ body {
        font-weight:bold;
        margin-bottom:10px;
      ">
-  VERSÃO 20261104-QR-API
+  VERSÃO 20261104-QR-API-DIAGNOSTICO
 </div>
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
@@ -332,7 +332,7 @@ async function carregarParceiroQR() {
   if (nomeEl) nomeEl.textContent = "Identificando parceiro...";
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 45000);
+  const timeout = setTimeout(() => controller.abort(), 15000);
 
   try {
     const url = "/api/parceiro?parceiro_id=" +
@@ -732,7 +732,7 @@ function validar() {
         );
 
       },
-      15000
+      45000
     );
 
 
@@ -1306,13 +1306,16 @@ async function confirmarDesconto() {
     "&_=" +
     Date.now();
 
+  const controladorConfirmacao = new AbortController();
+  const limiteConfirmacao = setTimeout(() => controladorConfirmacao.abort(), 20000);
   try {
 
     const resposta =
       await fetch(url, {
         method: "GET",
         cache: "no-store",
-        redirect: "follow"
+        redirect: "follow",
+        signal: controladorConfirmacao.signal
       });
 
     if (!resposta.ok) {
@@ -1362,14 +1365,12 @@ async function confirmarDesconto() {
     );
 
     if (btn) {
-      btn.disabled = false;
-      btn.innerText =
-        "✅ Confirmar desconto concedido";
+      btn.disabled = true;
+      btn.innerText = "Verificar situação da confirmação";
     }
-
-    mostrarMsg(
-      "❌ Não foi possível confirmar o benefício."
-    );
+    mostrarMsg("⚠️ Não recebemos a resposta da confirmação. O registro pode ter sido realizado. Consulte o relatório antes de tentar novamente. Código: " + codigoERO);
+  } finally {
+    clearTimeout(limiteConfirmacao);
   }
 }
 
@@ -1380,26 +1381,20 @@ function retornoConfirmacao(resp) {
 
   console.log("RETORNO CONFIRMAÇÃO:", resp);
 
-  document.getElementById("btnConfirmar").style.display = "none";
-
-  document.getElementById("beneficioSelecionado").disabled = true;
-
-  const sv = document.getElementById("selectVeiculo");
-
-  if (sv) {
-    sv.disabled = true;
-  }
-
   if (!resp || resp.ok !== true) {
-    mostrarMsg(resp?.msg || "❌ Erro ao confirmar desconto");
-    
-pararCronometro();
-
-document.getElementById("timer").innerHTML =
-"✅ Benefício confirmado";
+    mostrarMsg("❌ " + (resp?.msg || "Servidor não confirmou o benefício."));
+    const btnErro = document.getElementById("btnConfirmar");
+    if (btnErro) {
+      btnErro.disabled = true;
+      btnErro.innerText = "Confirmação não autorizada";
+    }
     return;
   }
 
+  document.getElementById("btnConfirmar").style.display = "none";
+  document.getElementById("beneficioSelecionado").disabled = true;
+  const sv = document.getElementById("selectVeiculo");
+  if (sv) sv.disabled = true;
   pararCronometro();
 
   document.getElementById("blocoCodigo").innerHTML = `
@@ -1951,13 +1946,16 @@ async function gerarERO() {
       "Gerando Código ERO...";
   }
 
+  const controladorGeracao = new AbortController();
+  const limiteGeracao = setTimeout(() => controladorGeracao.abort(), 20000);
   try {
 
     const resposta =
       await fetch(url, {
         method: "GET",
         cache: "no-store",
-        redirect: "follow"
+        redirect: "follow",
+        signal: controladorGeracao.signal
       });
 
     if (!resposta.ok) {
@@ -2012,9 +2010,9 @@ async function gerarERO() {
         "Gerar Código ERO";
     }
 
-    mostrarMsg(
-      "❌ Não foi possível gerar o Código ERO."
-    );
+    mostrarMsg("⚠️ Não recebemos a resposta da geração. O ERO pode ter sido criado. Confira o relatório antes de gerar outro.");
+  } finally {
+    clearTimeout(limiteGeracao);
   }
 }
 
