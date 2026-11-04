@@ -6496,6 +6496,18 @@ async function editarBeneficio(beneficioId){
   flex:"1 1 620px"
 },
 
+
+{
+  key:"itens_calculadora",
+  label:"Configuração da Calculadora de Economia",
+  type:"textarea",
+  placeholder:
+    "Campo reservado para os itens calculáveis. " +
+    "O preenchimento será feito pelo configurador visual.",
+  w:"620px",
+  flex:"1 1 620px"
+},
+
 {
   key:"grupo",
   label:"Segmentação",
@@ -6762,6 +6774,12 @@ onSave: async (patch)=>{
     String(
       patch.itens_beneficio || ""
     ).trim();
+
+
+patch.itens_calculadora =
+  String(
+    patch.itens_calculadora || ""
+  ).trim();
 
 
   patch.forma_pagamento =
@@ -7038,6 +7056,17 @@ categoria:
   "Produto ou Serviço|10% de desconto\n" +
   "Produto Especial|R$ 5,00 de desconto\n" +
   "Serviço|Condição especial",
+  w:"620px",
+  flex:"1 1 620px"
+},
+
+{
+  key:"itens_calculadora",
+  label:"Configuração da Calculadora de Economia",
+  type:"textarea",
+  placeholder:
+    "Campo reservado para os itens calculáveis. " +
+    "O preenchimento será feito pelo configurador visual.",
   w:"620px",
   flex:"1 1 620px"
 },
@@ -7406,6 +7435,13 @@ itens_beneficio:
   String(
     data.itens_beneficio || ""
   ).trim(),
+
+
+itens_calculadora:
+  String(
+    data.itens_calculadora || ""
+  ).trim(),
+
 
 ordem:
   data.ordem || "",
@@ -7794,6 +7830,18 @@ async function editarPromocao(promocaoId){
     flex:"1 1 520px"
   },
 
+
+{
+  key:"itens_calculadora",
+  label:"Configuração da Calculadora de Economia",
+  type:"textarea",
+  placeholder:
+    "Campo reservado para os itens calculáveis. " +
+    "O preenchimento será feito pelo configurador visual.",
+  w:"620px",
+  flex:"1 1 620px"
+},
+
   {
     key:"dataInicio",
     label:"Data Inicial",
@@ -8095,6 +8143,12 @@ async function editarPromocao(promocaoId){
     String(
       patch.itens_beneficio || ""
     ).trim();
+
+
+patch.itens_calculadora =
+  String(
+    patch.itens_calculadora || ""
+  ).trim();
 
 
   patch.forma_pagamento =
@@ -8406,6 +8460,17 @@ categoria:
   flex:"1 1 520px"
 },      
 
+
+{
+  key:"itens_calculadora",
+  label:"Configuração da Calculadora de Economia",
+  type:"textarea",
+  placeholder:
+    "Campo reservado para os itens calculáveis. " +
+    "O preenchimento será feito pelo configurador visual.",
+  w:"620px",
+  flex:"1 1 620px"
+},
 
       {
         key:"dataInicio",
@@ -8825,6 +8890,12 @@ itens_beneficio:
   String(
     data.itens_beneficio || ""
   ).trim(),
+
+itens_calculadora:
+  String(
+    data.itens_calculadora || ""
+  ).trim(),
+
 
 ordem:
   data.ordem || "",

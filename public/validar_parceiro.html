@@ -85,7 +85,7 @@ body {
        font-weight:bold;
        margin-bottom:10px;
      ">
-  VERSÃO 20260823-004-FETCH
+  VERSÃO 20261103-QR-DIAGNOSTICO
 </div>
   <label>CPF do Cliente</label>
   <input id="cpf" placeholder="Somente números" inputmode="numeric">
@@ -323,186 +323,70 @@ const elBtn = document.getElementById("btnValidar");
 ========================================== */
 
 function carregarParceiroQR() {
-
   if (!parceiroId) {
-
-    mostrarMsg(
-      "❌ Parceiro não identificado no QR Code."
-    );
-
+    mostrarMsg("❌ Parceiro não identificado no QR Code.");
     return;
   }
 
-  console.log(
-    "CARREGANDO PARCEIRO DO QR:",
-    parceiroId
-  );
+  const nomeEl = document.getElementById("nomeParceiro");
+  if (nomeEl) nomeEl.textContent = "Identificando parceiro...";
 
+  const callback = "cbParceiroQR_" + Date.now() + "_" +
+    Math.floor(Math.random() * 100000);
+  const script = document.createElement("script");
+  let encerrado = false;
+  let respondeu = false;
 
-  /* ==========================================
-     CALLBACK JSONP EXCLUSIVO
-  ========================================== */
+  const timeout = setTimeout(function () {
+    finalizar("TEMPO_ESGOTADO");
+  }, 15000);
 
-  const callback =
-    "cbParceiroQR_" +
-    Date.now();
+  function finalizar(motivo, resp) {
+    if (encerrado) return;
+    encerrado = true;
+    clearTimeout(timeout);
+    script.onload = null;
+    script.onerror = null;
+    if (script.parentNode) script.parentNode.removeChild(script);
+    try { delete window[callback]; } catch (e) { window[callback] = undefined; }
 
+    if (motivo === "OK") {
+      const nome = resp.nomeFantasia || resp.nome || parceiroId;
+      if (nomeEl) nomeEl.textContent = nome;
+      carregarLogoParceiro(resp.logoURL || resp.logo || "");
+      console.info("PARCEIRO QR IDENTIFICADO", parceiroId);
+      return;
+    }
 
-  window[callback] =
-    function(resp) {
-
-      console.log(
-        "RETORNO PARCEIRO QR:",
-        resp
-      );
-
-
-      /* ======================================
-         LIMPEZA
-      ====================================== */
-
-      try {
-
-        delete window[callback];
-
-      } catch(e) {}
-
-
-      if (
-        !resp ||
-        resp.ok !== true
-      ) {
-
-        console.error(
-          "PARCEIRO NÃO ENCONTRADO:",
-          resp
-        );
-
-        mostrarMsg(
-          "❌ Não foi possível identificar o parceiro deste QR Code."
-        );
-
-        return;
-      }
-
-
-      /* ======================================
-         NOME DO PARCEIRO
-      ====================================== */
-
-      const nome =
-        resp.nomeFantasia ||
-        resp.nome ||
-        parceiroId;
-
-
-      const elNome =
-        document.getElementById(
-          "nomeParceiro"
-        );
-
-
-      if (elNome) {
-
-        elNome.innerText =
-          nome;
-
-      }
-
-
-      /* ======================================
-         LOGO DO PARCEIRO
-      ====================================== */
-
-      carregarLogoParceiro(
-
-        resp.logoURL ||
-        resp.logo ||
-        ""
-
-      );
-
-
-      console.log(
-        "PARCEIRO QR CARREGADO COM SUCESSO:",
-        nome
-      );
-
+    if (nomeEl) nomeEl.textContent = "Parceiro não identificado";
+    const mensagens = {
+      RESPOSTA_NEGATIVA: "❌ O servidor não confirmou o parceiro. Código: PARCEIRO_RESPOSTA. Tente novamente ou contate o suporte.",
+      ERRO_SCRIPT: "❌ Falha de comunicação ao identificar o parceiro. Código: PARCEIRO_REDE. Tente novamente ou use outro navegador.",
+      SEM_CALLBACK: "❌ A resposta de identificação não pôde ser processada. Código: PARCEIRO_CALLBACK. Contate o suporte.",
+      TEMPO_ESGOTADO: "❌ A identificação demorou demais. Código: PARCEIRO_TIMEOUT. Tente novamente."
     };
+    console.error("FALHA IDENTIFICAÇÃO PARCEIRO", motivo, resp || "", parceiroId);
+    mostrarMsg(mensagens[motivo] || "❌ Falha ao identificar o parceiro.");
+  }
 
+  window[callback] = function (resp) {
+    respondeu = true;
+    if (resp && resp.ok === true) finalizar("OK", resp);
+    else finalizar("RESPOSTA_NEGATIVA", resp);
+  };
 
-  /* ==========================================
-     CRIA CHAMADA JSONP
-  ========================================== */
+  script.onerror = function () { finalizar("ERRO_SCRIPT"); };
+  script.onload = function () {
+    // O arquivo pode carregar sem executar o callback esperado.
+    if (!respondeu) finalizar("SEM_CALLBACK");
+  };
 
-  const script =
-    document.createElement(
-      "script"
-    );
-
-
-  script.src =
-
-    GAS_URL +
-
+  script.src = GAS_URL +
     "?acao=dadosEmpresa" +
-
-    "&parceiro_id=" +
-    encodeURIComponent(
-      parceiroId
-    ) +
-
-    "&callback=" +
-    encodeURIComponent(
-      callback
-    ) +
-
-    "&_=" +
-    Date.now();
-
-
-  console.log(
-    "URL JSONP DADOS EMPRESA:",
-    script.src
-  );
-
-
-  script.onerror =
-    function() {
-
-      console.error(
-        "ERRO JSONP DADOS EMPRESA"
-      );
-
-      try {
-
-        delete window[callback];
-
-      } catch(e) {}
-
-
-      script.remove();
-
-
-      mostrarMsg(
-        "❌ Não foi possível identificar o parceiro deste QR Code."
-      );
-
-    };
-
-
-  script.onload =
-    function() {
-
-      script.remove();
-
-    };
-
-
-  document.body.appendChild(
-    script
-  );
-
+    "&parceiro_id=" + encodeURIComponent(parceiroId) +
+    "&callback=" + encodeURIComponent(callback) +
+    "&_=" + Date.now();
+  document.body.appendChild(script);
 }
 
 function carregarLogoParceiro(logo) {
@@ -978,8 +862,29 @@ document.getElementById("blocoCodigo")
 
 document.getElementById("btnValidar").disabled = true;
 
+  // Identificação do parceiro independe de veículo cadastrado.
+  document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
+
+const nomeParceiroRetorno =
+  resp.nomeParceiro ||
+  resp.nomeFantasia ||
+  resp.nome ||
+  parceiroId;
+
+document.getElementById("nomeParceiro").innerText =
+  nomeParceiroRetorno;
+
+carregarLogoParceiro(
+  resp.logoURL ||
+  resp.logo ||
+  ""
+);
+
+
   // ===== VEÍCULO =====
-if (resp.exige_placa) {
+if ([true, "SIM", "S", "TRUE", "1", 1].includes(
+  typeof resp.exige_placa === "string" ? resp.exige_placa.trim().toUpperCase() : resp.exige_placa
+)) {
 
     // Cliente não possui veículo cadastrado
     const placaPrincipal = resp.placa1 || resp.placa || "";
@@ -1026,22 +931,6 @@ if (resp.exige_placa) {
   // ===== CÓDIGO ERO =====
 
   document.getElementById("btnConfirmar").style.display = "none";
-  document.getElementById("nomeParceiro").innerText = resp.nomeParceiro || "-";
-
-const nomeParceiroRetorno =
-  resp.nomeParceiro ||
-  resp.nomeFantasia ||
-  resp.nome ||
-  parceiroId;
-
-document.getElementById("nomeParceiro").innerText =
-  nomeParceiroRetorno;
-
-carregarLogoParceiro(
-  resp.logoURL ||
-  resp.logo ||
-  ""
-);
 
 document.getElementById("nomeCliente").innerText =
 resp.nomeCliente || "";
