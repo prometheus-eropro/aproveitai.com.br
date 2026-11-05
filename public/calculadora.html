@@ -42,9 +42,116 @@ main { margin: 0 auto 50px !important; padding-top: 22px !important; }
 <main>
 <section class="panel"><h2>1. Encontre benefícios e promoções</h2><div class="grid"><div><label for="city">Cidade onde deseja utilizar</label><select id="city"><option value="">Carregando cidades...</option></select></div><div><label for="branch">Ramo de atividade</label><select id="branch"><option value="">Todos os ramos</option></select></div><div><label for="offerType">Tipo de oferta</label><select id="offerType"><option value="todos">Todos — Benefícios e Promoções</option><option value="beneficio">Benefícios</option><option value="promocao">Promoções</option></select></div><div><label for="search">Pesquisar produto, serviço ou parceiro</label><input id="search" type="search" placeholder="Ex.: gás, autopeças, recarga" autocomplete="off"></div></div><p id="status" class="muted" role="status">Consultando benefícios e promoções atuais...</p><div id="offers" class="results"></div></section>
 <section class="panel"><h2>2. Sua comparação mensal</h2><p class="muted">Adicione os produtos e serviços que costuma utilizar. Cada consumo é calculado com o desconto do parceiro escolhido.</p><div id="cart"><div class="empty">Nenhuma oferta adicionada. Pesquise acima e selecione uma oferta.</div></div></section>
-<section class="panel summary"><h2>3. Resultado da sua simulação</h2><div class="line"><span>Economia mensal aproximada</span><strong id="gross">R$ 0,00</strong></div><div class="line"><span>Mensalidade individual do cartão</span><strong>− R$ 25,00</strong></div><div class="line total"><span>Resultado estimado após a mensalidade</span><strong id="net" class="negative">− R$ 25,00</strong></div><p style="font-size:13px;color:#d7eee0">A mensalidade é considerada uma única vez, independentemente da quantidade de benefícios simulados.</p></section>
+<section class="panel summary"><h2>3. Resultado da sua simulação</h2><div class="line"><span>Economia mensal aproximada</span><strong id="gross">R$ 0,00</strong></div><div class="line"><span>Mensalidade individual do cartão</span>
+<strong id="mensalidadeExibida">Carregando...</strong>
+
+</div><div class="line total"><span>Resultado estimado após a mensalidade</span><strong id="net" class="negative">− R$ 25,00</strong></div><p style="font-size:13px;color:#d7eee0">A mensalidade é considerada uma única vez, independentemente da quantidade de benefícios simulados.</p></section>
+
+
+<!-- ==========================================
+     APROVEITAI — BRINDES E VANTAGENS
+========================================== -->
+
+<section class="panel" id="painelBrindes"
+         style="display:none">
+
+  <h2>🎁 Brindes e vantagens adicionais</h2>
+
+  <p class="muted">
+    Além da economia financeira, você poderá
+    aproveitar brindes e vantagens oferecidos
+    pelos parceiros.
+  </p>
+
+  <div id="listaBrindes"></div>
+
+  <p class="muted">
+    Brindes sujeitos às condições de cada
+    parceiro, à disponibilidade e à validação
+    pela Plataforma AproveitAI.
+  </p>
+
+</section>
+
+
 <div class="notice"><strong>Importante:</strong> Economia mensal aproximada com benefícios disponíveis hoje. Simulação demonstrativa, não é economia garantida. Valores, condições e vigência podem variar. Descontos dependem das regras de cada parceiro e da validação do Cartão AproveitAI. Não há acumulação automática de benefícios sobre a mesma compra.</div>
-<section class="panel" style="margin-top:17px;text-align:center"><h2>Quer aproveitar esses benefícios?</h2><p>Plano individual: <strong>R$ 25,00 por mês.</strong> Para empresas, associações, sindicatos e grupos, as condições podem ser negociadas.</p><a class="primary" href="cadastro.html" style="display:inline-block;text-decoration:none;border-radius:12px;padding:14px 20px">Quero ser cliente</a> <a class="secondary" href="https://wa.me/5527996618679?text=Ol%C3%A1%21%20Quero%20conhecer%20as%20condi%C3%A7%C3%B5es%20para%20grupos%20do%20AproveitAI." target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;border-radius:12px;padding:14px 20px;margin-top:8px">Consultar plano coletivo</a></section>
+
+<section class="panel" style="margin-top:17px;text-align:center">
+
+  <h2>Quer aproveitar esses benefícios?</h2>
+
+  <p>
+    Plano individual:
+    
+<strong id="valorPlanoIndividual">Consultando mensalidade...</strong>
+
+    Para empresas, associações, sindicatos e grupos,
+    consulte as condições disponíveis.
+  </p>
+
+  <div style="
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+    margin-top:18px;
+  ">
+
+    <a
+      class="primary"
+      href="cadastro.html"
+      style="
+        display:inline-block;
+        text-decoration:none;
+        border-radius:12px;
+        padding:14px 20px;
+      "
+    >
+      Quero ser cliente
+    </a>
+
+    <a
+      class="secondary"
+      
+
+href="#"
+onclick="tirarDuvidasCalculadora(event)"
+
+
+      target="_blank"
+      rel="noopener"
+      style="
+        display:inline-block;
+        text-decoration:none;
+        border-radius:12px;
+        padding:14px 20px;
+      "
+    >
+      💬 Tirar dúvidas pelo WhatsApp
+    </a>
+
+    <a
+      class="secondary"
+      
+
+href="https://wa.me/5528999692303?text=Ol%C3%A1%21%20Conheci%20a%20Calculadora%20de%20Economia%20do%20AproveitAI%20e%20quero%20saber%20sobre%20o%20plano%20coletivo."
+
+      target="_blank"
+      rel="noopener"
+      style="
+        display:inline-block;
+        text-decoration:none;
+        border-radius:12px;
+        padding:14px 20px;
+      "
+    >
+      Consultar plano coletivo
+    </a>
+
+  </div>
+
+</section>
+
 
 </main>
 <footer class="calc-footer">© 2026 Plataforma AproveitAI • PROMETHEUS EROPRO<br><strong>Aviso legal:</strong> A Plataforma AproveitAI não garante descontos. Benefícios e promoções são definidos e concedidos exclusivamente pelos parceiros, sujeitos às condições vigentes e à validação pela plataforma.<div class="versao">Versão <span id="versaoSistema">—</span></div></footer>
@@ -52,24 +159,121 @@ main { margin: 0 auto 50px !important; padding-top: 22px !important; }
 <script>
 'use strict';
 const API_URL = 'https://script.google.com/macros/s/AKfycbwMMQ2FR2JBpo7xvWVazw4dAV6t_t90UxTASLcGfo1t7fA-beDqJDC-4z-Y7DL9vRunVg/exec';
-const MENSALIDADE = 25;
+
+let MENSALIDADE = null;
+
 const $ = id => document.getElementById(id);
 const moeda = n => Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const normal = v => String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
 let ofertas=[],itens=[],selecionada=null;
 const numero = s => {const m=String(s||'').match(/(?:^|\D)(\d{1,3}(?:[.,]\d{1,2})?)(?:\s*%)/);return m?Number(m[1].replace(',','.')):null};
 function regras(oferta){
- const origem=[oferta.itens_beneficio,oferta.descricao,oferta.titulo].filter(Boolean).join('\n');
- const linhas=String(oferta.itens_beneficio||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
- const candidatos=linhas.some(x=>x.includes('|'))?linhas.map(x=>{const [nome,...resto]=x.split('|');return {nome:nome.trim(),regra:resto.join('|').trim()}}):[{nome:oferta.titulo||'Benefício',regra:origem}];
- return candidatos.map(c=>{
-  const desc=normal(c.regra);const gas=normal([oferta.titulo,oferta.descricao,oferta.categoria,oferta.ramo,c.nome].join(' ')).includes('GAS')||normal([oferta.titulo,oferta.descricao,oferta.categoria,oferta.ramo,c.nome].join(' ')).includes('BOTIJAO');
-  const pct=numero(c.regra)||numero(oferta.descricao);
-  const fixo=c.regra.match(/R\$\s*(\d+(?:[.,]\d{1,2})?)\s*(?:POR|\/|A CADA)\s*(LITRO|L|UNIDADE|UN|KG|BOTIJAO|RECARGA)/i);
-  if(fixo){return {...c,tipo:'fixo',valor:Number(fixo[1].replace(',','.')),unidade:normal(fixo[2]).startsWith('L')?'litros':'unidades',gas};}
-  if(pct!==null && pct>0 && pct<=100){return {...c,tipo:gas?'gas':'percentual',valor:pct,unidade:gas?'botijões':'reais',gas};}
-  return {...c,tipo:'indefinido',valor:0,gas};
- }).filter(c=>c.nome||c.regra);
+
+
+  // Prioriza os parâmetros cadastrados pelo Admin.
+  // Se não houver configuração, mantém a leitura textual existente.
+
+  let config = null;
+
+  try {
+    config = JSON.parse(oferta.itens_calculadora || "null");
+  } catch (erro) {
+    console.warn("Configuração da calculadora inválida:", erro);
+  }
+
+  if (config && !Array.isArray(config)) {
+    config = [config];
+  }
+
+  if (Array.isArray(config) && config.length) {
+
+    
+const validos = config.filter(x => {
+
+  if (!x || typeof x !== "object") {
+    return false;
+  }
+
+  const tipo = String(x.tipo || "").trim();
+  const valor = Number(x.valor);
+  const preco = Number(x.preco_referencia);
+  const minimo = Number(x.compra_minima);
+
+  if (tipo === "brinde") {
+    return (
+      String(x.brinde || x.nome || "").trim() !== "" &&
+      Number.isFinite(minimo) &&
+      minimo > 0
+    );
+  }
+
+  if (tipo === "percentual") {
+    return (
+      Number.isFinite(valor) &&
+      valor > 0 &&
+      valor <= 100
+    );
+  }
+
+  if (tipo === "fixo") {
+    return Number.isFinite(valor) && valor > 0;
+  }
+
+  if (tipo === "percentual_unidade") {
+    return (
+      Number.isFinite(valor) &&
+      valor > 0 &&
+      valor <= 100 &&
+      Number.isFinite(preco) &&
+      preco > 0
+    );
+  }
+
+  return false;
+
+});
+
+
+    if (validos.length) {
+      return validos.map(x => ({
+        nome: x.nome || oferta.titulo || "Benefício",
+        regra: oferta.descricao || "",
+        tipo: x.tipo,
+        valor: Number(x.valor) || 0,
+        preco_referencia: Number(x.preco_referencia) || 0,
+        unidade: x.unidade || "unidade",
+        compra_minima: Number(x.compra_minima) || 0,
+
+        brinde: x.brinde || "",
+        grupo_brindes: x.grupo_brindes || "",
+        cumulativo: x.cumulativo === true ||
+                    String(x.cumulativo).toLowerCase() === "sim",
+        configurado: true
+
+      }));
+    }
+  }
+
+
+
+ 
+  // Sem configuração financeira válida do Admin,
+  // a oferta permanece disponível somente para consulta.
+  // Não interpretar percentuais ou valores de textos livres.
+
+  return [{
+    nome: oferta.titulo || "Benefício",
+    regra: oferta.descricao || "",
+    tipo: "indefinido",
+    valor: 0,
+    preco_referencia: 0,
+    unidade: "",
+    compra_minima: 0,
+    brinde: "",
+    grupo_brindes: "",
+    configurado: false
+  }];
+
 }
 function chaveCidade(o){return normal(o.cidade_chave||o.cidade)+'|'+normal(o.uf)}
 function preparar(d){
@@ -120,7 +324,47 @@ function renderOfertas(){
   const box=document.createElement('article');box.className='offer';
   const info=document.createElement('div');const titulo=document.createElement('h3');titulo.textContent=o.nomeItem;
   const parceiro=document.createElement('p');parceiro.textContent=o.parceiro+' • '+o.cidade+(o.uf?' – '+o.uf:'');
-  const regra=document.createElement('p');regra.textContent=o.tipo==='indefinido'?'Benefício disponível — sem regra numérica identificada':o.tipo==='fixo'?`${moeda(o.valor)} por ${o.unidade==='litros'?'litro':'unidade'}`:`${o.valor}% de desconto${o.tipo==='gas'?' sobre o preço de placa':''}`;
+  
+const regra = document.createElement('p');
+
+if (o.tipo === 'brinde') {
+
+  regra.textContent =
+    '🎁 ' + (o.brinde || o.nomeItem) +
+    ' — em compras a partir de ' +
+    moeda(o.compra_minima);
+
+} else if (o.tipo === 'indefinido') {
+
+  regra.textContent =
+    'Benefício disponível para consulta';
+
+} else if (o.tipo === 'fixo') {
+
+  regra.textContent =
+    moeda(o.valor) + ' por ' +
+    (o.unidade || 'unidade');
+
+} else if (
+  o.tipo === 'gas' ||
+  o.tipo === 'percentual_unidade'
+) {
+
+  regra.textContent =
+    o.valor + '% de desconto sobre o preço de referência';
+
+} else if (o.tipo === 'percentual') {
+
+  regra.textContent =
+    o.valor + '% de desconto';
+
+} else {
+
+  regra.textContent =
+    'Consulte as condições desta oferta';
+
+}
+
   const cond=document.createElement('p');cond.className='muted';cond.textContent=[o.forma_pagamento&&'Pagamento: '+o.forma_pagamento,o.observacoes].filter(Boolean).join(' • ');
   const selo=document.createElement('span');selo.className='pill';selo.textContent=o.tipo_oferta==='promocao'?'PROMOÇÃO':'BENEFÍCIO';
   info.append(selo,titulo,parceiro,regra,cond);
@@ -128,27 +372,521 @@ function renderOfertas(){
   box.append(info,btn);container.append(box);
  }
 }
-function abrir(o){selecionada=o;$('modalTitle').textContent=o.nomeItem+' • '+o.parceiro;$('modalDescription').textContent=o.descricao||'';
- $('qty').value='';$('price').value='';$('priceBlock').classList.toggle('hidden',o.tipo!=='gas');
- $('qtyBlock').classList.toggle('hidden',o.tipo==='percentual');$('qty').required=o.tipo!=='percentual';$('price').required=o.tipo==='gas';
- $('qtyLabel').textContent=o.tipo==='gas'?'Quantos botijões compra por mês?':o.tipo==='fixo'?`Quantidade mensal (${o.unidade})`:'Quantidade mensal';
- $('priceLabel').textContent='Preço de placa por botijão (R$)';
- if(o.tipo==='percentual'){$('qtyBlock').classList.remove('hidden');$('qtyLabel').textContent='Quanto gasta por mês em compras elegíveis (R$)?';}
- $('modalNote').textContent=o.tipo==='gas'?'Informe o preço de placa do parceiro. O desconto cadastrado é calculado sobre esse preço, não sobre um preço inventado.':o.tipo==='percentual'?'Informe o gasto mensal que realmente se enquadra nas condições do benefício.':'Informe sua quantidade mensal aproximada.';
- $('overlay').classList.add('show');$('qty').focus();
+
+
+function abrir(o) {
+
+  selecionada = o;
+
+  $('modalTitle').textContent =
+    o.nomeItem + ' • ' + o.parceiro;
+
+  $('modalDescription').textContent =
+    o.descricao || '';
+
+  $('qty').value = '';
+  $('price').value = '';
+
+  // O cliente nunca informa preços.
+  $('priceBlock').classList.add('hidden');
+  $('price').required = false;
+
+  const tipo = o.tipo;
+  const preco = Number(o.preco_referencia);
+
+  
+const precisaReferencia =
+  tipo === 'gas' ||
+  tipo === 'percentual_unidade';
+
+
+  $('qtyBlock').classList.remove('hidden');
+  $('qty').required = true;
+
+  if (tipo === 'fixo') {
+
+    $('qtyLabel').textContent =
+      'Quantidade mensal (' + (o.unidade || 'unidades') + ')';
+
+  } else if (tipo === 'gas') {
+
+    $('qtyLabel').textContent =
+      'Quantos botijões compra por mês?';
+
+  } else if (tipo === 'percentual') {
+
+
+$('qtyLabel').textContent =
+  'Quanto você gasta por mês nesse estabelecimento (R$)?';
+
+
+  } else {
+
+    $('qtyLabel').textContent =
+      'Quantidade mensal (' + (o.unidade || 'unidades') + ')';
+
+  }
+
+  $('modalNote').textContent =
+    'Os valores são definidos pelo parceiro e cadastrados pelo AproveitAI.';
+
+
+if (o.tipo === 'brinde') {
+
+  $('priceBlock').classList.add('hidden');
+  $('price').required = false;
+
+  $('qtyBlock').classList.remove('hidden');
+  $('qty').required = true;
+
+  $('qtyLabel').textContent =
+    'Valor de uma compra individual (R$)';
+
+  $('modalNote').textContent =
+    'Informe o valor de uma única compra. ' +
+    'O AproveitAI selecionará automaticamente ' +
+    'o brinde da maior faixa atingida.';
+
 }
+
+
+  $('overlay').classList.add('show');
+  $('qty').focus();
+
+}
+
+
+/* ==========================================
+   APROVEITAI — ATENDIMENTO COMERCIAL
+   Envia o resumo da simulação pelo WhatsApp
+========================================== */
+
+
+function tirarDuvidasCalculadora(event) {
+
+  event.preventDefault();
+
+  const telefone = "5528999692303";
+
+  const beneficios = itens.filter(item =>
+    item.o.tipo !== 'brinde'
+  );
+
+  const brindes = itens.filter(item =>
+    item.o.tipo === 'brinde'
+  );
+
+  const economia = beneficios.reduce(
+    (total, item) =>
+      total + (Number(item.economia) || 0),
+    0
+  );
+
+  const liquido = economia - MENSALIDADE;
+
+  const linhas = [
+    "🧮 *SIMULAÇÃO APROVEITAI*",
+    "",
+    "*Economia mensal:* " + moeda(economia),
+    "*Mensalidade:* " + moeda(MENSALIDADE),
+    "*Economia líquida estimada:* " +
+      (liquido < 0 ? "-" : "") +
+      moeda(Math.abs(liquido))
+  ];
+
+  if (brindes.length) {
+
+    linhas.push("", "🎁 *BRINDES*");
+
+    brindes.forEach(item => {
+      linhas.push(
+        "• " +
+        (item.o.brinde || item.o.nomeItem) +
+        " — " +
+        (item.o.parceiro || "Parceiro AproveitAI")
+      );
+    });
+
+  }
+
+  linhas.push(
+    "",
+    "Gostaria de conhecer o Cartão AproveitAI."
+  );
+
+  const url =
+    "https://wa.me/" +
+    telefone +
+    "?text=" +
+    encodeURIComponent(linhas.join("\n"));
+
+  window.open(url, "_blank", "noopener,noreferrer");
+
+}
+
+
+
 function fechar(){$('overlay').classList.remove('show');selecionada=null}
-function renderCart(){const c=$('cart');c.replaceChildren();if(!itens.length){const x=document.createElement('div');x.className='empty';x.textContent='Nenhuma oferta adicionada. Pesquise acima e selecione uma oferta.';c.append(x)}
- let total=0;itens.forEach((item,i)=>{total+=item.economia;const row=document.createElement('div');row.className='cart-item';const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=item.o.nomeItem+' • '+item.o.parceiro;const detalhe=document.createElement('div');detalhe.className='muted';detalhe.textContent=item.resumo+' → economia: '+moeda(item.economia);info.append(strong,detalhe);const btn=document.createElement('button');btn.textContent='Remover';btn.addEventListener('click',()=>{itens.splice(i,1);renderCart()});row.append(info,btn);c.append(row)});
- $('gross').textContent=moeda(total);if(!itens.length){$('net').textContent='Adicione um benefício';$('net').className='';return;}const liquido=total-MENSALIDADE;$('net').textContent=(liquido<0?'− ':'')+moeda(Math.abs(liquido));$('net').className=liquido>=0?'positive':'negative';}
-$('simulationForm').addEventListener('submit',e=>{e.preventDefault();const o=selecionada;if(!o)return;const q=Number($('qty').value),p=Number($('price').value);if(!(q>0)||!Number.isFinite(q)||(o.tipo==='gas'&&!(p>0)))return;
- let economia=0,resumo='';if(o.tipo==='fixo'){economia=q*o.valor;resumo=`${q} ${o.unidade} × ${moeda(o.valor)}`;}else if(o.tipo==='gas'){economia=q*p*o.valor/100;resumo=`${q} botijão(ões) × ${moeda(p)} × ${o.valor}%`;}else if(o.tipo==='percentual'){economia=q*o.valor/100;resumo=`${moeda(q)} em compras × ${o.valor}%`;}else return;
- // Evita somar dois descontos de gás sobre o mesmo consumo mensal.
- if(o.tipo==='gas')itens=itens.filter(x=>x.o.tipo!=='gas');
- // Uma oferta por vez; repetir seleção substitui a simulação anterior.
- itens=itens.filter(x=>!(x.o.oferta_id===o.oferta_id&&x.o.nomeItem===o.nomeItem));
- itens.push({o,economia,resumo});fechar();renderCart();$('cart').scrollIntoView({behavior:'smooth',block:'center'});
+
+
+/* ==========================================
+   APROVEITAI — MAIOR FAIXA DE BRINDE
+========================================== */
+
+function selecionarBrindesPorFaixa(ofertasBrinde, valorCompra) {
+
+  const valor = Number(valorCompra);
+
+  if (!Number.isFinite(valor) || valor <= 0) {
+    return [];
+  }
+
+  const maioresFaixas = new Map();
+
+  ofertasBrinde.forEach(o => {
+
+    if (!o || o.tipo !== 'brinde') return;
+
+    const minimo = Number(o.compra_minima);
+
+    if (!Number.isFinite(minimo) || minimo <= 0) {
+      return;
+    }
+
+    if (valor < minimo) return;
+
+    const parceiro = String(
+      o.parceiro_id || o.parceiro || ''
+    ).trim();
+
+    if (!parceiro) return;
+
+    const grupo = String(
+      o.grupo_brindes || 'PADRAO'
+    ).trim();
+
+    const chave = parceiro + '|' + grupo;
+
+    const anterior = maioresFaixas.get(chave);
+
+    if (
+      !anterior ||
+      minimo > Number(anterior.compra_minima)
+    ) {
+      maioresFaixas.set(chave, o);
+    }
+
+  });
+
+  return Array.from(maioresFaixas.values());
+
+}
+
+
+/* APROVEITAI — BRINDES AUTOMÁTICOS */
+
+
+/* APROVEITAI — BRINDES AUTOMÁTICOS */
+
+function atualizarBrindesAutomaticos(parceiroId, valorCompra) {
+
+  const id = String(parceiroId || '').trim();
+  const compra = Number(valorCompra);
+
+  // Remove os brindes anteriores desse parceiro.
+  itens = itens.filter(item =>
+    !(
+      item.automaticoBrinde &&
+      String(item.o.parceiro_id) === id
+    )
+  );
+
+  if (!id || !Number.isFinite(compra) || compra <= 0) {
+    return;
+  }
+
+  const cidade = $('city').value;
+
+  // Busca somente brindes cadastrados para o parceiro.
+  const ofertasBrinde = ofertas.filter(o =>
+    o.tipo === 'brinde' &&
+    String(o.parceiro_id) === id &&
+    (!cidade || chaveCidade(o) === cidade)
+  );
+
+  // Seleciona apenas a maior faixa elegível.
+  const selecionados =
+    selecionarBrindesPorFaixa(ofertasBrinde, compra);
+
+  selecionados.forEach(o => {
+
+    itens.push({
+      o,
+      economia: 0,
+      resumo: 'Brinde da maior faixa atingida',
+      automaticoBrinde: true
+    });
+
+  });
+
+}
+
+
+
+function renderCart() {
+
+
+  /* ==========================================
+     APROVEITAI — VALIDAÇÃO DA MENSALIDADE
+  ========================================== */
+
+  if (
+    !Number.isFinite(MENSALIDADE) ||
+    MENSALIDADE <= 0
+  ) {
+    const bruto = document.getElementById("gross");
+    const liquido = document.getElementById("net");
+
+    if (bruto) bruto.textContent = "R$ 0,00";
+
+    if (liquido) {
+      liquido.textContent = "Aguardando mensalidade...";
+      liquido.className = "";
+    }
+
+    return;
+  }
+
+  const c = $('cart');
+  c.replaceChildren();
+
+  const painel = $('painelBrindes');
+  const lista = $('listaBrindes');
+
+  if (lista) lista.replaceChildren();
+  if (painel) painel.style.display = 'none';
+
+  if (!itens.length) {
+    const x = document.createElement('div');
+    x.className = 'empty';
+    x.textContent =
+      'Nenhuma oferta adicionada. Pesquise acima e selecione uma oferta.';
+    c.append(x);
+  }
+
+  let total = 0;
+  const brindes = [];
+
+  itens.forEach((item, i) => {
+
+    const o = item.o;
+
+    if (o.tipo === 'brinde') {
+      brindes.push(item);
+      return;
+    }
+
+    total += Number(item.economia) || 0;
+
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+
+    const info = document.createElement('div');
+    const strong = document.createElement('strong');
+
+    strong.textContent =
+      o.nomeItem + ' • ' + o.parceiro;
+
+    const detalhe = document.createElement('div');
+    detalhe.className = 'muted';
+
+    detalhe.textContent =
+      item.resumo + ' → economia: ' +
+      moeda(item.economia);
+
+    info.append(strong, detalhe);
+
+    const btn = document.createElement('button');
+    btn.textContent = 'Remover';
+
+    btn.addEventListener('click', () => {
+      itens.splice(i, 1);
+      renderCart();
+    });
+
+    row.append(info, btn);
+    c.append(row);
+
+  });
+
+  $('gross').textContent = moeda(total);
+
+  if (!itens.length) {
+    $('net').textContent = 'Adicione um benefício';
+    $('net').className = '';
+  } else {
+
+    const liquido = total - MENSALIDADE;
+
+    $('net').textContent =
+      (liquido < 0 ? '− ' : '') +
+      moeda(Math.abs(liquido));
+
+    $('net').className =
+      liquido >= 0 ? 'positive' : 'negative';
+  }
+
+  // Brindes são apresentados separadamente.
+  if (painel && lista && brindes.length) {
+
+    painel.style.display = 'block';
+
+    brindes.forEach(item => {
+
+      const bloco = document.createElement('div');
+      bloco.className = 'cart-item';
+
+      const info = document.createElement('div');
+      const titulo = document.createElement('strong');
+
+      
+titulo.textContent =
+  '🎁 ' + (item.o.brinde || item.o.nomeItem) +
+  ' • ' + (item.o.parceiro || 'Parceiro AproveitAI');
+
+
+      const condicao = document.createElement('div');
+      condicao.className = 'muted';
+
+      
+condicao.textContent =
+  'Maior faixa atingida: compra individual a partir de ' +
+  moeda(Number(item.o.compra_minima) || 0) +
+  '. Brinde sujeito à disponibilidade, às condições ' +
+  'do parceiro e à validação pelo AproveitAI.';
+
+
+      info.append(titulo, condicao);
+      bloco.append(info);
+      lista.append(bloco);
+
+    });
+  }
+}
+
+
+
+
+$('simulationForm').addEventListener('submit', e => {
+
+  e.preventDefault();
+
+  const o = selecionada;
+  if (!o) return;
+
+  const q = Number($('qty').value);
+  const valor = Number(o.valor);
+  const preco = Number(o.preco_referencia);
+
+  if (!Number.isFinite(q) || q <= 0) {
+    alert('Informe um valor ou quantidade válida.');
+    return;
+  }
+
+  // Simulação específica de brinde.
+  if (o.tipo === 'brinde') {
+
+    if (q < Number(o.compra_minima)) {
+      alert(
+        'Compra mínima para este brinde: ' +
+        moeda(Number(o.compra_minima))
+      );
+      return;
+    }
+
+    atualizarBrindesAutomaticos(o.parceiro_id, q);
+    fechar();
+    renderCart();
+    $('cart').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  if (!Number.isFinite(valor) || valor < 0) {
+    alert('Desconto inválido.');
+    return;
+  }
+
+  let economia = 0;
+  let resumo = '';
+
+  if (o.tipo === 'fixo') {
+
+    economia = q * valor;
+    resumo =
+      `${q} ${o.unidade || 'unidades'} × ${moeda(valor)}`;
+
+  } else if (
+    o.tipo === 'gas' ||
+    o.tipo === 'percentual_unidade'
+  ) {
+
+    if (!Number.isFinite(preco) || preco <= 0) {
+      alert('Preço de referência não cadastrado pelo Admin.');
+      return;
+    }
+
+    economia = q * preco * valor / 100;
+
+    resumo =
+      `${q} ${o.unidade || 'unidades'} × ` +
+      `${moeda(preco)} × ${valor}%`;
+
+  } else if (o.tipo === 'percentual') {
+
+    economia = q * valor / 100;
+    resumo =
+      `${moeda(q)} de gasto mensal elegível × ${valor}%`;
+
+  } else {
+    alert('Oferta disponível somente para consulta.');
+    return;
+  }
+
+  if (!Number.isFinite(economia) || economia < 0) {
+    alert('Não foi possível calcular a economia.');
+    return;
+  }
+
+  // Não confunde compra mínima em R$ com quantidade.
+  if (
+    o.tipo === 'percentual' &&
+    Number(o.compra_minima) > 0 &&
+    q < Number(o.compra_minima)
+  ) {
+    alert('Valor inferior ao mínimo desta oferta.');
+    return;
+  }
+
+  itens = itens.filter(x => !(
+    !x.automaticoBrinde &&
+    x.o.oferta_id === o.oferta_id &&
+    x.o.nomeItem === o.nomeItem
+  ));
+
+  itens.push({o, economia, resumo});
+
+  fechar();
+  renderCart();
+
+  $('cart').scrollIntoView({
+    behavior:'smooth',
+    block:'center'
+  });
+
 });
+
+
+
 $('cancel').addEventListener('click',fechar);$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))fechar()});document.addEventListener('keydown',e=>{if(e.key==='Escape')fechar()});$('search').addEventListener('input',renderOfertas);$('branch').addEventListener('change',renderOfertas);$('offerType').addEventListener('change',renderOfertas);$('city').addEventListener('change',()=>{itens=[];renderCart();atualizarRamos();renderOfertas()});
 
 /* ==========================================
@@ -208,7 +946,51 @@ function iniciar() {
 
     }
 
-    preparar(resposta.dados);
+    
+/* ==========================================
+   APROVEITAI — MENSALIDADE OFICIAL DO ADMIN
+========================================== */
+
+const mensalidadeRecebida =
+  resposta.dados.mensalidade_individual;
+
+const mensalidadeNumero =
+  typeof mensalidadeRecebida === "number"
+    ? mensalidadeRecebida
+    : Number(
+        String(mensalidadeRecebida ?? "")
+          .replace(/[R$\s]/g, "")
+          .replace(/\./g, "")
+          .replace(",", ".")
+      );
+
+if (
+  mensalidadeRecebida === null ||
+  mensalidadeRecebida === undefined ||
+  String(mensalidadeRecebida).trim() === "" ||
+  !Number.isFinite(mensalidadeNumero) ||
+  mensalidadeNumero <= 0
+) {
+  mostrarErro(
+    "Mensalidade individual não configurada no Admin."
+  );
+  return;
+}
+
+
+MENSALIDADE = mensalidadeNumero;
+
+document.getElementById("mensalidadeExibida").textContent =
+  "− " + moeda(MENSALIDADE);
+
+
+document.getElementById("valorPlanoIndividual").textContent =
+  moeda(MENSALIDADE) + " por mês.";
+
+
+preparar(resposta.dados);
+
+renderCart();
 
   };
 

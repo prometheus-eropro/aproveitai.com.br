@@ -2314,6 +2314,46 @@ Pesquisar
 <div class="hr"></div>
 
         <div class="content">
+
+<!-- CONFIGURAÇÕES GERAIS -->
+<section data-section="config" style="display:none;">
+
+  <div class="card">
+
+    <h2>⚙️ Configurações da Plataforma</h2>
+
+    <h3>💰 Configurações Financeiras</h3>
+
+    <div style="max-width:380px;margin-top:20px;">
+
+      <label for="configMensalidadeIndividual">
+        Mensalidade individual padrão (R$)
+      </label>
+
+      <input
+        type="number"
+        id="configMensalidadeIndividual"
+        min="0.01"
+        step="0.01"
+        placeholder="Aguardando consulta"
+        disabled
+      >
+
+      <p style="font-size:13px;color:#666;">
+        Valor oficial utilizado pela Calculadora
+        de Economia.
+      </p>
+
+    </div>
+
+    <p id="configMensagem">
+      Aguardando integração com o Google Apps Script.
+    </p>
+
+  </div>
+
+</section>
+
           <!-- DASHBOARD -->
           <section data-section="dashboard">
             <div class="cards">
@@ -3988,6 +4028,10 @@ const views = {
   log_admin: { title:"Log Admin", desc:"Somente leitura (auditoria)." },
   admins: { title:"Admins", desc:"Somente leitura (atenção às senhas)." },
   novo_parceiro:{title:"Novo Parceiro",desc:"Cadastro completo do parceiro."},
+config: {
+  title: "Configurações",
+  desc: "Parâmetros gerais da Plataforma AproveitAI"
+},
  
   gerencial: {
     title:"Gerencial",
@@ -4074,12 +4118,361 @@ async function loadView(name){
   if(name === "admins")
     return loadAdmins(true);
 
+  if(name === "config")
+    return loadConfig();
+
   if(name === "novo_parceiro"){
     renderPaginaNovoParceiro();
     return;
   }
 
 }
+
+/* ==========================================
+   APROVEITAI — CONFIGURAÇÕES GERAIS
+   Acesso exclusivo ao Admin TOTAL
+========================================== */
+
+/* ==========================================
+   APROVEITAI — CONFIGURAÇÕES DA PLATAFORMA
+   Acesso exclusivo ao Admin TOTAL
+========================================== */
+
+function loadConfig() {
+
+  const permissao = String(
+    state.permissao || "operacional"
+  ).trim().toLowerCase();
+
+  if (permissao !== "total") {
+    toast("Acesso permitido somente ao Admin TOTAL.");
+    return;
+  }
+
+  const area = document.querySelector(
+    'section[data-section="config"]'
+  );
+
+  if (!area) {
+    toast("Seção de Configurações não encontrada.");
+    return;
+  }
+
+  area.innerHTML = `
+    <div class="card">
+
+      <h2>⚙️ Configurações da Plataforma</h2>
+
+      <p>
+        Gerencie os parâmetros gerais do AproveitAI.
+      </p>
+
+      <hr>
+
+      <h3>💰 Configurações Financeiras</h3>
+
+      <div style="max-width:350px;margin-top:20px;">
+
+        <label for="configMensalidadeIndividual">
+          Mensalidade individual (R$)
+        </label>
+
+        <input
+          type="number"
+          id="configMensalidadeIndividual"
+          min="0.01"
+          step="0.01"
+          placeholder="Carregamento pendente"
+          disabled
+        >
+
+        <div style="margin-top:15px;">
+
+  <button
+    type="button"
+    id="btnSalvarMensalidade"
+    class="btn primary"
+    disabled
+  >
+    💾 Salvar mensalidade
+  </button>
+
+</div>
+
+        <small>
+          Valor oficial utilizado pela Calculadora
+          de Economia e pelas regras financeiras
+          aplicáveis.
+        </small>
+
+      </div>
+
+      <p id="configMensagem"
+         style="margin-top:20px;color:#666;">
+        Aguardando integração com o Google Apps Script.
+      </p>
+
+    </div>
+  
+  `;
+
+  // Consulta a mensalidade oficial cadastrada no GS.
+  carregarMensalidadeIndividualConfig();
+
+}
+
+
+/* ==========================================
+   CONSULTAR MENSALIDADE INDIVIDUAL
+   CONFIGURAÇÕES — ADMIN TOTAL
+========================================== */
+
+async function carregarMensalidadeIndividualConfig() {
+
+  const campo = document.getElementById(
+    "configMensalidadeIndividual"
+  );
+
+  if (!campo) return;
+
+  try {
+
+    const resposta = await callAPI({
+      action: "consultar_mensalidade_individual"
+    });
+
+    if (!resposta || resposta.ok !== true) {
+      throw new Error(
+        resposta?.erro ||
+        "Não foi possível consultar a mensalidade."
+      );
+    }
+
+    const valor = Number(
+      resposta.mensalidade_individual
+    );
+
+    if (!Number.isFinite(valor) || valor <= 0) {
+      throw new Error("Mensalidade inválida.");
+    }
+
+    campo.value = valor.toFixed(2);
+
+/* ==========================================
+   HABILITAR EDIÇÃO — SOMENTE ADMIN TOTAL
+========================================== */
+
+const permissao = String(
+  state.permissao || "operacional"
+).trim().toLowerCase();
+
+const btnSalvar = document.getElementById(
+  "btnSalvarMensalidade"
+);
+
+if (permissao === "total") {
+
+  campo.disabled = false;
+
+  if (btnSalvar) {
+    btnSalvar.disabled = false;
+  }
+
+}
+
+const mensagem = document.getElementById("configMensagem");
+
+if (mensagem) {
+  mensagem.textContent =
+    "✅ Mensalidade oficial carregada com sucesso.";
+}
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao carregar mensalidade:",
+      erro
+    );
+
+    toast(
+      "Não foi possível carregar a mensalidade."
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   APROVEITAI — SALVAR MENSALIDADE INDIVIDUAL
+   Exclusivo do Admin TOTAL
+===================================================== */
+
+async function salvarMensalidadeIndividualConfig() {
+
+  const permissao = String(
+    state.permissao || "operacional"
+  ).trim().toLowerCase();
+
+  if (permissao !== "total") {
+    toast("Acesso permitido somente ao Admin TOTAL.");
+    return;
+  }
+
+  const campo = document.getElementById(
+    "configMensalidadeIndividual"
+  );
+
+  const botao = document.getElementById(
+    "btnSalvarMensalidade"
+  );
+
+  const mensagem = document.getElementById(
+    "configMensagem"
+  );
+
+  if (!campo || !botao) {
+    toast("Campos de configuração não encontrados.");
+    return;
+  }
+
+  const texto = String(campo.value || "")
+    .trim()
+    .replace(",", ".");
+
+  const novoValor = Number(texto);
+
+  if (
+    !texto ||
+    !Number.isFinite(novoValor) ||
+    novoValor <= 0 ||
+    novoValor > 10000 ||
+    Math.round(novoValor * 100) !== novoValor * 100
+  ) {
+    toast("Informe um valor válido, com até duas casas decimais.");
+    campo.focus();
+    return;
+  }
+
+  const valorFormatado = novoValor.toLocaleString(
+    "pt-BR",
+    {
+      style: "currency",
+      currency: "BRL"
+    }
+  );
+
+  const confirmou = confirm(
+    "CONFIRMAR ALTERAÇÃO DA MENSALIDADE\n\n" +
+    "Novo valor: " + valorFormatado + "\n\n" +
+    "Esta alteração atualizará o valor padrão " +
+    "da plataforma e da Calculadora de Economia.\n\n" +
+    "Deseja continuar?"
+  );
+
+  if (!confirmou) return;
+
+  botao.disabled = true;
+  campo.disabled = true;
+
+  const textoOriginal = botao.textContent;
+  botao.textContent = "Salvando...";
+
+  if (mensagem) {
+    mensagem.textContent =
+      "Salvando mensalidade no Google Apps Script...";
+  }
+
+  try {
+
+    const resposta = await callAPI({
+      action: "alterar_mensalidade_individual",
+      valor: novoValor
+    });
+
+    if (!resposta || resposta.ok !== true) {
+      throw new Error(
+        resposta?.erro ||
+        resposta?.msg ||
+        "Não foi possível salvar a mensalidade."
+      );
+    }
+
+    const valorConfirmado = Number(
+      resposta.mensalidade_individual
+    );
+
+    if (
+      !Number.isFinite(valorConfirmado) ||
+      valorConfirmado <= 0
+    ) {
+      throw new Error(
+        "O servidor não retornou um valor válido."
+      );
+    }
+
+    campo.value = valorConfirmado.toFixed(2);
+
+    if (mensagem) {
+      mensagem.textContent = resposta.alterado === false
+        ? "O valor informado já estava cadastrado."
+        : "✅ Mensalidade atualizada com sucesso.";
+    }
+
+    toast(
+      resposta.mensagem ||
+      "Mensalidade salva com sucesso."
+    );
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao salvar mensalidade:",
+      erro
+    );
+
+    if (mensagem) {
+      mensagem.textContent =
+        "❌ Não foi possível confirmar o salvamento. " +
+        "Consulte novamente antes de tentar salvar.";
+    }
+
+    toast(
+      "Erro ao salvar: " +
+      String(erro.message || erro)
+    );
+
+  } finally {
+
+    botao.textContent = textoOriginal;
+
+    // Mantém bloqueado até uma nova consulta,
+    // evitando repetição acidental da operação.
+    botao.disabled = true;
+    campo.disabled = true;
+
+  }
+
+}
+
+
+/* =====================================================
+   APROVEITAI — EVENTO DO BOTÃO DE MENSALIDADE
+   Delegação para elementos criados por loadConfig()
+===================================================== */
+
+document.addEventListener("click", function(evento) {
+
+  const botao = evento.target.closest(
+    "#btnSalvarMensalidade"
+  );
+
+  if (!botao || botao.disabled) return;
+
+  salvarMensalidadeIndividualConfig();
+
+});
+
 
 /*** 7) RENDER TABLES ***/
 function chipAtivo(v){
@@ -4220,6 +4613,248 @@ function downloadCSV(filename, rows){
   a.remove();
 
   URL.revokeObjectURL(url);
+}
+
+
+/* ==================================================
+   APROVEITAI — CONFIGURADOR VISUAL DA CALCULADORA
+   Preserva os itens existentes e gera JSON
+================================================== */
+
+function configurarCampoCalculadora(input) {
+
+  const wrap = input.parentElement;
+
+  input.readOnly = true;
+
+  const tipos = [
+    ["percentual", "Desconto percentual sobre a compra"],
+    ["fixo", "Desconto fixo por unidade"],
+    ["percentual_unidade", "Percentual por unidade"],
+    ["brinde", "Brinde por faixa de compra"]
+  ];
+
+  let itens = [];
+
+  try {
+    const atual = JSON.parse(input.value || "[]");
+    itens = Array.isArray(atual)
+      ? atual
+      : (atual && typeof atual === "object" ? [atual] : []);
+  } catch (erro) {
+    console.warn("Configuração anterior preservada:", erro);
+  }
+
+  const painel = document.createElement("div");
+  painel.style.cssText =
+    "margin-top:12px;padding:14px;border:1px solid #b7d8c2;" +
+    "border-radius:12px;background:#f5faf6;color:#17362a;";
+
+  const lista = document.createElement("div");
+  const editor = document.createElement("div");
+
+  function campo(rotulo, valor, tipo = "text") {
+    const bloco = document.createElement("label");
+    bloco.style.cssText =
+      "display:block;margin:10px 0;font-weight:600;";
+
+    const titulo = document.createElement("span");
+    titulo.textContent = rotulo;
+
+    const controle = document.createElement("input");
+    controle.type = tipo;
+    controle.value = valor ?? "";
+    controle.style.cssText =
+      "display:block;width:100%;padding:9px;" +
+      "margin-top:5px;border:1px solid #bbb;border-radius:7px;";
+
+    if (tipo === "number") {
+      controle.min = "0";
+      controle.step = "any";
+    }
+
+    bloco.append(titulo, controle);
+    editor.appendChild(bloco);
+
+    return controle;
+  }
+
+  function sincronizar() {
+    input.value = JSON.stringify(itens);
+  }
+
+  function renderizar() {
+    lista.replaceChildren();
+
+    itens.forEach((item, indice) => {
+      const linha = document.createElement("div");
+      linha.style.cssText =
+        "padding:9px;border-bottom:1px solid #ddd;" +
+        "display:flex;justify-content:space-between;" +
+        "align-items:center;gap:10px;";
+
+      const descricao = document.createElement("span");
+      descricao.textContent =
+        (item.nome || item.brinde || "Item sem nome") +
+        " — " + (tipos.find(t => t[0] === item.tipo)?.[1] || item.tipo);
+
+      const remover = document.createElement("button");
+      remover.type = "button";
+      remover.textContent = "Remover";
+
+      remover.onclick = () => {
+        if (!confirm("Remover este item da calculadora?")) return;
+        itens.splice(indice, 1);
+        sincronizar();
+        renderizar();
+      };
+
+      linha.append(descricao, remover);
+      lista.appendChild(linha);
+    });
+  }
+
+  const botaoNovo = document.createElement("button");
+  botaoNovo.type = "button";
+  botaoNovo.textContent = "+ Adicionar item à calculadora";
+  botaoNovo.style.cssText =
+    "background:#087b39;color:white;padding:10px;" +
+    "border:0;border-radius:8px;margin-top:12px;";
+
+  botaoNovo.onclick = () => {
+    editor.replaceChildren();
+
+    const seletor = document.createElement("select");
+    seletor.style.cssText =
+      "width:100%;padding:10px;margin-top:12px;";
+
+    tipos.forEach(([valor, texto]) => {
+      seletor.add(new Option(texto, valor));
+    });
+
+    editor.appendChild(seletor);
+
+    const campos = document.createElement("div");
+    editor.appendChild(campos);
+
+    function montarCampos() {
+      campos.replaceChildren();
+
+      const nome = campo("Produto ou serviço", "");
+      campos.appendChild(nome.parentElement);
+
+      const tipo = seletor.value;
+
+      let valor, preco, unidade, minimo, brinde, grupo;
+
+      if (tipo !== "brinde") {
+        valor = campo(
+          tipo === "fixo"
+            ? "Desconto por unidade (R$)"
+            : "Percentual de desconto (%)",
+          "",
+          "number"
+        );
+        campos.appendChild(valor.parentElement);
+      }
+
+      if (tipo === "fixo" || tipo === "percentual_unidade") {
+        unidade = campo("Unidade (litro, botijão, peça etc.)", "");
+        campos.appendChild(unidade.parentElement);
+      }
+
+      if (tipo === "percentual_unidade") {
+        preco = campo("Preço de referência por unidade (R$)", "", "number");
+        campos.appendChild(preco.parentElement);
+      }
+
+      if (tipo === "brinde") {
+        minimo = campo("Compra mínima individual (R$)", "", "number");
+        brinde = campo("Descrição do brinde", "");
+        grupo = campo("Grupo de brindes (opcional)", "PADRAO");
+
+        campos.append(
+          minimo.parentElement,
+          brinde.parentElement,
+          grupo.parentElement
+        );
+      }
+
+      const salvar = document.createElement("button");
+      salvar.type = "button";
+      salvar.textContent = "Salvar item";
+      salvar.style.cssText =
+        "background:#087b39;color:white;padding:10px;" +
+        "border:0;border-radius:8px;margin-top:12px;";
+
+      salvar.onclick = () => {
+        const item = {
+          nome: nome.value.trim(),
+          tipo
+        };
+
+        if (!item.nome) {
+          alert("Informe o nome do produto ou serviço.");
+          return;
+        }
+
+        if (tipo === "brinde") {
+          item.compra_minima = Number(minimo.value);
+          item.brinde = brinde.value.trim();
+          item.grupo_brindes = grupo.value.trim() || "PADRAO";
+
+          if (!minimo.value || item.compra_minima <= 0 || !item.brinde) {
+            alert("Informe a compra mínima e o brinde.");
+            return;
+          }
+        } else {
+          item.valor = Number(valor.value);
+
+          if (
+            !valor.value ||
+            !Number.isFinite(item.valor) ||
+            item.valor <= 0 ||
+            (tipo !== "fixo" && item.valor > 100)
+          ) {
+            alert("Informe um desconto válido.");
+            return;
+          }
+
+          if (unidade) {
+            item.unidade = unidade.value.trim() || "unidade";
+          }
+
+          if (preco) {
+            item.preco_referencia = Number(preco.value);
+
+            if (
+              !preco.value ||
+              !Number.isFinite(item.preco_referencia) ||
+              item.preco_referencia <= 0
+            ) {
+              alert("Informe um preço de referência válido.");
+              return;
+            }
+          }
+        }
+
+        itens.push(item);
+        sincronizar();
+        renderizar();
+        editor.replaceChildren();
+      };
+
+      campos.appendChild(salvar);
+    }
+
+    seletor.addEventListener("change", montarCampos);
+    montarCampos();
+  };
+
+  painel.append(lista, botaoNovo, editor);
+  wrap.appendChild(painel);
+
+  renderizar();
 }
 
 
@@ -4384,11 +5019,23 @@ function openEditModal({title, hint, fields, initial, onSave}){
     }
 
 
-       wrap.appendChild(lab);
+       
+wrap.appendChild(lab);
 
-    wrap.appendChild(input);
+wrap.appendChild(input);
 
-    form.appendChild(wrap);
+form.appendChild(wrap);
+
+/* ==========================================
+   APROVEITAI — CONFIGURADOR DA CALCULADORA
+========================================== */
+
+if (f.key === "itens_calculadora") {
+
+  configurarCampoCalculadora(input);
+
+}
+
 
 
     /* ==========================================
@@ -6497,15 +7144,16 @@ async function editarBeneficio(beneficioId){
 },
 
 
+
 {
   key:"itens_calculadora",
   label:"Configuração da Calculadora de Economia",
   type:"textarea",
   placeholder:
-    "Campo reservado para os itens calculáveis. " +
-    "O preenchimento será feito pelo configurador visual.",
+    "Configure os itens e descontos pelo configurador visual.",
   w:"620px",
-  flex:"1 1 620px"
+  flex:"1 1 620px",
+  readonly:true
 },
 
 {
@@ -7060,15 +7708,16 @@ categoria:
   flex:"1 1 620px"
 },
 
+
 {
   key:"itens_calculadora",
   label:"Configuração da Calculadora de Economia",
   type:"textarea",
   placeholder:
-    "Campo reservado para os itens calculáveis. " +
-    "O preenchimento será feito pelo configurador visual.",
+    "Configure os itens e descontos pelo configurador visual.",
   w:"620px",
-  flex:"1 1 620px"
+  flex:"1 1 620px",
+  readonly:true
 },
 
 {
@@ -7831,15 +8480,16 @@ async function editarPromocao(promocaoId){
   },
 
 
+
 {
   key:"itens_calculadora",
   label:"Configuração da Calculadora de Economia",
   type:"textarea",
   placeholder:
-    "Campo reservado para os itens calculáveis. " +
-    "O preenchimento será feito pelo configurador visual.",
+    "Configure os itens e descontos pelo configurador visual.",
   w:"620px",
-  flex:"1 1 620px"
+  flex:"1 1 620px",
+  readonly:true
 },
 
   {
@@ -8461,15 +9111,16 @@ categoria:
 },      
 
 
+
 {
   key:"itens_calculadora",
   label:"Configuração da Calculadora de Economia",
   type:"textarea",
   placeholder:
-    "Campo reservado para os itens calculáveis. " +
-    "O preenchimento será feito pelo configurador visual.",
+    "Configure os itens e descontos pelo configurador visual.",
   w:"620px",
-  flex:"1 1 620px"
+  flex:"1 1 620px",
+  readonly:true
 },
 
       {

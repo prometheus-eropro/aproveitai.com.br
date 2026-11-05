@@ -1004,11 +1004,21 @@ const d=await r.json();
 
 if(!d.ok){
 
-document.getElementById("listaBeneficios").innerHTML=
+if (
+  !d.ok ||
+  !Array.isArray(d.dados)
+) {
 
-"<div class='status-box'>Nenhum benefício encontrado.</div>";
+  document.getElementById("listaBeneficios").innerHTML =
+    "<div class='status-box'>Não foi possível consultar os benefícios.</div>";
 
-return;
+  return;
+}
+
+if (!d.dados.length) {
+
+  document.getElementById("listaBeneficios").innerHTML =
+    "<div class='status-box'>Nenhum benefício cadastrado ainda.</div>";
 
 }
 
@@ -1124,21 +1134,23 @@ async function carregarPromocoes(){
         await r.json();
 
 
-    if(
-        !d.ok ||
-        !Array.isArray(d.dados) ||
-        !d.dados.length
-    ){
+   if (
+    !d.ok ||
+    !Array.isArray(d.dados)
+) {
 
-        document
-            .getElementById("listaPromocoes")
-            .innerHTML =
+    document
+        .getElementById("listaPromocoes")
+        .innerHTML =
+        "<div class='status-box'>Não foi possível consultar as promoções.</div>";
 
-            "<div class='status-box'>Nenhuma promoção encontrada.</div>";
+    return;
+}
 
-        return;
+if (!d.dados.length) {
 
-    }
+    d.dados = [];
+}
 
 
     let html = "";
