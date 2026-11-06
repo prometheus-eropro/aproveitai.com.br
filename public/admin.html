@@ -2441,6 +2441,14 @@ id="btnNovoCliente">
 
 </button>
 
+<button
+  type="button"
+  class="btn primary"
+  id="btnNovoGrupo"
+  onclick="novoGrupoConvenio()">
+  ➕ Novo Grupo / Convênio
+</button>
+
 </div>
             <div class="hint">Dica: o botão de status altera a coluna <b>ativo</b> para <b>SIM</b> ou <b>NAO</b>.</div>
             <div class="hr"></div>
@@ -16099,6 +16107,290 @@ async function buscarGruposCadastro(){
     .sort((a,b) =>
       a.label.localeCompare(b.label,"pt-BR")
     );
+
+}
+
+/* ==========================================
+   APROVEITAI - NOVO GRUPO / CONVENIO
+   Utiliza a API administrativa existente
+========================================== */
+
+function novoGrupoConvenio(){
+
+  if(
+    String(state.permissao || "")
+      .trim()
+      .toLowerCase() !== "total"
+  ){
+    toast("Cadastro exclusivo do Admin TOTAL.");
+    return;
+  }
+
+  openEditModal({
+
+    title:"Novo Grupo / Convênio",
+
+    hint:"Cadastre as condições comerciais negociadas.",
+
+    initial:{
+      tipo_grupo:"GRUPO",
+      modalidade_cobranca:"INDIVIDUAL",
+      forma_recebimento:"PIX",
+      ativo:"SIM"
+    },
+
+    fields:[
+
+      {
+        key:"nome_grupo",
+        label:"Nome do grupo / convênio"
+      },
+      {
+        key:"tipo_grupo",
+        label:"Tipo de contratação",
+        type:"select",
+        options:[
+          {value:"GRUPO",label:"Grupo - pagamento individual"},
+          {value:"CONVENIO",label:"Convênio - pagamento coletivo"}
+        ]
+      },
+      {
+        key:"cnpj_cpf",
+        label:"CNPJ / CPF da entidade"
+      },
+      {
+        key:"responsavel",
+        label:"Responsável"
+      },
+      {
+        key:"whatsapp",
+        label:"WhatsApp com DDD"
+      },
+      {
+        key:"email",
+        label:"E-mail"
+      },
+      {
+        key:"endereco",
+        label:"Endereço"
+      },
+      {
+        key:"numero",
+        label:"Número"
+      },
+      {
+        key:"complemento",
+        label:"Complemento"
+      },
+      {
+        key:"bairro",
+        label:"Bairro"
+      },
+      {
+        key:"cidade",
+        label:"Cidade"
+      },
+      {
+        key:"uf",
+        label:"UF"
+      },
+      {
+        key:"cep",
+        label:"CEP"
+      },
+      {
+        key:"modalidade_cobranca",
+        label:"Modalidade de cobrança",
+        type:"select",
+        options:[
+          {
+            value:"INDIVIDUAL",
+            label:"Individual - cada cliente paga"
+          },
+          {
+            value:"COLETIVA_POR_PESSOA",
+            label:"Coletiva - valor por participante"
+          },
+          {
+            value:"COLETIVA_FIXA",
+            label:"Coletiva - valor mensal fechado"
+          }
+        ]
+      },
+      {
+        key:"forma_recebimento",
+        label:"Forma prevista de recebimento",
+        type:"select",
+        options:[
+          {value:"PIX",label:"PIX"},
+          {value:"BOLETO",label:"Boleto"},
+          {value:"DINHEIRO",label:"Dinheiro"},
+          {value:"DEPOSITO",label:"Depósito"}
+        ]
+      },
+      {
+        key:"valor_por_pessoa",
+        label:"Valor mensal por pessoa (R$)",
+        type:"number"
+      },
+      {
+        key:"valor_fechado_mensal",
+        label:"Valor mensal fechado (R$)",
+        type:"number"
+      },
+      {
+        key:"dia_vencimento",
+        label:"Dia de vencimento",
+        type:"select",
+        options:[
+          {value:"",label:"Selecione"},
+          {value:"5",label:"05"},
+          {value:"10",label:"10"},
+          {value:"15",label:"15"},
+          {value:"20",label:"20"},
+          {value:"25",label:"25"},
+          {value:"30",label:"30"}
+        ]
+      },
+      {
+        key:"quantidade_negociada",
+        label:"Quantidade negociada",
+        type:"number"
+      },
+      {
+        key:"data_inicio",
+        label:"Data de início",
+        type:"date"
+      },
+      {
+        key:"data_fim",
+        label:"Data de término (opcional)",
+        type:"date"
+      },
+      {
+        key:"data_vigencia_valor",
+        label:"Vigência do valor",
+        type:"date"
+      },
+      {
+        key:"observacoes",
+        label:"Observações e condições negociadas",
+        type:"textarea",
+        w:"720px",
+        flex:"1 1 720px"
+      }
+
+    ],
+
+    onSave:async function(dados){
+
+      const nome =
+        String(dados.nome_grupo || "").trim();
+
+      const tipo =
+        String(dados.tipo_grupo || "").trim();
+
+      const modalidade =
+        String(dados.modalidade_cobranca || "").trim();
+
+      if(!nome){
+        throw new Error(
+          "Informe o nome do grupo ou convênio."
+        );
+      }
+
+      if(
+        tipo === "GRUPO" &&
+        modalidade !== "INDIVIDUAL"
+      ){
+        throw new Error(
+          "Grupo deve ter cobrança individual."
+        );
+      }
+
+      if(
+        tipo === "CONVENIO" &&
+        ![
+          "COLETIVA_POR_PESSOA",
+          "COLETIVA_FIXA"
+        ].includes(modalidade)
+      ){
+        throw new Error(
+          "Convênio exige cobrança coletiva."
+        );
+      }
+
+      const valorPessoa =
+        Number(dados.valor_por_pessoa || 0);
+
+      const valorFechado =
+        Number(dados.valor_fechado_mensal || 0);
+
+      if(
+        modalidade !== "COLETIVA_FIXA" &&
+        !(valorPessoa > 0)
+      ){
+        throw new Error(
+          "Informe o valor mensal por participante."
+        );
+      }
+
+      if(
+        modalidade === "COLETIVA_FIXA" &&
+        !(valorFechado > 0)
+      ){
+        throw new Error(
+          "Informe o valor mensal fechado."
+        );
+      }
+
+      if(!dados.dia_vencimento){
+        throw new Error(
+          "Selecione o dia de vencimento."
+        );
+      }
+
+      const quantidade =
+        Number(dados.quantidade_negociada || 0);
+
+      if(
+        !Number.isInteger(quantidade) ||
+        quantidade < 0
+      ){
+        throw new Error(
+          "Quantidade negociada inválida."
+        );
+      }
+
+      const resp = await callAPI({
+        action:"criar_grupo",
+        ...dados,
+        key:state.key
+      });
+
+      if(!resp || resp.ok !== true){
+        throw new Error(
+          resp?.erro ||
+          resp?.msg ||
+          "Não foi possível cadastrar o grupo."
+        );
+      }
+
+      toast(
+        "Grupo / Convênio cadastrado: " +
+        resp.grupo_id
+      );
+
+      alert(
+        "CADASTRO REALIZADO\n\n" +
+        "Nome: " + resp.nome_grupo +
+        "\nID: " + resp.grupo_id +
+        "\n\nConfira o registro na aba grupos."
+      );
+
+    }
+
+  });
 
 }
 
