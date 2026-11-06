@@ -2028,6 +2028,275 @@ grid-template-columns:1fr;
   }
 }
 
+/* ==========================================
+   APROVEITAI — RESPONSIVIDADE ADMIN
+   Complemento para celulares e tablets
+========================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+.tableWrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tableWrap table {
+  min-width: 680px;
+}
+
+@media (max-width: 768px) {
+
+  .card {
+    max-width: 100%;
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .row > input,
+  .row > select,
+  .row > button {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .row > .btn {
+    min-height: 44px;
+  }
+
+  #editForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  #editForm > div {
+    min-width: 0 !important;
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 100% !important;
+  }
+
+  #editForm input,
+  #editForm select,
+  #editForm textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+
+  #tblGrupos {
+    min-width: 850px;
+  }
+
+  #detalhesGrupo {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  #detalhesGrupo .card {
+    padding: 12px;
+  }
+
+  button,
+  select {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .card {
+    padding: 10px;
+  }
+
+  #detalhesGrupo .tableWrap {
+    margin-top: 10px;
+  }
+}
+
+/* ==========================================
+   APROVEITAI — REFINAMENTO ADMIN MOBILE
+========================================== */
+
+.apv-grupos-mobile {
+  display: none;
+}
+
+.apv-grupo-card {
+  border: 1px solid #dce7df;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.apv-grupo-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #08712c;
+}
+
+.apv-grupo-card-id {
+  color: #52615b;
+  font-size: 12px;
+}
+
+.apv-grupo-card button {
+  min-height: 44px;
+  width: 100%;
+}
+
+#detalhesGrupo {
+  scroll-margin-top: 14px;
+}
+
+#detalhesGrupo .card > div {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+
+  .apv-grupos-mobile {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .apv-grupos-tabela {
+    display: none;
+  }
+
+  [data-section="grupos"] .card {
+    padding: 12px;
+  }
+
+  [data-section="grupos"] .row > * {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  #overlayEdit {
+    padding: 6px !important;
+  }
+
+  #overlayEdit .modal {
+    width: calc(100vw - 12px) !important;
+    max-height: calc(100dvh - 12px) !important;
+    height: auto !important;
+    margin: 0 auto !important;
+  }
+
+  #overlayEdit .modal-head {
+    padding: 12px !important;
+  }
+
+  #overlayEdit .body {
+    padding: 12px !important;
+    overscroll-behavior: contain;
+  }
+
+  #overlayEdit footer {
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+
+  #overlayEdit footer button {
+    min-height: 44px;
+    flex: 1 1 auto;
+  }
+
+  #editForm > div {
+    box-sizing: border-box;
+  }
+
+  #editForm .input {
+    font-size: 16px !important;
+  }
+}
+
+/* ==========================================
+   APROVEITAI — AJUSTES FINAIS MOBILE
+========================================== */
+
+#detalhesGrupo {
+  scroll-margin-top: 16px;
+  overflow-wrap: anywhere;
+}
+
+#detalhesGrupo .tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+
+  [data-section="grupos"] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  [data-section="grupos"] .row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  [data-section="grupos"] .row > * {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  [data-section="grupos"] button {
+    min-height: 44px;
+  }
+
+  #detalhesGrupo .card {
+    padding: 12px;
+  }
+
+  #detalhesGrupo .card > div {
+    min-width: 0;
+  }
+
+  #detalhesGrupo strong {
+    overflow-wrap: anywhere;
+  }
+
+  #cardsGruposMobile {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .apv-grupo-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 /*==================================================
 =             FIM DO CSS
 ==================================================*/
@@ -2507,9 +2776,15 @@ id="btnNovoCliente">
 
     <div id="resumoGrupos" class="hint"></div>
 
-    <div class="tableWrap">
-      <table id="tblGrupos"></table>
-    </div>
+   <div class="tableWrap apv-grupos-tabela">
+  <table id="tblGrupos"></table>
+</div>
+
+<div
+  id="cardsGruposMobile"
+  class="apv-grupos-mobile"
+  aria-live="polite">
+</div>
 
     <div id="detalhesGrupo"
          style="margin-top:20px;"></div>
@@ -4029,6 +4304,26 @@ if(menuGrupos){
   menuGrupos.style.display =
     total ? "" : "none";
 }
+
+/* ==========================================
+   PERMISSOES VISUAIS — GRUPOS
+========================================== */
+
+const botoesNovoGrupo = [
+  document.getElementById("btnNovoGrupo"),
+  document.querySelector(
+    '[data-section="grupos"] button[onclick="novoGrupoConvenio()"]'
+  ),
+  document.querySelector(
+    '.navbtn[onclick="novoGrupoConvenio()"]'
+  )
+];
+
+botoesNovoGrupo.forEach(function(botao){
+  if(botao){
+    botao.style.display = total ? "" : "none";
+  }
+});
 
   const menuAdmins =
     document.querySelector(
@@ -16184,7 +16479,14 @@ async function loadGrupos(){
       );
     }
 
-    gruposAdminCache = resp.grupos;
+          gruposAdminCache = resp.grupos;
+
+    const detalhes =
+      document.getElementById("detalhesGrupo");
+
+    if(detalhes){
+      detalhes.innerHTML = "";
+    }
 
     renderGrupos();
 
@@ -16229,6 +16531,16 @@ function renderGrupos(){
 
   const esc = v => escapeHtml(String(v ?? ""));
 
+  const nomesModalidade = {
+    INDIVIDUAL: "Pagamento individual",
+    COLETIVA_POR_PESSOA: "Coletivo por participante",
+    COLETIVA_FIXA: "Mensalidade coletiva fixa"
+  };
+
+  const nomeModalidade = valor =>
+    nomesModalidade[String(valor || "")] ||
+    String(valor || "-");
+
   tabela.innerHTML = `
     <thead>
       <tr>
@@ -16244,7 +16556,7 @@ function renderGrupos(){
     </thead>
 
     <tbody>
-      ${lista.map(g => {
+    ${lista.length ? lista.map(g => {
 
         const indice = gruposAdminCache.indexOf(g);
 
@@ -16253,7 +16565,7 @@ function renderGrupos(){
             <td>${esc(g.grupo_id)}</td>
             <td>${esc(g.nome_grupo)}</td>
             <td>${esc(g.tipo_grupo)}</td>
-            <td>${esc(g.modalidade_cobranca)}</td>
+            <td>${esc(nomeModalidade(g.modalidade_cobranca))}</td>
             <td>${esc(g.quantidade_negociada)}</td>
             <td>${esc(g.quantidade_participantes)}</td>
             <td>${esc(g.ativo)}</td>
@@ -16266,9 +16578,101 @@ function renderGrupos(){
           </tr>
         `;
 
-      }).join("")}
+     }).join("") : `
+  <tr>
+    <td colspan="8" style="
+      text-align:center;
+      padding:18px;
+      color:#64748b;
+    ">
+      Nenhum grupo ou convênio encontrado.
+    </td>
+  </tr>
+`}
     </tbody>
   `;
+
+  /* ==========================================
+     CARTOES RESPONSIVOS DE GRUPOS
+  ========================================== */
+
+  const areaMobile =
+    document.getElementById("cardsGruposMobile");
+
+  if(areaMobile){
+
+    const modalidadeNome = {
+      INDIVIDUAL: "Pagamento individual",
+      COLETIVA_POR_PESSOA: "Coletivo por participante",
+      COLETIVA_FIXA: "Coletivo com valor fechado"
+    };
+
+    areaMobile.innerHTML = lista.length
+      ? lista.map(g => {
+
+          const indice = gruposAdminCache.indexOf(g);
+
+          const modalidade =
+            modalidadeNome[g.modalidade_cobranca] ||
+            String(g.modalidade_cobranca || "-");
+
+          const situacao =
+            String(g.ativo || "").toUpperCase() === "SIM"
+              ? "Ativo"
+              : "Inativo";
+
+          return `
+            <article class="apv-grupo-card">
+
+              <div class="apv-grupo-card-title">
+                ${esc(g.nome_grupo)}
+              </div>
+
+              <div class="apv-grupo-card-id">
+                ${esc(g.grupo_id)}
+              </div>
+
+              <div>
+                <strong>Tipo:</strong>
+                ${esc(g.tipo_grupo)}
+              </div>
+
+              <div>
+                <strong>Modalidade:</strong>
+                ${esc(modalidade)}
+              </div>
+
+              <div>
+                <strong>Participantes:</strong>
+                ${esc(g.quantidade_participantes || 0)}
+                vinculados /
+                ${esc(g.quantidade_negociada || 0)}
+                negociados
+              </div>
+
+              <div>
+                <strong>Situação:</strong>
+                ${esc(situacao)}
+              </div>
+
+              <button
+                type="button"
+                class="btn primary"
+                onclick="detalharGrupo(${indice})">
+                Consultar detalhes
+              </button>
+
+            </article>
+          `;
+
+        }).join("")
+      : `
+        <div class="apv-grupo-card">
+          Nenhum grupo ou convênio encontrado.
+        </div>
+      `;
+
+  }
 
   const resumo = document.getElementById("resumoGrupos");
 
@@ -16289,9 +16693,23 @@ async function detalharGrupo(indice){
 
   const esc = v => escapeHtml(String(v ?? ""));
 
-  const clientes = await callAPI({
+  let clientes;
+
+try {
+
+  clientes = await callAPI({
     aba:"clientes"
   });
+
+} catch (erro) {
+
+  toast(
+    "Falha ao consultar participantes: " +
+    (erro?.message || erro)
+  );
+
+  return;
+}
 
   if(!clientes || clientes.ok === false){
     toast("Não foi possível consultar os participantes.");
@@ -16308,28 +16726,87 @@ async function detalharGrupo(indice){
     String(g.grupo_id || "").trim()
   );
 
+  const moedaBR = valor => {
+    if(
+      valor === null ||
+      valor === undefined ||
+      String(valor).trim() === ""
+    ){
+      return "-";
+    }
+
+   const texto = String(valor)
+  .trim()
+  .replace(/^R\$\s*/, "")
+  .replace(/\s/g, "");
+
+const normalizado = texto.includes(",")
+  ? texto.replace(/\./g, "").replace(",", ".")
+  : texto;
+
+const numero = Number(normalizado);
+
+    return Number.isFinite(numero)
+      ? numero.toLocaleString("pt-BR", {
+          style:"currency",
+          currency:"BRL"
+        })
+      : String(valor);
+  };
+
+  const dataBR = valor => {
+    const texto = String(valor || "").trim();
+
+    if(!texto) return "-";
+
+    const partes = texto.match(
+      /^(\d{4})-(\d{2})-(\d{2})/
+    );
+
+    if(partes){
+      return `${partes[3]}/${partes[2]}/${partes[1]}`;
+    }
+
+    return texto;
+  };
+
+  const modalidadesBR = {
+    INDIVIDUAL:"Pagamento individual",
+    COLETIVA_POR_PESSOA:"Coletivo por participante",
+    COLETIVA_FIXA:"Mensalidade coletiva fixa"
+  };
+
   const campos = [
-    ["Identificador",g.grupo_id],
-    ["Nome",g.nome_grupo],
-    ["Tipo",g.tipo_grupo],
-    ["CNPJ / CPF",g.cnpj_cpf],
-    ["Responsável",g.responsavel],
-    ["WhatsApp",g.whatsapp],
-    ["E-mail",g.email],
-    ["Cidade",g.cidade],
-    ["UF",g.uf],
-    ["Modalidade",g.modalidade_cobranca],
-    ["Forma de recebimento",g.forma_recebimento],
-    ["Valor por pessoa",g.valor_por_pessoa],
-    ["Valor mensal fechado",g.valor_fechado_mensal],
-    ["Dia de vencimento",g.dia_vencimento],
-    ["Quantidade negociada",g.quantidade_negociada],
-    ["Data de início",g.data_inicio],
-    ["Data de término",g.data_fim],
-    ["Vigência do valor",g.data_vigencia_valor],
-    ["Situação",g.ativo],
-    ["Observações",g.observacoes]
-  ];
+  ["Identificador", g.grupo_id],
+  ["Nome", g.nome_grupo],
+  ["Tipo", g.tipo_grupo],
+  ["CNPJ / CPF", g.cnpj_cpf],
+  ["Responsável", g.responsavel],
+  ["WhatsApp", g.whatsapp],
+  ["E-mail", g.email],
+  ["Cidade", g.cidade],
+  ["UF", g.uf],
+
+  ["Modalidade",
+    modalidadesBR[g.modalidade_cobranca] ||
+    g.modalidade_cobranca
+  ],
+
+  ["Forma de recebimento", g.forma_recebimento],
+
+  ["Valor por pessoa", moedaBR(g.valor_por_pessoa)],
+  ["Valor mensal fechado", moedaBR(g.valor_fechado_mensal)],
+
+  ["Dia de vencimento", g.dia_vencimento],
+  ["Quantidade negociada", g.quantidade_negociada],
+
+  ["Data de início", dataBR(g.data_inicio)],
+  ["Data de término", dataBR(g.data_fim)],
+  ["Vigência do valor", dataBR(g.data_vigencia_valor)],
+
+  ["Situação", g.ativo],
+  ["Observações", g.observacoes]
+];
 
   area.innerHTML = `
     <div class="card">
@@ -16372,19 +16849,41 @@ async function detalharGrupo(indice){
           </thead>
 
           <tbody>
-            ${participantes.map(c => `
-              <tr>
-                <td>${esc(c.idPublico)}</td>
-                <td>${esc(c.nome)}</td>
-                <td>${esc(c.ativo)}</td>
-              </tr>
-            `).join("")}
+            ${participantes.length
+  ? participantes.map(c => `
+      <tr>
+        <td>${esc(c.idPublico)}</td>
+        <td>${esc(c.nome)}</td>
+        <td>${esc(c.ativo)}</td>
+      </tr>
+    `).join("")
+  : `
+      <tr>
+        <td colspan="3" style="
+          text-align:center;
+          padding:20px;
+          color:#64748b;
+        ">
+          Nenhum cliente vinculado a este grupo.
+        </td>
+      </tr>
+    `
+}
           </tbody>
         </table>
       </div>
-
     </div>
   `;
+
+  /* ==========================================
+     ROLAR ATE OS DETALHES DO GRUPO
+     MELHORIA PARA CELULAR E COMPUTADOR
+  ========================================== */
+
+  area.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 
 }
 
