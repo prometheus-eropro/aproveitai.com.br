@@ -4169,7 +4169,7 @@ function loadConfig() {
 
       <hr>
 
-      <h3>💰 Configurações Financeiras</h3>
+      <h3>💰 Configurações de Valores</h3>
 
       <div style="max-width:350px;margin-top:20px;">
 
@@ -4211,6 +4211,36 @@ function loadConfig() {
          style="margin-top:20px;color:#666;">
         Aguardando integração com o Google Apps Script.
       </p>
+
+     <hr style="margin:28px 0;">
+
+<h3>📅 Vencimentos e Tolerância</h3>
+<p>Configuração futura das regras de vencimento e carência.</p>
+
+<hr>
+
+<h3>🏦 Integração Bancária</h3>
+<p>Banco C6, Pix, boletos e conciliação — pendente de integração.</p>
+
+<hr>
+
+<h3>💬 Mensagens e Automações</h3>
+<p>Parâmetros das notificações e do WhatsApp.</p>
+
+<hr>
+
+<h3>🔐 Segurança e Permissões</h3>
+<p>Controle de acesso, sessões e auditoria.</p>
+
+<hr>
+
+<h3>🏢 Dados Institucionais</h3>
+<p>Informações oficiais da Plataforma AproveitAI.</p>
+
+<hr>
+
+<h3>🔌 Integrações do Sistema</h3>
+<p>Estado das conexões e serviços externos.</p>
 
     </div>
   
@@ -14654,6 +14684,33 @@ if(menuCadastros){
             .toggle("ativo");
 
     };
+
+}
+
+/* ==========================================
+   MENU FINANCEIRO — ABRIR E RECOLHER
+========================================== */
+
+const menuFinanceiro =
+  document.getElementById("menuFinanceiro");
+
+if (menuFinanceiro) {
+
+  menuFinanceiro.addEventListener(
+    "click",
+    function () {
+
+      const submenu =
+        document.getElementById(
+          "submenuFinanceiro"
+        );
+
+      if (!submenu) return;
+
+      submenu.classList.toggle("ativo");
+
+    }
+  );
 
 }
 

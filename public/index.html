@@ -38,6 +38,65 @@ href="style.css">
 
 <link rel="stylesheet" href="visual2.css?v=2.0.0">
 
+<style>
+/* APROVEITAI — MENU E CALCULADORA */
+
+.menu-principal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-principal .instalar-aproveitai-box {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.menu-principal .btn-instalar-app {
+  margin: 0;
+  min-height: 44px;
+  white-space: nowrap;
+  background: #087a2c;
+  color: #fff;
+  border: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 650px) {
+  .menu-principal {
+    gap: 8px;
+  }
+
+  .menu-principal .btn-instalar-app {
+    white-space: normal;
+  }
+}
+
+/* APROVEITAI — COR DO BOTÃO INSTALAR */
+
+.menu-principal .instalar-aproveitai-box {
+  width: 100% !important;
+}
+
+.menu-principal .btn-instalar-app {
+  width: 100% !important;
+  background: #087a2c !important;
+  color: #ffffff !important;
+  border: 2px solid #087a2c !important;
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+}
+
+.menu-principal .btn-instalar-app:hover {
+  background: #065e22 !important;
+  color: #ffffff !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -154,30 +213,24 @@ Conectando empresas, consumidores e oportunidades através da tecnologia.
       🏪 Área do Parceiro
     </a>
 
-  </div>
+   <div class="instalar-aproveitai-box">
+  <button
+    type="button"
+    class="btn-instalar-app btn-aproveitai"
+    data-instalar-aproveitai
+  >
+    📲 Instalar AproveitAI
+  </button>
 
-
-  <!-- =================================================
-       INSTALAR APROVEITAI
-  ================================================== -->
-
-  <div class="instalar-aproveitai-box">
-
-    <button
-      type="button"
-      class="btn-instalar-app"
-      data-instalar-aproveitai
-    >
-      📲 Instalar AproveitAI
-    </button>
-
-    <div
-      class="instalacao-msg"
-      data-instalacao-msg
-      hidden
-    ></div>
+  <div
+    class="instalacao-msg"
+    data-instalacao-msg
+    hidden
+  ></div>
+</div>
 
   </div>
+
 
 </div>
 
@@ -186,9 +239,10 @@ Conectando empresas, consumidores e oportunidades através da tecnologia.
 ========================================== -->
 
 <section style="
-  max-width:900px;
-  margin:30px auto 35px;
-  padding:28px 20px;
+  max-width:1100px;
+  width:calc(100% - 32px);
+  margin:12px auto 25px;
+  padding:18px 24px;
   background:linear-gradient(135deg,#e8f8ed,#ffffff);
   border:2px solid #0a7a2a;
   border-radius:18px;
@@ -199,7 +253,7 @@ Conectando empresas, consumidores e oportunidades através da tecnologia.
   <h2 style="
     color:#087a2c;
     font-size:clamp(23px,4vw,32px);
-    margin:0 0 12px;
+    margin:0 0 8px;
   ">
     🧮 Descubra quanto você pode economizar!
   </h2>
@@ -208,7 +262,7 @@ Conectando empresas, consumidores e oportunidades através da tecnologia.
     color:#345044;
     font-size:17px;
     line-height:1.6;
-    margin:0 0 20px;
+    margin:0 0 12px;
   ">
     Simule suas compras nos parceiros do AproveitAI
     e descubra sua economia mensal com benefícios reais.
