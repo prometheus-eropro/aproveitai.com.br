@@ -16060,7 +16060,63 @@ console.log(r);
 
 }
 
-function novoCliente(){
+/* ==========================================
+   APROVEITAI - GRUPOS PARA CADASTRO
+========================================== */
+
+async function buscarGruposCadastro(){
+
+  const resp = await callAPI({
+    action:"listar_grupos",
+    key:state.key
+  });
+
+  if(!resp || resp.ok !== true){
+    throw new Error(
+      resp?.erro ||
+      resp?.msg ||
+      "Não foi possível consultar os grupos."
+    );
+  }
+
+  if(!Array.isArray(resp.grupos)){
+    throw new Error(
+      "Resposta inválida da consulta de grupos."
+    );
+  }
+
+  return resp.grupos
+    .filter(g =>
+      String(g.ativo || "")
+        .trim()
+        .toUpperCase() === "SIM"
+    )
+    .map(g => ({
+      value:String(g.grupo_id || "").trim(),
+      label:String(g.nome_grupo || "").trim()
+    }))
+    .filter(g => g.value && g.label)
+    .sort((a,b) =>
+      a.label.localeCompare(b.label,"pt-BR")
+    );
+
+}
+
+async function novoCliente(){
+
+  let gruposCadastro;
+
+  try{
+    gruposCadastro =
+      await buscarGruposCadastro();
+  }
+  catch(erro){
+    toast(
+      "Erro ao carregar grupos: " +
+      (erro.message || erro)
+    );
+    return;
+  }
 
   openEditModal({
 
@@ -16119,10 +16175,18 @@ function novoCliente(){
          VÍNCULO
       ========================= */
 
-      {
-        key:"grupo",
-        label:"Grupo"
-      },
+     {
+  key:"grupo_id",
+  label:"Grupo / Convênio",
+  type:"select",
+  options:[
+    {
+      value:"",
+      label:"Sem grupo / Individual"
+    },
+    ...gruposCadastro
+  ]
+},
 
 {
   key:"ativo",
@@ -16214,6 +16278,32 @@ function novoCliente(){
 
 
     onSave:async(dados)=>{
+
+/* ==========================================
+   VINCULO OFICIAL AO GRUPO
+========================================== */
+
+dados.grupo_id =
+  String(dados.grupo_id || "").trim();
+
+const grupoSelecionado =
+  gruposCadastro.find(g =>
+    g.value === dados.grupo_id
+  );
+
+if(
+  dados.grupo_id &&
+  !grupoSelecionado
+){
+  throw new Error(
+    "Grupo ou convênio inválido."
+  );
+}
+
+dados.grupo =
+  grupoSelecionado
+    ? grupoSelecionado.label
+    : "";
 
 /* =========================================
    WHATSAPP OBRIGATÓRIO
