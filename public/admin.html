@@ -2138,6 +2138,13 @@ Novo Parceiro
 
 </button>
 
+<button
+  class="navbtn"
+  type="button"
+  onclick="novoGrupoConvenio()">
+  👥 <span class="texto">Novo Grupo / Convênio</span>
+</button>
+
 <button class="navbtn" data-view="implantacao">
     🚀 <span class="texto">Implantação</span>
 </button>
@@ -2201,6 +2208,10 @@ Novo Parceiro
 </button>
 
 <div class="submenu ativo" id="submenuAdministracao">
+
+<button class="navbtn" data-view="grupos">
+  👥 <span class="texto">Grupos e Convênios</span>
+</button>
 
     <button class="navbtn" data-view="gerencial">
         📊 <span class="texto">Gerencial</span>
@@ -2456,6 +2467,57 @@ id="btnNovoCliente">
               <table id="tblClientes"></table>
             </div>
           </section>
+
+<!-- CONSULTA DE GRUPOS E CONVENIOS -->
+<section data-section="grupos" style="display:none">
+
+  <div class="card">
+
+    <h3>👥 Grupos e Convênios</h3>
+
+    <p class="hint">
+      Consulte contratos, condições comerciais
+      e participantes vinculados.
+    </p>
+
+    <div class="row">
+
+      <input
+        class="input"
+        id="filtroGrupos"
+        placeholder="Pesquisar grupo, responsável, CNPJ ou ID"
+        oninput="renderGrupos()"
+      >
+
+      <button
+        class="btn"
+        onclick="loadGrupos()">
+        🔄 Recarregar
+      </button>
+
+      <button
+        class="btn primary"
+        onclick="novoGrupoConvenio()">
+        ➕ Novo Grupo / Convênio
+      </button>
+
+    </div>
+
+    <div class="hr"></div>
+
+    <div id="resumoGrupos" class="hint"></div>
+
+    <div class="tableWrap">
+      <table id="tblGrupos"></table>
+    </div>
+
+    <div id="detalhesGrupo"
+         style="margin-top:20px;"></div>
+
+  </div>
+
+</section>
+
 
           <!-- PARCEIROS -->
           <section data-section="parceiros" style="display:none">
@@ -3960,6 +4022,13 @@ function aplicarPermissoesVisuais(){
      ADMINISTRADORES
      Somente TOTAL
   ========================================== */
+const menuGrupos =
+  document.querySelector('[data-view="grupos"]');
+
+if(menuGrupos){
+  menuGrupos.style.display =
+    total ? "" : "none";
+}
 
   const menuAdmins =
     document.querySelector(
@@ -4026,6 +4095,10 @@ store.del("apv_admin_permissao");
 
 /*** 6) NAV / VIEW ***/
 const views = {
+  grupos: {
+    title:"Grupos e Convênios",
+    desc:"Consulta de contratos, valores e participantes."
+  },
   dashboard: { title:"Dashboard", desc:"Resumo geral do banco e validações." },
   clientes: { title:"Clientes", desc:"Criar, editar, ativar/desativar e gerar termos." },
   parceiros: { title:"Parceiros", desc:"Criar, editar, ativar/desativar, token e contrato." },
@@ -4079,7 +4152,7 @@ async function loadView(name){
 
   if(
     permissao !== "total" &&
-    ["admins", "config", "backup"].includes(name)
+    ["admins", "config", "backup", "grupos"].includes(name)
   ){
     toast(
       "Seu perfil não possui permissão para acessar esta área."
@@ -4101,6 +4174,9 @@ async function loadView(name){
 
   if(name === "clientes")
     return loadClientes(true);
+
+if(name === "grupos")
+    return loadGrupos();
 
   if(name === "parceiros")
     return loadParceiros(true);
@@ -16065,6 +16141,250 @@ console.log(r);
         toast("Erro ao gerar termo.");
 
     }
+
+}
+
+/* ==========================================
+   APROVEITAI - CONSULTA DE GRUPOS
+========================================== */
+
+let gruposAdminCache = [];
+
+async function loadGrupos(){
+
+  if(!(await ensureLogin())) return;
+
+  const permissao =
+    String(state.permissao || "")
+      .trim().toLowerCase();
+
+  if(permissao !== "total"){
+    toast("Acesso exclusivo do Admin TOTAL.");
+    return;
+  }
+
+  try{
+
+    const resp = await callAPI({
+      action:"listar_grupos",
+      key:state.key
+    });
+
+    if(!resp || resp.ok !== true){
+      throw new Error(
+        resp?.erro ||
+        resp?.msg ||
+        "Erro ao consultar grupos."
+      );
+    }
+
+    if(!Array.isArray(resp.grupos)){
+      throw new Error(
+        "A API não retornou uma lista válida."
+      );
+    }
+
+    gruposAdminCache = resp.grupos;
+
+    renderGrupos();
+
+  }catch(erro){
+
+    toast(
+      "Erro na consulta: " +
+      (erro.message || erro)
+    );
+
+  }
+
+}
+
+function renderGrupos(){
+
+  const tabela = document.getElementById("tblGrupos");
+  if(!tabela) return;
+
+  const filtro =
+    String(
+      document.getElementById("filtroGrupos")?.value || ""
+    ).trim().toLocaleLowerCase("pt-BR");
+
+  const lista = gruposAdminCache.filter(g => {
+
+    if(!filtro) return true;
+
+    return [
+      g.grupo_id,
+      g.nome_grupo,
+      g.responsavel,
+      g.cnpj_cpf,
+      g.cidade
+    ].some(v =>
+      String(v || "")
+        .toLocaleLowerCase("pt-BR")
+        .includes(filtro)
+    );
+
+  });
+
+  const esc = v => escapeHtml(String(v ?? ""));
+
+  tabela.innerHTML = `
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Grupo / Convênio</th>
+        <th>Tipo</th>
+        <th>Modalidade</th>
+        <th>Negociados</th>
+        <th>Vinculados</th>
+        <th>Situação</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      ${lista.map(g => {
+
+        const indice = gruposAdminCache.indexOf(g);
+
+        return `
+          <tr>
+            <td>${esc(g.grupo_id)}</td>
+            <td>${esc(g.nome_grupo)}</td>
+            <td>${esc(g.tipo_grupo)}</td>
+            <td>${esc(g.modalidade_cobranca)}</td>
+            <td>${esc(g.quantidade_negociada)}</td>
+            <td>${esc(g.quantidade_participantes)}</td>
+            <td>${esc(g.ativo)}</td>
+            <td>
+              <button class="btn"
+                onclick="detalharGrupo(${indice})">
+                Consultar
+              </button>
+            </td>
+          </tr>
+        `;
+
+      }).join("")}
+    </tbody>
+  `;
+
+  const resumo = document.getElementById("resumoGrupos");
+
+  if(resumo){
+    resumo.textContent =
+      `${lista.length} grupo(s) encontrado(s).`;
+  }
+
+}
+
+async function detalharGrupo(indice){
+
+  const g = gruposAdminCache[indice];
+  if(!g) return;
+
+  const area = document.getElementById("detalhesGrupo");
+  if(!area) return;
+
+  const esc = v => escapeHtml(String(v ?? ""));
+
+  const clientes = await callAPI({
+    aba:"clientes"
+  });
+
+  if(!clientes || clientes.ok === false){
+    toast("Não foi possível consultar os participantes.");
+    return;
+  }
+
+  if(!Array.isArray(clientes.dados)){
+    toast("Resposta inválida da consulta de clientes.");
+    return;
+  }
+
+  const participantes = clientes.dados.filter(c =>
+    String(c.grupo_id || "").trim() ===
+    String(g.grupo_id || "").trim()
+  );
+
+  const campos = [
+    ["Identificador",g.grupo_id],
+    ["Nome",g.nome_grupo],
+    ["Tipo",g.tipo_grupo],
+    ["CNPJ / CPF",g.cnpj_cpf],
+    ["Responsável",g.responsavel],
+    ["WhatsApp",g.whatsapp],
+    ["E-mail",g.email],
+    ["Cidade",g.cidade],
+    ["UF",g.uf],
+    ["Modalidade",g.modalidade_cobranca],
+    ["Forma de recebimento",g.forma_recebimento],
+    ["Valor por pessoa",g.valor_por_pessoa],
+    ["Valor mensal fechado",g.valor_fechado_mensal],
+    ["Dia de vencimento",g.dia_vencimento],
+    ["Quantidade negociada",g.quantidade_negociada],
+    ["Data de início",g.data_inicio],
+    ["Data de término",g.data_fim],
+    ["Vigência do valor",g.data_vigencia_valor],
+    ["Situação",g.ativo],
+    ["Observações",g.observacoes]
+  ];
+
+  area.innerHTML = `
+    <div class="card">
+
+      <h3>📋 ${esc(g.nome_grupo)}</h3>
+
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:12px;
+      ">
+
+        ${campos.map(([nome,valor]) => `
+          <div>
+            <strong>${esc(nome)}</strong>
+            <div>${esc(valor) || "-"}</div>
+          </div>
+        `).join("")}
+
+      </div>
+
+      <div class="hr"></div>
+
+      <h3>👥 Participantes vinculados</h3>
+
+      <p>
+        Negociados: <strong>${esc(g.quantidade_negociada)}</strong>
+        |
+        Vinculados: <strong>${participantes.length}</strong>
+      </p>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>APV</th>
+              <th>Nome</th>
+              <th>Situação</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${participantes.map(c => `
+              <tr>
+                <td>${esc(c.idPublico)}</td>
+                <td>${esc(c.nome)}</td>
+                <td>${esc(c.ativo)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  `;
 
 }
 
