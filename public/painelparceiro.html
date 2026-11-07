@@ -1002,8 +1002,6 @@ API_URL+
 
 const d=await r.json();
 
-if(!d.ok){
-
 if (
   !d.ok ||
   !Array.isArray(d.dados)
@@ -1358,6 +1356,7 @@ encodeURIComponent(sessionStorage.getItem("parceiroId"));
 }
 
 </script>
+
 <!-- ✅ RODAPÉ PADRÃO -->
 <footer style="
   background:#dfffe0;
