@@ -16918,10 +16918,40 @@ async function buscarGruposCadastro(){
         .trim()
         .toUpperCase() === "SIM"
     )
-    .map(g => ({
-      value:String(g.grupo_id || "").trim(),
-      label:String(g.nome_grupo || "").trim()
-    }))
+   .map(g => ({
+  value:String(g.grupo_id || "").trim(),
+  label:String(g.nome_grupo || "").trim(),
+
+  modalidade_cobranca:
+    String(g.modalidade_cobranca || "")
+      .trim()
+      .toUpperCase(),
+
+  responsavel_pagamento:
+    String(g.responsavel_pagamento || "")
+      .trim()
+      .toUpperCase(),
+
+  tipo_grupo:
+    String(g.tipo_grupo || "")
+      .trim()
+      .toUpperCase(),
+
+  valor_por_pessoa:
+    g.valor_por_pessoa ?? "",
+
+  valor_fechado_mensal:
+    g.valor_fechado_mensal ?? "",
+
+  dia_vencimento:
+    g.dia_vencimento ?? "",
+
+  ativo:
+    String(g.ativo || "")
+      .trim()
+      .toUpperCase()
+}))
+
     .filter(g => g.value && g.label)
     .sort((a,b) =>
       a.label.localeCompare(b.label,"pt-BR")
@@ -17416,6 +17446,49 @@ dados.grupo =
     ? grupoSelecionado.label
     : "";
 
+/* ==========================================
+   REGRA FINANCEIRA DO CONVENIO
+========================================== */
+
+const modalidade =
+  String(
+    grupoSelecionado?.modalidade_cobranca || ""
+  ).trim().toUpperCase();
+
+const pagamentoColetivo = [
+  "COLETIVA_POR_PESSOA",
+  "COLETIVA_FIXA"
+].includes(modalidade);
+
+if(pagamentoColetivo){
+
+  dados.tipoPlano = "GRUPO";
+
+  dados.responsavelPagamento = "EMPRESA";
+
+  dados.grupoPagante =
+    grupoSelecionado.label;
+
+  // A mensalidade pertence ao convenio.
+  // Nao enviar valor individual para cobranca.
+  dados.valorMensalidade = "";
+
+  // O vencimento financeiro pertence ao grupo.
+  dados.dataVencimento = "";
+
+  dados.modalidade_cobranca = modalidade;
+
+} else {
+
+  dados.responsavelPagamento = "CLIENTE";
+
+  dados.grupoPagante = "";
+
+  dados.modalidade_cobranca =
+    modalidade || "INDIVIDUAL";
+
+}
+
 /* =========================================
    WHATSAPP OBRIGATÓRIO
 ========================================= */
@@ -17642,6 +17715,211 @@ if(
     }
 
   });
+
+  /* ==========================================
+     APROVEITAI — CADASTRO INTELIGENTE
+     CONDICOES COMERCIAIS DO GRUPO
+  ========================================== */
+
+  const formCliente =
+    document.getElementById("editForm");
+
+  const campoGrupo =
+    formCliente?.querySelector(
+      '[data-key="grupo_id"]'
+    );
+
+  if(campoGrupo){
+
+    campoGrupo.addEventListener(
+      "change",
+      atualizarCondicoesCliente
+    );
+
+    atualizarCondicoesCliente();
+
+  }
+
+  function atualizarCondicoesCliente(){
+
+document
+  .getElementById("avisoCondicoesConvenio")
+  ?.remove();
+
+    const grupoId =
+      String(campoGrupo.value || "").trim();
+
+    const grupo =
+      gruposCadastro.find(g =>
+        g.value === grupoId
+      );
+
+    const coletivo =
+      grupo &&
+      [
+        "COLETIVA_POR_PESSOA",
+        "COLETIVA_FIXA"
+      ].includes(grupo.modalidade_cobranca);
+
+    const campo = chave =>
+      formCliente.querySelector(
+        `[data-key="${chave}"]`
+      );
+
+    const configurar = (
+      chave,
+      valor,
+      bloqueado
+    ) => {
+
+      const elemento = campo(chave);
+
+      if(!elemento) return;
+
+      elemento.value =
+        valor == null ? "" : String(valor);
+
+      elemento.disabled = !!bloqueado;
+
+      elemento.style.background =
+        bloqueado ? "#f1f5f9" : "";
+
+    };
+
+    const mostrar = (chave, visivel) => {
+
+      const elemento = campo(chave);
+
+      if(!elemento) return;
+
+      const bloco = elemento.parentElement;
+
+      if(bloco){
+        bloco.style.display =
+          visivel ? "" : "none";
+      }
+
+    };
+
+    if(coletivo){
+
+      configurar(
+        "responsavelPagamento",
+        grupo.responsavel_pagamento === "CLIENTE"
+          ? "CLIENTE"
+          : "EMPRESA",
+        true
+      );
+
+      configurar(
+        "grupoPagante",
+        grupo.label,
+        true
+      );
+
+      configurar(
+        "valorMensalidade",
+        grupo.modalidade_cobranca ===
+          "COLETIVA_POR_PESSOA"
+            ? grupo.valor_por_pessoa
+            : grupo.valor_fechado_mensal,
+        true
+      );
+
+      configurar(
+        "dataVencimento",
+        "",
+        true
+      );
+
+      mostrar("dataVencimento", false);
+
+const avisoAntigo =
+  document.getElementById(
+    "avisoCondicoesConvenio"
+  );
+
+if(avisoAntigo){
+  avisoAntigo.remove();
+}
+
+const aviso =
+  document.createElement("div");
+
+aviso.id = "avisoCondicoesConvenio";
+
+aviso.style.cssText = `
+  width:100%;
+  padding:12px;
+  background:#eef8f0;
+  border:1px solid #b9dfc3;
+  border-radius:10px;
+  line-height:1.6;
+  box-sizing:border-box;
+`;
+
+const valor =
+  grupo.modalidade_cobranca ===
+    "COLETIVA_POR_PESSOA"
+      ? grupo.valor_por_pessoa
+      : grupo.valor_fechado_mensal;
+
+const numero = Number(
+  String(valor || "0")
+    .replace(",", ".")
+);
+
+const valorFormatado =
+  numero.toLocaleString("pt-BR",{
+    style:"currency",
+    currency:"BRL"
+  });
+
+aviso.textContent =
+  "Convênio: " + grupo.label +
+  " | Modalidade: " +
+  (grupo.modalidade_cobranca ===
+    "COLETIVA_POR_PESSOA"
+      ? "Coletivo por participante"
+      : "Coletivo com valor fechado") +
+  " | Valor contratado: " +
+  valorFormatado +
+  " | Vencimento financeiro: dia " +
+  (grupo.dia_vencimento || "-");
+
+formCliente.appendChild(aviso);
+
+    } else {
+
+      configurar(
+        "responsavelPagamento",
+        "CLIENTE",
+        false
+      );
+
+      configurar(
+        "grupoPagante",
+        "",
+        false
+      );
+
+      configurar(
+        "valorMensalidade",
+        "",
+        false
+      );
+
+      configurar(
+        "dataVencimento",
+        "",
+        false
+      );
+
+      mostrar("dataVencimento", true);
+
+    }
+
+  }
 
 }
 

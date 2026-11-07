@@ -39,61 +39,72 @@ href="style.css">
 <link rel="stylesheet" href="visual2.css?v=2.0.0">
 
 <style>
-/* APROVEITAI — MENU E CALCULADORA */
+/* ==========================================
+   APROVEITAI — MENU RESPONSIVO
+========================================== */
 
 .menu-principal {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   gap: 10px;
 }
 
 .menu-principal .instalar-aproveitai-box {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: auto !important;
   margin: 0;
   padding: 0;
-  display: flex;
-  align-items: center;
 }
 
 .menu-principal .btn-instalar-app {
-  margin: 0;
+  width: auto !important;
   min-height: 44px;
-  white-space: nowrap;
-  background: #087a2c;
-  color: #fff;
-  border: 0;
-  box-shadow: none;
-}
-
-@media (max-width: 650px) {
-  .menu-principal {
-    gap: 8px;
-  }
-
-  .menu-principal .btn-instalar-app {
-    white-space: normal;
-  }
-}
-
-/* APROVEITAI — COR DO BOTÃO INSTALAR */
-
-.menu-principal .instalar-aproveitai-box {
-  width: 100% !important;
-}
-
-.menu-principal .btn-instalar-app {
-  width: 100% !important;
+  margin: 0;
+  padding: 10px 16px;
+  white-space: normal;
   background: #087a2c !important;
   color: #ffffff !important;
   border: 2px solid #087a2c !important;
   border-radius: 12px !important;
   font-weight: 800 !important;
+  text-align: center;
 }
 
 .menu-principal .btn-instalar-app:hover {
   background: #065e22 !important;
   color: #ffffff !important;
+}
+
+/* CELULAR */
+
+@media (max-width: 650px) {
+
+  .menu-principal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .menu-principal .instalar-aproveitai-box {
+    width: auto !important;
+    max-width: 100%;
+  }
+
+  .menu-principal .btn-instalar-app {
+    width: auto !important;
+    max-width: 100%;
+    min-height: 42px;
+    padding: 9px 12px;
+    font-size: 13px;
+    white-space: normal;
+  }
+
 }
 </style>
 
