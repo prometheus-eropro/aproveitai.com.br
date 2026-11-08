@@ -699,26 +699,47 @@ async function verificarConteudoParceiro(parceiroId) {
             : [];
 
 
-    const beneficiosAtivos = listaBeneficios.filter(item => {
+    
+/* ==========================================
+   APROVEITAI — REGRA ÚNICA DE VIGÊNCIA
 
-      const ativo = String(item.ativo ?? "sim")
-        .trim()
-        .toLowerCase();
+   BENEFÍCIOS E PROMOÇÕES
 
-      return ativo !== "nao" && ativo !== "não";
+   Aparece somente quando:
+   - ativo = SIM
+   - data inicial já chegou
+   - data final ainda não venceu
 
-    });
+   Não altera a planilha.
+========================================== */
 
+const ofertaPublicavel = item => {
 
-    const promocoesAtivas = listaPromocoes.filter(item => {
+  const ativo = String(item.ativo ?? "")
+    .trim()
+    .toUpperCase();
 
-      const ativo = String(item.ativo ?? "sim")
-        .trim()
-        .toLowerCase();
+  if (!["SIM", "ATIVO", "TRUE", "1"].includes(ativo)) {
+    return false;
+  }
 
-      return ativo !== "nao" && ativo !== "não";
+  if (AproveitAIOfertas.promocaoEncerrada(item)) {
+    return false;
+  }
 
-    });
+  if (AproveitAIOfertas.promocaoFutura(item)) {
+    return false;
+  }
+
+  return true;
+
+};
+
+const beneficiosAtivos =
+  listaBeneficios.filter(ofertaPublicavel);
+
+const promocoesAtivas =
+  listaPromocoes.filter(ofertaPublicavel);
 
 
     console.log(

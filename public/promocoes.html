@@ -931,14 +931,38 @@ function carregarPromocoes(){
             }
 
 
-            const dados =
-    (Array.isArray(retorno.dados)
-        ? retorno.dados
-        : [])
-    .filter(oferta =>
-        !AproveitAIOfertas.promocaoEncerrada(oferta) &&
-        !AproveitAIOfertas.promocaoFutura(oferta)
-    );
+           
+/* ==========================================
+   APROVEITAI — OFERTAS PUBLICÁVEIS
+   Status + início + vencimento
+========================================== */
+
+const dados =
+  (Array.isArray(retorno.dados)
+    ? retorno.dados
+    : [])
+  .filter(oferta => {
+
+    const ativo = String(oferta.ativo ?? "")
+      .trim()
+      .toUpperCase();
+
+    if (!["SIM", "ATIVO", "TRUE", "1"].includes(ativo)) {
+      return false;
+    }
+
+    if (AproveitAIOfertas.promocaoEncerrada(oferta)) {
+      return false;
+    }
+
+    if (AproveitAIOfertas.promocaoFutura(oferta)) {
+      return false;
+    }
+
+    return true;
+
+  });
+
 
 
             lista.innerHTML = "";
