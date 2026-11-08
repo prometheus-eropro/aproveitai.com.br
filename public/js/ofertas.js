@@ -221,12 +221,30 @@ window.AproveitAIOfertas = (() => {
     }
 
 
-    /*
-     * Demais formatos recebidos do GAS
-     */
+/*
+ * Data ISO recebida do GAS.
+ * Preserva o dia do calendário, evitando
+ * deslocamento causado pelo fuso horário.
+ */
 
-    const d =
-      new Date(valor);
+const iso = s.match(
+  /^(\d{4})-(\d{2})-(\d{2})(?:T|$)/
+);
+
+if (iso) {
+  return new Date(
+    Number(iso[1]),
+    Number(iso[2]) - 1,
+    Number(iso[3])
+  );
+}
+
+/*
+ * Outros formatos reconhecidos
+ */
+
+const d =
+  new Date(valor);
 
 
     return isNaN(d.getTime())

@@ -242,12 +242,24 @@ body {
 <input type="hidden" name="aceiteTermo" value="Aceito cadastro online">
 <input type="hidden" name="dataAceite" id="dataAceite">
 
-  <label>Nome completo:</label>
-  <input type="text" name="nome" required>
+  <!-- ==========================================
+     DADOS PESSOAIS DO CLIENTE
+========================================== -->
 
-<label>CPF:</label>
+<label for="cadNome">Nome completo:</label>
 <input
   type="text"
+  id="cadNome"
+  name="nome"
+  placeholder="Digite seu nome completo"
+  autocomplete="name"
+  required
+>
+
+<label for="cadCpf">CPF:</label>
+<input
+  type="text"
+  id="cadCpf"
   name="cpf"
   placeholder="Somente números"
   maxlength="11"
@@ -256,27 +268,36 @@ body {
   required
 >
 
-<label>Celular (WhatsApp):</label>
+<label for="cadCelular">Celular (WhatsApp):</label>
 <input
   type="text"
+  id="cadCelular"
   name="celular"
   placeholder="DDD + número (ex: 28999990000)"
   maxlength="11"
   pattern="\d{10,11}"
   inputmode="numeric"
+  autocomplete="tel-national"
   required
 >
 
-<label>Cidade:</label>
+<label for="cadCidade">Cidade:</label>
 <input
   type="text"
+  id="cadCidade"
   name="cidade"
   placeholder="Ex: Guaçuí"
+  autocomplete="address-level2"
   required
 >
 
-<label>Estado (UF):</label>
-<select name="uf" required>
+<label for="cadUF">Estado (UF):</label>
+<select
+  id="cadUF"
+  name="uf"
+  autocomplete="address-level1"
+  required
+>
   <option value="">Selecione</option>
   <option value="AC">AC</option>
   <option value="AL">AL</option>
@@ -307,15 +328,17 @@ body {
   <option value="TO">TO</option>
 </select>
 
-  <label>Data de nascimento:</label>
+<label for="nascimento">Data de nascimento:</label>
 <input
   type="text"
   id="nascimento"
   name="nascimento"
   placeholder="DD/MM/AAAA"
   maxlength="10"
+  autocomplete="bday"
   required
 >
+
 <h3>🚗 Veículos (opcional no cadastro)</h3>
 
 <p style="

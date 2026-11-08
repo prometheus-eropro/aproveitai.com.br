@@ -932,9 +932,13 @@ function carregarPromocoes(){
 
 
             const dados =
-                Array.isArray(retorno.dados)
-                    ? retorno.dados
-                    : [];
+    (Array.isArray(retorno.dados)
+        ? retorno.dados
+        : [])
+    .filter(oferta =>
+        !AproveitAIOfertas.promocaoEncerrada(oferta) &&
+        !AproveitAIOfertas.promocaoFutura(oferta)
+    );
 
 
             lista.innerHTML = "";
@@ -1076,7 +1080,7 @@ carregarPromocoes();
 
 function voltarPagina(){
 
-    history.back();
+    window.location.href = "index.html";
 
 }
 

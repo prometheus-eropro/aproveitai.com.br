@@ -1363,10 +1363,12 @@ body {
 footer.footer {
   margin-top: auto;
 }
+
 footer.footer {
   background: #e9ffe9;
   padding: 30px 20px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .footer-container {
@@ -3734,4 +3736,23 @@ body.pagina-promocoes {
     box-sizing: border-box !important;
   }
 
+}
+
+/* ==========================================
+   APROVEITAI — CORREÇÃO DO RODAPÉ
+   Evita largura excedente causada pelo padding
+========================================== */
+
+footer.footer {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.footer-container,
+.footer-container > div {
+  min-width: 0;
+}
+
+.footer-container a {
+  overflow-wrap: anywhere;
 }

@@ -453,8 +453,18 @@ function renderizar(lista) {
     const instagram =
       String(p.instagram || "").trim();
 
-    const site =
-      String(p.site || "").trim();
+    const siteInformado =
+  String(p.site || "").trim();
+
+const siteNormalizado =
+  /^https?:\/\//i.test(siteInformado)
+    ? siteInformado
+    : "https://" + siteInformado;
+
+const site =
+  /^https?:\/\/[^\s"'<>]+$/i.test(siteNormalizado)
+    ? siteNormalizado
+    : "";
 
     const email =
       String(p.email || "").trim();

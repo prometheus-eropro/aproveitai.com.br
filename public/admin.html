@@ -3710,12 +3710,20 @@ Somente leitura.
     <div class="modal">
       <header>
         <b>Entrar no Admin</b>
-        <span class="hint">Acesso via aba “admins”</span>
+        <span class="hint">Acesso restrito a administradores autorizados</span>
       </header>
       <div class="body">
-        <p>Digite a <b>senha (key)</b> cadastrada na coluna <b>senha</b> da aba <b>admins</b>.</p>
+        <p>Digite sua senha de acesso ao painel administrativo.</p>
         <div class="row">
-          <input class="input" id="inpKey" placeholder="Senha (key) do admin" style="min-width:260px"/>
+          <input
+  class="input"
+  type="password"
+  id="inpKey"
+  placeholder="Senha do administrador"
+  autocomplete="current-password"
+  aria-label="Senha do administrador"
+  style="min-width:260px"
+/>
           <button class="btn primary" id="btnLogin">Entrar</button>
         </div>
         <div class="hint" id="loginMsg"></div>
@@ -3762,9 +3770,9 @@ const API_URL = CONFIG.apiAdmin;
 
 /*** 2) ESTADO ***/
 const store = {
-  get(k){ try{return localStorage.getItem(k)}catch(e){return null} },
-  set(k,v){ try{localStorage.setItem(k,v)}catch(e){} },
-  del(k){ try{localStorage.removeItem(k)}catch(e){} },
+  get(k){ try{return sessionStorage.getItem(k)}catch(e){return null} },
+  set(k,v){ try{sessionStorage.setItem(k,v)}catch(e){} },
+  del(k){ try{sessionStorage.removeItem(k)}catch(e){} },
 };
 const state = {
   key: store.get("apv_admin_key") || null,
@@ -4194,7 +4202,7 @@ aplicarPermissoesVisuais();
 
     setPill("Não autenticado");
     showOverlay("overlayLogin", true);
-    $("loginMsg").textContent = "Acesso negado. Verifique a key na aba 'admins'.";
+    $("loginMsg").textContent = "Acesso negado. Verifique sua senha e tente novamente.";
     return false;
   }
 }
@@ -6320,21 +6328,34 @@ if(nascimentoOriginal){
          PLANO / PAGAMENTO
       ========================================= */
 
-      {
-        key:"tipoPlano",
-        label:"Tipo de plano"
-      },
+     {
+  key:"tipoPlano",
+  label:"Tipo de plano",
+  readonly:true
+},
+
+      /* =========================================
+   VALOR MENSAL DO ACESSO
+========================================= */
+
+{
+  key:"valorMensalidade",
+  label:"Valor mensal do acesso (R$)",
+  type:"number"
+},
 
       {
-        key:"dataVencimento",
-        label:"Data de vencimento",
-        type:"date"
-      },
+  key:"dataVencimento",
+  label:"Data de vencimento",
+  type:"date",
+  readonly:true
+},
 
       {
-        key:"statusPagamento",
-        label:"Status do pagamento"
-      },
+  key:"statusPagamento",
+  label:"Status do pagamento",
+  readonly:true
+},
 
     {
   key:"responsavelPagamento",
@@ -6371,12 +6392,52 @@ if(nascimentoOriginal){
     onSave:async(patch)=>{
 
       /* =========================================
+         PROTEÇÃO FINANCEIRA — APROVEITAI
+         ADMIN TOTAL / OPERACIONAL
+      ========================================= */
+
+      const permissao = String(
+        state.permissao || "operacional"
+      ).trim().toLowerCase();
+
+      if (permissao !== "total") {
+
+        [
+          "valorMensalidade",
+          "tipoPlano",
+          "dataVencimento",
+          "statusPagamento",
+          "responsavelPagamento",
+          "grupoPagante",
+          "dataEntradaGrupo"
+        ].forEach(campo => {
+          delete patch[campo];
+        });
+
+      }
+
+      /* =========================================
          PROTEÇÃO DOS DADOS PERMANENTES
       ========================================= */
 
       delete patch.cpf;
       delete patch.idPublico;
       delete patch.nascimento;
+
+/* =========================================
+   STATUS FINANCEIRO
+   ALTERAÇÃO SOMENTE PELO FINANCEIRO
+========================================= */
+
+delete patch.statusPagamento;
+
+/* =========================================
+   CICLO FINANCEIRO
+   ALTERAÇÃO FORA DA EDIÇÃO CADASTRAL
+========================================= */
+
+delete patch.tipoPlano;
+delete patch.dataVencimento;
 
 
 /* =========================================
