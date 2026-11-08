@@ -6115,6 +6115,15 @@ renderTable("tblClientes", rows, [
   {key:"tipoPlano", label:"Plano"},
 
   {
+  key:"dataVencimento",
+  label:"Validade do acesso",
+  render:(c)=>
+    formatarValidadeCliente_(
+      c.dataVencimento
+    ) || "—"
+},
+
+  {
       key:"ativo",
       label:"Status",
       render:(c)=>{
@@ -6180,14 +6189,72 @@ async function toggleCliente(cpf, ativo){
   }catch(err){ toast("Erro ao alterar status"); }
 }
 
+/* ==========================================
+   APROVEITAI — EXIBIÇÃO DA VALIDADE
+   SOMENTE LEITURA
+========================================== */
+
+function formatarValidadeCliente_(valor){
+
+  if(!valor) return "";
+
+  const texto = String(valor).trim();
+
+  // Data brasileira, inclusive com horário
+  const br = texto.match(
+    /^(\d{2})\/(\d{2})\/(\d{4})/
+  );
+
+  if(br){
+    return `${br[1]}/${br[2]}/${br[3]}`;
+  }
+
+  // Data ISO com horário e fuso
+  if(/^\d{4}-\d{2}-\d{2}T/.test(texto)){
+
+    const data = new Date(texto);
+
+    if(!isNaN(data.getTime())){
+
+      return new Intl.DateTimeFormat("pt-BR",{
+        day:"2-digit",
+        month:"2-digit",
+        year:"numeric",
+        timeZone:"America/Sao_Paulo"
+      }).format(data);
+
+    }
+
+  }
+
+  // Data ISO sem horário
+  const iso = texto.match(
+    /^(\d{4})-(\d{2})-(\d{2})$/
+  );
+
+  if(iso){
+    return `${iso[3]}/${iso[2]}/${iso[1]}`;
+  }
+
+  return texto;
+}
+
 function abrirEditarCliente(cpf){
 
-  const c =
+ const c = {
+  ...(
     state.cache.clientes.find(
       x =>
         apenasNumeros(x.cpf) ===
         apenasNumeros(cpf)
-    ) || {};
+    ) || {}
+  )
+};
+
+c.dataVencimento =
+  formatarValidadeCliente_(
+    c.dataVencimento
+  );
 
 /* =========================================
    FORMATA DATA DE NASCIMENTO PARA EXIBIÇÃO
@@ -6344,10 +6411,10 @@ if(nascimentoOriginal){
   type:"number"
 },
 
-      {
+{
   key:"dataVencimento",
-  label:"Data de vencimento",
-  type:"date",
+  label:"Validade do acesso (somente leitura)",
+  type:"text",
   readonly:true
 },
 
@@ -11772,6 +11839,13 @@ function renderPagamentos(){
         label:"ID"
       },
 
+   {
+  key:"cliente_id",
+  label:"Cliente APV",
+  render:(p)=>
+    String(p.cliente_id || "—")
+},
+
       {
         key:"nome_pagador",
         label:"Pagador"
@@ -14966,6 +15040,152 @@ btnSair.addEventListener("click",()=>{
 });
 
 }
+
+/* ============================================
+   APROVEITAI — EXPORTAÇÃO CSV DO ADMIN
+   Clientes, Parceiros, Benefícios,
+   Promoções e Logs
+
+   Somente Admin TOTAL.
+   Não altera dados na planilha.
+============================================ */
+
+const exportacoesCSV = {
+
+  clientes: {
+    botao: "btnCsvClientes",
+    filtro: "filtroClientes",
+    carregar: () => loadClientes(true),
+    campos: [
+      "idPublico", "nome", "cpf", "celular",
+      "cidade", "uf", "grupo", "ativo",
+      "tipoPlano", "valorMensalidade",
+      "validade", "statusPagamento"
+    ]
+  },
+
+  parceiros: {
+    botao: "btnCsvParceiros",
+    filtro: "filtroParceiros",
+    carregar: () => loadParceiros(true),
+    campos: [
+      "parceiro_id", "nomeFantasia",
+      "razaoSocial", "cnpj", "cpf",
+      "cidade", "uf", "ramo", "ativo",
+      "whatsapp", "email", "instagram",
+      "site", "dataCadastro"
+    ]
+  },
+
+  beneficios: {
+    botao: "btnCsvBeneficios",
+    filtro: "filtroBeneficios",
+    carregar: () => loadBeneficios(true),
+    campos: [
+      "beneficio_id", "titulo", "descricao",
+      "parceiro", "parceiro_id", "grupo",
+      "dataInicio", "dataFim", "ativo",
+      "forma_pagamento"
+    ]
+  },
+
+  promocoes: {
+    botao: "btnCsvPromocoes",
+    filtro: "filtroPromocoes",
+    carregar: () => loadPromocoes(true),
+    campos: [
+      "promocao_id", "titulo", "descricao",
+      "parceiro", "parceiro_id", "grupo",
+      "dataInicio", "dataFim", "ativo",
+      "forma_pagamento"
+    ]
+  },
+
+  logs: {
+    botao: "btnCsvLogs",
+    filtro: "filtroLogs",
+    carregar: () => loadLogs(true),
+    campos: [
+      "data", "cpf", "cliente", "parceiro",
+      "parceiro_id", "tipo", "status",
+      "codigo_ero", "beneficio_utilizado",
+      "usado", "usadoEm"
+    ]
+  }
+
+};
+
+Object.entries(exportacoesCSV).forEach(([aba, config]) => {
+
+  const botao = document.getElementById(config.botao);
+
+  if (!botao) return;
+
+  botao.addEventListener("click", async () => {
+
+    if (
+      String(state.permissao || "")
+        .trim()
+        .toLowerCase() !== "total"
+    ) {
+      toast("Exportação permitida somente ao Admin TOTAL.");
+      return;
+    }
+
+    try {
+
+      await config.carregar();
+
+      const busca = String(
+        document.getElementById(config.filtro)?.value || ""
+      ).trim().toLowerCase();
+
+      const registros = (
+        Array.isArray(state.cache[aba])
+          ? state.cache[aba]
+          : []
+      ).filter(registro => {
+
+        if (!busca) return true;
+
+        return JSON.stringify(registro)
+          .toLowerCase()
+          .includes(busca);
+
+      });
+
+      const linhas = registros.map(registro => {
+
+        const linha = {};
+
+        config.campos.forEach(campo => {
+          linha[campo] = registro[campo] ?? "";
+        });
+
+        return linha;
+
+      });
+
+      const data = new Date()
+        .toISOString()
+        .slice(0, 10);
+
+      downloadCSV(
+        `aproveitai_${aba}_${data}.csv`,
+        linhas
+      );
+
+    } catch (erro) {
+
+      console.error("Erro na exportação CSV:", erro);
+      toast("Não foi possível exportar os dados.");
+
+    }
+
+  });
+
+});
+
  const btnPesquisarGlobal = $("btnPesquisarGlobal");
 
 if(btnPesquisarGlobal){
@@ -21336,10 +21556,11 @@ align-items:end;
 <div style="margin-top:25px">
 
 <button
-class="btn">
-
-Cancelar
-
+  type="button"
+  class="btn"
+  onclick="if(confirm('Descartar o cadastro não salvo?')) showView('parceiros')"
+>
+  Cancelar
 </button>
 
 <button
