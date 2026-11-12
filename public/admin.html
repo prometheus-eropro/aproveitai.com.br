@@ -10212,12 +10212,6 @@ async function carregarSolicitacoes(){
       });
 
 
-    console.log(
-      "SOLICITAÇÕES:",
-      r
-    );
-
-
     if(
       !r ||
       r.ok === false
@@ -10512,10 +10506,6 @@ function abrirSolicitacao(protocolo){
 
   window.solicitacaoAtual = s;
 
-console.log("CPF RECEBIDO NA ABERTURA:", s.cpf);
-console.log("OBJETO COMPLETO NA ABERTURA:", s);
-
-
   /* ==========================================
      ABRE ÁREA DE DETALHES
   ========================================== */
@@ -10723,13 +10713,6 @@ console.log("OBJETO COMPLETO NA ABERTURA:", s);
     behavior: "smooth",
     block: "start"
   });
-
-
-  console.log(
-    "SOLICITAÇÃO EM TRATAMENTO:",
-    s
-  );
-
 }
 
 async function salvarAndamentoSolicitacao(){
@@ -10858,13 +10841,6 @@ if(
           resposta
 
       });
-
-
-    console.log(
-      "SALVAR ANDAMENTO:",
-      r
-    );
-
 
     if(
       !r ||
@@ -11268,13 +11244,7 @@ status:
         });
 
 
-      console.log(
-        "ENVIO WHATSAPP SOLICITAÇÃO:",
-        r
-      );
-
-
-      if(!r || r.ok !== true){
+     if(!r || r.ok !== true){
 
         throw new Error(
           r?.erro ||
@@ -11417,13 +11387,6 @@ async function concluirSolicitacao(){
           resposta
 
       });
-
-
-    console.log(
-      "CONCLUIR SOLICITAÇÃO:",
-      r
-    );
-
 
     if(
       !r ||
@@ -15198,8 +15161,7 @@ if(btnPesquisarGlobal){
 
         const texto = pesquisa.value.toLowerCase();
 
-        console.log(texto);
-
+        
     });
 
 }
@@ -16649,40 +16611,6 @@ Salvar Parceiro
 </div>
 
 <script>
-async function gerarContratoParceiro(parceiroId){
-
-  try{
-
-    const resp = await callAPI({
-
-      action:"gerarContratoParceiro",
-      parceiro_id:parceiroId
-
-    });
-
-    if(resp && resp.ok && resp.pdfUrl){
-
-      window.open(resp.pdfUrl,"_blank");
-
-    }else{
-
-      alert(
-        resp?.mensagem ||
-        "PDF não gerado."
-      );
-
-    }
-
-  }catch(err){
-
-    console.error(err);
-
-    alert("Erro ao gerar contrato.");
-
-  }
-
-}
-
 async function gerarTermosCliente(cpf){
 
 
@@ -16698,8 +16626,6 @@ async function gerarTermosCliente(cpf){
             key:state.key
 
         });
-
-console.log(r);
 
 
         if(r.url){
@@ -18249,11 +18175,6 @@ await callAPI({
   parceiro_id:id
 });
 
-console.log(
-  "RESPOSTA BENEFÍCIOS IMPLANTAÇÃO:",
-  beneficiosResp
-);
-
 const beneficios = {
   dados:
     Array.isArray(beneficiosResp)
@@ -18275,11 +18196,6 @@ await callAPI({
   action:"listarPromocoesParceiro",
   parceiro_id:id
 });
-
-console.log(
-  "RESPOSTA PROMOÇÕES IMPLANTAÇÃO:",
-  promocoesResp
-);
 
 const promocoes = {
   dados:
@@ -18304,11 +18220,6 @@ try{
     await callAPI({
       action:"bibliotecaOficial"
     });
-
-  console.log(
-    "RESPOSTA BIBLIOTECA OFICIAL:",
-    bibliotecaResp
-  );
 
   if(
     bibliotecaResp &&
@@ -18389,12 +18300,6 @@ const implantacaoResp =
     parceiro_id:id
   });
 
-console.log(
-  "CONSULTA IMPLANTAÇÃO:",
-  implantacaoResp
-);
-
-
 if(
   implantacaoResp &&
   implantacaoResp.ok
@@ -18435,11 +18340,6 @@ if(
   };
 
 }
-
-  console.log(
-    "CHECKLIST IMPLANTAÇÃO:",
-    checklist
-  );
 
 }catch(erro){
 
@@ -19085,12 +18985,6 @@ const resp =
 
   });
 
-    console.log(
-      "ATUALIZAÇÃO CHECKLIST:",
-      resp
-    );
-
-
     if(
       !resp ||
       resp.ok === false
@@ -19193,13 +19087,6 @@ async function concluirImplantacao(
           parceiroId
 
       });
-
-
-    console.log(
-      "CONCLUSÃO IMPLANTAÇÃO:",
-      resp
-    );
-
 
     if(
       !resp ||
