@@ -21657,40 +21657,43 @@ async function reprocessarImplantacao(parceiroId){
 
 }
 
-function gerarContratoParceiro(parceiroId){
+async function gerarContratoParceiro(parceiroId) {
+  const id = String(parceiroId || "").trim();
 
-  parceiroId =
-    String(
-      parceiroId || ""
-    )
-    .trim()
-    .toUpperCase();
-
-
-  if(!parceiroId){
-
-    alert(
-      "Parceiro sem ID operacional."
-    );
-
+  if (!id) {
+    alert("Parceiro sem ID operacional.");
     return;
-
   }
 
+  if (!confirm("Gerar ou abrir o contrato do parceiro " + id + "?")) {
+    return;
+  }
 
-  const url =
-    "gerar-contrato-parceiro.html?p=" +
-    encodeURIComponent(
-      parceiroId
-    );
+  const aba = window.open("about:blank", "_blank");
+  if (!aba) {
+    alert("Permita pop-ups para abrir o contrato e tente novamente.");
+    return;
+  }
 
+  aba.opener = null;
+  aba.document.body.textContent = "Aguarde, consultando o contrato...";
 
-  window.open(
-    url,
-    "_blank"
-  );
+  try {
+const resposta = await fetch(API_URL, {
+  method: "POST",
+  headers: { "Content-Type": "text/plain;charset=UTF-8" },
+  body: JSON.stringify({
+    action: "gerarContrato",
+    key: state.key,
+    parceiro_id: id
+  })
+});
 
+if (!resposta.ok) {
+  throw new Error("Falha ao consultar o serviço de contratos.");
 }
+
+const resp = await resposta.json();
 
 </script>
 
