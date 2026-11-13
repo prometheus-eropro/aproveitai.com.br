@@ -361,10 +361,12 @@ Versão
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QAD1SxpnMq3vc8e1FhtknlB7_1j6qLjYIbPA0qPJS7ck7y/exec";
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
-const nascimento = params.get("nascimento") || sessionStorage.getItem("clienteNascimento") || "";
+const id = sessionStorage.getItem("clienteIdPublico") || "";
+const nascimento = sessionStorage.getItem("clienteNascimento") || "";
 
+if (location.search) {
+  history.replaceState(null, "", location.pathname + location.hash);
+}
 
 function jsonp(url){
   return new Promise((resolve, reject) => {
@@ -382,7 +384,10 @@ function jsonp(url){
 }
 
 (async () => {
-  if(!id){ alert("ID do cartão não informado."); return; }
+    if (!id || !nascimento) {
+    window.location.replace("painelcliente.html");
+    return;
+  }
 
   try{
     const d = await jsonp(

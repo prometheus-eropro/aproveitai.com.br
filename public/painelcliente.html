@@ -572,12 +572,7 @@ function abrirCartao() {
     return;
   }
 
-  window.location.href =
-    "cartao.html?id=" +
-    encodeURIComponent(ultimoIdPublico) +
-    "&nascimento=" +
-    encodeURIComponent(nasc);
-}
+    window.location.href = "cartao.html";
 
 function formatarDataBR(valor) {
   if (!valor) return "-";

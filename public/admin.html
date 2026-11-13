@@ -21695,6 +21695,33 @@ if (!resposta.ok) {
 
 const resp = await resposta.json();
 
+    if (resp?.ok !== true) {
+      throw new Error(
+        resp?.erro || resp?.msg || resp?.mensagem ||
+        "Não foi possível gerar o contrato."
+      );
+    }
+
+    const link = resp.pdf_url || resp.pdfUrl || resp.url;
+    if (!link) {
+      throw new Error("O Admin não retornou o link do PDF.");
+    }
+
+    const url = new URL(link);
+    if (
+      url.protocol !== "https:" ||
+      !["drive.google.com", "docs.google.com"].includes(url.hostname)
+    ) {
+      throw new Error("O link do contrato não é um endereço do Google Drive.");
+    }
+
+    aba.location.replace(url.href);
+  } catch (erro) {
+    aba.close();
+    alert(erro.message || "Erro ao abrir o contrato.");
+  }
+}
+
 </script>
 
 </body>
