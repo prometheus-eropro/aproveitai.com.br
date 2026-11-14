@@ -449,8 +449,23 @@ async function consultar() {
 
         STATUS: ATIVO
 
-      </div>
+<div style="margin-top:4px; font-size:0.9em; font-weight:400;">
+  <b>Válido até:</b>
+  ${(() => {
+    const valor = String(achado.dataVencimento || achado.validade || "").trim();
 
+    const br = valor.match(/^(\d{2}\/\d{2}\/\d{4})(?:\s|$)/);
+    if (br) return br[1];
+
+    const iso = valor.match(/^(\d{4})-(\d{2})-(\d{2})(?:T|\s|$)/);
+    if (iso) return iso[3] + "/" + iso[2] + "/" + iso[1];
+
+    return "Não informada";
+  })()}
+</div>
+
+      </div>
+      
       <div id="resumoCliente"></div>
 
       <div id="veiculosCliente"></div>
@@ -550,29 +565,15 @@ async function consultar() {
 }
 
 function abrirBeneficios() {
-  const nascimento = document.getElementById("nascimento").value;
+  const id = sessionStorage.getItem("clienteIdPublico");
+  const nascimento = sessionStorage.getItem("clienteNascimento");
 
-  if (!ultimoIdPublico || !nascimento) {
+  if (!id || !nascimento) {
     alert("Consulte seus dados primeiro.");
     return;
   }
 
-  window.location.href =
-    "meus-beneficios.html?id=" +
-    encodeURIComponent(ultimoIdPublico) +
-    "&nascimento=" +
-    encodeURIComponent(nascimento);
-}
-
-function abrirCartao() {
-  const nasc = sessionStorage.getItem("clienteNascimento");
-
-  if (!ultimoIdPublico || !nasc) {
-    alert("Dados do cartão não encontrados.");
-    return;
-  }
-
-    window.location.href = "cartao.html";
+  window.location.href = "meus-beneficios.html";
 }
 
 function formatarDataBR(valor) {

@@ -2496,6 +2496,10 @@ Novo Parceiro
 
     <button class="navbtn" data-view="admins">
 
+<button type="button" class="navbtn" data-view="feedback">
+  💬 <span class="texto">Feedback</span>
+</button>
+
 👨‍💼
 
 <span class="texto">
@@ -3470,6 +3474,26 @@ style="display:none;margin-top:20px;">
             </div>
           </section>
 
+         <section data-section="feedback" style="display:none">
+  <button type="button" onclick="carregarFeedback()">Recarregar</button>
+  <p id="feedbackStatus" role="status"></p>
+  <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Tipo</th>
+          <th>Parceiro</th>
+          <th>Nota do parceiro</th>
+          <th>Nota da plataforma</th>
+          <th>Comentário</th>
+        </tr>
+      </thead>
+      <tbody id="feedbackLinhas"></tbody>
+    </table>
+  </div>
+</section>
+
           <!-- LOG ADMIN -->
           <section data-section="log_admin" style="display:none">
            <div class="row">
@@ -4410,6 +4434,7 @@ const views = {
   promocoes: { title:"Promoções", desc:"Criar, editar e ativar/desativar promoções." },
   logs: { title:"Logs", desc:"Somente leitura (validações)." },
   log_admin: { title:"Log Admin", desc:"Somente leitura (auditoria)." },
+  feedback: { title: "Feedback", desc: "Avaliações recebidas pelo AproveitAI." },
   admins: { title:"Admins", desc:"Somente leitura (atenção às senhas)." },
   novo_parceiro:{title:"Novo Parceiro",desc:"Cadastro completo do parceiro."},
 config: {
@@ -4438,6 +4463,46 @@ function showView(name){
 
   // lazy load
   loadView(name).catch(()=>{});
+}
+
+async function carregarFeedback() {
+  const status = document.getElementById("feedbackStatus");
+  const corpo = document.getElementById("feedbackLinhas");
+
+  corpo.replaceChildren();
+  status.textContent = "Carregando avaliações…";
+
+  try {
+    const resposta = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      body: JSON.stringify({ action: "listar_feedback", key: state.key })
+    });
+
+    if (!resposta.ok) {
+      throw new Error("Falha ao consultar as avaliações.");
+    }
+
+    const dados = await resposta.json();
+
+    if (dados.ok !== true || !Array.isArray(dados.avaliacoes)) {
+      throw new Error(dados.erro || "Resposta inválida do Admin.");
+    }
+
+    for (const valores of dados.avaliacoes) {
+      const linha = corpo.insertRow();
+
+      for (const valor of valores) {
+        linha.insertCell().textContent = valor === "" ? "—" : valor;
+      }
+    }
+
+    status.textContent = dados.avaliacoes.length
+      ? ""
+      : "Nenhuma avaliação recebida.";
+  } catch (erro) {
+    status.textContent = erro.message || "Não foi possível carregar as avaliações.";
+  }
 }
 
 async function loadView(name){
@@ -4499,8 +4564,11 @@ if(name === "grupos")
   if(name === "logs")
     return loadLogs(true);
 
-  if(name === "log_admin")
-    return loadLogAdmin(true);
+if(name === "log_admin")
+  return loadLogAdmin(true);
+
+if(name === "feedback")
+  return carregarFeedback();
 
   if(name === "admins")
     return loadAdmins(true);

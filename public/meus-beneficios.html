@@ -68,18 +68,19 @@ const API_URL =
 // DADOS RECEBIDOS PELA URL
 // ==================================================
 
-const params =
-  new URLSearchParams(window.location.search);
+const idCliente = String(
+  sessionStorage.getItem("clienteIdPublico") || ""
+).trim().toUpperCase();
 
-const idCliente =
-  String(params.get("id") || "")
-    .trim()
-    .toUpperCase();
+const nascimento = String(
+  sessionStorage.getItem("clienteNascimento") || ""
+).trim();
 
-const nascimento =
-  params.get("nascimento") ||
-  sessionStorage.getItem("clienteNascimento") ||
-  "";
+if (location.search) {
+  history.replaceState(null, "", location.pathname + location.hash);
+}
+
+document.getElementById("btnVerCartao").href = "cartao.html";
 
 
 // ==================================================
