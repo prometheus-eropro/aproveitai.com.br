@@ -1654,31 +1654,24 @@ async function gerarERO() {
       String(partes[1] || "").trim();
   }
 
-  const url =
-    GAS_URL +
-    "?acao=gerarERO" +
-    "&cpf=" +
-    encodeURIComponent(cpf) +
-    "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
-    "&tipo=" +
-    encodeURIComponent(
-      beneficio.tipo || ""
-    ) +
-    "&titulo=" +
-    encodeURIComponent(
-      beneficio.titulo || ""
-    ) +
-    "&descricao=" +
-    encodeURIComponent(
-      beneficio.descricao || ""
-    ) +
-    "&placa=" +
-    encodeURIComponent(placa) +
-    "&modelo=" +
-    encodeURIComponent(modelo) +
-    "&_=" +
-    Date.now();
+ const nascimento = document.getElementById("nascimento").value.trim();
+
+if (!/^\d{2}\/\d{2}\/\d{4}$/.test(nascimento)) {
+  mostrarMsg("⚠️ Informe a data de nascimento no formato DD/MM/AAAA.");
+  return;
+}
+
+const dadosERO = {
+  acao: "gerarERO",
+  cpf,
+  nascimento,
+  parceiro_id: parceiroId,
+  tipo: beneficio.tipo || "",
+  titulo: beneficio.titulo || "",
+  descricao: beneficio.descricao || "",
+  placa,
+  modelo
+};
 
   const btn =
     document.getElementById(
@@ -1695,13 +1688,14 @@ async function gerarERO() {
   const limiteGeracao = setTimeout(() => controladorGeracao.abort(), 20000);
   try {
 
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow",
-        signal: controladorGeracao.signal
-      });
+    const resposta = await fetch(GAS_URL, {
+  method: "POST",
+  headers: { "Content-Type": "text/plain;charset=UTF-8" },
+  body: JSON.stringify(dadosERO),
+  cache: "no-store",
+  redirect: "follow",
+  signal: controladorGeracao.signal
+});
 
     if (!resposta.ok) {
       throw new Error(

@@ -428,6 +428,8 @@ formNascimentoQr.addEventListener("submit", (evento) => {
   validar(campoNascimentoQr.value);
 });
 
+let nascimentoValidadoERO = "";
+
 /* =============================
    VALIDAÇÃO
 ============================= */
@@ -443,6 +445,8 @@ async function validar(nascimento = "") {
   }
 
   validacaoEmAndamento = true;
+
+  nascimentoValidadoERO = "";
 
 
   // ==========================================
@@ -628,9 +632,12 @@ if (resp.status === "NAO_LOCALIZADO") {
 }
 
 if (resp.ok === true) {
+  nascimentoValidadoERO = nascimento;
   formNascimentoQr.hidden = true;
   campoNascimentoQr.value = "";
 }
+
+retornoValidacao(resp);
 
 retornoValidacao(resp);
 
@@ -1966,38 +1973,18 @@ async function gerarERO() {
   // VEÍCULO
   // ==========================================
 
-  let placa = "";
-  let modelo = "";
+const selectVeiculo = document.getElementById("selectVeiculo");
+const veiculoSelecionado = String(selectVeiculo?.value || "").trim();
+const [placaSelecionada = "", modeloSelecionado = ""] =
+  veiculoSelecionado.split("|");
 
-  const selectVeiculo =
-    document.getElementById(
-      "selectVeiculo"
-    );
+const placa = placaSelecionada.trim();
+const modelo = modeloSelecionado.trim();
 
-  if (
-    window.exigePlaca &&
-    selectVeiculo
-  ) {
-
-    const veiculo =
-      String(
-        selectVeiculo.value || ""
-      ).trim();
-
-    if (!veiculo) {
-      mostrarMsg("❌ Selecione o veículo.");
-      return;
-    }
-
-    const partes =
-      veiculo.split("|");
-
-    placa =
-      String(partes[0] || "").trim();
-
-    modelo =
-      String(partes[1] || "").trim();
-  }
+if (window.exigePlaca && !placa) {
+  mostrarMsg("❌ Selecione um veículo com placa cadastrada.");
+  return;
+}
 
 
   // ==========================================
@@ -2023,38 +2010,26 @@ async function gerarERO() {
   // MONTA URL
   // ==========================================
 
-  const url =
-    GAS_URL +
-    "?acao=gerarERO" +
-    "&cpf=" +
-    encodeURIComponent(cpf) +
-    "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
-    "&tipo=" +
-    encodeURIComponent(
-      beneficio.tipo || ""
-    ) +
-    "&titulo=" +
-    encodeURIComponent(
-      beneficio.titulo || ""
-    ) +
-    "&descricao=" +
-    encodeURIComponent(
-      beneficio.descricao || ""
-    ) +
-    "&placa=" +
-    encodeURIComponent(placa) +
-    "&modelo=" +
-    encodeURIComponent(modelo) +
-    "&_=" +
-    Date.now();
+if (!nascimentoValidadoERO) {
+  mostrarMsg("Valide a data de nascimento do cliente antes de gerar o ERO.");
+  return;
+}
 
+const dadosERO = {
+  acao: "gerarERO",
+  cpf,
+  parceiro_id: parceiroId,
+  nascimento: nascimentoValidadoERO,
+  tipo: beneficio.tipo || "",
+  titulo: beneficio.titulo || "",
+  descricao: beneficio.descricao || "",
+  placa,
+  modelo
+};
 
-  diagnosticoQR(
-    "17 - GERAR ERO API",
-    url
-  );
-
+console.info("[ERO] Veículo no POST", {
+  placaPreenchida: Boolean(dadosERO.placa)
+});
 
   // ==========================================
   // BLOQUEIA BOTÃO
@@ -2070,19 +2045,24 @@ async function gerarERO() {
     btn.innerText = "Gerando Código ERO...";
   }
 
+let etapaERO = "conexão com o CORE";
+let httpERO = null;
 
   // ==========================================
   // CONSULTA CORE
   // ==========================================
 
-  try {
+ try {
+  const resposta = await fetch(GAS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
+    body: JSON.stringify(dadosERO),
+    cache: "no-store",
+    redirect: "follow"
+  });
 
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      });
+  httpERO = resposta.status;
+  etapaERO = "status HTTP";
 
 
     diagnosticoQR(
@@ -2097,6 +2077,7 @@ async function gerarERO() {
       );
     }
 
+etapaERO = "leitura e interpretação da resposta";
 
     const texto =
       await resposta.text();
@@ -2160,6 +2141,16 @@ async function gerarERO() {
     const resp =
       JSON.parse(textoLimpo);
 
+etapaERO = "verificação da resposta do CORE";
+
+console.info("[ERO] Resposta do CORE", {
+  http: httpERO,
+  ok: resp?.ok === true,
+  temCodigo: Boolean(resp?.codigo),
+  status: /^[A-Z][A-Z_]{0,59}$/.test(resp?.status || "")
+    ? resp.status
+    : "SEM_STATUS_PADRONIZADO"
+});
 
     diagnosticoQR(
       "21 - ERO CONVERTIDO",
@@ -2190,7 +2181,25 @@ async function gerarERO() {
     // ENTREGA PARA FUNÇÃO EXISTENTE
     // ==========================================
 
-    retornoGeracaoERO(resp);
+etapaERO = "exibição do código";
+    try {
+  retornoGeracaoERO(resp);
+} catch (erroTela) {
+  console.error("[ERO] O CORE retornou um código, mas a tela falhou.", {
+    tipo: erroTela.name
+  });
+
+  mostrarMsg(
+    "O código foi gerado, mas não pôde ser exibido. Confira o histórico antes de gerar outro."
+  );
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = "Confira o histórico";
+  }
+
+  return;
+}
 
 
     // ==========================================
@@ -2205,10 +2214,11 @@ async function gerarERO() {
 
   } catch (erro) {
 
-    diagnosticoQR(
-      "22 - ERRO GERAR ERO",
-      String(erro)
-    );
+    console.error("[ERO] Falha", {
+  etapa: etapaERO,
+  http: httpERO,
+  tipo: erro?.name || "Error"
+});
 
     mostrarMsg(
       "❌ Não foi possível gerar o Código ERO."
