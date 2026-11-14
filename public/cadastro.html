@@ -88,6 +88,32 @@ body {
   padding: 12px;
 }
 
+.aviso-idade-cadastro,
+.alerta-nascimento {
+  max-width: 620px;
+  box-sizing: border-box;
+  margin: 12px auto;
+  padding: 12px 16px;
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.aviso-idade-cadastro {
+  background: #eef7f0;
+  border-left: 4px solid #087d32;
+  color: #174c2a;
+}
+
+.alerta-nascimento {
+  background: #fff4dd;
+  border-left: 4px solid #b36a00;
+  color: #593600;
+}
+
+.alerta-nascimento[hidden] {
+  display: none;
+}
+
   </style>
 <script src="js/config.js"></script>
 
@@ -230,6 +256,12 @@ body {
 
 <!-- ✅ FORMULÁRIO -->
 <div class="form-wrap">
+
+<p class="aviso-idade-cadastro">
+  <strong>Cadastro online a partir de 18 anos</strong><br>
+  É necessário ter 18 anos completos para se cadastrar pelo site.
+</p>
+
 <form
   id="formCadastro"
   
@@ -338,6 +370,8 @@ body {
   autocomplete="bday"
   required
 >
+
+<p id="alertaNascimento" class="alerta-nascimento" role="alert" hidden></p>
 
 <h3>🚗 Veículos (opcional no cadastro)</h3>
 
@@ -550,6 +584,21 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
 const form = document.getElementById("formCadastro");
 const box = document.getElementById("mensagemCadastro");
 
+const alertaNascimento = document.getElementById("alertaNascimento");
+
+function mostrarAlertaNascimento(menorDeIdade) {
+  alertaNascimento.textContent = menorDeIdade
+    ? "O cadastro pelo site é permitido a partir de 18 anos completos. Em caso de dúvida, peça ao seu responsável legal que entre em contato com o AproveitAI."
+    : "Informe uma data de nascimento válida no formato DD/MM/AAAA.";
+
+  alertaNascimento.hidden = false;
+  alertaNascimento.scrollIntoView({ block: "nearest" });
+}
+
+document.getElementById("nascimento").addEventListener("input", () => {
+  alertaNascimento.hidden = true;
+});
+
 function verificarIdadeCadastro(nascimento, hojeISO) {
   const partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(
     String(nascimento || "").trim()
@@ -593,12 +642,7 @@ const resultadoIdade = verificarIdadeCadastro(
 );
 
 if (resultadoIdade !== "OK") {
-  box.style.display = "block";
-  box.setAttribute("role", "alert");
-  box.textContent = resultadoIdade === "MENOR_DE_IDADE"
-    ? "O cadastro online é para maiores de 18 anos. Para cadastrar um menor, peça ao responsável legal que entre em contato com o AproveitAI."
-    : "Informe uma data de nascimento válida no formato DD/MM/AAAA.";
-  box.scrollIntoView({ block: "nearest" });
+  mostrarAlertaNascimento(resultadoIdade === "MENOR_DE_IDADE");
   return;
 }
 
