@@ -550,8 +550,57 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzhwXhtWdsDSuABRneoz6QA
 const form = document.getElementById("formCadastro");
 const box = document.getElementById("mensagemCadastro");
 
+function verificarIdadeCadastro(nascimento, hojeISO) {
+  const partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(
+    String(nascimento || "").trim()
+  );
+
+  if (!partes) return "DATA_INVALIDA";
+
+  const [, dia, mes, ano] = partes;
+  const nascimentoISO = `${ano}-${mes}-${dia}`;
+  const data = new Date(`${nascimentoISO}T00:00:00Z`);
+
+  if (
+    Number(ano) === 0 ||
+    Number.isNaN(data.getTime()) ||
+    data.toISOString().slice(0, 10) !== nascimentoISO ||
+    nascimentoISO > hojeISO
+  ) {
+    return "DATA_INVALIDA";
+  }
+
+  const [anoAtual, mesAtual, diaAtual] = hojeISO.split("-");
+  const aniversarioPassou = `${mesAtual}-${diaAtual}` >= `${mes}-${dia}`;
+  const idade = Number(anoAtual) - Number(ano) - (aniversarioPassou ? 0 : 1);
+
+  return idade >= 18 ? "OK" : "MENOR_DE_IDADE";
+}
+
 form.addEventListener("submit", function(e){
   e.preventDefault();
+
+const hojeISO = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit"
+}).format(new Date());
+
+const resultadoIdade = verificarIdadeCadastro(
+  document.getElementById("nascimento").value,
+  hojeISO
+);
+
+if (resultadoIdade !== "OK") {
+  box.style.display = "block";
+  box.setAttribute("role", "alert");
+  box.textContent = resultadoIdade === "MENOR_DE_IDADE"
+    ? "O cadastro online é para maiores de 18 anos. Para cadastrar um menor, peça ao responsável legal que entre em contato com o AproveitAI."
+    : "Informe uma data de nascimento válida no formato DD/MM/AAAA.";
+  box.scrollIntoView({ block: "nearest" });
+  return;
+}
 
   box.style.display = "block";
   box.innerHTML = "⏳ Enviando cadastro...";
@@ -564,7 +613,19 @@ form.addEventListener("submit", function(e){
 
   window[callback] = function(r) {
 
-  console.log("RETORNO DO GAS:", r);
+  if (
+  r?.status === "MENOR_DE_IDADE" ||
+  r?.status === "NASCIMENTO_INVALIDO"
+) {
+  box.style.display = "block";
+  box.setAttribute("role", "alert");
+  box.textContent = r.mensagem || "Confira a data de nascimento informada.";
+  box.scrollIntoView({ block: "nearest" });
+
+  document.getElementById(callback)?.remove();
+  delete window[callback];
+  return;
+}
 
   if (r.ok && r.status === "CADASTRO_RECEBIDO") {
 

@@ -49,6 +49,23 @@ body {
   padding: 12px;
 }
 
+#msg.aviso-validacao {
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid #d5a43b;
+  border-left: 4px solid #a66a00;
+  border-radius: 8px;
+  background: #fff7dd;
+  color: #543600;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+}
+
+#msg.aviso-validacao:empty {
+  display: none;
+}
+
 </style>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
@@ -82,9 +99,25 @@ body {
 <div class="container">
   <h2>Validação de Benefício</h2>
 
+<div id="msg" class="aviso-validacao" role="status" aria-live="polite"></div>
+
 <button id="btnLerQR" onclick="abrirCamera()">
 📷 Ler QR Code
 </button>
+
+<form id="formNascimentoQr" hidden>
+  <label for="nascimentoQr">Data de nascimento</label>
+  <input
+    id="nascimentoQr"
+    type="text"
+    inputmode="numeric"
+    maxlength="10"
+    placeholder="DD/MM/AAAA"
+    autocomplete="off"
+    required
+  >
+  <button type="submit">Validar cliente</button>
+</form>
 
 <div id="reader"
      style="display:none;width:100%;margin-top:15px;">
@@ -296,6 +329,18 @@ let clienteId =
   params.get("cliente") ||
   "";
 
+const enderecoLimpo = new URL(window.location.href);
+
+for (const campo of ["idPublico", "id", "cliente", "cpf", "nascimento"]) {
+  enderecoLimpo.searchParams.delete(campo);
+}
+
+history.replaceState(
+  history.state,
+  "",
+  enderecoLimpo.pathname + enderecoLimpo.search + enderecoLimpo.hash
+);
+
 const elMsg = document.getElementById("msg");
 const elBtn =
 document.getElementById("btnLerQR");
@@ -366,10 +411,27 @@ function somenteNumeros(v) {
   return String(v || "").replace(/\D/g, "");
 }
 
+const formNascimentoQr = document.getElementById("formNascimentoQr");
+const campoNascimentoQr = document.getElementById("nascimentoQr");
+
+campoNascimentoQr.addEventListener("input", () => {
+  const digitos = campoNascimentoQr.value.replace(/\D/g, "").slice(0, 8);
+  campoNascimentoQr.value = [
+    digitos.slice(0, 2),
+    digitos.slice(2, 4),
+    digitos.slice(4, 8)
+  ].filter(Boolean).join("/");
+});
+
+formNascimentoQr.addEventListener("submit", (evento) => {
+  evento.preventDefault();
+  validar(campoNascimentoQr.value);
+});
+
 /* =============================
    VALIDAÇÃO
 ============================= */
-async function validar() {
+async function validar(nascimento = "") {
 
   // ==========================================
   // EVITA DUPLICIDADE
@@ -449,91 +511,36 @@ document.getElementById("btnGerarERO").style.display = "none";
   }
 
 
-  mostrarMsg(
-    "⏳ Validando benefício..."
-  );
+const dataDigitada = formNascimentoQr.hidden = false;
 
+if (!/^\d{2}\/\d{2}\/\d{4}$/.test(nascimento)) {
+  validacaoEmAndamento = false;
+  mostrarMsg(nascimento
+    ? "Digite os oito números da data de nascimento."
+    : "QR identificado. Informe a data de nascimento do cliente.");
+  campoNascimentoQr.focus();
+  return;
+}
 
-  // ==========================================
-  // DEFINE CPF OU ID PÚBLICO
-  // ==========================================
+const identificador = /^APV-/i.test(valor)
+  ? valor.toUpperCase()
+  : valor.replace(/\D/g, "");
 
-  const somenteDigitos =
-    valor.replace(/\D/g, "");
+mostrarMsg("⏳ Validando benefício...");
 
-  let acao;
-  let parametro;
-
-
-  if (/^\d{11}$/.test(somenteDigitos)) {
-
-    valor = somenteDigitos;
-
-    acao = "buscarClienteCPF";
-    parametro = "&cpf=";
-
-  } else {
-
-    valor =
-      valor.toUpperCase();
-
-    if (!valor.startsWith("APV-")) {
-
-      validacaoEmAndamento = false;
-
-      mostrarMsg(
-        "❌ ID Público inválido."
-      );
-
-      return;
-    }
-
-    acao = "buscarClienteId";
-    parametro = "&idPublico=";
-  }
-
-
-  // ==========================================
-  // MONTA URL
-  // ==========================================
-
-  const url =
-    GAS_URL +
-    "?acao=" +
-    encodeURIComponent(acao) +
-    parametro +
-    encodeURIComponent(valor) +
-    "&p=" +
-    encodeURIComponent(parceiroId) +
-    "&parceiro_id=" +
-    encodeURIComponent(parceiroId) +
-    "&_=" +
-    Date.now();
-
-
-  diagnosticoQR(
-    "8 - AÇÃO",
-    acao
-  );
-
-  diagnosticoQR(
-    "9 - FETCH API",
-    url
-  );
-
-
-  // ==========================================
-  // CONSULTA CORE VIA FETCH
-  // ==========================================
-
-  try {
-
-    const resposta =
-      await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      });
+try {
+  const resposta = await fetch(GAS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
+    body: JSON.stringify({
+      acao: "consultarClienteValidacao",
+      parceiro_id: parceiroId,
+      identificador,
+      nascimento
+    }),
+    cache: "no-store",
+    redirect: "follow"
+  });
 
 
     diagnosticoQR(
@@ -604,6 +611,25 @@ try {
     "Resposta inválida do CORE: " +
     texto.substring(0, 150)
   );
+}
+
+if (resp.status === "NAO_LOCALIZADO") {
+  validacaoEmAndamento = false;
+
+  const mensagem = String(resp.mensagem || "");
+
+  mostrarMsg(mensagem.includes("Cadastre-se")
+    ? "O servidor respondeu pelo fluxo antigo. Confira a implantação do CORE."
+    : "Não foi possível validar o cartão. Confira a data de nascimento e tente novamente.");
+
+  campoNascimentoQr.focus();
+  campoNascimentoQr.select();
+  return;
+}
+
+if (resp.ok === true) {
+  formNascimentoQr.hidden = true;
+  campoNascimentoQr.value = "";
 }
 
 retornoValidacao(resp);
