@@ -18747,8 +18747,7 @@ function renderChecklistImplantacao(
     "qr_gerado",
     "contato_ok",
       "endereco_ok",
-  "maps_ok",
-  "logo_ok",,
+     "logo_ok",
     "token_ok",
     "pin_ok",
     "painel_ok",
@@ -18801,10 +18800,11 @@ function renderChecklistImplantacao(
         "Endereço"
       )}
 
-      ${auto(
-        "maps_ok",
-        "Google Maps"
-      )}
+     ${auto(
+  "maps_ok",
+  "Google Maps",
+  true
+)}
 
       ${auto(
         "logo_ok",
