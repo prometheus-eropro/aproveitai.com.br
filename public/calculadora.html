@@ -171,7 +171,7 @@ href="https://wa.me/5528999692303?text=Ol%C3%A1%21%20Conheci%20a%20Calculadora%2
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><h2 id="modalTitle">Simular benefício</h2><p id="modalDescription" class="muted"></p><form id="simulationForm"><div id="qtyBlock"><label for="qty" id="qtyLabel">Quantidade mensal</label><input id="qty" type="number" min="0.01" step="any" inputmode="decimal" required></div><div id="priceBlock" style="margin-top:13px"><label for="price" id="priceLabel">Preço de referência (R$)</label><input id="price" type="number" min="0.01" step="0.01" inputmode="decimal"></div><p id="modalNote" class="muted"></p><div class="actions"><button type="button" class="secondary" id="cancel">Cancelar</button><button type="submit" class="primary">Adicionar à comparação</button></div></form></div></div>
 <script>
 'use strict';
-const API_URL = 'https://script.google.com/macros/s/AKfycbwMMQ2FR2JBpo7xvWVazw4dAV6t_t90UxTASLcGfo1t7fA-beDqJDC-4z-Y7DL9vRunVg/exec';
+
 
 let MENSALIDADE = null;
 
@@ -907,123 +907,64 @@ $('cancel').addEventListener('click',fechar);$('overlay').addEventListener('clic
    Evita bloqueio CORS do Google Apps Script
 ========================================== */
 
-function iniciar() {
-
-  const callback = "receberCalculadora_" + Date.now();
-
-  const script = document.createElement("script");
-
-  const timeout = setTimeout(() => {
-
-    finalizar();
-
-    mostrarErro("Tempo esgotado ao consultar os benefícios.");
-
-  }, 20000);
-
-  function finalizar() {
-
-    clearTimeout(timeout);
-
-    delete window[callback];
-
-    script.remove();
-
-  }
+async function iniciar() {
+  const controle = new AbortController();
+  const timeout = setTimeout(() => controle.abort(), 20000);
 
   function mostrarErro(mensagem) {
-
-    console.error("Calculadora:", mensagem);
-
-    document.getElementById("status").textContent =
+    $("status").textContent =
       "Não foi possível carregar os benefícios. " + mensagem;
 
-    document.getElementById("city").replaceChildren(
-      new Option("Consulta indisponível", "")
-    );
-
+    $("city").replaceChildren(new Option("Consulta indisponível", ""));
   }
 
-  window[callback] = function(resposta) {
+  try {
+    const consulta = await fetch("/api/calculadora", {
+      signal: controle.signal
+    });
 
-    finalizar();
-
-    if (
-      !resposta ||
-      resposta.ok !== true ||
-      !resposta.dados
-    ) {
-
-      mostrarErro("Resposta inválida da plataforma.");
+    if (!consulta.ok) {
+      mostrarErro(consulta.status === 504
+        ? "Tempo esgotado ao consultar os benefícios."
+        : "Falha de comunicação com o servidor.");
       return;
-
     }
 
-    
-/* ==========================================
-   APROVEITAI — MENSALIDADE OFICIAL DO ADMIN
-========================================== */
+    const resposta = await consulta.json();
+    if (resposta?.ok !== true || !resposta.dados) {
+      mostrarErro("Resposta inválida da plataforma.");
+      return;
+    }
 
-const mensalidadeRecebida =
-  resposta.dados.mensalidade_individual;
-
-const mensalidadeNumero =
-  typeof mensalidadeRecebida === "number"
-    ? mensalidadeRecebida
-    : Number(
-        String(mensalidadeRecebida ?? "")
+    const mensalidade = resposta.dados.mensalidade_individual;
+    const valor = typeof mensalidade === "number"
+      ? mensalidade
+      : Number(String(mensalidade ?? "")
           .replace(/[R$\s]/g, "")
           .replace(/\./g, "")
-          .replace(",", ".")
-      );
+          .replace(",", "."));
 
-if (
-  mensalidadeRecebida === null ||
-  mensalidadeRecebida === undefined ||
-  String(mensalidadeRecebida).trim() === "" ||
-  !Number.isFinite(mensalidadeNumero) ||
-  mensalidadeNumero <= 0
-) {
-  mostrarErro(
-    "Mensalidade individual não configurada no Admin."
-  );
-  return;
+    if (!Number.isFinite(valor) || valor <= 0) {
+      mostrarErro("Mensalidade individual não configurada no Admin.");
+      return;
+    }
+
+    MENSALIDADE = valor;
+    $("mensalidadeExibida").textContent = "− " + moeda(MENSALIDADE);
+    $("valorPlanoIndividual").textContent = moeda(MENSALIDADE) + " por mês.";
+
+    preparar(resposta.dados);
+    renderCart();
+  } catch (erro) {
+    mostrarErro(erro.name === "AbortError"
+      ? "Tempo esgotado ao consultar os benefícios."
+      : "Falha de comunicação com o servidor.");
+  } finally {
+    clearTimeout(timeout);
+  }
 }
-
-
-MENSALIDADE = mensalidadeNumero;
-
-document.getElementById("mensalidadeExibida").textContent =
-  "− " + moeda(MENSALIDADE);
-
-
-document.getElementById("valorPlanoIndividual").textContent =
-  moeda(MENSALIDADE) + " por mês.";
-
-
-preparar(resposta.dados);
 
 renderCart();
+iniciar();
 
-  };
-
-  script.onerror = function() {
-
-    finalizar();
-
-    mostrarErro("Falha de comunicação com o servidor.");
-
-  };
-
-  script.src =
-    API_URL +
-    "?action=listarDadosCalculadora" +
-    "&callback=" + encodeURIComponent(callback) +
-    "&_=" + Date.now();
-
-  document.head.appendChild(script);
-
-}
-
-renderCart();iniciar();
 </script></body></html>

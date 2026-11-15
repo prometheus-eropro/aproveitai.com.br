@@ -98,6 +98,7 @@ oninput="mascaraData(this)">
       onclick="abrirCartao()">
       💳 Ver / Salvar Cartão
     </button>
+
 <div style="
   margin-top:18px;
   padding:12px;
@@ -575,6 +576,18 @@ function abrirBeneficios() {
 
   window.location.href = "meus-beneficios.html";
 }
+
+window.abrirCartao = function () {
+  const id = sessionStorage.getItem("clienteIdPublico");
+  const nascimento = sessionStorage.getItem("clienteNascimento");
+
+  if (!id || !nascimento) {
+    alert("Consulte seus dados primeiro.");
+    return;
+  }
+
+  window.location.href = "cartao.html?id=" + encodeURIComponent(id);
+};
 
 function formatarDataBR(valor) {
   if (!valor) return "-";
