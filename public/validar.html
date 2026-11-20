@@ -407,8 +407,22 @@ function diagnosticoQR(etapa, valor) {
   */
 
 }
+
 function somenteNumeros(v) {
   return String(v || "").replace(/\D/g, "");
+}
+
+function mascararCPF(cpf) {
+  const numeros = String(cpf || "")
+    .replace(/\D/g, "");
+
+  if (numeros.length !== 11) {
+    return "Não disponível";
+  }
+
+  return numeros.slice(0, 3) +
+    ".***.***-" +
+    numeros.slice(-2);
 }
 
 const formNascimentoQr = document.getElementById("formNascimentoQr");
@@ -639,8 +653,6 @@ if (resp.ok === true) {
 
 retornoValidacao(resp);
 
-retornoValidacao(resp);
-
 
   } catch (erro) {
 
@@ -687,7 +699,7 @@ document.getElementById("nomeCliente").textContent =
 resp.nomeCliente;
 
 document.getElementById("cpfCliente").textContent =
-resp.cpf;
+  mascararCPF(resp.cpf);
 
 document.getElementById("celularCliente").textContent =
 resp.celular;
@@ -864,7 +876,7 @@ document.getElementById("nomeCliente").innerText =
 resp.nomeCliente || "";
 
 document.getElementById("cpfCliente").innerText =
-resp.cpf || "";
+  mascararCPF(resp.cpf);
 
 window.cpfCliente = resp.cpf;
 window.idPublicoCliente = resp.idPublico;

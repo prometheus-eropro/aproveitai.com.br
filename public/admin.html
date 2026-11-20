@@ -2543,6 +2543,13 @@ Novo Parceiro
         🤖 <span class="texto">Prometheus AI</span>
     </button>
 
+<button
+    class="navbtn"
+    type="button"
+    id="btnHubEroproMentor">
+    📊 <span class="texto">EROPRO Mentor</span>
+</button>
+
 </div>
 </aside>
 
@@ -15422,6 +15429,32 @@ if(menuSistema){
             .toggle("ativo");
 
     };
+
+}
+
+const btnHubEroproMentor =
+    document.getElementById("btnHubEroproMentor");
+
+if (btnHubEroproMentor) {
+
+    btnHubEroproMentor.addEventListener("click", function () {
+
+        const permissao = String(
+            state.permissao || "operacional"
+        ).trim().toLowerCase();
+
+        if (permissao !== "total") {
+            toast("Acesso permitido somente ao Admin TOTAL.");
+            return;
+        }
+
+        window.open(
+            "https://eropro-mentor.vercel.app/",
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+    });
 
 }
 
