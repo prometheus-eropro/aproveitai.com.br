@@ -163,11 +163,10 @@ body {
   
 </div>
 <br>
-  <strong>Cliente:</strong> <span id="nomeCliente"></span><br>
+
+<strong>Cliente:</strong> <span id="nomeCliente"></span><br>
 
 <strong>CPF:</strong> <span id="cpfCliente"></span><br>
-
-<strong>Celular:</strong> <span id="celularCliente"></span><br>
 
 <strong>ID Público:</strong> <span id="idPublicoCliente"></span><br>
 
@@ -1960,15 +1959,18 @@ async function gerarERO() {
   // CPF DO CLIENTE
   // ==========================================
 
-  const cpf =
-    String(
-      window.cpfCliente || ""
-    ).replace(/\D/g, "");
+ const cpf = String(
+  window.cpfCliente || ""
+).replace(/\D/g, "");
 
-  if (!cpf) {
-    mostrarMsg("❌ CPF do cliente não identificado.");
-    return;
-  }
+const idPublico = String(
+  window.idPublicoCliente || clienteId || ""
+).trim().toUpperCase();
+
+if (!cpf && !/^APV-[A-Z0-9]+$/.test(idPublico)) {
+  mostrarMsg("❌ Cliente não identificado.");
+  return;
+}
 
 
   // ==========================================
@@ -2030,6 +2032,7 @@ if (!nascimentoValidadoERO) {
 const dadosERO = {
   acao: "gerarERO",
   cpf,
+  idPublico,
   parceiro_id: parceiroId,
   nascimento: nascimentoValidadoERO,
   tipo: beneficio.tipo || "",
