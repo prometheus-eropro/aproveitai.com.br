@@ -700,9 +700,6 @@ resp.nomeCliente;
 document.getElementById("cpfCliente").textContent =
   mascararCPF(resp.cpf);
 
-document.getElementById("celularCliente").textContent =
-resp.celular;
-
 document.getElementById("idPublicoCliente").textContent =
 resp.idPublico;
 
@@ -880,9 +877,6 @@ document.getElementById("cpfCliente").innerText =
 window.cpfCliente = resp.cpf;
 window.idPublicoCliente = resp.idPublico;
 window.grupoCliente = resp.grupo;
-
-document.getElementById("celularCliente").innerText =
-resp.celular || "";
 
 document.getElementById("idPublicoCliente").innerText =
 resp.idPublico || "";
@@ -2771,9 +2765,10 @@ font-size:11px;
 color:#777;
 text-align:center;
 margin-top:8px;">
-Versão
-<span id="versaoRodape"></span></footer>
 
+Versão <strong id="versaoRodape">Carregando...</strong>
+</div>
+</footer>
 
 <script>
 
@@ -2838,6 +2833,24 @@ window.addEventListener("load", function () {
   }, 500);
 
 });
+</script>
+
+<script>
+(function () {
+  const campo = document.getElementById("versaoRodape");
+
+  if (!campo) return;
+
+  if (
+    typeof CONFIG !== "undefined" &&
+    CONFIG.versao
+  ) {
+    campo.textContent = CONFIG.versao;
+  } else {
+    campo.textContent = "Não identificada";
+    console.warn("Versão não encontrada no config.js");
+  }
+})();
 </script>
 
 </body>
